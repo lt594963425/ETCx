@@ -1,0 +1,7 @@
+ext {
+    cfg = [compileSdkVersion: 25,
+           buildToolsVersion: '25.0.3',
+           applicationId    : "com.etcxc.android",
+           minSdkVersion    : 15,
+           targetSdkVersion : 25]
+}
