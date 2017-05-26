@@ -17,6 +17,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="com.etcxc.android.modle.db.PublicContentProvider"
+            android:exported="true"
+            android:permission="false"
+            android:authorities="${applicationId}.public">
+        </provider>
+        <provider
+            android:name="com.etcxc.android.modle.db.PrivateContentProvider"
+            android:exported="false"
+            android:authorities="${applicationId}.private" />
     </application>
 
 </manifest>
