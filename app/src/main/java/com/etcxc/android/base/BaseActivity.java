@@ -1,4 +1,4 @@
-package com.etcxc.android;
+package com.etcxc.android.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,13 +11,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.util.LogUtil;
 
 /**
  * 封装Activity公共的操作
  */
 
-public abstract class BasicActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
 
     protected <T extends View> T find(int id) {

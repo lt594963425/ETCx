@@ -1,4 +1,4 @@
-package com.etcxc.android.fragment;
+package com.etcxc.android.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -6,17 +6,28 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.etcxc.android.CApp"
+        android:name="com.etcxc.android.base.App"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.etcxc.android.MainActivity">
+        <activity android:name="com.etcxc.android.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="com.etcxc.android.modle.db.PublicContentProvider"
+            android:exported="true"
+            android:permission="false"
+            android:authorities="${applicationId}.public">
+        </provider>
+        <provider
+            android:name="com.etcxc.android.modle.db.PrivateContentProvider"
+            android:exported="false"
+            android:authorities="${applicationId}.private" />
     </application>
 
 </manifest>
