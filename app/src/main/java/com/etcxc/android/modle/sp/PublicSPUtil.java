@@ -2,7 +2,7 @@ package com.etcxc.android.modle.sp;
 
 import android.content.Context;
 
-import com.etcxc.android.App;
+import com.etcxc.android.base.App;
 
 /**
  * fixme:单例写法
@@ -28,6 +28,6 @@ public class PublicSPUtil extends BasicSPUtil {
     }
 
     private static class InstanceInner {
-        private static PublicSPUtil instance = new PublicSPUtil( App.get());
+        private static PublicSPUtil instance = new PublicSPUtil(App.get());
     }
 }

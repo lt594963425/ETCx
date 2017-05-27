@@ -74,7 +74,7 @@ public class Base64Util {
         try {
             return new String(Base64.decode(str, Base64.DEFAULT), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            LogUtil.e(TAG, "decode " + str, e);
+            com.etcxc.android.util.LogUtil.e(TAG, "decode " + str, e);
             return null;
         }
     }

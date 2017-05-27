@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.etcxc.android.util.Base64Util;
-import com.etcxc.android.util.LogUtil;
 
 /**
  * 封装SPUtil的基础类
@@ -19,10 +18,7 @@ public abstract class BasicSPUtil {
     private Context mContext;
 
     public BasicSPUtil(Context context) {
-        if (context == null) {
-            LogUtil.e("xwpeng16", "ddsdsd");
-        }
-        this.mContext = mContext;
+        this.mContext = context;
     }
 
     protected void initSP() {

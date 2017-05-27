@@ -3,7 +3,7 @@ package com.etcxc.android.utils;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.etcxc.android.App;
+import com.etcxc.android.base.App;
 
 /**
  *  封装和ui相关的操作

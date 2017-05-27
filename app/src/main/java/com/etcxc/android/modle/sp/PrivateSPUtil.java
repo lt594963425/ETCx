@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.etcxc.MeManager;
-import com.etcxc.android.App;
+import com.etcxc.android.base.App;
 import com.etcxc.android.util.Base64Util;
 
 /**
