@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * Created by lt on 2017/5/27
  * 对Fragment进行一些常规的抽取
- *
  * BaseFragmentCommon抽取的好处(基类抽取的好处?)
  *      1.从java语言角度 --> 减少代码量,基类里面放置共有的方法,以及共有的属性
  *      2.针对BaseFragmentCommon --> 后期子类就只需要实现我们自己定义的方法就可以(init,initViews,initData,initListener)

@@ -12,6 +12,83 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
     }
+
+    signingConfigs {
+        debug {
+
+        }
+        release {
+
+        }
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "DEBUG2", "true"
+            versionNameSuffix ".${releaseTime()}.debug"
+            minifyEnabled true
+            zipAlignEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
+            signingConfig signingConfigs.debug
+            multiDexEnabled true
+        }
+        release {
+            buildConfigField "boolean", "DEBUG2", "false"
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            multiDexEnabled false
+        }
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile
+                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                    def fileName;
+                    if (variant.flavorName.equals("auto")) {
+                        fileName = "ETCXC_v${defaultConfig.versionName}_${releaseTimeAuto()}_${variant.buildType.name}_${variant.flavorName}.apk"
+                    } else {
+                        fileName = "ETCXC_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}_${variant.flavorName}.apk"
+                    }
+                    output.outputFile = new File(outputFile.parent, fileName)
+                }
+            }
+        }
+    }
+
+
+    afterEvaluate { project ->
+        def propsFile = rootProject.file('sign.properties')
+        def configName = 'release'
+
+        if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+            if (props.containsKey('STORE_PASSWORD') && props.containsKey('KEY_PASSWORD') && props.containsKey('KEY_ALIAS') && props.containsKey('STORE_FILE')) {
+                android.signingConfigs[configName].storeFile = file(props['STORE_FILE'])
+                android.signingConfigs[configName].storePassword = props['STORE_PASSWORD']
+                android.signingConfigs[configName].keyAlias = props['KEY_ALIAS']
+                android.signingConfigs[configName].keyPassword = props['KEY_PASSWORD']
+            }
+        }
+    }
+
+    compileOptions {
+        encoding "UTF-8"
+    }
+
+}
+
+//平时打包的文件名包含的时间，只有年月日
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+8"))
+}
+
+//自动化打包的文件名包含的时间
+def releaseTimeAuto() {
+    return new Date().format("yyyyMMdd_HHmmss", TimeZone.getTimeZone("GMT+8"))
 }
 
 dependencies {
@@ -23,5 +100,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile 'com.google.dagger:dagger:2.11'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.jakewharton:butterknife:8.6.0'
 }
