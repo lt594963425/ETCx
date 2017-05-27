@@ -57,27 +57,7 @@ android {
             }
         }
     }
-    productFlavors {
-        official {
 
-        }
-
-        beta {
-
-        }
-
-        qa {
-
-        }
-
-        auto {
-
-        }
-
-        dev {
-
-        }
-    }
 
     afterEvaluate { project ->
         def propsFile = rootProject.file('sign.properties')

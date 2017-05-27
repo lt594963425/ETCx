@@ -1,8 +1,7 @@
 package com.etcxc.android.activity;
 
 import android.os.Bundle;
-
-import com.android.etcxc.R;
+import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 
 
