@@ -3,7 +3,7 @@ package com.etcxc.android.modle.db;
 import android.database.Cursor;
 import android.provider.BaseColumns;
 
-import com.android.etcxc.BuildConfig;
+import com.etcxc.android.BuildConfig;
 import com.etcxc.android.util.LogUtil;
 
 import java.util.LinkedHashMap;

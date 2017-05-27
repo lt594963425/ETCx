@@ -16,7 +16,7 @@ import com.etcxc.android.util.LogUtil;
 /**
  * 封装Activity公共的操作
  */
-
+@SuppressWarnings("ResourceType")
 public abstract class BaseActivity extends AppCompatActivity {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
 
