@@ -7,6 +7,9 @@ import android.os.Handler;
 
 import com.etcxc.android.utils.LogUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * App基础类
  * Created by xwpeng on 2017/5/25.
@@ -20,6 +23,12 @@ public class App extends Application {
     public App() {
         sInstance = this;
     }
+    /**
+     * 协议的内存缓存集合
+     */
+    private Map<String, String> protocolCacheMemory = new HashMap<>();
+    //购物车的请求参数
+    public static SkuListInfo mSkuListInfo;
     /**
      *  程序的入口方法
      */
@@ -49,6 +58,10 @@ public class App extends Application {
         return sInstance;
     }
 
+
+    public Map<String, String> getProtocolCacheMemory() {
+        return protocolCacheMemory;
+    }
 
     /**
      * 得到上下文

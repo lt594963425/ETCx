@@ -1,44 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
-
-    <TextView
-        android:id="@+id/tv_register"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:clickable="true"
-        android:gravity="center"
-        android:text="注册" />
-
-    <TextView
-
-        android:id="@+id/tv_find"
-        android:clickable="true"
-        android:text="充值"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp">
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:text="Toolbar Title"
+                style="@style/ToolbarTitle"/>
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_content"
         android:layout_width="match_parent"
-        android:layout_height="50dp" />
-    <TextView
-
-        android:id="@+id/tv_Recharge"
-        android:clickable="true"
-        android:text="余额查询"
-        android:gravity="center"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        ></android.support.v4.view.ViewPager>
+     <Button
+         android:layout_width="match_parent"
+         android:layout_height="50dp"
+         android:id="@+id/tv_register"
+         />
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="50dp" />
-
-    <Button
-        android:id="@+id/bt_login"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:onClick="login"
-        android:text="登录" />
-
-
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        app:bb_behavior="shifting|underNavbar"
+        app:bb_tabXmlResource="@xml/bottombar_tabs_color_changing"/>
 </LinearLayout>
