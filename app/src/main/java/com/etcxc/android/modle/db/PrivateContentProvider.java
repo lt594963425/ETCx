@@ -17,7 +17,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.etcxc.MeManager;
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;

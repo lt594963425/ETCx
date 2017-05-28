@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import com.etcxc.android.util.Base64Util;
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

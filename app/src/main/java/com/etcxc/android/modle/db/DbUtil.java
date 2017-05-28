@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.provider.BaseColumns;
 
 import com.etcxc.android.BuildConfig;
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -2,6 +2,8 @@ package com.etcxc.android.util;
 
 import android.util.Base64;
 
+import com.etcxc.android.utils.LogUtil;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -74,7 +76,7 @@ public class Base64Util {
         try {
             return new String(Base64.decode(str, Base64.DEFAULT), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            com.etcxc.android.util.LogUtil.e(TAG, "decode " + str, e);
+           LogUtil.e(TAG, "decode " + str, e);
             return null;
         }
     }

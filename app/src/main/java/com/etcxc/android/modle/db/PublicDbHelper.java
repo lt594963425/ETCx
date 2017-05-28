@@ -4,8 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
 
 import java.util.LinkedHashMap;
 

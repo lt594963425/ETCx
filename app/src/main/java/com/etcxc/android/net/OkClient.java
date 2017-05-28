@@ -4,7 +4,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.etcxc.MeManager;
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.base.App;
+import com.etcxc.android.utils.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,85 +53,6 @@ public class OkClient {
             = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     public static final String HEADER_SET_COOKIE = "Set-Cookie";
 
-    /**
-     * http用
-     */
-    public static final OkHttpClient sClient = new OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(180, TimeUnit.SECONDS)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .build();
-
-    /**
-     * https用
-     */
-    public static final OkHttpClient sClient2 = new OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(180, TimeUnit.SECONDS)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .sslSocketFactory(overlockCard().getSocketFactory(), new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(
-                        java.security.cert.X509Certificate[] chain,
-                        String authType) throws CertificateException {
-                }
-
-                @Override
-                public void checkServerTrusted(
-                        java.security.cert.X509Certificate[] chain,
-                        String authType) throws CertificateException {
-                }
-
-                @Override
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    X509Certificate[] x509Certificates = new X509Certificate[0];
-                    return x509Certificates;
-                }
-            })
-            .hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            }).build();
-
-    /**
-     * 忽略所有https证书
-     */
-    private static SSLContext overlockCard() {
-        final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(
-                    java.security.cert.X509Certificate[] chain,
-                    String authType) throws CertificateException {
-            }
-
-            @Override
-            public void checkServerTrusted(
-                    java.security.cert.X509Certificate[] chain,
-                    String authType) throws CertificateException {
-            }
-
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                X509Certificate[] x509Certificates = new X509Certificate[0];
-                return x509Certificates;
-            }
-        }};
-        SSLContext sslContext = null;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts,
-                    new java.security.SecureRandom());
-        } catch (Exception e) {
-            LogUtil.e(TAG, "overlockCard", e);
-        }
-        return sslContext;
-    }
 
     private static final String EMPTY_BODY = new JSONObject().toString();
 
@@ -187,9 +109,6 @@ public class OkClient {
     private static Object getOriginal(String url, Map<String, String> differentHeaders, String requestBody, Object tag) {
         //根据http或https获取不同的OKHttpClient
         OkHttpClient client = rightClient(url);
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        client = client.newBuilder().addInterceptor(logging).build();
         Request request = initRequest(url, differentHeaders, requestBody);
         //TODO：记录http请求日志到本地文件，结合拦截器做
         Object result = null;
@@ -353,11 +272,63 @@ public class OkClient {
     }
 
     /**
-     * 确认是使用http还是https<br/>
+     * 忽略所有https证书
      */
-    public static OkHttpClient rightClient(String url) {
-        return httpOrHttps(url) ? sClient2 : sClient;
+    private static SSLContext overlockCard() {
+        final TrustManager[] trustAllCerts = new TrustManager[]{x509TrustManager};
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts,
+                    new java.security.SecureRandom());
+        } catch (Exception e) {
+            LogUtil.e(TAG, "overlockCard", e);
+        }
+        return sslContext;
     }
+
+    public static OkHttpClient rightClient(String url) {
+         OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(180, TimeUnit.SECONDS)
+                .build();
+        if (App.isApkDebugable(App.get())) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            client = client.newBuilder().addInterceptor(logging).build();
+        }
+        if (httpOrHttps(url)) {
+           client = client.newBuilder().sslSocketFactory(overlockCard().getSocketFactory(), x509TrustManager)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    }).build();
+        }
+        return client;
+    }
+
+    private static X509TrustManager x509TrustManager = new X509TrustManager() {
+        @Override
+        public void checkClientTrusted(
+                java.security.cert.X509Certificate[] chain,
+                String authType) throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(
+                java.security.cert.X509Certificate[] chain,
+                String authType) throws CertificateException {
+        }
+
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            X509Certificate[] x509Certificates = new X509Certificate[0];
+            return x509Certificates;
+        }
+    };
 
     /**
      * @return true:https false:http

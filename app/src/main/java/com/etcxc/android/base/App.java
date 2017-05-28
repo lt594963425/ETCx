@@ -2,9 +2,10 @@ package com.etcxc.android.base;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.os.Handler;
 
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
 
 /**
  * App基础类
@@ -67,5 +68,18 @@ public class App extends Application {
      */
     public static int getMainThreadId() {
         return mMainThreadId;
+    }
+
+    /**
+     *判断Apk是不是debug，一些日志只有debug模式才会打印
+     */
+    public static boolean isApkDebugable(Context context) {
+        try {
+            ApplicationInfo info= context.getApplicationInfo();
+            return (info.flags&ApplicationInfo.FLAG_DEBUGGABLE)!=0;
+        } catch (Exception e) {
+
+        }
+        return false;
     }
 }

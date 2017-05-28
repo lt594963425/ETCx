@@ -6,7 +6,7 @@ import android.view.View;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
 
 import org.json.JSONObject;
 

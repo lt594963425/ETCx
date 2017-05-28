@@ -11,7 +11,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import com.etcxc.android.util.LogUtil;
+import com.etcxc.android.utils.LogUtil;
+
 
 /**
  * 封装Activity公共的操作
