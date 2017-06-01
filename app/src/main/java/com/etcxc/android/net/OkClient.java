@@ -72,8 +72,8 @@ public class OkClient {
         return body instanceof String ? body.toString() : null;
     }
 
-    public static String get(String url, JSONObject object, Object tag) {
-        Object body = get(url, null, object == null ? null : object.toString(), tag, false);
+    public static String get(String url, JSONObject array, Object tag) {
+        Object body = get(url, null, array == null ? null : array.toString(), tag, false);
         return body instanceof String ? body.toString() : null;
     }
 

@@ -8,11 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
@@ -32,7 +30,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.ButterKnife;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -48,37 +45,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ViewPager mVpContent;
     private Toolbar mToolbar;
     TextView mToolbarTitle;
-    private  MyPagerAdapter mAdapter;
+    private MyPagerAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //取消顶部标题
-       requestWindowFeature(Window.FEATURE_NO_TITLE);
-      //设置全屏
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+     /*   //取消顶部标题
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //设置全屏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
-
-        find(R.id.tv_register).setOnClickListener(this);
-        mBottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        mVpContent = (ViewPager) findViewById(R.id.vp_content);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-        ButterKnife.bind(this);
         initViews();
         initData();
     }
 
     private void initViews() {
+        find(R.id.tv_register).setOnClickListener(this);
+        mBottomBar = find(R.id.bottomBar);
+        mVpContent = find(R.id.vp_content);
+        mToolbar = find(R.id.toolbar);
+        mToolbarTitle = find(R.id.toolbar_title);
         tabIdPosition.put(R.id.tab_recents, 0);
         tabIdPosition.put(R.id.tab_favorites, 1);
         tabIdPosition.put(R.id.tab_nearby, 2);
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         mAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mVpContent.setAdapter(mAdapter);
-        //toobar初始化
+        //toolbar初始化
         //底部标签栏
         initBottomBar();
-
     }
 
     /**
@@ -93,6 +88,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         });
         mNearby = mBottomBar.getTabWithId(R.id.tab_friends);
     }
+
     private void initData() {
         /**
          * 监听fragment页面改变,以触发加载数据
@@ -128,6 +124,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         break;
                 }
             }
+
             @Override
             public void onPageScrollStateChanged(int state) {
             }
@@ -150,7 +147,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_register:
-                testNet();
+                register();
                 break;
         }
     }
@@ -172,6 +169,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     }
                 });
     }
+
     private class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -187,7 +185,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public int getCount() {
             return 3;
         }
-
     }
+
+    private void register() {
+      /*  Flowable.just("").map(new Function<String, String>() {
+            @Override
+            public String apply(@NonNull String s) throws Exception {
+
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        LogUtil.d("xwpeng16", s);
+                    }
+                });*/
+    }
+
 }
 

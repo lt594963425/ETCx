@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
-import com.etcxc.android.util.Base64Util;
+import com.etcxc.android.utils.Base64Util;
 import com.etcxc.android.utils.LogUtil;
 
 import java.util.LinkedHashMap;

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.base.App;
-import com.etcxc.android.util.Base64Util;
+import com.etcxc.android.utils.Base64Util;
 
 /**
  * fixme:单例写法
