@@ -1,4 +1,4 @@
-package com.etcxc.proxy;
+package com.etcxc.android.factory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;

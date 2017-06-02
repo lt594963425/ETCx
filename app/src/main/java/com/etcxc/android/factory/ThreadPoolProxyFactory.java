@@ -1,7 +1,4 @@
 package com.etcxc.android.factory;
-
-import com.etcxc.proxy.ThreadPoolProxy;
-
 /**
  * Created by 刘涛 on 2017/5/27 0027.
  */

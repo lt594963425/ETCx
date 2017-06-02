@@ -26,13 +26,13 @@ import com.etcxc.android.utils.UIUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements  ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener{
+public class MainActivity extends FragmentActivity implements  ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager vp;
     private FragmentTabHost mTabHost;
     private LayoutInflater layoutInflater;
-    private Class fragmentArray[] = { Fragment1.class, Fragment2.class };
-    private int imageViewArray[] = { R.drawable.tab_home_btn, R.drawable.tab_view_btn };
-    private String textViewArray[] = { "首页", "分类"};
+    private Class fragmentArray[] = {Fragment1.class, Fragment2.class};
+    private int imageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_view_btn};
+    private String textViewArray[] = {"首页", "我的"};
     private List<Fragment> list = new ArrayList<>();
     Toolbar mToolbar;
     TextView mToolbarTitle;
@@ -40,6 +40,7 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);// 配置主界面
         initView();
         initPage();//初始化页面
@@ -52,12 +53,6 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
 
-        /*实现OnPageChangeListener接口,目的是监听Tab选项卡的变化，然后通知ViewPager适配器切换界面*/
-        /*简单来说,是为了让ViewPager滑动的时候能够带着底部菜单联动*/
-
-        vp.addOnPageChangeListener(this);//设置页面切换时的监听器
-        layoutInflater = LayoutInflater.from(this);//加载布局管理器
-
         /*实例化FragmentTabHost对象并进行绑定*/
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);//绑定tahost
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);//绑定viewpager
@@ -67,6 +62,13 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
         mTabHost.setOnTabChangedListener(this);
 
         int count = textViewArray.length;
+        /*实现OnPageChangeListener接口,目的是监听Tab选项卡的变化，然后通知ViewPager适配器切换界面*/
+        /*简单来说,是为了让ViewPager滑动的时候能够带着底部菜单联动*/
+
+        vp.addOnPageChangeListener(this);//设置页面切换时的监听器
+        layoutInflater = LayoutInflater.from(this);//加载布局管理器
+
+
 
         /*新建Tabspec选项卡并设置Tab菜单栏的内容和绑定对应的Fragment*/
         for (int i = 0; i < count; i++) {
@@ -90,6 +92,7 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
             }
         });
     }
+
     /*初始化Fragment*/
     private void initPage() {
         Fragment1 fragment1 = new Fragment1();
@@ -105,7 +108,6 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
     }
 
     @Override
@@ -126,8 +128,8 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
     @Override
     public void onTabChanged(String tabId) {//Tab改变的时候调用
         int position = mTabHost.getCurrentTab();
-        vp.setCurrentItem(position,false);//把选中的Tab的位置赋给适配器，让它控制页面切换
-        switch (position){
+        vp.setCurrentItem(position, false);//把选中的Tab的位置赋给适配器，让它控制页面切换
+        switch (position) {
             case 0:
                 mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
                 mTabHost.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
@@ -151,8 +153,6 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
         mTextView.setText(textViewArray[i]);
         return view;
     }
-
-
 
 }
 

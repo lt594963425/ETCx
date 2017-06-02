@@ -1,8 +1,6 @@
-package com.etcxc.android.util;
+package com.etcxc.android.utils;
 
 import android.util.Base64;
-
-import com.etcxc.android.utils.LogUtil;
 
 import java.io.UnsupportedEncodingException;
 

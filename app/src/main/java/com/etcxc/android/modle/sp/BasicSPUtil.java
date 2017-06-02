@@ -3,7 +3,7 @@ package com.etcxc.android.modle.sp;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.etcxc.android.util.Base64Util;
+import com.etcxc.android.utils.Base64Util;
 
 /**
  * 封装SPUtil的基础类
