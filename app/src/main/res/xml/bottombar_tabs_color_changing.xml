@@ -15,14 +15,5 @@
         icon="@drawable/mine_off"
         title="我的"
         barColorWhenSelected="#7B1FA2" />
-    <!--<tab-->
-        <!--id="@+id/tab_friends"-->
-        <!--icon="@drawable/shopcar"-->
-        <!--title="充值"-->
-        <!--barColorWhenSelected="#FF5252" />-->
-    <!--<tab-->
-        <!--id="@+id/tab_food"-->
-        <!--icon="@drawable/more"-->
-        <!--title="注册"-->
-        <!--barColorWhenSelected="#FF9800" />-->
+
 </tabs>

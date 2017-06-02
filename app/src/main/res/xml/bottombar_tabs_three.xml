@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <tabs>
     <tab
-        id="@+id/tab_favorites"
+        id="@+id/tab_home"
         icon="@drawable/ic_favorites"
         title="Favorites" />
     <tab
@@ -9,7 +9,7 @@
         icon="@drawable/ic_nearby"
         title="Nearby" />
     <tab
-        id="@+id/tab_friends"
+        id="@+id/tab_mine"
         icon="@drawable/ic_friends"
-        title="Friends" />
+        title="mine" />
 </tabs>

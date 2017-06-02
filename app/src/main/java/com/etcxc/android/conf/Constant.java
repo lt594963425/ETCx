@@ -1,8 +1,9 @@
-package com.etcxc.android.utils;
-
+package com.etcxc.android.conf;
 /**
- * Created by p on 2016/8/24.
+ * 服务器接口
+ * Created by 刘涛 on 2017/5/29
  */
+
 public interface Constant {
     String HOST = "http://10.0.2.2:8080/";
 //    String HOST = "http://172.16.0.129:8080/";

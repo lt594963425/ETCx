@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
@@ -15,26 +16,37 @@
             android:layout_height="70dp">
             <TextView
                 android:id="@+id/toolbar_title"
-                android:text="Toolbar Title"
+                android:textColor="#000"
                 style="@style/ToolbarTitle"/>
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
+
+    <!--<include layout="@layout/main_top" />-->
+
     <android.support.v4.view.ViewPager
-        android:id="@+id/vp_content"
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        ></android.support.v4.view.ViewPager>
-     <Button
-         android:layout_width="match_parent"
-         android:layout_height="50dp"
-         android:id="@+id/tv_register"
-         />
-    <com.roughike.bottombar.BottomBar
-        android:id="@+id/bottomBar"
+        android:layout_weight="1" /><!--装4个Fragment-->
+
+    <FrameLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        app:bb_behavior="shifting|underNavbar"
-        app:bb_tabXmlResource="@xml/bottombar_tabs_color_changing"/>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!--定义FragmentTabHost控件-->
+    <android.support.v4.app.FragmentTabHost
+        android:id="@android:id/tabhost"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black" >
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:layout_weight="0" /><!--装Tab的内容-->
+    </android.support.v4.app.FragmentTabHost>
+
 </LinearLayout>
