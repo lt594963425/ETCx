@@ -16,11 +16,9 @@
         android:supportsRtl="true"
         >
         <activity
-            android:theme="@style/MyFullScreen"
             android:name="com.etcxc.android.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -29,7 +27,7 @@
             android:name="com.etcxc.android.modle.db.PublicContentProvider"
             android:authorities="${applicationId}.public"
             android:exported="true"
-            android:permission="false"></provider>
+            android:permission="false"/>
         <provider
             android:name="com.etcxc.android.modle.db.PrivateContentProvider"
             android:authorities="${applicationId}.private"

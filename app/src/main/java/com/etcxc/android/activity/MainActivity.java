@@ -1,24 +1,21 @@
 package com.etcxc.android.activity;
 
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.Gravity;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.adapter.MyFragmentAdapter;
+import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.fragment.Fragment1;
 import com.etcxc.android.fragment.Fragment2;
 import com.etcxc.android.utils.UIUtils;
@@ -26,83 +23,67 @@ import com.etcxc.android.utils.UIUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements  ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
-    private ViewPager vp;
+/**
+ * 主界面Activity
+ */
+
+public class MainActivity extends BaseActivity implements  ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
+    private ViewPager mViewPager;
     private FragmentTabHost mTabHost;
-    private LayoutInflater layoutInflater;
-    private Class fragmentArray[] = {Fragment1.class, Fragment2.class};
-    private int imageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_view_btn};
-    private String textViewArray[] = {"首页", "我的"};
-    private List<Fragment> list = new ArrayList<>();
-    Toolbar mToolbar;
-    TextView mToolbarTitle;
+    private Toolbar mToolbar;
+    private TextView mToolbarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);// 配置主界面
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
+        setContentView(R.layout.activity_main);
         initView();
-        initPage();//初始化页面
+        initPage();
     }
 
     private void initView() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        vp = (ViewPager) findViewById(R.id.pager);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-
-        /*实例化FragmentTabHost对象并进行绑定*/
-        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);//绑定tahost
-        mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);//绑定viewpager
-
-        /*实现setOnTabChangedListener接口,目的是为监听界面切换），然后实现TabHost里面图片文字的选中状态切换*/
-        /*简单来说,是为了当点击下面菜单时,上面的ViewPager能滑动到对应的Fragment*/
+        mViewPager = find(R.id.pager);
+        mViewPager.addOnPageChangeListener(this);
+        //让ViewPager切换到第1个页面
+        mViewPager.setCurrentItem(0, false);
+        mToolbar = find(R.id.toolbar);
+        mToolbarTitle = find(R.id.toolbar_title);
+        mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
+        mToolbarTitle.setText(getString(R.string.index_page) + "ETC");
+        mTabHost = find(android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
-
-        int count = textViewArray.length;
-        /*实现OnPageChangeListener接口,目的是监听Tab选项卡的变化，然后通知ViewPager适配器切换界面*/
-        /*简单来说,是为了让ViewPager滑动的时候能够带着底部菜单联动*/
-
-        vp.addOnPageChangeListener(this);//设置页面切换时的监听器
-        layoutInflater = LayoutInflater.from(this);//加载布局管理器
-
-
-
-        /*新建Tabspec选项卡并设置Tab菜单栏的内容和绑定对应的Fragment*/
-        for (int i = 0; i < count; i++) {
-            // 给每个Tab按钮设置标签、图标和文字
-            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(textViewArray[i]).setIndicator(getTabItemView(i));
-            // 将Tab按钮添加进Tab选项卡中，并绑定Fragment
-            mTabHost.addTab(tabSpec, fragmentArray[i], null);
-            mTabHost.setTag(i);
-            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);//设置Tab被选中的时候颜色改变
-        }
-        /**
-         * 默认加载第一页的数据
-         */
-        vp.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
-                mToolbarTitle.setText("首页ETC");
-                vp.setCurrentItem(0, false);// 让ViewPager切换到第1个页面
-                vp.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
+        initTabs();
     }
 
-    /*初始化Fragment*/
+    private void initTabs() {
+        Class mFragmentArray[] = {Fragment1.class, Fragment2.class};
+        int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_view_btn};
+        String mTextViewArray[] = {getString(R.string.index_page),getString(R.string.mime)};
+        int count = mTextViewArray.length;
+        for (int i = 0; i < count; i++) {
+            TextView textView = new TextView(this);
+            textView.setText(mTextViewArray[i]);
+            Drawable d = getResources().getDrawable(mImageViewArray[i]);
+            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+            textView.setCompoundDrawables(null, d, null, null);
+            textView.setCompoundDrawablePadding(UIUtils.dip2Px(8));
+            textView.setPadding(0, UIUtils.dip2Px(8), 0, UIUtils.dip2Px(8));
+            textView.setGravity(Gravity.CENTER);
+            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextViewArray[i]).setIndicator(textView);
+            mTabHost.addTab(tabSpec, mFragmentArray[i], null);
+            mTabHost.setTag(i);
+            //设置Tab被选中的时候颜色改变
+            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
+        }
+    }
+
     private void initPage() {
-        Fragment1 fragment1 = new Fragment1();
-        Fragment2 fragment2 = new Fragment2();
-
-        list.add(fragment1);
-        list.add(fragment2);
-
-        //绑定Fragment适配器
-        vp.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), list));
+        List<Fragment> list = new ArrayList();
+        list.add( new Fragment1());
+        list.add(new Fragment2());
+        mViewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), list));
         mTabHost.getTabWidget().setDividerDrawable(null);
     }
 
@@ -111,47 +92,35 @@ public class MainActivity extends FragmentActivity implements  ViewPager.OnPageC
     }
 
     @Override
-    public void onPageSelected(int position) {//表示在前一个页面滑动到后一个页面的时候，在前一个页面滑动前调用的方法
+    public void onPageSelected(int position) {
         TabWidget widget = mTabHost.getTabWidget();
         int oldFocusability = widget.getDescendantFocusability();
         widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);//设置View覆盖子类控件而直接获得焦点
         mTabHost.setCurrentTab(position);//根据位置Postion设置当前的Tab
         widget.setDescendantFocusability(oldFocusability);//设置取消分割线
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
 
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {//arg0 ==1的时候表示正在滑动，arg0==2的时候表示滑动完毕了，arg0==0的时候表示什么都没做，就是停在那。
-
-    }
-
-    @Override
-    public void onTabChanged(String tabId) {//Tab改变的时候调用
+    public void onTabChanged(String tabId) {
         int position = mTabHost.getCurrentTab();
-        vp.setCurrentItem(position, false);//把选中的Tab的位置赋给适配器，让它控制页面切换
+        mViewPager.setCurrentItem(position, false);
         switch (position) {
             case 0:
                 mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
                 mTabHost.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
-                mToolbarTitle.setText("首页ETC");
+                mToolbarTitle.setText(getString(R.string.index_page) + "ETC");
                 break;
             case 1:
                 mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorPrimary));
                 mTabHost.setBackgroundColor(UIUtils.getColor(R.color.colorPrimary));
-                mToolbarTitle.setText("我的");
+                mToolbarTitle.setText(getString(R.string.mime));
                 break;
         }
-    }
-
-    private View getTabItemView(int i) {
-        //将xml布局转换为view对象
-        View view = layoutInflater.inflate(R.layout.tab_content, null);
-        //利用view对象，找到布局中的组件,并设置内容，然后返回视图
-        ImageView mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
-        TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
-        mImageView.setBackgroundResource(imageViewArray[i]);
-        mTextView.setText(textViewArray[i]);
-        return view;
     }
 
 }

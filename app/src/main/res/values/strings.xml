@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">迅畅ETC</string>
+    <string name="index_page">首页</string>
+    <string name="mime">我的</string>
 </resources>
