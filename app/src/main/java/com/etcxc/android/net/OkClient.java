@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.etcxc.MeManager;
-import com.etcxc.android.base.App;
+import com.etcxc.android.BuildConfig;
 import com.etcxc.android.utils.LogUtil;
 
 import org.json.JSONArray;
@@ -293,7 +293,7 @@ public class OkClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(180, TimeUnit.SECONDS)
                 .build();
-        if (App.isApkDebugable(App.get())) {
+        if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             client = client.newBuilder().addInterceptor(logging).build();

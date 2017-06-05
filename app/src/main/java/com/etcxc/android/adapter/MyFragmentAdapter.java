@@ -11,21 +11,19 @@ import java.util.List;
  */
 
 public class MyFragmentAdapter extends FragmentPagerAdapter{
-    List<Fragment> list;
-
-
+    List<Fragment> mlist;
     public MyFragmentAdapter(FragmentManager fm, List<Fragment> list) {
         super(fm);
-        this.list = list;
-    }//写构造方法，方便赋值调用
+        this.mlist = list;
+    }
 
     @Override
     public Fragment getItem(int arg0) {
-        return list.get(arg0);
-    }//根据Item的位置返回对应位置的Fragment，绑定item和Fragment
+        return mlist.get(arg0);
+    }
 
     @Override
     public int getCount() {
-        return list.size();
-    }//设置Item的数量
+        return mlist == null ? 0 : mlist.size();
+    }
 }

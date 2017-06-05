@@ -2,7 +2,7 @@ package com.etcxc.android.utils;
 
 import android.util.Log;
 
-import com.etcxc.android.base.App;
+import com.etcxc.android.BuildConfig;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -24,15 +24,6 @@ public class LogUtil {
      */
     private static final String[] WRITE_TAGS = {"EngineBridge", "WebSocket", "SocketIOSocket", "CService"};
 
-    /**
-     * 是否打印日志
-     */
-    private static boolean PRINT_LOG;
-
-    static {
-         PRINT_LOG = App.isApkDebugable(App.get());
-    }
-
     private static final int PART_COUNT = 2000;// 分段输出
 
     private static final int LEVEL_V = 1;
@@ -42,7 +33,7 @@ public class LogUtil {
     private static final int LEVEL_E = 5;
 
     private static void print(int level, String tag, String msg) {
-        if (!PRINT_LOG || msg == null) {
+        if (!BuildConfig.DEBUG || msg == null) {
             return;
         }
         int size = msg.length();
