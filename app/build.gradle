@@ -26,16 +26,16 @@ dependencies {
     })
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile(name: 'bottom-bar-release', ext: 'aar')
-    compile(name: 'submitbutton-release', ext: 'aar')
     //okhttp与日志拦截器
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     //rx
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-
     compile 'com.jakewharton:butterknife:8.6.0'
     compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
     compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    compile files('libs/gson-2.3.1.jar')
+    compile files('libs/libammsdk.jar')
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

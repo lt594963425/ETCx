@@ -2,4 +2,6 @@
     <string name="app_name">迅畅ETC</string>
     <string name="index_page">首页</string>
     <string name="mime">我的</string>
+    <string name="regist_protocal">注册既表示同意</string>
+    <string name="protocal">《湘通卡用户协议》</string>
 </resources>

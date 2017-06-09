@@ -2,20 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:orientation="vertical">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="true"
+        android:fitsSystemWindows="true">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="70dp">
+
             <TextView
                 android:id="@+id/toolbar_title"
-                android:textColor="#000"
-                style="@style/ToolbarTitle"/>
+                style="@style/ToolbarTitle"
+                android:textColor="#000" />
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -24,25 +27,17 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" /><!--装4个Fragment-->
-
-    <FrameLayout
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!--定义FragmentTabHost控件-->
     <android.support.v4.app.FragmentTabHost
         android:id="@android:id/tabhost"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/black" >
+        android:layout_height="wrap_content">
+
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@android:color/transparent"
             android:layout_weight="0" /><!--装Tab的内容-->
     </android.support.v4.app.FragmentTabHost>
 </LinearLayout>

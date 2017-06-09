@@ -28,6 +28,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().hide();
 
         LogUtil.i(TAG, "----------onNewIntent----------");
     }

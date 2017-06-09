@@ -1,6 +1,5 @@
 package com.etcxc.android.activity;
 
-
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,28 +14,37 @@ import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.adapter.MyFragmentAdapter;
+import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.fragment.Fragment1;
 import com.etcxc.android.fragment.Fragment2;
+import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.UIUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 主界面Activity
  */
 
-public class MainActivity extends BaseActivity implements  ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
+public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
-    private FragmentTabHost mTabHost;
     private Toolbar mToolbar;
     private TextView mToolbarTitle;
+    private FragmentTabHost mTabHost;
+
+    private static final int ERROR = 1;
+    private static final int SUCCESS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getSupportActionBar() != null) getSupportActionBar().hide();
+
         setContentView(R.layout.activity_main);
         initView();
         initPage();
@@ -60,7 +68,7 @@ public class MainActivity extends BaseActivity implements  ViewPager.OnPageChang
     private void initTabs() {
         Class mFragmentArray[] = {Fragment1.class, Fragment2.class};
         int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_view_btn};
-        String mTextViewArray[] = {getString(R.string.index_page),getString(R.string.mime)};
+        String mTextViewArray[] = {getString(R.string.index_page), getString(R.string.mime)};
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
             TextView textView = new TextView(this);
@@ -73,16 +81,19 @@ public class MainActivity extends BaseActivity implements  ViewPager.OnPageChang
             textView.setGravity(Gravity.CENTER);
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextViewArray[i]).setIndicator(textView);
             mTabHost.addTab(tabSpec, mFragmentArray[i], null);
-            mTabHost.setTag(i);
-            //设置Tab被选中的时候颜色改变
-            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
         }
     }
 
+    Fragment1 f1;
+    Fragment2 f2;
+
     private void initPage() {
-        List<Fragment> list = new ArrayList();
-        list.add( new Fragment1());
-        list.add(new Fragment2());
+        ArrayList<Fragment> list = new ArrayList();
+        f1 = new Fragment1();
+        f2 = new Fragment2();
+        list.add(f1);
+        list.add(f2);
+        //绑定Fragment适配器
         mViewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), list));
         mTabHost.getTabWidget().setDividerDrawable(null);
     }
@@ -112,16 +123,39 @@ public class MainActivity extends BaseActivity implements  ViewPager.OnPageChang
         switch (position) {
             case 0:
                 mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
-                mTabHost.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
                 mToolbarTitle.setText(getString(R.string.index_page) + "ETC");
                 break;
             case 1:
-                mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorPrimary));
-                mTabHost.setBackgroundColor(UIUtils.getColor(R.color.colorPrimary));
+                mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
                 mToolbarTitle.setText(getString(R.string.mime));
                 break;
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    /**
+     * 事件订阅者自定义的接收方法
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        f2.setUserName(event.data);
+        String headurl = PrefUtils.getString(App.getContext(), "headurl", null);
+        f2.setHead(headurl);
+    }
+
 
 }
 
