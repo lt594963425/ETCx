@@ -14,17 +14,10 @@ import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.adapter.MyFragmentAdapter;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.fragment.Fragment1;
 import com.etcxc.android.fragment.Fragment2;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.UIUtils;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -131,31 +124,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
         }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    /**
-     * 事件订阅者自定义的接收方法
-     *
-     * @param event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-        f2.setUserName(event.data);
-        String headurl = PrefUtils.getString(App.getContext(), "headurl", null);
-        f2.setHead(headurl);
-    }
-
 
 }
 

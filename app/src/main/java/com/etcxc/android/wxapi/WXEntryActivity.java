@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.etcxc.android.base.App;
-import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PrefUtils;
 import com.tencent.mm.sdk.openapi.BaseReq;
@@ -16,7 +15,6 @@ import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.SendAuth;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -201,7 +199,8 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                         LogUtil.i(TAG, "名字.. nickname:" + nickname);
                         LogUtil.i(TAG, "性别.. nickname:" + sex);
                         LogUtil.i(TAG, "头像:" + headimgurl);
-                        EventBus.getDefault().post(new MessageEvent(nickname));
+                        //todo：不使用eventbus
+//                        EventBus.getDefault().post(new MessageEvent(nickname));
                         //拿到这些信息后进行相应的业务操作，提交服务器
                     } catch (JSONException e) {
                         e.printStackTrace();

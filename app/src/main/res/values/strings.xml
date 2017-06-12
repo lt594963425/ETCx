@@ -3,5 +3,10 @@
     <string name="index_page">首页</string>
     <string name="mime">我的</string>
     <string name="regist_protocal">注册既表示同意</string>
-    <string name="protocal">《湘通卡用户协议》</string>
+    <string name="protocal">《迅畅用户协议》</string>
+    <string name="please_input_phonenumber">请输入您的手机号码</string>
+    <string name="please_input_password">请设置密码</string>
+    <string name="regist">注册</string>
+    <string name="get_verifycode">获取验证码</string>
+    <string name="please_input_correct_phone_number">请输入正确的手机号码</string>
 </resources>
