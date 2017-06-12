@@ -1,4 +1,4 @@
-package com.etcxc.android.wxapi;
+package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

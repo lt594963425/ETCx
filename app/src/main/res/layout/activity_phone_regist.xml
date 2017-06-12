@@ -35,7 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:paddingLeft="16dp"
-            android:src="@mipmap/wo" />
+            app:srcCompat="@drawable/vd_regist_delete"
+            android:layout_centerVertical="true"
+            />
     </RelativeLayout>
 
     <RelativeLayout
@@ -57,8 +59,6 @@
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/eye"
             android:background="@null"
-            android:drawableLeft="@mipmap/suo"
-            android:drawablePadding="16dp"
             android:hint="@string/please_input_password"
             android:inputType="textPassword"
             android:maxLength="16" />

@@ -1,4 +1,4 @@
-package com.etcxc.android.fragment;
+package com.etcxc.android.ui.fragment;
 
 
 import android.content.Intent;
@@ -18,8 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etcxc.android.R;
-import com.etcxc.android.activity.LoginActivity;
-import com.etcxc.android.activity.PhoneRegistActivity;
+import com.etcxc.android.ui.activity.LoginActivity;
+import com.etcxc.android.ui.activity.PhoneRegistActivity;
 import com.etcxc.android.base.App;
 import com.etcxc.android.utils.PrefUtils;
 

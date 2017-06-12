@@ -1,4 +1,4 @@
-package com.etcxc.android.fragment;
+package com.etcxc.android.ui.fragment;
 
 
 import android.os.Bundle;

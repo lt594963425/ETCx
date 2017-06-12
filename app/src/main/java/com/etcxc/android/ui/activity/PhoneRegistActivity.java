@@ -1,6 +1,7 @@
-package com.etcxc.android.activity;
+package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import android.widget.EditText;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +36,9 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mVerifiCodeEdit = find(R.id.verificode_edt);
         mRegistButton = find(R.id.regist_button);
         mVerificodeButton = find(R.id.get_verificode_button);
+        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_regist_password, null);
+        mPswEdit.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+        mPswEdit.setCompoundDrawablePadding(UIUtils.dip2Px(16));
         mRegistButton.setOnClickListener(this);
         mVerificodeButton.setOnClickListener(this);
     }

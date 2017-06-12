@@ -1,4 +1,4 @@
-package com.etcxc.android.activity;
+package com.etcxc.android.ui.activity;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -13,10 +13,10 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
-import com.etcxc.android.adapter.MyFragmentAdapter;
+import com.etcxc.android.ui.adapter.MyFragmentAdapter;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.fragment.Fragment1;
-import com.etcxc.android.fragment.Fragment2;
+import com.etcxc.android.ui.fragment.Fragment1;
+import com.etcxc.android.ui.fragment.Fragment2;
 import com.etcxc.android.utils.UIUtils;
 
 import java.util.ArrayList;

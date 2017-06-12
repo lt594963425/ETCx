@@ -1,4 +1,4 @@
-package com.etcxc.android.activity;
+package com.etcxc.android.ui.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

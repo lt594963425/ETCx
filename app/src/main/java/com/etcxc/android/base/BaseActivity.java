@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
 
 
@@ -20,6 +22,52 @@ import com.etcxc.android.utils.LogUtil;
 @SuppressWarnings("ResourceType")
 public abstract class BaseActivity extends AppCompatActivity {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
+    private XToolbar mXToolbar;
+    protected XToolbar getToolbar() {
+        return mXToolbar;
+    }
+    @Override
+    public void setTitle(@StringRes int titleId) {
+        if (mXToolbar != null) {
+            mXToolbar.setTitle(titleId);
+        }
+    }
+    @Override
+    public void setTitle(CharSequence title) {
+        if (mXToolbar != null) {
+            mXToolbar.setTitle(title);
+        }
+    }
+
+    public void setSubtitle(@StringRes int subtitleId) {
+        if (mXToolbar != null) {
+            mXToolbar.setSubtitle(subtitleId);
+        }
+    }
+
+    public void setSubtitle(CharSequence subtitle) {
+        if (mXToolbar != null) {
+            mXToolbar.setSubtitle(subtitle);
+        }
+    }
+
+    /**
+     * ToolBar自定义View
+     *
+     * @param view
+     */
+    protected void setTitleView(View view) {
+        if (view != null && mXToolbar != null) {
+            mXToolbar.setView(view);
+        }
+    }
+
+    protected void setToolbarClickEventActivated(boolean activated) {
+        if (mXToolbar != null) {
+            mXToolbar.setClickEventActivated(activated);
+        }
+    }
+
 
     protected <T extends View> T find(int id) {
         return (T) super.findViewById(id);
