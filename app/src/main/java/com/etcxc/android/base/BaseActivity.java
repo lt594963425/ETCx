@@ -2,18 +2,27 @@ package com.etcxc.android.base;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import com.etcxc.android.R;
 import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
+
+import java.util.List;
 
 
 /**
@@ -23,15 +32,18 @@ import com.etcxc.android.utils.LogUtil;
 public abstract class BaseActivity extends AppCompatActivity {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
+
     protected XToolbar getToolbar() {
         return mXToolbar;
     }
+
     @Override
     public void setTitle(@StringRes int titleId) {
         if (mXToolbar != null) {
             mXToolbar.setTitle(titleId);
         }
     }
+
     @Override
     public void setTitle(CharSequence title) {
         if (mXToolbar != null) {
@@ -51,21 +63,89 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * ToolBar自定义View
-     *
-     * @param view
-     */
     protected void setTitleView(View view) {
-        if (view != null && mXToolbar != null) {
-            mXToolbar.setView(view);
-        }
+        if (view != null && mXToolbar != null) mXToolbar.setView(view);
     }
 
     protected void setToolbarClickEventActivated(boolean activated) {
-        if (mXToolbar != null) {
-            mXToolbar.setClickEventActivated(activated);
+        if (mXToolbar != null) mXToolbar.setClickEventActivated(activated);
+    }
+
+    private void initToolbar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//            window.getDecorView().setSystemUiVisibility(
+//                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+////                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION这行加上去NoticesFragment不能滚到最底(差一点)，这行去掉带来的问题：导航栏不能半透明 at 20150928
+//                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);//TODO 待改 20150930
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(getResources().getColor(R.color.my));
+//            window.setNavigationBarColor(getResources().getColor(R.color.my));
         }
+
+        mXToolbar = find(R.id.toolbar);
+        if (mXToolbar != null) {
+            setSupportActionBar(mXToolbar);
+            mXToolbar.setActionBar(getSupportActionBar());
+            mXToolbar.setOnToolbarTitleClickListener(new XToolbar.OnToolbarTitleClickListener() {
+                @Override
+                public void onToolbarTitleClick() {
+                    onTitleClick();
+                }
+            });
+            mXToolbar.setOnToolbarTitleDoubleClickListener(new XToolbar.OnToolbarTitleDoubleClickListener() {
+                @Override
+                public void onToolbarTitleDoubleClick() {
+                    onTitleDoubleClick();
+                }
+            });
+
+        }
+    }
+
+    protected void onTitleClick() {
+        List<Fragment> list = getSupportFragmentManager().getFragments();
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        for (Fragment f : list) {
+            if (f instanceof BaseFragmentCommon) {
+                //todo :调好fragment再弄
+//                ((BaseFragmentCommon) f).onTitleClick();
+            }
+        }
+    }
+
+    protected void onTitleDoubleClick() {
+        List<Fragment> list = getSupportFragmentManager().getFragments();
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        for (Fragment f : list) {
+            if (f instanceof BaseFragmentCommon) {
+                //todo :调好fragment再弄
+//                ((BaseFragmentCommon) f).onTitleDoubleClick();
+            }
+        }
+    }
+
+    protected void setToolbarBack(boolean showBack) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(showBack);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -106,16 +186,19 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(@IdRes int layoutResID) {
         super.setContentView(layoutResID);
+        initToolbar();
     }
 
     @Override
     public void setContentView(View view) {
         super.setContentView(view);
+        initToolbar();
     }
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
+        initToolbar();
     }
 
     @Override

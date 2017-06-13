@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <com.etcxc.android.ui.view.XToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
                 style="@style/ToolbarTitle"
                 android:textColor="#000" />
         </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+    </com.etcxc.android.ui.view.XToolbar>
 
     <!--<include layout="@layout/main_top" />-->
     <android.support.v4.view.ViewPager

@@ -48,10 +48,11 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.addOnPageChangeListener(this);
         //让ViewPager切换到第1个页面
         mViewPager.setCurrentItem(0, false);
-        mToolbar = find(R.id.toolbar);
-        mToolbarTitle = find(R.id.toolbar_title);
+        mToolbar = getToolbar();
         mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
+        mToolbarTitle = find(R.id.toolbar_title);
         mToolbarTitle.setText(getString(R.string.index_page) + "ETC");
+        setToolbarBack(false);
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
