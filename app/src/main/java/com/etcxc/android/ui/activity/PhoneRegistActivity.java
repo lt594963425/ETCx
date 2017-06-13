@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
@@ -23,11 +25,14 @@ import java.util.regex.Pattern;
 public class PhoneRegistActivity extends BaseActivity implements View.OnClickListener {
     private EditText mPhoneNumberEdit, mPswEdit, mVerifiCodeEdit;
     private Button mRegistButton, mVerificodeButton;
+    private ImageView mDeleteImg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_regist);
         initView();
+        setTitle(R.string.regist);
     }
 
     private void initView() {
@@ -36,11 +41,19 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mVerifiCodeEdit = find(R.id.verificode_edt);
         mRegistButton = find(R.id.regist_button);
         mVerificodeButton = find(R.id.get_verificode_button);
-        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_regist_password, null);
-        mPswEdit.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-        mPswEdit.setCompoundDrawablePadding(UIUtils.dip2Px(16));
+        mDeleteImg = find(R.id.phonenumber_delete);
+        addIcon(mPhoneNumberEdit, R.drawable.vd_regist_persion, 16);
+        addIcon(mPswEdit, R.drawable.vd_regist_password, 16);
+        addIcon(mVerifiCodeEdit, R.drawable.vd_regist_verificode, 16);
         mRegistButton.setOnClickListener(this);
         mVerificodeButton.setOnClickListener(this);
+        mDeleteImg.setOnClickListener(this);
+    }
+
+    private void addIcon(TextView tv, int imgId, int paddingDp) {
+        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), imgId, null);
+        tv.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+        tv.setCompoundDrawablePadding(UIUtils.dip2Px(paddingDp));
     }
 
     /**
@@ -58,7 +71,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.regist_button:
-              String phoneNum = mPhoneNumberEdit.getText().toString();
+                String phoneNum = mPhoneNumberEdit.getText().toString();
                 if (!isMobileNO(phoneNum)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
                     return;
@@ -68,10 +81,10 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.get_verificode_button:
                 String phoneNum2 = mPhoneNumberEdit.getText().toString();
-                if(!isMobileNO(phoneNum2)){
+                if (!isMobileNO(phoneNum2)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
                     return;
-                }else if(TextUtils.isEmpty(phoneNum2)){
+                } else if (TextUtils.isEmpty(phoneNum2)) {
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                     return;
                 }
