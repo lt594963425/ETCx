@@ -8,6 +8,7 @@ import com.etcxc.android.conf.Constants;
 import java.util.List;
 
 /**
+ * Created by 刘涛  on 2017/5/27 0027.
  * 打印日志的工具类
  * @des	   日志级别是LEVEL_ALL显示所有信息,包括System.out.println信息
  * @des  日志级别是LEVEL_OFF关闭所有信息,包括System.out.println信息

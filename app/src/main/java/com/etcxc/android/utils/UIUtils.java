@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import com.etcxc.android.base.App;
 
 /**
+ * Created by 刘涛  on 2017/5/27 0027.
  *  封装和ui相关的操作
  */
 public class UIUtils {

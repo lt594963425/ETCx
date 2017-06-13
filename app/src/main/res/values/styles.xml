@@ -1,8 +1,5 @@
 <resources>
-
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="AppTheme.Base"/>
-
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="windowActionBar">false</item>
@@ -10,7 +7,7 @@
         <!-- Actionbar color -->
         <item name="colorPrimary">@color/white</item>
         <!--Status bar color-->
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/white</item>
         <!--Window color-->
         <item name="android:windowBackground">@color/white</item>
         <item name="android:actionMenuTextAppearance">@style/CActionMenuTextAppearance</item>
@@ -21,12 +18,10 @@
         <item name="android:textStyle">normal</item>
         <!--<item name="actionMenuTextAppearance">@android:style/TextAppearance.Holo.Widget.ActionBar.Menu</item>-->
     </style>
-
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#fc7520</item>
     </style>
-
     <style name="style_15_EBEBEB_BOLD">
         <item name="android:textSize">15.0sp</item>
         <item name="android:textStyle">bold</item>

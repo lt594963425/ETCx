@@ -33,7 +33,6 @@ import okhttp3.Response;
 import static com.etcxc.android.R.id.editText1;
 import static com.etcxc.android.R.id.editText2;
 
-
 /**
  * Created by 刘涛 on 2017/6/7 0007.
  */
@@ -48,7 +47,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private ImageView iv_qq_login;
     public String userName;
     public String passWord;
-    private  Bitmap bitmap;
+    private Bitmap bitmap;
     private FrameLayout flwx_user;
     private FrameLayout fl_f2;
     SendAuth.Req req;
@@ -56,7 +55,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private static final String WEIXIN_STATE = "login_state"; // 自定义
 
     private static final int ERROR = 1;
-    private static final int SUCCESS = 2 ;
+    private static final int SUCCESS = 2;
     private TextView username;
     private TextView usersex;
     private ImageView head;
@@ -78,6 +77,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }
     };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,33 +85,33 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         flwx_user = (FrameLayout) findViewById(R.id.flwx_user);
         fl_f2 = (FrameLayout) findViewById(R.id.fl_f2);
 
-            username =(TextView) findViewById(R.id.tv_username);
-             usersex =(TextView) findViewById(R.id.tv_usersex);
-                head = (ImageView) findViewById(R.id.iv_userhead);
-              openid =(TextView) findViewById(R.id.tv_userid);
+        username = (TextView) findViewById(R.id.tv_username);
+        usersex = (TextView) findViewById(R.id.tv_usersex);
+        head = (ImageView) findViewById(R.id.iv_userhead);
+        openid = (TextView) findViewById(R.id.tv_userid);
         f2_editText1 = (EditText) findViewById(editText1);//用户名
-        f2_editText2 = (EditText)findViewById(editText2);//密码
-        f2_textView3 = (TextView)findViewById(R.id.textView3);//登录
-         iv_wx_login = (ImageView)findViewById(R.id.iv_wx_login);
-         iv_qq_login = (ImageView)findViewById(R.id.iv_qq_login);
+        f2_editText2 = (EditText) findViewById(editText2);//密码
+        f2_textView3 = (TextView) findViewById(R.id.textView3);//登录
+        iv_wx_login = (ImageView) findViewById(R.id.iv_wx_login);
+        iv_qq_login = (ImageView) findViewById(R.id.iv_qq_login);
         initview();
 
     }
 
     private void initview() {
-        userTag = PrefUtils.getBoolean(App.getContext(), "userTag",false);
-        if(userTag){
+        userTag = PrefUtils.getBoolean(App.getContext(), "userTag", false);
+        if (userTag) {
             //加载头像url
             String headurl = PrefUtils.getString(App.getContext(), "headurl", null);
             flwx_user.setVisibility(View.VISIBLE);
             fl_f2.setVisibility(View.INVISIBLE);
-            if(headurl!=null)
-            SetWXUserInfo(headurl);
-        }else{
+            if (headurl != null)
+                SetWXUserInfo(headurl);
+        } else {
             fl_f2.setVisibility(View.VISIBLE);
             flwx_user.setVisibility(View.INVISIBLE);
         }
-        f2_textView3.setOnClickListener( this);
+        f2_textView3.setOnClickListener(this);
         iv_wx_login.setOnClickListener(this);
         iv_qq_login.setOnClickListener(this);
         userName = f2_editText1.getText().toString();
@@ -128,7 +128,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void SetWXUserInfo(final String url) {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 OkHttpClient uOkHttpClient = new OkHttpClient();
@@ -144,7 +144,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        InputStream is  = response.body().byteStream();//字节流
+                        InputStream is = response.body().byteStream();//字节流
                         bitmap = BitmapFactory.decodeStream(is);
                         //使用Hanlder发送消息
                         Message msg = Message.obtain();
@@ -158,9 +158,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         }.start();
     }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.textView3:
                 Toast.makeText(UIUtils.getContext(), "登录成功", Toast.LENGTH_SHORT).show();
                 break;
@@ -174,6 +175,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         }
     }
+
     /**
      * 登录微信
      */
@@ -184,7 +186,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             req.scope = WEIXIN_SCOPE;
             req.state = WEIXIN_STATE;
             App.WXapi.sendReq(req);
-            Log.i(TAG,"。。。。。。。。。。。。WxLogin()，微信登录。。。。。。。");
+            Log.i(TAG, "。。。。。。。。。。。。WxLogin()，微信登录。。。。。。。");
             Toast.makeText(this, "请稍后....", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(this, "用户未安装微信", Toast.LENGTH_SHORT).show();
@@ -196,10 +198,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      */
     private void QQLogin() {
     }
+
     @Override
     public void onResume() {
         super.onResume();
     }
+
     @Override
     public void onStart() {
         super.onStart();

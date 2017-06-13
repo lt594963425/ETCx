@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
-
 import com.etcxc.android.R;
 import com.etcxc.android.ui.adapter.MyFragmentAdapter;
 import com.etcxc.android.base.BaseActivity;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
     private Toolbar mToolbar;
-    private TextView mToolbarTitle;
     private FragmentTabHost mTabHost;
 
     private static final int ERROR = 1;
@@ -37,22 +35,18 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         initView();
         initPage();
     }
-
     private void initView() {
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         //让ViewPager切换到第1个页面
         mViewPager.setCurrentItem(0, false);
-        mToolbar = getToolbar();
-        mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
-        mToolbarTitle = find(R.id.toolbar_title);
-        mToolbarTitle.setText(getString(R.string.index_page) + "ETC");
-        setToolbarBack(false);
+        mToolbar = find(R.id.My_toolbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setTitle(getString(R.string.index_page) + "ETC");
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
@@ -116,12 +110,10 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(position, false);
         switch (position) {
             case 0:
-                mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
-                mToolbarTitle.setText(getString(R.string.index_page) + "ETC");
+                mToolbar.setTitle(getString(R.string.index_page) + "ETC");
                 break;
             case 1:
-                mToolbar.setBackgroundColor(UIUtils.getColor(R.color.colorOrange));
-                mToolbarTitle.setText(getString(R.string.mime));
+                mToolbar.setTitle(getString(R.string.mime) + "ETC");
                 break;
         }
     }

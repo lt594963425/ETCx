@@ -2,6 +2,7 @@ package com.etcxc.android.base;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -14,10 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
-
 import com.etcxc.android.R;
 import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
@@ -43,7 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             mXToolbar.setTitle(titleId);
         }
     }
-
     @Override
     public void setTitle(CharSequence title) {
         if (mXToolbar != null) {
@@ -86,7 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 //            window.setNavigationBarColor(getResources().getColor(R.color.my));
         }
 
-        mXToolbar = find(R.id.toolbar);
+       // mXToolbar = find(R.id.toolbar);
         if (mXToolbar != null) {
             setSupportActionBar(mXToolbar);
             mXToolbar.setActionBar(getSupportActionBar());
@@ -156,12 +156,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
-
+        //initState();
         LogUtil.i(TAG, "----------onNewIntent----------");
     }
-
+    /**
+     * 沉浸式状态栏
+     */
+    private void initState() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //透明状态栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //透明导航栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+    }
     @Override
     protected void onPause() {
         super.onPause();

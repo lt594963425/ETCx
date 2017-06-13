@@ -24,21 +24,21 @@ import java.lang.reflect.Field;
  * 标题居中，修改toobar的高度
  */
 
-public class MyToobar extends Toolbar {
+public class MyToolbar extends Toolbar {
     private TextView mTitleTextView;
     private CharSequence mTitleText;
     private int mTitleTextColor;
     private int mTitleTextAppearance;
 
-    public  MyToobar(Context context) {
+    public MyToolbar(Context context) {
         super(context);
-        resolveAttribute(context, null,R.attr.toolbarStyle);
+        resolveAttribute(context, null, R.attr.toolbarStyle);
     }
-    public MyToobar(Context context,@NullableAttributeSet attrs) {
+    public MyToolbar(Context context,@Nullable AttributeSet attrs) {
         super(context,attrs);
         resolveAttribute(context,attrs,R.attr.toolbarStyle);
     }
-    public MyToobar(Context context,@NullableAttributeSet attrs, intdefStyleAttr) {
+    public MyToolbar(Context context,@Nullable AttributeSet attrs, int defStyleAttr) {
         super(context,attrs,defStyleAttr);
         resolveAttribute(context,attrs,defStyleAttr);
     }

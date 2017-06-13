@@ -36,6 +36,8 @@ public class XToolbar extends Toolbar {
         init();
     }
 
+
+
     private void init() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) setElevation(0f);
         else ViewCompat.setElevation(this, 0f);

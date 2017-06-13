@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * Created by 刘涛  on 2017/5/27 0027.
  * 写文件的工具类
  */
 public class FileUtils {

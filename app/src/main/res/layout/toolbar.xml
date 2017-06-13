@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.etcxc.android.ui.view.XToolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@id/toolbar"
+<com.etcxc.android.ui.view.MyToolbar
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/colorPrimary"
-    android:minHeight="?attr/actionBarSize"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    android:layout_height="40dp"
+    android:background="@color/white"
+    app:navigationIcon="@drawable/vd_return"
     app:titleTextAppearance="@style/Toolbar.TitleText"
-    /><!-- MenuTextStyle -->
+    app:titleTextColor="@color/colorOrange"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+</com.etcxc.android.ui.view.MyToolbar>
