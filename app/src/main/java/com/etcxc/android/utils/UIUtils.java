@@ -14,7 +14,6 @@ public class UIUtils {
      * 得到上下文
      */
     public static Context getContext() {
-
         return App.get();
     }
 

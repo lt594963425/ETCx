@@ -1,5 +1,7 @@
 package com.etcxc.android.utils;
+
 import android.os.Environment;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -137,7 +139,7 @@ public class FileUtils {
 	/** 判断文件是否可写 */
 	public static boolean isWriteable(String path) {
 		try {
-			if (StringUtils.isEmpty(path)) {
+			if (TextUtils.isEmpty(path)) {
 				return false;
 			}
 			File f = new File(path);
@@ -266,7 +268,7 @@ public class FileUtils {
 	 */
 	public static void writeProperties(String filePath, String key,
 			String value, String comment) {
-		if (StringUtils.isEmpty(key) || StringUtils.isEmpty(filePath)) {
+		if (TextUtils.isEmpty(key) || TextUtils.isEmpty(filePath)) {
 			return;
 		}
 		FileInputStream fis = null;
@@ -293,7 +295,7 @@ public class FileUtils {
 	/** 根据值读取 */
 	public static String readProperties(String filePath, String key,
 			String defaultValue) {
-		if (StringUtils.isEmpty(key) || StringUtils.isEmpty(filePath)) {
+		if (TextUtils.isEmpty(key) || TextUtils.isEmpty(filePath)) {
 			return null;
 		}
 		String value = null;
@@ -318,7 +320,7 @@ public class FileUtils {
 	/** 把字符串键值对的map写入文件 */
 	public static void writeMap(String filePath, Map<String, String> map,
 			boolean append, String comment) {
-		if (map == null || map.size() == 0 || StringUtils.isEmpty(filePath)) {
+		if (map == null || map.size() == 0 || TextUtils.isEmpty(filePath)) {
 			return;
 		}
 		FileInputStream fis = null;
@@ -348,7 +350,7 @@ public class FileUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Map<String, String> readMap(String filePath,
 			String defaultValue) {
-		if (StringUtils.isEmpty(filePath)) {
+		if (TextUtils.isEmpty(filePath)) {
 			return null;
 		}
 		Map<String, String> map = null;

@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.etcxc.android.base.App;
 
 /**
+ * toast封装，还可以改进
  * Created by 刘涛 on 2017/5/27 0027.
  */
 
