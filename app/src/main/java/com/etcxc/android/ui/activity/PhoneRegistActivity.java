@@ -33,7 +33,6 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye;
     private Boolean flag = false;
-    CharSequence temp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +41,12 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
         initView();
-        setTitle(R.string.regist);
     }
 
     //verificode_edt
     private void initView() {
         Toolbar mToolbar = (Toolbar) find(R.id.regist_toolbar);
-        mToolbar.setTitle("注册");
+        mToolbar.setTitle(R.string.regist);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -98,15 +96,29 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
 
             case R.id.regist_button://注册
                 String phoneNum = mPhoneNumberEdit.getText().toString();
-                if (!isMobileNO(phoneNum)) {
+                String passWord = mPswEdit.getText().toString().trim();
+                String veriFicode = mVerifiCodeEdit.getText().toString().trim();
+                if(phoneNum.isEmpty()){
+                    ToastUtils.showToast(R.string.phone_isempty);
+                    return;
+                }else if (!isMobileNO(phoneNum)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
+                    return;
+                }else if(passWord.isEmpty()){
+                    ToastUtils.showToast(R.string.password_isempty);
+                    return;
+                }else if(passWord.length() < 6){
+                    ToastUtils.showToast(R.string.password_isshort);
+                    return;
+                }else if(veriFicode.isEmpty()){
+                    ToastUtils.showToast(R.string.please_input_verificodem);
                     return;
                 }
                 ToastUtils.showToast(R.string.regist);
                 //todo: 密码强弱长短校验
                 //todo:发验证码后端校验
                 break;
-            case R.id.get_verificode_button://发送验证码
+            case R.id.get_verificode_button://获取验证码
                 String phoneNum2 = mPhoneNumberEdit.getText().toString();
                 if (!isMobileNO(phoneNum2)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
@@ -126,17 +138,23 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.eye:
                 mPswEdit.setHorizontallyScrolling(true);//不可换行
-                if (flag == true) {//不可见
-                    mPswEdit.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                if (flag == true) {
+                    mPswEdit.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     flag = false;
                     mEye.setImageResource(R.drawable.vd_close_eyes);
-                } else {//可见
-                    mPswEdit.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                } else {
+                    mPswEdit.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+
                     flag = true;
                     mEye.setImageResource(R.drawable.vd_open_eyes);
                 }
         }
     }
+
+    /**
+     * 监听手机号码的长度
+     */
+    CharSequence temp;
     public class MyTextWatcher implements TextWatcher{
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {

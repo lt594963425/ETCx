@@ -22,8 +22,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.OfficailActivity"/>
-        <activity android:name=".ui.activity.Login2Activity"/>
         <activity android:name=".ui.activity.PhoneRegistActivity"/>
+        <activity android:name=".ui.activity.LoginActivity"/>
+        <activity android:name=".ui.activity.MessageLoginActivity"/>
+        <activity android:name=".ui.activity.SetPasswordActivity"/>
         <!--微信登录-->
         <activity
             android:name="com.etcxc.android.ui.activity.WXEntryActivity"
