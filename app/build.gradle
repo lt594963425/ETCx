@@ -12,7 +12,56 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary true
     }
+
+
+    buildTypes {
+        debug {
+//            设置debug版本的报名为<应用id>.debug，这样就可以在设备上同时安装debug和release版本了。
+//            applicationIdSuffix ".debug"
+            versionNameSuffix ".${releaseTime()}.debug"
+            zipAlignEnabled false
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
+            signingConfig signingConfigs.debug
+            multiDexEnabled true
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            multiDexEnabled false
+        }
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile
+                if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}_${variant.flavorName}.apk"
+                    output.outputFile = new File(outputFile.parent, fileName)
+                }
+            }
+        }
+    }
+
+    signingConfigs {
+        debug {
+
+        }
+        release {
+              storeFile new File("C:/ETCXc.keystore")
+              storePassword "etc+xc"
+              keyAlias "ETCXcKey"
+              keyPassword "etc+xc"
+        }
+    }
 }
+
+//平时打包的文件名包含的时间，只有年月日
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+8"))
+}
+
 repositories {
     //...
     flatDir {
