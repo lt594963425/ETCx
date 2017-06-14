@@ -37,4 +37,5 @@ dependencies {
     //微信登录
     compile files('libs/libammsdk.jar')
     compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.jakewharton:butterknife:8.6.0'
 }

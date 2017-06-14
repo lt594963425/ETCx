@@ -50,7 +50,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(0, false);
         mToolbar = find(R.id.My_toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setTitle(getString(R.string.index_page) + "ETC");
+        mToolbar.setTitle(getString(R.string.index_page));
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(position, false);
         switch (position) {
             case 0:
-                mToolbar.setTitle(getString(R.string.index_page) + "ETC");
+                mToolbar.setTitle(getString(R.string.index_page));
                 break;
             case 1:
                 mToolbar.setTitle(getString(R.string.mime) + "ETC");

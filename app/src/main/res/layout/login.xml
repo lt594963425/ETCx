@@ -126,6 +126,7 @@
                 android:text="@string/get_verifycode" />
 
             <ImageView
+                android:clickable="true"
                 android:id="@+id/login_fresh_verification"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
