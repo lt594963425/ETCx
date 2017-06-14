@@ -15,13 +15,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.etcxc.android.R;
-import com.etcxc.android.ui.activity.LoginActivity;
-import com.etcxc.android.ui.activity.PhoneRegistActivity;
 import com.etcxc.android.base.App;
+import com.etcxc.android.ui.activity.Login2Activity;
+import com.etcxc.android.ui.activity.PhoneRegistActivity;
 import com.etcxc.android.utils.PrefUtils;
+import com.etcxc.android.utils.ToastUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +54,8 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                     head.setImageBitmap((Bitmap) msg.obj);
 
                     break;
-
                 case ERROR:
-
-                    Toast.makeText(App.getContext(), "请求超时", Toast.LENGTH_SHORT).show();
+                    ToastUtils.showToast("请求超时");
 
                     break;
             }
@@ -92,7 +90,7 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rl_login:
-                Intent intent1 = new Intent(getActivity(), LoginActivity.class);
+                Intent intent1 = new Intent(getActivity(), Login2Activity.class);
                 startActivity(intent1);
                 break;
             case R.id.bt_f2_rg:

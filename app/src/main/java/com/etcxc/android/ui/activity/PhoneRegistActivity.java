@@ -86,7 +86,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
      */
     public boolean isMobileNO(String mobiles) {
         if (TextUtils.isEmpty(mobiles)) return false;
-        String regExp = getString(R.string.regExpMobile);//"((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$";
+        String regExp ="((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$" ;//;
         Pattern p = Pattern.compile(regExp);
         Matcher m = p.matcher(mobiles);
         return m.matches();
@@ -102,6 +102,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
                     return;
                 }
+                ToastUtils.showToast(R.string.regist);
                 //todo: 密码强弱长短校验
                 //todo:发验证码后端校验
                 break;
@@ -125,14 +126,14 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.eye:
                 mPswEdit.setHorizontallyScrolling(true);//不可换行
-                if (flag == true) {
+                if (flag == true) {//不可见
                     mPswEdit.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                     flag = false;
-                    mEye.setImageResource(R.drawable.vd_open_eyes);
-                } else {
+                    mEye.setImageResource(R.drawable.vd_close_eyes);
+                } else {//可见
                     mPswEdit.setTransformationMethod(PasswordTransformationMethod.getInstance());
                     flag = true;
-                    mEye.setImageResource(R.drawable.vd_close_eyes);
+                    mEye.setImageResource(R.drawable.vd_open_eyes);
                 }
         }
     }

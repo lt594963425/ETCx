@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@mipmap/bj">
 
-    <include layout="@layout/toolbar"
+    <include layout="@layout/cd_toolbar"
         android:id="@+id/regist_toolbar">
     </include>
     <RelativeLayout
@@ -44,9 +44,7 @@
                 android:paddingLeft="16dp"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/vd_regist_delete"
-
                 />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
@@ -60,7 +58,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/phonenumber_layout"
-
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="24dp"
@@ -109,9 +106,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:background="@null"
-                android:hint="@string/please_input_password"
+                android:hint="@string/set_verifycode"
                 android:inputType="textPassword"
-                android:maxLength="16" />
+                android:maxLength="8" />
 
             <Button
                 android:id="@+id/get_verificode_button"
@@ -149,7 +146,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="40dp"
             android:orientation="horizontal">
 
             <TextView
@@ -166,5 +163,6 @@
                 android:textColor="@color/colorOrange"
                 android:textSize="14sp" />
         </LinearLayout>
+
     </RelativeLayout>
 </LinearLayout>

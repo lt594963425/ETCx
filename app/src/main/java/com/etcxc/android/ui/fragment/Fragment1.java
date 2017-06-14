@@ -7,10 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.etcxc.android.R;
-import com.etcxc.android.utils.UIUtils;
+import com.etcxc.android.utils.ToastUtils;
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
@@ -37,12 +36,12 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.textView1: //注册
-                Toast.makeText(UIUtils.getContext(), "注册....", Toast.LENGTH_SHORT).show();
+                ToastUtils.showToast("注册....");
                 break;
         }
         switch (v.getId()) {
             case R.id.textView2: //激活
-                Toast.makeText(UIUtils.getContext(), "激活....", Toast.LENGTH_SHORT).show();
+                ToastUtils.showToast("激活....");
                 break;
         }
     }

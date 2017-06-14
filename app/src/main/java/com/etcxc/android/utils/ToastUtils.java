@@ -1,5 +1,6 @@
 package com.etcxc.android.utils;
 
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.etcxc.android.base.App;
@@ -16,6 +17,8 @@ public class ToastUtils {
             toast = Toast.makeText(App.get(), msg, Toast.LENGTH_SHORT);
         }
         toast.setText(msg);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
         toast.show();
     }
 
@@ -23,6 +26,7 @@ public class ToastUtils {
         if (toast == null) {
             toast = Toast.makeText(App.get(), resId, Toast.LENGTH_SHORT);
         }
+        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.setText(resId);
         toast.show();
     }

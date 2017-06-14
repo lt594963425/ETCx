@@ -7,6 +7,7 @@
     <string name="please_input_phonenumber">请输入您的手机号码</string>
     <string name="please_input_password">请输入6-16位密码</string>
     <string name="regist">注册</string>
+    <string name="login">登录</string>
     <string name="get_verifycode">获取验证码</string>
     <string name="please_input_correct_phone_number">请输入正确的手机号码</string>
     <string name="set_verifycode">请输入验证码</string>

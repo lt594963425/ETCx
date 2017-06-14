@@ -1,6 +1,7 @@
 package com.etcxc.android.ui.activity;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
@@ -8,12 +9,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+
 import com.etcxc.android.R;
-import com.etcxc.android.ui.adapter.MyFragmentAdapter;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.ui.adapter.MyFragmentAdapter;
 import com.etcxc.android.ui.fragment.Fragment1;
 import com.etcxc.android.ui.fragment.Fragment2;
 import com.etcxc.android.utils.UIUtils;
@@ -36,6 +39,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //initState();
         initView();
         initPage();
     }
@@ -117,6 +121,16 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
         }
     }
-
+    /**
+     * 沉浸式状态栏
+     */
+    private void initState() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //透明状态栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //透明导航栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+    }
 }
 
