@@ -68,7 +68,7 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
         head = (ImageView) view.findViewById(R.id.f2_uhead);
         username = (TextView) view.findViewById(R.id.f2_uid);
         rl_login = (RelativeLayout) view.findViewById(R.id.rl_login);
-        bt_f2_rg =(Button)view.findViewById(R.id.bt_f2_rg);
+        bt_f2_rg = (Button) view.findViewById(R.id.bt_f2_rg);
         initView();
         return view;
     }
@@ -76,8 +76,8 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
     private void initView() {
         rl_login.setOnClickListener(this);
         bt_f2_rg.setOnClickListener(this);
-        userTag = PrefUtils.getBoolean(App.get(), "userTag",false);
-        if(userTag) {
+        userTag = PrefUtils.getBoolean(App.get(), "userTag", false);
+        if (userTag) {
             //加载头像url
             String headurl = PrefUtils.getString(App.get(), "headurl", null);
             username.setText(PrefUtils.getString(App.get(), "username", null));
@@ -107,8 +107,8 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
 
 
     public void setHead(String headurl) {
-        if(headurl != null)
-        SetWXUserInfo(headurl);
+        if (headurl != null)
+            SetWXUserInfo(headurl);
     }
 
     private void SetWXUserInfo(final String url) {
@@ -125,6 +125,7 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
                     public void onFailure(Call call, IOException e) {
 
                     }
+
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         InputStream is = response.body().byteStream();//字节流

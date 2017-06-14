@@ -1,5 +1,7 @@
 <resources>
-    <style name="AppTheme" parent="AppTheme.Base"/>
+
+    <style name="AppTheme" parent="AppTheme.Base" />
+
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="windowActionBar">false</item>
@@ -17,8 +19,11 @@
     <style name="CActionMenuTextAppearance" parent="@android:style/TextAppearance.Holo.Small">
         <item name="android:textSize">@dimen/abc_text_size_subtitle_material_toolbar</item>
         <item name="android:textStyle">normal</item>
-        <item name="actionMenuTextAppearance">@android:style/TextAppearance.Holo.Widget.ActionBar.Menu</item>
+        <item name="actionMenuTextAppearance">
+            @android:style/TextAppearance.Holo.Widget.ActionBar.Menu
+        </item>
     </style>
+
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#fc7520</item>
