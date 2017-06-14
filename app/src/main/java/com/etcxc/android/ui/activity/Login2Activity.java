@@ -30,9 +30,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.etcxc.android.R.id.editText1;
-import static com.etcxc.android.R.id.editText2;
-
 /**
  * Created by 刘涛 on 2017/6/7 0007.
  */
@@ -71,7 +68,7 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
 
                 case ERROR:
 
-                    Toast.makeText(App.getContext(), "请求超时", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(App.get(), "请求超时", Toast.LENGTH_SHORT).show();
 
                     break;
             }
@@ -82,7 +79,7 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        flwx_user = (FrameLayout) findViewById(R.id.flwx_user);
+ /*       flwx_user = (FrameLayout) findViewById(R.id.flwx_user);
         fl_f2 = (FrameLayout) findViewById(R.id.fl_f2);
 
         username = (TextView) findViewById(R.id.tv_username);
@@ -93,16 +90,16 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
         f2_editText2 = (EditText) findViewById(editText2);//密码
         f2_textView3 = (TextView) findViewById(R.id.textView3);//登录
         iv_wx_login = (ImageView) findViewById(R.id.iv_wx_login);
-        iv_qq_login = (ImageView) findViewById(R.id.iv_qq_login);
+        iv_qq_login = (ImageView) findViewById(R.id.iv_qq_login);*/
         initview();
 
     }
 
     private void initview() {
-        userTag = PrefUtils.getBoolean(App.getContext(), "userTag", false);
+        userTag = PrefUtils.getBoolean(App.get(), "userTag", false);
         if (userTag) {
             //加载头像url
-            String headurl = PrefUtils.getString(App.getContext(), "headurl", null);
+            String headurl = PrefUtils.getString(App.get(), "headurl", null);
             flwx_user.setVisibility(View.VISIBLE);
             fl_f2.setVisibility(View.INVISIBLE);
             if (headurl != null)
@@ -116,10 +113,10 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
         iv_qq_login.setOnClickListener(this);
         userName = f2_editText1.getText().toString();
         passWord = f2_editText2.getText().toString();
-        username.setText(PrefUtils.getString(App.getContext(), "username", null));
-        openid.setText(PrefUtils.getString(App.getContext(), "openid", null));
+        username.setText(PrefUtils.getString(App.get(), "username", null));
+        openid.setText(PrefUtils.getString(App.get(), "openid", null));
         // headurl.setText(PrefUtils.getString(App.getContext(),"headurl",null));
-        if (PrefUtils.getInt(App.getContext(), "usersex", 1) == 1) {
+        if (PrefUtils.getInt(App.get(), "usersex", 1) == 1) {
             usersex.setText("男");
         } else {
             usersex.setText("女");
@@ -161,7 +158,7 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+    /*    switch (v.getId()) {
             case R.id.textView3:
                 ToastUtils.showToast("登录成功");
                 break;
@@ -173,7 +170,7 @@ public class Login2Activity extends BaseActivity implements View.OnClickListener
                 QQLogin();
                 break;
 
-        }
+        }*/
     }
 
     /**

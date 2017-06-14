@@ -17,6 +17,7 @@ import java.util.Properties;
  * 写文件的工具类
  */
 public class FileUtils {
+	private static String TAG = "FileUtils";
 
 	public static final String ROOT_DIR = "Android/data/" + UIUtils.getPackageName();
 	public static final String DOWNLOAD_DIR = "download";
@@ -124,7 +125,7 @@ public class FileUtils {
 				srcFile.delete();
 			}
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "copyFile", e);
 			return false;
 		} finally {
 			IOUtils.close(out);
@@ -142,7 +143,7 @@ public class FileUtils {
 			File f = new File(path);
 			return f.exists() && f.canWrite();
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "isWriteable", e);
 			return false;
 		}
 	}
@@ -154,7 +155,7 @@ public class FileUtils {
 			Runtime runtime = Runtime.getRuntime();
 			runtime.exec(command);
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "chmod", e);
 		}
 	}
 
@@ -190,7 +191,7 @@ public class FileUtils {
 				res = true;
 			}
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "writeFile", e);
 		} finally {
 			IOUtils.close(fos);
 			IOUtils.close(is);
@@ -229,7 +230,7 @@ public class FileUtils {
 				res = true;
 			}
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "writeFile", e);
 		} finally {
 			IOUtils.close(raf);
 		}
@@ -282,7 +283,7 @@ public class FileUtils {
 			fos = new FileOutputStream(f);
 			p.store(fos, comment);
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "writeProperties", e);
 		} finally {
 			IOUtils.close(fis);
 			IOUtils.close(fos);
@@ -307,7 +308,7 @@ public class FileUtils {
 			p.load(fis);
 			value = p.getProperty(key, defaultValue);
 		} catch (IOException e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "readProperties", e);
 		} finally {
 			IOUtils.close(fis);
 		}
@@ -336,7 +337,7 @@ public class FileUtils {
 			fos = new FileOutputStream(f);
 			p.store(fos, comment);
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "writeMap", e);
 		} finally {
 			IOUtils.close(fis);
 			IOUtils.close(fos);
@@ -360,9 +361,9 @@ public class FileUtils {
 			fis = new FileInputStream(f);
 			Properties p = new Properties();
 			p.load(fis);
-			map = new HashMap<String, String>((Map) p);// 因为properties继承了map，所以直接通过p来构造一个map
+			map = new HashMap(p);// 因为properties继承了map，所以直接通过p来构造一个map
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "readMap", e);
 		} finally {
 			IOUtils.close(fis);
 		}
@@ -388,7 +389,7 @@ public class FileUtils {
 				out.flush();
 			}
 		} catch (Exception e) {
-			LogUtils.e(e);
+			LogUtil.e(TAG, "copy", e);
 			return false;
 		} finally {
 			IOUtils.close(in);

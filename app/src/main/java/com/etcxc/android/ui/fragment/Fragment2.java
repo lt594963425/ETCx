@@ -76,11 +76,11 @@ public class Fragment2 extends Fragment implements View.OnClickListener {
     private void initView() {
         rl_login.setOnClickListener(this);
         bt_f2_rg.setOnClickListener(this);
-        userTag = PrefUtils.getBoolean(App.getContext(), "userTag",false);
+        userTag = PrefUtils.getBoolean(App.get(), "userTag",false);
         if(userTag) {
             //加载头像url
-            String headurl = PrefUtils.getString(App.getContext(), "headurl", null);
-            username.setText(PrefUtils.getString(App.getContext(), "username", null));
+            String headurl = PrefUtils.getString(App.get(), "headurl", null);
+            username.setText(PrefUtils.getString(App.get(), "username", null));
             if (headurl != null)
                 SetWXUserInfo(headurl);
         }

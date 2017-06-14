@@ -38,9 +38,7 @@ import static com.etcxc.android.base.App.userTag;
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private BaseResp resp = null;
-    // 获取第一步的code后，请求以下链接获取access_token
     private String GetCodeRequest = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
-    // 获取用户个人信息
     private String GetUserInfo = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID";
     private final OkHttpClient client = new OkHttpClient();
 
@@ -80,7 +78,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                     getAccess_token(code);
                 }
                 userTag = true;
-                PrefUtils.setBoolean(App.getContext(), "userTag", userTag);
+                PrefUtils.setBoolean(App.get(), "userTag", userTag);
                 finish();
 
                 break;
@@ -190,11 +188,11 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                         String headimgurl = jsonObject.getString("headimgurl");  //头像
                         String openid = jsonObject.getString("openid");
                         String unionid = jsonObject.getString("openid");
-                        PrefUtils.setString(App.getContext(), "openid", openid);
-                        PrefUtils.setString(App.getContext(), "username", nickname);
-                        PrefUtils.setInt(App.getContext(), "usersex", sex);
-                        PrefUtils.setString(App.getContext(), "headurl", headimgurl);
-                        PrefUtils.setString(App.getContext(), "unionid", unionid);
+                        PrefUtils.setString(App.get(), "openid", openid);
+                        PrefUtils.setString(App.get(), "username", nickname);
+                        PrefUtils.setInt(App.get(), "usersex", sex);
+                        PrefUtils.setString(App.get(), "headurl", headimgurl);
+                        PrefUtils.setString(App.get(), "unionid", unionid);
                         LogUtil.i(TAG, "getUserMesg 拿到了用户Wx基本信息：");
                         LogUtil.i(TAG, "名字.. nickname:" + nickname);
                         LogUtil.i(TAG, "性别.. nickname:" + sex);

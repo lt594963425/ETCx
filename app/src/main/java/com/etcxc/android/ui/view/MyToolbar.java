@@ -21,7 +21,7 @@ import java.lang.reflect.Field;
 
 /**
  * Created by 刘涛 on 2017/6/13 0013.
- * 标题居中，修改toobar的高度
+ * 标题居中，修改toolbar的高度
  */
 
 public class MyToolbar extends Toolbar {
