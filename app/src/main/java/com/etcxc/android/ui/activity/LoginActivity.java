@@ -30,6 +30,8 @@ import static com.etcxc.android.R.id.login_phonenumber_delete;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
+ *
+ * 登录页面
  */
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
@@ -88,6 +90,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginButton.setOnClickListener(this);
         mLoginEye.setOnClickListener(this);
         mLoginMessage.setOnClickListener(this);
+        mLoginFast.setOnClickListener(this);
+        mForgetPassword.setOnClickListener(this);
         MyTextWatcher myTextWatcher = new MyTextWatcher();
         mLoginPhonenumberEdt.addTextChangedListener(myTextWatcher);
         // ToDo 向后台请求初始化图形验证码
@@ -99,7 +103,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
         view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
-
     /**
      * 判断手机号码是否正确
      */
@@ -138,16 +141,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private Boolean flag = false;
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.login_phonenumber_edt:
-                break;
             case R.id.login_phonenumber_delete:
                 mLoginPhonenumberEdt.setText("");
-                break;
-            case R.id.login_password_edt:
                 break;
             case R.id.login_eye:
                 mLoginPasswordEdt.setHorizontallyScrolling(true);//不可换行
@@ -162,10 +160,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     mLoginEye.setImageResource(R.drawable.vd_open_eyes);
                 }
                 break;
-            case R.id.login_verificode_edt:
-                break;
-            case R.id.login_image_verificode:
-                break;
             case R.id.login_fresh_verification:
                 startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
                 // ToDo 向后台请求更换验证码，同时更新验证码图片
@@ -176,10 +170,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 startActivity(intentMsg);
                 break;
             case R.id.login_fast:
+                Intent intentFast= new Intent(this,PhoneRegistActivity.class);
+                startActivity(intentFast);
                 break;
             case R.id.forget_password:
-                break;
-            case R.id.login_more_type:
+                Intent intentForget = new Intent(this,ResetPasswordActivity.class);
+                startActivity(intentForget);
                 break;
             case R.id.login_button:  //登录
                 String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();

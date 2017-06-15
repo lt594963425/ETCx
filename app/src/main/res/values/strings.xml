@@ -23,10 +23,13 @@
     <string name="password_isshort">亲，您输入的密码太短了</string>
     <string name="please_input_phonenumbers">请输入您的手机号码</string>
     <string name="please_input_passwords">请您输入6～16位密码</string>
-    <string name="set_verifycodes">请输入您的短信验证码</string>
+    <string name="set_verifycodes">请输入短信验证码</string>
     <string name="set_ig_verifycodes">请输入验证码</string>
     <string name="please_set_passwords">设置6~16位含数字和字母的密码</string>
     <string name="set_password_text">此手机号码没有注册，设置密码完成注册</string>
     <string name="set_accomplish">完成</string>
     <string name="setpassword">设置密码</string>
+    <string name="messagelogin">短信登录</string>
+    <string name="retrieve_password">找回密码</string>
+    <string name="set_picture_verifycodes">请输入图形验证码</string>
 </resources>

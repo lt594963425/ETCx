@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
@@ -27,6 +28,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
+ * 短信登录
  */
 
 public class MessageLoginActivity extends BaseActivity implements View.OnClickListener {
@@ -36,6 +38,8 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private EditText mMVeriFicodeEdt;
     private Button mGetMsgVeriFicodeButton;
     private Button mMLoginButton;
+    private RelativeLayout mMsgLVLayout;
+    private EditText mMPicCodeEdt;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
 
     private void initView() {//message_login_toolbar
         Toolbar mToolbar = find(R.id.message_login_toolbar);
-        mToolbar.setTitle(R.string.login);
+        mToolbar.setTitle(R.string.messagelogin);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -64,7 +68,13 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         mMPhoneNumberDelete.setOnClickListener(this);
         mGetMsgVeriFicodeButton.setOnClickListener(this);
         mMLoginButton.setOnClickListener(this);
+        //todo 输入的次数超过3次要求输入图形验证码 显示mMsgLVLayout 控件
+        mMsgLVLayout=find(R.id.message_login_verificode_layout);
+        mMPicCodeEdt = find (R.id.message_login_verificode_edt); //图形验证码message_login_image_verificode
+        mMPicCodeEdt = find (R.id.message_login_image_verificode); //图形验证码 message_login_image_verificode
+        mMPicCodeEdt = find (R.id.message_login_fresh_verification); //刷新图形验证码 message_login_fresh_verification
 
+        addIcon(mMPicCodeEdt,R.drawable.vd_regist_captcha);
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
         addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);
         MyTextWatcher myTextWatcher = new MyTextWatcher();

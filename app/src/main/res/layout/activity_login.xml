@@ -101,7 +101,7 @@
         android:layout_below="@+id/login_password_layout"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="20dp">
 
         <EditText
             android:id="@+id/login_verificode_edt"
@@ -112,7 +112,7 @@
             android:layout_centerVertical="true"
             android:background="@null"
             android:textSize="14sp"
-            android:hint="@string/set_verifycodes"
+            android:hint="@string/set_picture_verifycodes"
             android:inputType="textPassword"
             android:maxLength="8" />
 
@@ -143,13 +143,13 @@
             android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="2px"
-            android:layout_below="@+id/login_fresh_verification"
-            android:layout_marginTop="22dp"
+            android:layout_below="@+id/login_image_verificode"
+            android:layout_marginTop="2dp"
             android:background="@color/white" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/login_more_type"
+        android:id="@+id/login_more_type_layout"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:layout_below="@+id/login_verificode_layout"
@@ -173,6 +173,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:clickable="true"
                 android:id="@+id/login_fast"
                 android:padding="3dp"
                 android:layout_width="wrap_content"
@@ -183,6 +184,7 @@
                 android:layout_width="1dp"
                 android:layout_height="15dp"/>
             <TextView
+                android:clickable="true"
                 android:id="@+id/forget_password"
                 android:padding="3dp"
                 android:layout_width="wrap_content"
@@ -200,7 +202,7 @@
         android:background="@drawable/bg_regist_button"
         android:text="@string/login"
         android:textColor="@color/white"
-        android:layout_below="@+id/login_more_type"
+        android:layout_below="@+id/login_more_type_layout"
         android:layout_centerHorizontal="true" />
     <LinearLayout
         android:layout_width="wrap_content"

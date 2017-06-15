@@ -15,6 +15,7 @@ import com.etcxc.android.utils.ToastUtils;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
+ * 设置密码
  */
 
 public class SetPasswordActivity extends BaseActivity implements View.OnClickListener {
@@ -76,7 +77,7 @@ public class SetPasswordActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showToast(R.string.password_isshort);
                     return;
                 }
-                //todo 设置密码完成 提交后台,保存用户登录信息
+                //todo 设置密码完成 提交后台,保存用户登录信息，返回
 
                 finish();
                 break;
