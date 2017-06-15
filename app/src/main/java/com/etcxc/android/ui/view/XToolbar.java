@@ -7,6 +7,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import java.lang.reflect.Field;
 
 public class XToolbar extends Toolbar {
     private static final String TAG = "XToolbar";
+    private ActionBar mActionBar;
+    private TextView mCTitleView;
 
     public XToolbar(Context context) {
         super(context, null);
@@ -36,23 +39,18 @@ public class XToolbar extends Toolbar {
         init();
     }
 
-
-
     private void init() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) setElevation(0f);
         else ViewCompat.setElevation(this, 0f);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                if (getLayoutParams() instanceof LayoutParams) {
+                    ((LayoutParams) getLayoutParams()).gravity = Gravity.CENTER;
+                }
+            }
+        });
     }
-
-    private ActionBar mActionBar;
-
-    /**
-     * 暂时只有一个TextView作为CustomView
-     */
-    private TextView mCTitleView;
-
-    private TextView mCSubtitleView;
-
-    private int mCTitleTextColor;
 
     public void setActionBar(ActionBar ab) {
         this.mActionBar = ab;
@@ -89,7 +87,7 @@ public class XToolbar extends Toolbar {
     }
 
     /**
-     * 替换{@link Toolbar#addView(View)}方法，但这里只加一个{@link View}，暂时Lunkr App无添加多个{@link View}的需求
+     * 替换{@link Toolbar#addView(View)}方法
      *
      * @param view
      */

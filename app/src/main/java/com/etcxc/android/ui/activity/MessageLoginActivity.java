@@ -24,7 +24,6 @@ import com.etcxc.android.utils.UIUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.ButterKnife;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -45,7 +44,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_login);
-        ButterKnife.bind(this);
         initView();
     }
 

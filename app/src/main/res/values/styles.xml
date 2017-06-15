@@ -13,7 +13,6 @@
         <!--Window color-->
         <item name="android:windowBackground">@color/white</item>
         <item name="android:actionMenuTextAppearance">@style/CActionMenuTextAppearance</item>
-        <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="CActionMenuTextAppearance" parent="@android:style/TextAppearance.Holo.Small">
         <item name="android:textSize">@dimen/abc_text_size_subtitle_material_toolbar</item>
@@ -26,6 +25,18 @@
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#fc7520</item>
+    </style>
+
+    <style name="TranslucentActivityTheme" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
 </resources>

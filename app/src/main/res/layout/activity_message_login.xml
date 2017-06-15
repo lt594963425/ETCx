@@ -7,7 +7,7 @@
     android:orientation="vertical">
     <include
         android:id="@+id/message_login_toolbar"
-        layout="@layout/cd_toolbar"></include>
+        layout="@layout/toolbar"></include>
     <!--手机号码-->
     <RelativeLayout
         android:layout_width="match_parent"

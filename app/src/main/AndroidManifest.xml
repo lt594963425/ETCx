@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.etcxc.android.base.App"
@@ -15,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.activity.MainActivity"
+            android:launchMode="singleTask"
            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +29,12 @@
         <activity android:name=".ui.activity.LoginActivity"/>
         <activity android:name=".ui.activity.MessageLoginActivity"/>
         <activity android:name=".ui.activity.SetPasswordActivity"/>
+        <activity android:name=".ui.activity.PermissionRequestingActivity" android:screenOrientation="portrait" android:theme="@style/TranslucentActivityTheme" >
+            <intent-filter>
+                <action android:name="com.etcxc.android.action.PAGE_REQUEST_PERMISSIONS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.activity.ResetPasswordActivity"/>
 
         <!--微信登录-->
@@ -35,6 +44,15 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent"/>
+
+        <service
+            android:name=".net.download.DService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.etcxc.android.action.DSERVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
 
         <provider
             android:name="com.etcxc.android.modle.db.PublicContentProvider"

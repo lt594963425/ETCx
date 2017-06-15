@@ -43,6 +43,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         initView();
         initPage();
     }
+
+
+
     private void initView() {
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
@@ -121,6 +124,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
         }
     }
+
     /**
      * 沉浸式状态栏
      */
