@@ -37,4 +37,10 @@
     <string name="cancle">取消</string>
     <string name="download_finish">下载完成</string>
     <string name="reject_permission">您禁止了权限</string>
+    <string name="uesr_type">用户类型</string>
+    <string name="org_user">单位用户</string>
+    <string name="personal_user">个人用户</string>
+    <string name="car_card_number">车牌号</string>
+    <string name="car_card_color">车牌颜色</string>
+    <string name="verify">验证</string>
 </resources>

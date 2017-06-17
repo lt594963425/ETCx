@@ -36,6 +36,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.ResetPasswordActivity"/>
+        <activity android:name=".ui.activity.ETCIssueActivity" android:theme="@style/BG_GRAY"/>
 
         <!--微信登录-->
         <activity

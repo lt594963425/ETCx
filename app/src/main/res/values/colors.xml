@@ -16,5 +16,8 @@
     <color name="red_btn_color_normal">#ffff5454</color>
     <color name="colorGray">#b6b6d8</color>
     <color name="colorGreen">#4EB84A</color>
+    <color name="textcolor">#757575</color>
+    <color name="space_line_color">#f4f4f4</color>
+    <color name="bottom_line_color">#e5e5e5</color>
 
 </resources>

@@ -37,4 +37,14 @@
         android:padding="10dp"
         android:text="官网"
         android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/issue_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="发行"
+        android:textSize="20sp" />
 </LinearLayout>

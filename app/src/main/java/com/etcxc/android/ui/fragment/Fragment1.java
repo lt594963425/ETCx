@@ -3,6 +3,7 @@ package com.etcxc.android.ui.fragment;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
+import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -35,13 +37,14 @@ import io.reactivex.functions.Consumer;
 
 public class Fragment1 extends RxFragment implements View.OnClickListener {
     private TextView textView1;
-    private TextView textView2;
+    private TextView textView2,mIssueTextView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item1, null);
         textView1 = (TextView) view.findViewById(R.id.textView1);
         textView2 = (TextView) view.findViewById(R.id.textView2);
+        mIssueTextView = (TextView) view.findViewById(R.id.issue_textview);
         initView();
         return view;
     }
@@ -49,6 +52,7 @@ public class Fragment1 extends RxFragment implements View.OnClickListener {
     private void initView() {
         textView1.setOnClickListener(this);
         textView2.setOnClickListener(this);
+        mIssueTextView.setOnClickListener(this);
     }
 
     @Override
@@ -58,10 +62,11 @@ public class Fragment1 extends RxFragment implements View.OnClickListener {
 //                ToastUtils.showToast("注册....");
                 checkVersion();
                 break;
-        }
-        switch (v.getId()) {
             case R.id.textView2: //激活
                 requestPermiss();
+                break;
+            case R.id.issue_textview:
+                startActivity(new Intent(getActivity(), ETCIssueActivity.class));
                 break;
         }
     }
