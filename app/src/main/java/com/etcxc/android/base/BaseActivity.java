@@ -9,19 +9,18 @@ import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
-import com.etcxc.android.R;
+
 import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ import java.util.List;
  * 封装Activity公共的操作
  */
 @SuppressWarnings("ResourceType")
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends RxAppCompatActivity {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
 
@@ -112,9 +111,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
         for (Fragment f : list) {
-            if (f instanceof BaseFragmentCommon) {
+            if (f instanceof BaseFragment) {
                 //todo :调好fragment再弄
-//                ((BaseFragmentCommon) f).onTitleClick();
             }
         }
     }
@@ -125,9 +123,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
         for (Fragment f : list) {
-            if (f instanceof BaseFragmentCommon) {
+            if (f instanceof BaseFragment) {
                 //todo :调好fragment再弄
-//                ((BaseFragmentCommon) f).onTitleDoubleClick();
             }
         }
     }

@@ -3,7 +3,6 @@ package com.etcxc.android.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,14 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.ui.activity.LoginActivity;
 import com.etcxc.android.ui.activity.PhoneRegistActivity;
+import com.trello.rxlifecycle2.components.support.RxFragment;
 
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
 
-public class Fragment2 extends Fragment implements View.OnClickListener {
+public class Fragment2 extends RxFragment implements View.OnClickListener {
     private Button bt_f2_rg;
     private ImageView head;
     private TextView username;

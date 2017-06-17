@@ -5,7 +5,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -17,24 +16,24 @@ import android.widget.TextView;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.utils.PermissionUtil;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
+import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import org.json.JSONObject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
 
-public class Fragment1 extends Fragment implements View.OnClickListener {
+public class Fragment1 extends RxFragment implements View.OnClickListener {
     private TextView textView1;
     private TextView textView2;
 
@@ -98,8 +97,8 @@ public class Fragment1 extends Fragment implements View.OnClickListener {
                         "}");
                 e.onComplete();
             }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        }).compose(RxUtil.io())
+                .compose(RxUtil.fragmentLifecycle(this))
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
