@@ -2,9 +2,7 @@ package com.etcxc.android.ui.fragment;
 
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,22 +17,12 @@ import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
 import com.etcxc.android.ui.activity.PhoneRegistActivity;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
-import java.io.File;
-
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
 
 public class FragmentMine extends RxFragment implements View.OnClickListener {
-    /*头像名称*/
-    private static final String IMAGE_FILE_NAME = "faceImage.jpg";
-    private File file;
-    private Uri uri;
-    /* 请求码*/
-    private static final int REQUEST_CODE_TAKE_PHOTO = 1;
-    private static final int REQUEST_CODE_ALBUM = 2;
-    private static final int REQUEST_CODE_CROUP_PHOTO = 3;
     private Button bt_f2_rg;
     private Button bt_login_rg;
     private ImageView userHead;
@@ -80,17 +68,5 @@ public class FragmentMine extends RxFragment implements View.OnClickListener {
 
                 break;
         }
-    }
-
-    /**
-     * camera,相机
-     */
-    private void uploadAvatarFromPhotoRequest() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
     }
 }

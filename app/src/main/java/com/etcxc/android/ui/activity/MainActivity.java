@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 /**
  * 主界面Activity
+ * Created by 刘涛 on 2017/6/3 0003.
  */
 
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {

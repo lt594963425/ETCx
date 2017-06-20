@@ -76,10 +76,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private TextView mForgetPassword;//忘记密码
     private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
-            String  sessionUrl = "http://192.169.6.119/index.php/login/login_pwd/session/"; //登录次数
-         String pictureCodeUrl = "http://192.169.6.119/index.php/captcha";  //更换图形验证码url
-    //"http:192.169.6.119/index.php/login/login_pwd/login/tel/'tel'/pwd/'pwd'/code/'code'
-    String loginPwdUrl  = "http://192.169.6.119/index.php/login/login_pwd/login/tel/'tel'/pwd/'pwd'/code/'code'";//登录的url
+    String pictureCodeUrl = "http://192.169.6.119/index.php/captcha";  //更换图形验证码url
+    String loginPwdUrl  = "http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty/sms_code/123456";//登录的url
     private boolean isShow = false;
     //
     String data;
@@ -176,7 +174,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             case R.id.login_fresh_verification:
                 startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
                 // ToDo 向后台请求更换验证码，同时更新验证码图片服务器返回的图形验证码 URL
-                SetPicCode(pictureCodeUrl);
+               // SetPicCode(pictureCodeUrl);
+                run(pictureCodeUrl);
                 break;
             case R.id.login_message:  //短信验证码登录
                 Intent intentMsg = new Intent(this, MessageLoginActivity.class);
@@ -202,7 +201,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 //判断
                 if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
                 //todo  访问服务器 请求输入的次数
-                getSession(sessionUrl);
+               // getSession(sessionUrl);
 
                 break;
         }
@@ -284,11 +283,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 .subscribe(new Consumer<Integer>() {
             @Override
             public void accept(@NonNull Integer s) throws Exception {
-                if (s < 4) {
-                    login();
-                } else {
-                    getVerifiCode();
-                }
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -319,13 +313,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     public void accept(@NonNull String s) throws Exception {
                         //JSONStringer js = new JSONStringer(s);
                         JSONObject jsonObject = new JSONObject(s);
-
                        // ToastUtils.showToast("----"+count+"---------");
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-
                     }
                 });
 

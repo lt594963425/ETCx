@@ -15,7 +15,6 @@
     <string name="timeLate">秒后可重新发送</string>
     <string name="reStartGetCode">重新获取验证码</string>
     <string name="login_fast_regist">快速注册</string>
-
     <string name="forget_password">忘记密码</string>
     <string name="phone_isempty">亲，请输入您的手机号码</string>
     <string name="password_isempty">亲，请输入密码</string>
@@ -50,4 +49,10 @@
     <string name="home_etcrecharge">ETC充值</string>
     <string name="home_etccircle">ETC圈存</string>
     <string name="strditle">高速公路畅通无阻\n“0”元照进不误</string>
+    <string name="uesr_type">用户类型</string>
+    <string name="org_user">单位用户</string>
+    <string name="personal_user">个人用户</string>
+    <string name="car_card_number">车牌号</string>
+    <string name="car_card_color">车牌颜色</string>
+    <string name="verify">验证</string>
 </resources>

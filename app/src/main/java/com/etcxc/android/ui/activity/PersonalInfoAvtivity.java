@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * 用户信息修改页面
  * Created by 刘涛 on 2017/6/17 0017.
  */
 
@@ -108,7 +109,7 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
     private void show2Dialog() {
         //动态加载布局生成View对象
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View longinDialogView = layoutInflater.inflate(R.layout.underline, null);
+        View longinDialogView = layoutInflater.inflate(R.layout.cameral_album, null);
         AlertDialog.Builder   builder = new AlertDialog.Builder(this);
         TextView takePicture = (TextView) longinDialogView.findViewById(R.id.take_picture);
         TextView selectPhoto = (TextView) longinDialogView.findViewById(R.id.select_photo);

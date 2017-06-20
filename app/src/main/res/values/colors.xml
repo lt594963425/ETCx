@@ -8,14 +8,17 @@
     <color name="colorCategory">#7B1FA2</color>
     <color name="colorShopcar">#FF5252</color>
     <color name="colorMore">#FF9800</color>
-    <color name="white_color_disable">#7fffffff</color>
+    <color name="white_color_disable">#7fffff</color>
     <color name="white">#ffffff</color>
     <!-- 白色 -->
-    <color name="red_btn_color_disable">#7fff5454</color>
-    <color name="red_btn_color_pressed">#ffd24242</color>
-    <color name="red_btn_color_normal">#ffff5454</color>
+    <color name="red_btn_color_disable">#7fff54</color>
+    <color name="red_btn_color_pressed">#ffd242</color>
+    <color name="red_btn_color_normal">#ffff54</color>
     <color name="colorGray">#b6b6d8</color>
     <color name="colorGreen">#4EB84A</color>
-    <color name="colorrechargegreen">#45b367 </color>
-    <color name="colorcircleblue">#5fb2d1 </color>
+    <color name="colorrechargegreen">#45b367</color>
+    <color name="colorcircleblue">#5fb2d1</color>
+    <color name="textcolor">#757575</color>
+    <color name="space_line_color">#f4f4f4</color>
+    <color name="bottom_line_color">#e5e5e5</color>
 </resources>

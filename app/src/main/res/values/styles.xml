@@ -1,7 +1,5 @@
 <resources>
-
     <style name="AppTheme" parent="AppTheme.Base" />
-
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="windowActionBar">false</item>
@@ -14,6 +12,10 @@
         <item name="android:windowBackground">@color/white</item>
         <item name="android:actionMenuTextAppearance">@style/CActionMenuTextAppearance</item>
     </style>
+    <style name="BG_GRAY" parent="AppTheme.Base">
+        <!--Window color-->
+        <item name="android:windowBackground">@color/space_line_color</item>
+    </style>
     <style name="CActionMenuTextAppearance" parent="@android:style/TextAppearance.Holo.Small">
         <item name="android:textSize">@dimen/abc_text_size_subtitle_material_toolbar</item>
         <item name="android:textStyle">normal</item>
@@ -21,12 +23,10 @@
             @android:style/TextAppearance.Holo.Widget.ActionBar.Menu
         </item>
     </style>
-
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#fc7520</item>
     </style>
-
     <style name="TranslucentActivityTheme" parent="AppTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
