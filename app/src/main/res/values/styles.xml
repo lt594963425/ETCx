@@ -38,5 +38,12 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowFullscreen">true</item>
     </style>
-
+    <style name="style0">
+        <item name="android:textSize">18dip</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+    <style name="style1">
+        <item name="android:textSize">23dip</item>
+        <item name="android:textColor">@color/colorOrange</item>
+    </style>
 </resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f0f0"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/mine_layout"
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:background="#ffffff">
+
+        <ImageView
+            android:layout_marginLeft="25dp"
+            android:id="@+id/userhead"
+            android:layout_width="89dp"
+            android:layout_height="89dp"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            app:srcCompat="@drawable/vd_head2" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="140dp"
+            android:clickable="true"
+            android:textSize="20sp"
+            android:text="立即登录"
+            android:textColor="#fc8337" />
+    </FrameLayout>
+    <Button
+        android:layout_marginTop="3dp"
+        android:textColor="#fc8337"
+        android:id="@+id/bt_login_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="登录" />
+    <Button
+        android:layout_marginTop="3dp"
+        android:textColor="#fc8337"
+        android:id="@+id/bt_f2_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="注册" />
+</LinearLayout>

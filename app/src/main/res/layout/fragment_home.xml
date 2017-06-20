@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f4f4f4"
+    android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="fill_parent"
+        android:layout_height="160dip"
+        android:background="@mipmap/advinfo"></android.support.v4.view.ViewPager>
+
+    <LinearLayout
+        android:id="@+id/home_llayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewpager"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="5dip">
+
+        <LinearLayout
+            android:id="@+id/ll_point_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dip"
+            android:orientation="horizontal"></LinearLayout>
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/home_gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/viewpager"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="20dp"
+        android:background="#ffffff"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"></GridView>
+
+    <LinearLayout
+        android:id="@+id/home_etcmore_llayout"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_below="@id/home_gridview"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/home_etconline_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:gravity="center"
+                android:text="@string/home_etconline"
+                android:textColor="@color/colorOrange"
+                android:textSize="23sp" />
+
+            <TextView
+                android:id="@+id/home_etcrecharge_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/vd_etcrecharge_bj"
+                android:gravity="center"
+                android:text="@string/home_etcrecharge"
+                android:textColor="@color/colorrechargegreen"
+                android:textSize="23sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/home_detile_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/vd_etcissue_bj"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/home_etccirclesave_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/vd_etctransfer_bj"
+                android:gravity="center"
+                android:text="@string/home_etccircle"
+                android:textColor="@color/colorcircleblue"
+                android:textSize="23sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.etcxc.android.ui.view.FocusTextview
+        android:id="@+id/ft_tv"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/home_etcmore_llayout"
+        android:background="#ffffff"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:maxLines="1"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:text="****** 唯一一家支持对ETC用户进行终身技术服务的团队 *******"
+        android:textColor="#c8374d" />
+</RelativeLayout>

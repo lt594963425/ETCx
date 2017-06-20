@@ -17,8 +17,9 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.ui.adapter.MyFragmentAdapter;
-import com.etcxc.android.ui.fragment.Fragment1;
-import com.etcxc.android.ui.fragment.Fragment2;
+import com.etcxc.android.ui.fragment.FragmentHome;
+import com.etcxc.android.ui.fragment.FragmentMine;
+import com.etcxc.android.ui.fragment.FragmentExpand;
 import com.etcxc.android.utils.UIUtils;
 
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     private ViewPager mViewPager;
     private Toolbar mToolbar;
     private FragmentTabHost mTabHost;
-
     private static final int ERROR = 1;
     private static final int SUCCESS = 2;
 
@@ -43,9 +43,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         initView();
         initPage();
     }
-
-
-
     private void initView() {
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
@@ -53,7 +50,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(0, false);
         mToolbar = find(R.id.My_toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setTitle(getString(R.string.index_page));
+        mToolbar.setTitle(getString(R.string.app_name));
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
@@ -61,9 +58,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
     private void initTabs() {
-        Class mFragmentArray[] = {Fragment1.class, Fragment2.class};
-        int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_view_btn};
-        String mTextViewArray[] = {getString(R.string.index_page), getString(R.string.mime)};
+        Class mFragmentArray[] = {FragmentHome.class,FragmentExpand.class, FragmentMine.class};
+        int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_expand_btn,R.drawable.tab_mine_btn};
+        String mTextViewArray[] = {getString(R.string.index_home),getString(R.string.index_expand), getString(R.string.mime)};
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
             TextView textView = new TextView(this);
@@ -79,15 +76,18 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         }
     }
 
-    Fragment1 f1;
-    Fragment2 f2;
+    FragmentHome f1;
+    FragmentExpand f2;
+    FragmentMine f3;
 
     private void initPage() {
         ArrayList<Fragment> list = new ArrayList();
-        f1 = new Fragment1();
-        f2 = new Fragment2();
+        f1 = new FragmentHome();
+        f2 = new FragmentExpand();
+        f3 = new FragmentMine();
         list.add(f1);
         list.add(f2);
+        list.add(f3);
         //绑定Fragment适配器
         mViewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), list));
         mTabHost.getTabWidget().setDividerDrawable(null);
@@ -117,11 +117,15 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(position, false);
         switch (position) {
             case 0:
-                mToolbar.setTitle(getString(R.string.index_page));
+                mToolbar.setTitle(getString(R.string.app_name));
                 break;
             case 1:
-                mToolbar.setTitle(getString(R.string.mime) + "ETC");
+                mToolbar.setTitle(getString(R.string.expand) );
                 break;
+            case 2:
+                mToolbar.setTitle(getString(R.string.mime));
+                break;
+
         }
     }
 

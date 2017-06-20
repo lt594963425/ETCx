@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.etcxc.MeManager;
-import com.etcxc.android.BuildConfig;
 import com.etcxc.android.utils.LogUtil;
 
 import org.json.JSONArray;
@@ -153,7 +152,7 @@ public class OkClient {
         }
         Object result = getOriginal(url, differentHeaders, bodyStr, tag);
         if (result == null) return null;
-        if (isInvalidSessionOrCookie(url, result)) {
+     /*   if (isInvalidSessionOrCookie(url, result)) {
             wLock.lock();
             result = getOriginal(newUrl(url), differentHeaders, bodyStr, tag);
             if (result == null) {
@@ -162,16 +161,16 @@ public class OkClient {
             //锁了之后再判断一次isInvalidSession
             if (isInvalidSessionOrCookie(url, result)) {
                 //todo:重登，拿已保存好的用户名和密码
-              /*  String lastUser = PublicSPUtil.getInstance().getLastUser();
+              *//*  String lastUser = PublicSPUtil.getInstance().getLastUser();
                 String lastPwd = PublicSPUtil.getInstance().getLastPwd();
                 UserLoginResult ulr = new LoginClient().login(new LoginOptions(lastUser, lastPwd, null, null)).userLoginResult;
                 if (ulr.isOK()) {
                     Object r = get(newUrl(url), differentHeaders, bodyStr, tag, true);
                     return releaseLockAndReturn(wLock, r);
-                }*/
+                }*//*
             }
             return releaseLockAndReturn(wLock, result);
-        }
+        }*/
         return result;
     }
 
@@ -293,7 +292,7 @@ public class OkClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(180, TimeUnit.SECONDS)
                 .build();
-        if (BuildConfig.DEBUG) {
+        if (true) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             client = client.newBuilder().addInterceptor(logging).build();

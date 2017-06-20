@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class PhoneRegistActivity extends BaseActivity implements View.OnClickListener {
     private EditText mPhoneNumberEdit, mPswEdit, mVerifiCodeEdit;
     private Button mRegistButton, mVerificodeButton;
-    private ImageView mPhonenumberDelete, mEye;
+    private ImageView mPhonenumberDelete, mEye,mPwdDeleteBtn;
     private Boolean flag = false;
 
     @Override
@@ -62,6 +62,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mVerificodeButton = find(R.id.get_verificode_button);
         mPhonenumberDelete =  find(R.id.phonenumber_delete);//清空
         mEye =  find(R.id.eye);
+        mPwdDeleteBtn = find(R.id.iv_regist_password_delete);
         addIcon(mPhoneNumberEdit, R.drawable.vd_my);
         addIcon(mPswEdit, R.drawable.vd_regist_password);
         addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha);
@@ -69,8 +70,28 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mVerificodeButton.setOnClickListener(this);
         mPhonenumberDelete.setOnClickListener(this);
         mEye.setOnClickListener(this);
+        mPwdDeleteBtn.setOnClickListener(this);
         MyTextWatcher myTextWatcher = new MyTextWatcher();
         mPhoneNumberEdit.addTextChangedListener(myTextWatcher);
+        mPswEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0 && !mPswEdit.getText().toString().isEmpty()) {
+                    mPwdDeleteBtn.setVisibility(View.VISIBLE);
+                } else {
+                    mPwdDeleteBtn.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
     }
     public void addIcon(TextView view, int resId) {
         VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), resId, null);
@@ -93,7 +114,9 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
+            case R.id.iv_regist_password_delete:
+                mPswEdit.setText("");
+                break;
             case R.id.regist_button://注册
                 String phoneNum = mPhoneNumberEdit.getText().toString();
                 String passWord = mPswEdit.getText().toString().trim();

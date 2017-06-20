@@ -12,7 +12,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <RelativeLayout
             android:id="@+id/message_phonenumber_layout"
             android:layout_width="match_parent"
@@ -94,11 +93,11 @@
         </RelativeLayout>
         <!--图形验证码登录-->
         <RelativeLayout
-            android:visibility="gone"
+android:visibility="invisible"
             android:id="@+id/message_login_verificode_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/message_verificode_layout"
+            android:layout_below="@id/message_verificode_layout"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="20dp">
@@ -119,14 +118,14 @@
             <ImageView
                 android:clickable="true"
                 android:id="@+id/message_login_image_verificode"
-                android:layout_width="80dp"
+                android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginEnd="31dp"
                 android:layout_marginRight="31dp"
-                android:background="@mipmap/image_code"
+                android:background="@mipmap/code"
                 android:scaleType="fitXY"
                 android:text="@string/get_verifycode" />
 
@@ -144,7 +143,7 @@
                 android:id="@+id/view"
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:layout_below="@+id/login_image_verificode"
+                android:layout_below="@+id/message_login_image_verificode"
                 android:layout_marginTop="2dp"
                 android:background="@color/white" />
         </RelativeLayout>

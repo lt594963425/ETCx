@@ -122,20 +122,16 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
 
     public void run(String url) {
         final Request request = new Request.Builder()
-                //.url("http://publicobject.com/helloworld.txt")
-                .url(url)
+                .url(url)  //.url("http://publicobject.com/helloworld.txt")
                 .get()
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) ;
-
                 try {
                     String responseStr = response.body().string();
                     JSONObject jsonObject = new JSONObject(responseStr);

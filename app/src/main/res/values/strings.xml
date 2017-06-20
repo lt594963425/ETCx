@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">迅畅ETC</string>
-    <string name="index_page">迅畅在线</string>
+    <string name="app_name">迅畅在线</string>
+    <string name="index_home">ETC</string>
     <string name="mime">我的</string>
     <string name="regist_protocal">注册即时表示同意</string>
     <string name="protocal">《迅畅用户协议》</string>
@@ -37,4 +37,17 @@
     <string name="cancle">取消</string>
     <string name="download_finish">下载完成</string>
     <string name="reject_permission">您禁止了权限</string>
+    <string name="index_expand">拓展</string>
+    <string name="expand">拓展</string>
+    <string name="personinfo">个人信息</string>
+    <string name="bussiness">业务办理</string>
+    <string name="rechargerecord">充值记录</string>
+    <string name="detail">通行明细</string>
+    <string name="activate">预约激活</string>
+    <string name="advice">投诉建议</string>
+    <string name="gridchek">网点查询</string>
+    <string name="home_etconline">ETC在线办理</string>
+    <string name="home_etcrecharge">ETC充值</string>
+    <string name="home_etccircle">ETC圈存</string>
+    <string name="strditle">高速公路畅通无阻\n“0”元照进不误</string>
 </resources>

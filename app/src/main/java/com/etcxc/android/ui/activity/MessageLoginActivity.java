@@ -24,7 +24,6 @@ import com.etcxc.android.utils.UIUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  * Created by 刘涛 on 2017/6/14 0014.
  * 短信登录
@@ -39,7 +38,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private Button mMLoginButton;
     private RelativeLayout mMsgLVLayout;
     private EditText mMPicCodeEdt;
-
+    private RelativeLayout mMsgVodeLayout;//图形验证码
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,15 +62,15 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         mMVeriFicodeEdt = find(R.id.message_verificode_edt);
         mGetMsgVeriFicodeButton = find(R.id.get_msg_verificode_button);
         mMLoginButton = find(R.id.message_login_button);
+        mMsgVodeLayout= find(R.id.message_verificode_layout);
         mMPhoneNumberDelete.setOnClickListener(this);
         mGetMsgVeriFicodeButton.setOnClickListener(this);
         mMLoginButton.setOnClickListener(this);
         //todo 输入的次数超过3次要求输入图形验证码 显示mMsgLVLayout 控件
         mMsgLVLayout=find(R.id.message_login_verificode_layout);
         mMPicCodeEdt = find (R.id.message_login_verificode_edt); //图形验证码message_login_image_verificode
-        mMPicCodeEdt = find (R.id.message_login_image_verificode); //图形验证码 message_login_image_verificode
-        mMPicCodeEdt = find (R.id.message_login_fresh_verification); //刷新图形验证码 message_login_fresh_verification
-
+        mMPhoneNumberEdt = find (R.id.message_phonenumber_edt); //图形验证码 message_login_image_verificode
+        mMVeriFicodeEdt = find (R.id.message_verificode_edt); //刷新图形验证码 message_login_fresh_verificatio
         addIcon(mMPicCodeEdt,R.drawable.vd_regist_captcha);
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
         addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);

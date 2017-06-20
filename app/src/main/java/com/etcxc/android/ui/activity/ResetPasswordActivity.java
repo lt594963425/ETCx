@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class ResetPasswordActivity extends BaseActivity implements View.OnClickListener {
     private EditText mPhoneNumberEdit, mResetPwd, mVerifiCodeEdit;
     private Button mRegistButton, mVerificodeButton;
-    private ImageView mPhonenumberDelete, mEye;
+    private ImageView mPhonenumberDelete, mEye,mResetPwdDelete;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +53,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         mPhoneNumberEdit =  find(R.id.reset_phonenumber_edt);//手机号码
         mPhonenumberDelete =  find(R.id.reset_phonenumber_delete);//清空
         mResetPwd =  find(R.id.reset_password_edt);
+        mResetPwdDelete= find(R.id.reset_password_delete);
         mEye =  find(R.id.reset_eye);
         mVerifiCodeEdit = find(R.id.reset_verificode_edt);
         mVerificodeButton = find(R.id.get_reset_verificode_button);
@@ -64,8 +65,23 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         mVerificodeButton.setOnClickListener(this);
         mPhonenumberDelete.setOnClickListener(this);
         mEye.setOnClickListener(this);
+        mResetPwdDelete.setOnClickListener(this);
         MyTextWatcher myTextWatcher = new MyTextWatcher();
         mPhoneNumberEdit.addTextChangedListener(myTextWatcher);
+        mResetPwd.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0 && !mResetPwd.getText().toString().isEmpty()) {
+                    mResetPwdDelete.setVisibility(View.VISIBLE);
+                } else {
+                    mResetPwdDelete.setVisibility(View.INVISIBLE);
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
     }
     public void addIcon(TextView view, int resId) {
         VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), resId, null);
@@ -87,7 +103,9 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
+            case R.id.reset_password_delete:
+                mResetPwd.setText("");
+                break;
             case R.id.reset_button://找回密码完成，跳回登录界面
                 String phoneNum = mPhoneNumberEdit.getText().toString();
                 String passWord = mResetPwd.getText().toString().trim();

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f0f0"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/person_toolbar"
+        layout="@layout/toolbar"></include>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:background="#eff1f2">
+
+        <ImageView
+            android:id="@+id/person_userhead"
+            android:layout_width="89dp"
+            android:layout_height="89dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="25dp"
+            android:clickable="true"
+            app:srcCompat="@drawable/vd_head2" />
+
+        <TextView
+            android:id="@+id/person_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="140dp"
+            android:clickable="true"
+            android:text="立即登录"
+            android:textColor="#fc8337"
+            android:textSize="20sp" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+    <Button
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/exit_login_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#fc8337"
+        android:text="退出登录" />
+</LinearLayout>

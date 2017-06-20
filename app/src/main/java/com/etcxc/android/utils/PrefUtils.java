@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 /**
  * Created by 刘涛 on 2017/5/27 0027.
- * SharePreference封装
+ * SharePreference封装，sp的存储
  */
 
 public class PrefUtils {
