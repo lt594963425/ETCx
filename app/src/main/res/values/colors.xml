@@ -21,4 +21,6 @@
     <color name="textcolor">#757575</color>
     <color name="space_line_color">#f4f4f4</color>
     <color name="bottom_line_color">#e5e5e5</color>
+    <color name="issue_finish_hint">#5a5a5a</color>
+    <color name="issue_finish_time">#fc7520</color>
 </resources>

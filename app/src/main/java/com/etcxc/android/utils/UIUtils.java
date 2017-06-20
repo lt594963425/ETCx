@@ -2,6 +2,8 @@ package com.etcxc.android.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.widget.TextView;
 
 import com.etcxc.android.base.App;
 
@@ -68,5 +70,27 @@ public class UIUtils {
         float density = getResources().getDisplayMetrics().density;
         int dip = (int) (px / density + .5f);
         return dip;
+    }
+
+
+    public final static int LEFT = 0, RIGHT = 1, TOP = 3, BOTTOM = 4 ;
+    public static void addIcon(TextView view, int resId, int orientation) {
+        if (view == null ) return;
+        VectorDrawableCompat drawable = VectorDrawableCompat.create(App.get().getResources(), resId, null);
+        switch (orientation) {
+            case LEFT:
+                view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                break;
+            case RIGHT:
+                view.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                break;
+            case TOP:
+                view.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+                break;
+            case BOTTOM:
+                view.setCompoundDrawablesWithIntrinsicBounds(null, null, null, drawable);
+                break;
+        }
+        view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
 }

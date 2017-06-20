@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:text="@string/detail"
+            android:textColor="@color/textcolor"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/obu_price_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:text="@string/obu_price"
+            android:textColor="@color/textcolor"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/issue_recharge_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="充值（单次不能低于50元）"
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/recharge_amount_edittext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:inputType="number"
+                android:maxLength="10"
+                android:singleLine="true"
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="元"
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/bottom_line_color" />
+
+        <TextView
+            android:id="@+id/issue_pay_amount_text"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="right|center_vertical"
+            android:text="@string/sum_pay" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/bottom_line_color" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:layout_marginTop="13dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请选择付款方式"
+                android:paddingTop="7dp"
+                android:textSize="15sp"
+                android:textColor="@color/textcolor"
+                />
+
+            <RadioGroup
+                android:id="@+id/pay_type_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/alipay_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/alipay"
+                    android:textSize="15sp"
+                    android:textColor="@color/textcolor"
+                    />
+
+                <RadioButton
+                    android:id="@+id/wechat_pay_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/wechat_pay"
+                    android:textSize="15sp"
+                    android:textColor="@color/textcolor"
+                    />
+            </RadioGroup>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/issue_pay_hint_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="22dp"
+        android:layout_marginLeft="22dp"
+        android:textColor="@color/textcolor"
+        android:textSize="13sp"
+        android:layout_marginTop="27dp"
+        android:text="您支付的200元OBU车载单元押金，3年内可无理由退款。OBU车载单元将在3个工作日内寄到"
+        android:maxLines="2"
+        />
+
+    <Button
+        android:id="@+id/commit_button"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="78dp"
+        android:background="@drawable/bg_regist_button"
+        android:gravity="center"
+        android:text="@string/next_step"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</LinearLayout>

@@ -3,6 +3,7 @@ package com.etcxc.android.ui.fragment;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
+import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.view.FocusTextview;
 import com.etcxc.android.utils.PermissionUtil;
@@ -59,10 +61,8 @@ public class FragmentHome extends RxFragment implements AdapterView.OnItemClickL
     private GridView mHomeGV;
     private List<ImageView> imageViewList; // Viewpager的数据
     private ViewPager mVPger;
-    private TextView mETCOnline;
-    private TextView mETCRecharge;
-    private TextView mETCSave;
-    private TextView mETCDetile;
+    private TextView mETCRecharge, mETCSave, mETCDetile;
+    private View mETCOnline;
     private FocusTextview ft;
     private LinearLayout llPointGroup;
     private int previousPosition = 0; // 前一个被选中的position
@@ -73,7 +73,7 @@ public class FragmentHome extends RxFragment implements AdapterView.OnItemClickL
             R.drawable.vd_complaint_and_advice,
             R.drawable.vd_gridchek,};
     private  String[] title = {App.get().getString(R.string.bussiness),App.get().getString(R.string.rechargerecord)
-            ,App.get().getString(R.string.detail), App.get().getString(R.string.activate),App.get().getString(R.string.advice),
+            ,App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate),App.get().getString(R.string.advice),
             App.get().getString(R.string.gridchek)};
     private String strDitle ="高速公路畅通无阻\n“0”元照进不误";
     @Override
@@ -84,7 +84,7 @@ public class FragmentHome extends RxFragment implements AdapterView.OnItemClickL
         ft.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
         mVPger = (ViewPager) view.findViewById(R.id.viewpager);
         llPointGroup = (LinearLayout) view.findViewById(R.id.ll_point_group);
-        mETCOnline = (TextView) view.findViewById(R.id.home_etconline_tv);//ETC在线办理
+        mETCOnline = view.findViewById(R.id.home_etcmore_llayout);//ETC在线办理
         mETCRecharge = (TextView) view.findViewById(R.id.home_etcrecharge_tv);//ETC充值
         mETCSave = (TextView) view.findViewById(R.id.home_etccirclesave_tv);//ETC圈存
         mETCDetile= (TextView) view.findViewById(R.id.home_detile_tv);//0元照进不误
@@ -181,7 +181,7 @@ public class FragmentHome extends RxFragment implements AdapterView.OnItemClickL
     }
 
     private void initData() {
-        int[] imageResIDs = {R.mipmap.advinfo, R.mipmap.advinfo1, R.mipmap.advinfo2,};
+        int[] imageResIDs = {R.mipmap.advinfo, R.mipmap.advinfo_one, R.mipmap.advinfo_two,};
         imageViewList = new ArrayList<>();
         ImageView iv;
         View v;
@@ -231,6 +231,11 @@ public class FragmentHome extends RxFragment implements AdapterView.OnItemClickL
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.home_etcmore_llayout:
+                startActivity(new Intent(mActivity, ETCIssueActivity.class));
+                break;
+        }
 
     }
 
@@ -377,10 +382,6 @@ public class FragmentHome extends RxFragment implements AdapterView.OnItemClickL
                 }
             });
         }
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
     @Override
     public void onPause() {

@@ -41,7 +41,8 @@
     <string name="personinfo">个人信息</string>
     <string name="bussiness">业务办理</string>
     <string name="rechargerecord">充值记录</string>
-    <string name="detail">通行明细</string>
+    <string name="pass_detail">通行明细</string>
+    <string name="detail">明细</string>
     <string name="activate">预约激活</string>
     <string name="advice">投诉建议</string>
     <string name="gridchek">网点查询</string>
@@ -55,4 +56,25 @@
     <string name="car_card_number">车牌号</string>
     <string name="car_card_color">车牌颜色</string>
     <string name="verify">验证</string>
+    <string name="car_card_format">格式：（湘A12345）</string>
+    <string name="person_upload_license_hint">请上传您的身份证与行驶证，并保证四角完整，文字清晰可见</string>
+    <string name="org_upload_license_hint">请上传您的营业执照（组织机构代码证）与行驶证，并保证四角完整，文字清晰可见</string>
+    <string name="id_card_figure">身份证示例图</string>
+    <string name="drive_license_figure">行驶证示例图</string>
+    <string name="upload">上传</string>
+    <string name="car_owner_phone">车辆所有人手机</string>
+    <string name="next_step">下一步</string>
+    <string name="receiver">收件人</string>
+    <string name="post_address_contact_phone">联系手机</string>
+    <string name="region">所在地区</string>
+    <string name="street">街道</string>
+    <string name="detailedly_address">详细地址</string>
+    <string name="obu_price">OBU车载单元200元</string>
+    <string name="sum_pay">合计:&#160;&#160;%1$d&#160;&#160;元</string>
+    <string name="wechat_pay">微信支付</string>
+    <string name="alipay">支付宝</string>
+    <string name="checking">正在审核中</string>
+    <string name="return_index">返回首页</string>
+    <string name="checking_finish_time_hint">预计完成时间：%1$s\n我们将尽快通过电话的形式与您进行人工回访，请保持您预留联系方式的有效与畅通。迅畅ETC祝您生活愉快</string>
+    <string name="checking_hint">亲爱的%1$s,您的车辆与个人信息</string>
 </resources>

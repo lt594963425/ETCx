@@ -1,5 +1,6 @@
 package com.etcxc.android.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -43,11 +44,17 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
         arr_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mCardColorSpinner.setAdapter(arr_adapter);
         mUserTypeGroup = find(R.id.user_type_radiogroup);
+       find(R.id.commit_button).setOnClickListener(this);
+
 
     }
 
     @Override
     public void onClick(View v) {
-
+switch (v.getId()) {
+    case R.id.commit_button:
+        startActivity(new Intent(this, UploadLicenseActivity.class));
+        break;
+}
     }
 }

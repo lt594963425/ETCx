@@ -2,7 +2,6 @@ package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
@@ -22,6 +20,8 @@ import com.etcxc.android.utils.UIUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.etcxc.android.utils.UIUtils.LEFT;
 
 /**
  * 手机注册页面
@@ -63,9 +63,9 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mPhonenumberDelete =  find(R.id.phonenumber_delete);//清空
         mEye =  find(R.id.eye);
         mPwdDeleteBtn = find(R.id.iv_regist_password_delete);
-        addIcon(mPhoneNumberEdit, R.drawable.vd_my);
-        addIcon(mPswEdit, R.drawable.vd_regist_password);
-        addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha);
+        UIUtils.addIcon(mPhoneNumberEdit, R.drawable.vd_my, LEFT);
+        UIUtils.addIcon(mPswEdit, R.drawable.vd_regist_password, LEFT);
+        UIUtils.addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha, LEFT);
         mRegistButton.setOnClickListener(this);
         mVerificodeButton.setOnClickListener(this);
         mPhonenumberDelete.setOnClickListener(this);
@@ -92,12 +92,6 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             }
         });
 
-    }
-    public void addIcon(TextView view, int resId) {
-        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), resId, null);
-        //drawable.setTint(Color.BLACK);
-        view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-        view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
 
     /**

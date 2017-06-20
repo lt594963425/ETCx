@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <ImageView
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="43dp"
+        app:srcCompat="@drawable/vd_issue_checking" />
+
+    <TextView
+        android:id="@+id/issue_checking_hint_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="43dp"
+        android:textColor="@color/issue_finish_hint"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="19dp"
+        android:textColor="@color/issue_finish_hint"
+        android:textSize="15sp"
+        android:text="@string/checking"
+        />
+
+    <TextView
+        android:id="@+id/issue_checkfinish_time_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        android:layout_marginTop="19dp"
+        android:textColor="@color/textcolor"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/commit_button"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="115dp"
+        android:background="@drawable/bg_regist_button"
+        android:gravity="center"
+        android:text="@string/return_index"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+</LinearLayout>
