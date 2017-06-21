@@ -17,7 +17,7 @@
         android:orientation="vertical"
         android:paddingLeft="22dp"
         android:paddingRight="22dp">
-<!--收件人-->
+        <!--收件人-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,17 +36,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                android:textColor="@color/textcolor"
-                android:textSize="15sp"
                 android:background="@null"
-                />
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:background="@color/bottom_line_color" />
- <!--联系手机-->
+        <!--联系手机-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,10 +64,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                android:textColor="@color/textcolor"
-                android:textSize="15sp"
                 android:background="@null"
-                />
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <View
@@ -76,57 +74,60 @@
             android:layout_height="1px"
             android:background="@color/bottom_line_color" />
         <!--所在地区-->
-       <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="48dp"
-           android:gravity="center_vertical"
-           >
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:textSize="15sp"
-               android:textColor="@color/textcolor"
-               android:text="@string/region"
-               />
-           <TextView
-               android:id="@+id/post_address_region_result"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:textColor="@color/textcolor"
-               android:textSize="15sp"
-               android:maxLines="2"
-               android:layout_marginLeft="15dp"
-               android:gravity="right"
-               />
-       </LinearLayout>
+        <LinearLayout
+            android:id="@+id/post_address_region_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/region"
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/post_address_region_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:gravity="right"
+                android:maxLines="2"
+                android:textColor="@color/textcolor"
+                android:textSize="15sp"
+                />
+        </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:background="@color/bottom_line_color" />
         <!--街道-->
         <LinearLayout
+            android:id="@+id/post_address_street_layout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:gravity="center_vertical"
-            >
+            android:gravity="center_vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:textColor="@color/textcolor"
                 android:text="@string/street"
-                />
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
+
             <TextView
                 android:id="@+id/post_address_street_result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textcolor"
-                android:textSize="15sp"
-                android:maxLines="2"
                 android:layout_marginLeft="15dp"
                 android:gravity="right"
-                />
+                android:maxLines="2"
+                android:textColor="@color/textcolor"
+                android:textSize="15sp" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
@@ -136,15 +137,14 @@
             android:id="@+id/detailedly_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lines="3"
             android:background="@null"
-            android:hint="@string/detailedly_address"
-            android:textSize="15sp"
-            android:textColor="@color/textcolor"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:gravity="top"
-            />
+            android:hint="@string/detailedly_address"
+            android:lines="3"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:textColor="@color/textcolor"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <Button

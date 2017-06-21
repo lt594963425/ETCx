@@ -56,6 +56,9 @@
         <activity
             android:name=".ui.activity.IssueFinishActivity"
             android:theme="@style/BG_GRAY" />
+        <activity android:name=".ui.activity.SelectRegionActivity"
+            android:theme="@style/BG_GRAY"
+            />
 
         <!--微信登录-->
         <activity

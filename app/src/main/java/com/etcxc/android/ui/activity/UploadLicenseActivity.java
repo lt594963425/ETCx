@@ -22,7 +22,7 @@ public class UploadLicenseActivity  extends BaseActivity implements View.OnClick
     private  boolean mIsOrg = true;//是组织用户吗？
     private TextView mUploadHintTextView;
     private RelativeLayout mFristLicenseLayout;
-    private ImageView mIdcardImageView;
+    private ImageView mFristImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +34,7 @@ public class UploadLicenseActivity  extends BaseActivity implements View.OnClick
         setTitle(R.string.upload_license);
         mUploadHintTextView = find(R.id.upload_license_hint_textview);
         mUploadHintTextView.setText(mIsOrg ? R.string.org_upload_license_hint : R.string.person_upload_license_hint);
-        mIdcardImageView = find(R.id.id_card_imageview);
+        mFristImageView = find(R.id.fisrt_license_imageview);
         find(R.id.commit_button).setOnClickListener(this);
         if (mIsOrg) {
             RelativeLayout fristLicenseLayout = find(R.id.first_license_layout);
@@ -42,7 +42,8 @@ public class UploadLicenseActivity  extends BaseActivity implements View.OnClick
             params.width = UIUtils.dip2Px(152);
             params.height = UIUtils.dip2Px(217);
             fristLicenseLayout.setLayoutParams(params);
-            mIdcardImageView.setImageResource(R.mipmap.org_license_two);
+            mFristImageView.setImageResource(R.mipmap.ic_org_license);
+            find(R.id.second_license_layout).setVisibility(View.VISIBLE);
         }
     }
 
