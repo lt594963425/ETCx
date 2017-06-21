@@ -3,9 +3,11 @@ package com.etcxc.android.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.utils.UIUtils;
 
 /**
  * 收货地址
@@ -13,6 +15,7 @@ import com.etcxc.android.base.BaseActivity;
  */
 
 public class PostAddressActivity extends BaseActivity implements View.OnClickListener {
+    private TextView mRegionResultTextView, mStreetResultTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +26,12 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initView() {
+        mRegionResultTextView =find(R.id.post_address_region_result);
+        mStreetResultTextView =find(R.id.post_address_street_result);
+        UIUtils.addIcon(mRegionResultTextView, R.drawable.vd_right_arrow, UIUtils.RIGHT);
+        UIUtils.addIcon(mStreetResultTextView, R.drawable.vd_right_arrow, UIUtils.RIGHT);
+        find(R.id.post_address_street_layout).setOnClickListener(this);
+        find(R.id.post_address_region_layout).setOnClickListener(this);
         find(R.id.commit_button).setOnClickListener(this);
     }
 
@@ -31,6 +40,11 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.commit_button:
                 startActivity(new Intent(this, IssuePayActivity.class));
+                break;
+            case R.id.post_address_region_layout:
+                startActivity(new Intent(this, SelectRegionActivity.class));
+                break;
+            case R.id.post_address_street_layout:
                 break;
         }
     }

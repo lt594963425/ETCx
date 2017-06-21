@@ -8,8 +8,8 @@
     <include layout="@layout/toolbar" />
 
     <ImageView
-        android:layout_width="88dp"
-        android:layout_height="88dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="43dp"
         app:srcCompat="@drawable/vd_issue_checking" />

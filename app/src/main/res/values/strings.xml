@@ -82,4 +82,7 @@
     <string name="pay">支付</string>
     <string name="upload_license">上传证件</string>
     <string name="edit_address">填写地址</string>
+    <string name="select_street">街道选择</string>
+    <string name="select_region">地区选择</string>
+    <string name="request_failed">请求失败</string>
 </resources>
