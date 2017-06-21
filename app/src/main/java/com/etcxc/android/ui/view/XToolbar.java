@@ -1,198 +1,170 @@
 package com.etcxc.android.ui.view;
 
 import android.content.Context;
-import android.os.Build;
-import android.os.Message;
-import android.support.v4.view.ViewCompat;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
+import android.support.v4.media.RatingCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.TintTypedArray;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.R;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
 /**
- * 替换{@link Toolbar}，提供更多功能，暂时只是为了单击标题栏才自定义的
- * Created by xwpeng on 2017/6/12.
+ * 标题居中
+ * Created by 刘涛 on 2017/6/13 0013.
  */
 
 public class XToolbar extends Toolbar {
-    private static final String TAG = "XToolbar";
-    private ActionBar mActionBar;
-    private TextView mCTitleView;
+    private TextView mTitleTextView;
+    private CharSequence mTitle;
+    private int mTitleColor;
+    private int mTitleAppearance;
 
     public XToolbar(Context context) {
-        super(context, null);
+        this(context, null);
     }
 
-    public XToolbar(Context context, AttributeSet attrs) {
-        super(context, attrs, 0);
+    public XToolbar(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public XToolbar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public XToolbar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        resolveAttribute(context, attrs, defStyleAttr);
     }
 
-    private void init() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) setElevation(0f);
-        else ViewCompat.setElevation(this, 0f);
+    private void resolveAttribute(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        final TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,
+                R.styleable.Toolbar, defStyleAttr, 0);
+        mTitleAppearance = a.getResourceId(R.styleable.Toolbar_titleTextAppearance, 0);
+        a.recycle();
+    }
+
+    @Override
+    public CharSequence getTitle() {
+        return mTitle;
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        if (!TextUtils.isEmpty(title)) {
+            if (mTitleTextView == null) {
+                final Context context = getContext();
+                mTitleTextView = new TextView(context);
+                mTitleTextView.setSingleLine();
+                mTitleTextView.setEllipsize(TextUtils.TruncateAt.END);
+                if (mTitleAppearance != 0)
+                    mTitleTextView.setTextAppearance(context, mTitleAppearance);
+                if (mTitleColor != 0) mTitleTextView.setTextColor(mTitleColor);
+            }
+            if (mTitleTextView.getParent() != this) addCenterView(mTitleTextView);
+            mTitleTextView.setText(title);
+        } else if (mTitleTextView != null && mTitleTextView.getParent() == this)
+            removeView(mTitleTextView);
+        mTitle = title;
+    }
+
+    private void addCenterView(View v) {
+        final ViewGroup.LayoutParams vlp = v.getLayoutParams();
+        final LayoutParams lp;
+        if (vlp == null) {
+            lp = generateDefaultLayoutParams();
+        } else if (!checkLayoutParams(vlp)) {
+            lp = generateLayoutParams(vlp);
+        } else {
+            lp = (LayoutParams) vlp;
+        }
+        addView(v, lp);
+    }
+
+    @Override
+    public LayoutParams generateLayoutParams(AttributeSet attrs) {
+        LayoutParams lp = new LayoutParams(getContext(), attrs);
+        lp.gravity = Gravity.CENTER;
+        return lp;
+    }
+
+    @Override
+    protected LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
+        LayoutParams lp;
+        if (p instanceof LayoutParams) {
+            lp = new LayoutParams((LayoutParams) p);
+        } else if (p instanceof ActionBar.LayoutParams) {
+            lp = new LayoutParams((ActionBar.LayoutParams) p);
+        } else if (p instanceof MarginLayoutParams) {
+            lp = new LayoutParams((MarginLayoutParams) p);
+        } else {
+            lp = new LayoutParams(p);
+        }
+        lp.gravity = Gravity.CENTER;
+        return lp;
+    }
+
+    @Override
+    protected LayoutParams generateDefaultLayoutParams() {
+        LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER;
+        return lp;
+    }
+
+    @Override
+    public void setTitleTextAppearance(Context context, @RatingCompat.Style int resId) {
+        mTitleAppearance = resId;
+        if (mTitleTextView != null) mTitleTextView.setTextAppearance(context, resId);
+    }
+
+    @Override
+    public void setTitleTextColor(@ColorInt int color) {
+        mTitleColor = color;
+        if (mTitleTextView != null) mTitleTextView.setTextColor(color);
+    }
+
+    @Override
+    public void setNavigationIcon(@Nullable Drawable icon) {
+        super.setNavigationIcon(icon);
+        setGravityCenter();
+    }
+
+    public void setGravityCenter() {
         post(new Runnable() {
             @Override
             public void run() {
-                if (getLayoutParams() instanceof LayoutParams) {
-                    ((LayoutParams) getLayoutParams()).gravity = Gravity.CENTER;
-                }
+                setCenter("mNavButtonView");
+//                setCenter("mMenuView");
             }
+
         });
     }
 
-    public void setActionBar(ActionBar ab) {
-        this.mActionBar = ab;
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-            ab.setDisplayShowTitleEnabled(false);
-            ab.setDisplayShowCustomEnabled(true);
-        }
-    }
-
-    /**
-     * 需要先调用{@link #setTitle(CharSequence)}或{@link #setTitle(int)}后才有用
-     * 反射TitleView
-     */
-    private void reflectViews() {
-        long t1 = System.currentTimeMillis();
+    private void setCenter(String fieldName) {
         try {
-            Field f = getClass().getSuperclass().getDeclaredField("mTitleTextView");
-            if (f != null) {
-                f.setAccessible(true);
-                Object o = f.get(this);
-                if (o instanceof TextView) {
-                    mCTitleView = (TextView) o;
+            Field field = getClass().getSuperclass().getDeclaredField(fieldName);//反射得到父类Field
+            field.setAccessible(true);
+            Object obj = field.get(this);//拿到对应的Object
+            if (obj == null) return;
+            if (obj instanceof View) {
+                View view = (View) obj;
+                ViewGroup.LayoutParams lp = view.getLayoutParams();//拿到LayoutParams
+                if (lp instanceof ActionBar.LayoutParams) {
+                    ActionBar.LayoutParams params = (ActionBar.LayoutParams) lp;
+                    params.gravity = Gravity.CENTER;//设置居中
+                    view.setLayoutParams(lp);
                 }
             }
         } catch (NoSuchFieldException e) {
-            LogUtil.e(TAG, "reflectViews", e);
+            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            LogUtil.e(TAG, "reflectViews", e);
-        } catch (Exception e) {
-            LogUtil.e(TAG, "reflectViews", e);
+            e.printStackTrace();
         }
-        LogUtil.d(TAG, "reflectViews:time spent=" + (System.currentTimeMillis() - t1));
-    }
-
-    /**
-     * 替换{@link Toolbar#addView(View)}方法
-     *
-     * @param view
-     */
-    public void setView(View view) {
-        if (mActionBar != null) {
-            mActionBar.setCustomView(view, new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.MATCH_PARENT));
-        }
-    }
-
-    /**
-     * 激活Toolbar点击事件
-     */
-    public void setClickEventActivated(boolean activated) {
-        reflectViews();
-        setToolbarListener(activated);
-    }
-
-    private MyHandler mHandler = new MyHandler(this);
-
-    private static class MyHandler extends android.os.Handler {
-
-        private static final int WHAT_CLICK = 1;
-        private static final int WHAT_DOUBLE_CLICK = 2;
-
-        private WeakReference<XToolbar> mBar;
-
-        public MyHandler(XToolbar mBar) {
-            this.mBar = new WeakReference<>(mBar);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            XToolbar bar = mBar.get();
-            if (bar != null) {
-                if (msg.what == MyHandler.WHAT_CLICK) {
-                    bar.onClick();
-                } else if (msg.what == MyHandler.WHAT_DOUBLE_CLICK) {
-                    bar.onDoubleClick();
-                }
-            }
-        }
-    }
-
-    private void onClick() {
-        mFirstClickTime = 0;
-        if (mOnToolbarTitleClickListener != null) {
-            mOnToolbarTitleClickListener.onToolbarTitleClick();
-        }
-    }
-
-    private void onDoubleClick() {
-        mFirstClickTime = 0;
-        if (mOnToolbarTitleDoubleClickListener != null) {
-            mOnToolbarTitleDoubleClickListener.onToolbarTitleDoubleClick();
-        }
-    }
-
-    private long mFirstClickTime;
-    private final long CLICK_INTERVAL = 400L;
-
-    /**
-     * @param activated 激活或关闭点击事件
-     */
-    private void setToolbarListener(boolean activated) {
-        if (mCTitleView != null) {
-            mCTitleView.setOnClickListener(activated ? new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mHandler.removeMessages(MyHandler.WHAT_CLICK);
-                    mHandler.removeMessages(MyHandler.WHAT_DOUBLE_CLICK);
-                    long t = System.currentTimeMillis();
-                    if (mFirstClickTime == 0 || t - mFirstClickTime > CLICK_INTERVAL) {
-                        mFirstClickTime = t;
-                        if (mHandler != null) {
-                            mHandler.sendEmptyMessageDelayed(MyHandler.WHAT_CLICK, CLICK_INTERVAL);
-                        }
-                    } else {
-                        if (mHandler != null) {
-                            mHandler.sendEmptyMessage(MyHandler.WHAT_DOUBLE_CLICK);
-                        }
-                    }
-                }
-            } : null);
-        }
-    }
-
-    private OnToolbarTitleClickListener mOnToolbarTitleClickListener;
-
-    public void setOnToolbarTitleClickListener(OnToolbarTitleClickListener listener) {
-        this.mOnToolbarTitleClickListener = listener;
-    }
-
-    public interface OnToolbarTitleClickListener {
-        void onToolbarTitleClick();
-    }
-
-    private OnToolbarTitleDoubleClickListener mOnToolbarTitleDoubleClickListener;
-
-    public void setOnToolbarTitleDoubleClickListener(OnToolbarTitleDoubleClickListener listener) {
-        this.mOnToolbarTitleDoubleClickListener = listener;
-    }
-
-    public interface OnToolbarTitleDoubleClickListener {
-        void onToolbarTitleDoubleClick();
     }
 }
-

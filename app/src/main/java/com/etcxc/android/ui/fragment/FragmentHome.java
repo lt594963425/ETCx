@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
+import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.view.FocusTextview;
@@ -38,7 +39,6 @@ import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import org.json.JSONObject;
 
@@ -55,7 +55,7 @@ import io.reactivex.functions.Consumer;
  * Created by 刘涛 on 2017/6/2 0002.
  */
 
-public class FragmentHome extends RxFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentHome extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
     private Handler mHandler = new Handler();
     private MainActivity mActivity;
     private GridView mHomeGV;

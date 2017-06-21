@@ -77,4 +77,9 @@
     <string name="return_index">返回首页</string>
     <string name="checking_finish_time_hint">预计完成时间：%1$s\n我们将尽快通过电话的形式与您进行人工回访，请保持您预留联系方式的有效与畅通。迅畅ETC祝您生活愉快</string>
     <string name="checking_hint">亲爱的%1$s,您的车辆与个人信息</string>
+    <string name="ETC_online_issue">ETC在线办理</string>
+    <string name="finish">完成</string>
+    <string name="pay">支付</string>
+    <string name="upload_license">上传证件</string>
+    <string name="edit_address">填写地址</string>
 </resources>

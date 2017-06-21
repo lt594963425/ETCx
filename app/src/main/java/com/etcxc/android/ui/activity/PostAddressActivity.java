@@ -12,13 +12,14 @@ import com.etcxc.android.base.BaseActivity;
  * Created by xwpeng on 2017/6/20.
  */
 
-public class PostAddressActivity extends BaseActivity implements View.OnClickListener{
+public class PostAddressActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_post_address);
-         initView();
+        setContentView(R.layout.activity_post_address);
+        setTitle(R.string.edit_address);
+        initView();
     }
 
     private void initView() {

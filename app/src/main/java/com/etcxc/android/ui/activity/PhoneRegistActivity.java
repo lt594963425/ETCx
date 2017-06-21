@@ -2,7 +2,6 @@ package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -31,37 +30,25 @@ import static com.etcxc.android.utils.UIUtils.LEFT;
 public class PhoneRegistActivity extends BaseActivity implements View.OnClickListener {
     private EditText mPhoneNumberEdit, mPswEdit, mVerifiCodeEdit;
     private Button mRegistButton, mVerificodeButton;
-    private ImageView mPhonenumberDelete, mEye,mPwdDeleteBtn;
+    private ImageView mPhonenumberDelete, mEye, mPwdDeleteBtn;
     private Boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_regist);
-        if (getSupportActionBar() != null)
-            getSupportActionBar().hide();
         initView();
     }
 
-    //verificode_edt
     private void initView() {
-        Toolbar mToolbar = (Toolbar) find(R.id.regist_toolbar);
-        mToolbar.setTitle(R.string.regist);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        mPhoneNumberEdit =  find(R.id.phonenumber_edt);//手机号码
-        mPswEdit =  find(R.id.password_edt);
+        setTitle(R.string.regist);
+        mPhoneNumberEdit = find(R.id.phonenumber_edt);//手机号码
+        mPswEdit = find(R.id.password_edt);
         mVerifiCodeEdit = find(R.id.verificode_edt);
-        mRegistButton =  find(R.id.regist_button);
+        mRegistButton = find(R.id.regist_button);
         mVerificodeButton = find(R.id.get_verificode_button);
-        mPhonenumberDelete =  find(R.id.phonenumber_delete);//清空
-        mEye =  find(R.id.eye);
+        mPhonenumberDelete = find(R.id.phonenumber_delete);//清空
+        mEye = find(R.id.eye);
         mPwdDeleteBtn = find(R.id.iv_regist_password_delete);
         UIUtils.addIcon(mPhoneNumberEdit, R.drawable.vd_my, LEFT);
         UIUtils.addIcon(mPswEdit, R.drawable.vd_regist_password, LEFT);
@@ -99,7 +86,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
      */
     public boolean isMobileNO(String mobiles) {
         if (TextUtils.isEmpty(mobiles)) return false;
-        String regExp ="((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$" ;//;
+        String regExp = "((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$";//;
         Pattern p = Pattern.compile(regExp);
         Matcher m = p.matcher(mobiles);
         return m.matches();
@@ -115,19 +102,19 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 String phoneNum = mPhoneNumberEdit.getText().toString();
                 String passWord = mPswEdit.getText().toString().trim();
                 String veriFicode = mVerifiCodeEdit.getText().toString().trim();
-                if(phoneNum.isEmpty()){
+                if (phoneNum.isEmpty()) {
                     ToastUtils.showToast(R.string.phone_isempty);
                     return;
-                }else if (!isMobileNO(phoneNum)) {
+                } else if (!isMobileNO(phoneNum)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
                     return;
-                }else if(passWord.isEmpty()){
+                } else if (passWord.isEmpty()) {
                     ToastUtils.showToast(R.string.password_isempty);
                     return;
-                }else if(passWord.length() < 6){
+                } else if (passWord.length() < 6) {
                     ToastUtils.showToast(R.string.password_isshort);
                     return;
-                }else if(veriFicode.isEmpty()){
+                } else if (veriFicode.isEmpty()) {
                     ToastUtils.showToast(R.string.please_input_verificodem);
                     return;
                 }
@@ -172,7 +159,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
      * 监听手机号码的长度
      */
     CharSequence temp;
-    public class MyTextWatcher implements TextWatcher{
+
+    public class MyTextWatcher implements TextWatcher {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             temp = s;
@@ -193,7 +181,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             }
         }
     }
-     /**
+
+    /**
      * 倒计时
      */
     public class TimeCount extends CountDownTimer {
@@ -201,12 +190,14 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         public TimeCount(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
+
         @Override
         public void onTick(long millisUntilFinished) {//R.color.colorAccent #B6B6D8
             mVerificodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGray));
             mVerificodeButton.setClickable(false);
             mVerificodeButton.setText("(" + millisUntilFinished / 1000 + ")" + getString(R.string.timeLate));
         }
+
         @Override
         public void onFinish() {
             mVerificodeButton.setText(getString(R.string.reStartGetCode));
@@ -214,4 +205,5 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             mVerificodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGreen));
         }
     }
+
 }

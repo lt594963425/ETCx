@@ -6,9 +6,7 @@
     android:background="@mipmap/bg_regist"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/regist_toolbar"
-        layout="@layout/toolbar"></include>
+    <include layout="@layout/toolbar"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

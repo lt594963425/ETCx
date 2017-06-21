@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.etcxc.android">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -14,36 +15,51 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:screenOrientation ="portrait"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.MainActivity"
-            android:launchMode="singleTask"
-           >
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.OfficailActivity"/>
-        <activity android:name=".ui.activity.PhoneRegistActivity"/>
-        <activity android:name=".ui.activity.LoginActivity"/>
-        <activity android:name=".ui.activity.MessageLoginActivity"/>
-        <activity android:name=".ui.activity.SetPasswordActivity"/>
-        <activity android:name=".ui.activity.PersonalInfoAvtivity"/>
-        <activity android:name=".ui.activity.PermissionRequestingActivity" android:screenOrientation="portrait" android:theme="@style/TranslucentActivityTheme" >
+        <activity android:name=".ui.activity.OfficailActivity" />
+        <activity android:name=".ui.activity.PhoneRegistActivity" />
+        <activity android:name=".ui.activity.LoginActivity" />
+        <activity android:name=".ui.activity.MessageLoginActivity" />
+        <activity android:name=".ui.activity.SetPasswordActivity" />
+        <activity android:name=".ui.activity.PersonalInfoAvtivity" />
+        <activity
+            android:name=".ui.activity.PermissionRequestingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TranslucentActivityTheme">
             <intent-filter>
                 <action android:name="com.etcxc.android.action.PAGE_REQUEST_PERMISSIONS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.ResetPasswordActivity"/>
-        <activity android:name=".ui.activity.ETCIssueActivity" android:theme="@style/BG_GRAY"/>
-        <activity android:name=".ui.activity.UploadLicenseActivity" android:theme="@style/BG_GRAY"/>
-        <activity android:name=".ui.activity.ContactPhoneActivity" android:theme="@style/BG_GRAY"/>
-        <activity android:name=".ui.activity.PostAddressActivity" android:theme="@style/BG_GRAY"/>
-        <activity android:name=".ui.activity.IssuePayActivity" android:theme="@style/BG_GRAY"/>
-        <activity android:name=".ui.activity.IssueFinishActivity" android:theme="@style/BG_GRAY"/>
+        <activity android:name=".ui.activity.ResetPasswordActivity" />
+        <activity
+            android:name=".ui.activity.ETCIssueActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.UploadLicenseActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.ContactPhoneActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.PostAddressActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.IssuePayActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.IssueFinishActivity"
+            android:theme="@style/BG_GRAY" />
 
         <!--微信登录-->
         <activity
@@ -51,7 +67,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent"/>
+            android:theme="@android:style/Theme.Translucent" />
 
         <service
             android:name=".net.download.DService"
@@ -73,7 +89,7 @@
             android:exported="false" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.etcxc.android"
+            android:authorities="com.yf.useravatar"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -34,33 +34,70 @@
         android:textColor="@color/textcolor"
         android:textSize="13sp" />
 
-    <RelativeLayout
-        android:id="@+id/first_license_layout"
-        android:layout_width="270dp"
-        android:layout_height="202dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_upload_license_image">
+    <LinearLayout
+        android:id="@+id/license_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        >
 
-        <ImageView
-            android:id="@+id/id_card_imageview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="8dp"
-            android:src="@mipmap/id_card_xxxxxxx" />
+        <RelativeLayout
+            android:id="@+id/first_license_layout"
+            android:layout_width="270dp"
+            android:layout_height="202dp"
+            android:background="@drawable/bg_upload_license_image">
 
-        <ImageView
-            android:id="@+id/id_card_camera_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_margin="15dp"
-            android:layout_marginTop="18dp"
-            app:srcCompat="@drawable/vd_camera" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/id_card_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="8dp"
+                android:src="@mipmap/id_card_xxxxxxx" />
+
+            <ImageView
+                android:id="@+id/camera_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="15dp"
+                android:layout_marginTop="18dp"
+                app:srcCompat="@drawable/vd_camera" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/two_license_layout"
+            android:layout_width="181dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_upload_license_image"
+            android:layout_marginLeft="8dp"
+            >
+
+            <ImageView
+                android:id="@+id/org_license_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="8dp"
+                android:src="@mipmap/id_card_two" />
+
+            <ImageView
+                android:id="@+id/camera_imageview2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="15dp"
+                android:layout_marginTop="18dp"
+                app:srcCompat="@drawable/vd_camera" />
+        </RelativeLayout>
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -76,7 +113,7 @@
         android:layout_width="320dp"
         android:layout_height="133dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="3dp"
         android:background="@drawable/bg_upload_license_image">
 
         <ImageView

@@ -32,6 +32,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void initView() {
+        setTitle(R.string.ETC_online_issue);
         mCarCardEdit = find(R.id.car_card_number_edittext);
         mCardColorSpinner = find(R.id.car_card_color_spinner);
         List ls = new ArrayList<String>();

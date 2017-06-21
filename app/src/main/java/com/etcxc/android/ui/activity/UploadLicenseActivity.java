@@ -19,7 +19,7 @@ import com.etcxc.android.utils.UIUtils;
 
 public class UploadLicenseActivity  extends BaseActivity implements View.OnClickListener {
     private final static String TAG = UploadLicenseActivity.class.getSimpleName();
-    private  boolean mIsOrg = false;//是组织用户吗？
+    private  boolean mIsOrg = true;//是组织用户吗？
     private TextView mUploadHintTextView;
     private RelativeLayout mFristLicenseLayout;
     private ImageView mIdcardImageView;
@@ -31,6 +31,7 @@ public class UploadLicenseActivity  extends BaseActivity implements View.OnClick
     }
 
     private void initView() {
+        setTitle(R.string.upload_license);
         mUploadHintTextView = find(R.id.upload_license_hint_textview);
         mUploadHintTextView.setText(mIsOrg ? R.string.org_upload_license_hint : R.string.person_upload_license_hint);
         mIdcardImageView = find(R.id.id_card_imageview);
@@ -38,10 +39,10 @@ public class UploadLicenseActivity  extends BaseActivity implements View.OnClick
         if (mIsOrg) {
             RelativeLayout fristLicenseLayout = find(R.id.first_license_layout);
             ViewGroup.LayoutParams params = fristLicenseLayout.getLayoutParams();
-            params.width = UIUtils.dip2Px(98);
-            params.height = UIUtils.dip2Px(139);
+            params.width = UIUtils.dip2Px(152);
+            params.height = UIUtils.dip2Px(217);
             fristLicenseLayout.setLayoutParams(params);
-            mIdcardImageView.setImageResource(R.mipmap.ic_org_license);
+            mIdcardImageView.setImageResource(R.mipmap.org_license_two);
         }
     }
 

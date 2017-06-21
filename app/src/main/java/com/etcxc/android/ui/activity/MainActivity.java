@@ -1,15 +1,12 @@
 package com.etcxc.android.ui.activity;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -17,9 +14,9 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.ui.adapter.MyFragmentAdapter;
+import com.etcxc.android.ui.fragment.FragmentExpand;
 import com.etcxc.android.ui.fragment.FragmentHome;
 import com.etcxc.android.ui.fragment.FragmentMine;
-import com.etcxc.android.ui.fragment.FragmentExpand;
 import com.etcxc.android.utils.UIUtils;
 
 import java.util.ArrayList;
@@ -31,27 +28,23 @@ import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
-    private Toolbar mToolbar;
     private FragmentTabHost mTabHost;
-    private static final int ERROR = 1;
-    private static final int SUCCESS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //initState();
         initView();
         initPage();
     }
+
     private void initView() {
+        setToolbarBack(false);
+        getToolbar().setBackgroundColor(getResources().getColor(R.color.textcolor));
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         //让ViewPager切换到第1个页面
         mViewPager.setCurrentItem(0, false);
-        mToolbar = find(R.id.My_toolbar);
-        setSupportActionBar(mToolbar);
-        mToolbar.setTitle(getString(R.string.app_name));
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
@@ -59,9 +52,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
     private void initTabs() {
-        Class mFragmentArray[] = {FragmentHome.class,FragmentExpand.class, FragmentMine.class};
-        int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_expand_btn,R.drawable.tab_mine_btn};
-        String mTextViewArray[] = {getString(R.string.index_home),getString(R.string.index_expand), getString(R.string.mime)};
+        Class mFragmentArray[] = {FragmentHome.class, FragmentExpand.class, FragmentMine.class};
+        int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_expand_btn, R.drawable.tab_mine_btn};
+        String mTextViewArray[] = {getString(R.string.index_home), getString(R.string.index_expand), getString(R.string.mime)};
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
             TextView textView = new TextView(this);
@@ -118,27 +111,14 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(position, false);
         switch (position) {
             case 0:
-                mToolbar.setTitle(getString(R.string.app_name));
+                setTitle(R.string.app_name);
                 break;
             case 1:
-                mToolbar.setTitle(getString(R.string.expand) );
+                setTitle(R.string.expand);
                 break;
             case 2:
-                mToolbar.setTitle(getString(R.string.mime));
+                setTitle(R.string.mime);
                 break;
-
-        }
-    }
-
-    /**
-     * 沉浸式状态栏
-     */
-    private void initState() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //透明状态栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //透明导航栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
     }
 }

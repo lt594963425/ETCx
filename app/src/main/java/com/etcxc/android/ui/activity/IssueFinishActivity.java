@@ -26,6 +26,7 @@ public class IssueFinishActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initView() {
+        setTitle(R.string.finish);
         mCheckingHintTextView = find(R.id.issue_checking_hint_textview);
         mTimeHintTextView = find(R.id.issue_checkfinish_time_textview);
         mCheckingHintTextView.setText(getString(R.string.checking_hint, "15512345678"));

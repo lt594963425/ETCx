@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -85,22 +84,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if (getSupportActionBar() != null)
-            getSupportActionBar().hide();
         initView();
     }
 
     private void initView() {
-        Toolbar mToolbar = find(R.id.login_toolbar);
-        mToolbar.setTitle(getString(R.string.login));
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        setTitle(R.string.login);
         mLoginPhonenumberEdt = find(R.id.login_phonenumber_edt);
         mLoginPhonenumberDelete = find(login_phonenumber_delete);
         mLoginPasswordEdt = find(R.id.login_password_edt);

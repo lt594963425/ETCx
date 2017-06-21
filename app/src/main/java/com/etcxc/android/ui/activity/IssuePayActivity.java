@@ -30,6 +30,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void initView() {
+        setTitle(R.string.pay);
         mSumPayTextView = find(R.id.issue_pay_amount_text);
         mRechargeEdittext = find(R.id.recharge_amount_edittext);
         String str = mRechargeEdittext.getText().toString();
