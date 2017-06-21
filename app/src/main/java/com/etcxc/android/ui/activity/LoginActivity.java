@@ -1,6 +1,8 @@
 package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -22,12 +24,13 @@ import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -41,10 +44,8 @@ import java.util.regex.Pattern;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -65,8 +66,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private final OkHttpClient client = new OkHttpClient();
     public static final int DEF_CONN_TIMEOUT = 30000;
     public static final int DEF_READ_TIMEOUT = 30000;
-    private EditText mLoginPhonenumberEdt,mLoginPasswordEdt,mLoginVerificodeEdt; // 手机号码,密码 ,输入图形验证码
-    private ImageView mLoginPhonenumberDelete,mLoginPasswordDelete;//   删除
+    private EditText mLoginPhonenumberEdt, mLoginPasswordEdt, mLoginVerificodeEdt; // 手机号码,密码 ,输入图形验证码
+    private ImageView mLoginPhonenumberDelete, mLoginPasswordDelete;//   删除
     private ImageView mLoginEye; //可见与不可见
     private ImageView mLoginImageVerificode;//图形取验证码
     private ImageView mLoginFreshVerification;//刷新验证码
@@ -76,10 +77,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
     String pictureCodeUrl = "http://192.169.6.119/index.php/captcha";  //更换图形验证码url
-    String loginPwdUrl  = "http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty/sms_code/123456";//登录的url
+    String loginServerUrl = "http://192.169.6.119/login/login/login/";//登录的url
     private boolean isShow = false;
-    //
-    String data;
+  private  SharedPreferences sPUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +93,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginPhonenumberDelete = find(login_phonenumber_delete);
         mLoginPasswordEdt = find(R.id.login_password_edt);
         mLoginPasswordDelete = find(R.id.login_password_delete);
-
         mLoginEye = find(R.id.login_eye);
         mLoginVerificodeEdt = find(R.id.login_verificode_edt);
         mLoginImageVerificode = find(R.id.login_image_verificode);
@@ -131,14 +130,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() > 0 && !mLoginPasswordEdt.getText().toString().isEmpty()){
+                if (s.length() > 0 && !mLoginPasswordEdt.getText().toString().isEmpty()) {
                     mLoginPasswordDelete.setVisibility(View.VISIBLE);
                     //temp = "";
-                }else {
+                } else {
                     mLoginPasswordDelete.setVisibility(View.INVISIBLE);
                 }
             }
         });
+        setPicCode(pictureCodeUrl);//初始化图形验证码
     }
 
     public void addIcon(TextView view, int resId) {
@@ -147,8 +147,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
         view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
+
     @Override
     public void onClick(View view) {
+        Intent intent = null;
         switch (view.getId()) {
             case R.id.login_phonenumber_delete:
                 mLoginPhonenumberEdt.setText("");
@@ -161,41 +163,40 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.login_fresh_verification:
                 startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
-                // ToDo 向后台请求更换验证码，同时更新验证码图片服务器返回的图形验证码 URL
-               // SetPicCode(pictureCodeUrl);
-                run(pictureCodeUrl);
+                setPicCode(pictureCodeUrl);
                 break;
             case R.id.login_message:  //短信验证码登录
-                Intent intentMsg = new Intent(this, MessageLoginActivity.class);
-                startActivity(intentMsg);
+                intent = new Intent(this, MessageLoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 break;
-
             case R.id.login_fast:
-                Intent intentFast = new Intent(this, PhoneRegistActivity.class);
-                startActivity(intentFast);
+                intent = new Intent(this, PhoneRegistActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 break;
             case R.id.forget_password:
-                Intent intentForget = new Intent(this, ResetPasswordActivity.class);
-                startActivity(intentForget);
+                intent = new Intent(this, ResetPasswordActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 break;
-            case R.id.login_button:  // 登录
+            case R.id.login_button:  // 登录 tel/15974255013/pwd/123456/code/wrty/sms_code/123456
+
+                loginRun("http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3");
                 String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
                 String passWord = mLoginPasswordEdt.getText().toString().trim();
-                String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
-                //登录https://192.169.6.119/index.php/login/loginpwd/login/tel/'tel'/pwd/'pwd'
-                // "http://192.169.6.119/index.php/login/login_pwd/login/tel/'tel'/pwd/'pwd'/code/'code'"
-                //192.169.6.119/index.php/login/loginpwd/session/
-                data = "tel/'" + phoneNum + "'/pwd/'" + passWord+"'/code/'"+veriFicodem+"'";
+                String veriFicodem= mLoginVerificodeEdt.getText().toString().trim();//验证码
+                String data = "tel/" + phoneNum + "/pwd/" + passWord;
                 //判断
                 if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
-                //todo  访问服务器 请求输入的次数
-               // getSession(sessionUrl);
-
+                //String str2 = "tel/15974255013/pwd/123456/code/wrty/sms_code/123456";
+                loginUUrl(loginServerUrl+data);
                 break;
         }
+        this.overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
     }
     /**
-     * 判断手机号码是否正确
+     * 正则判断手机号码是否正确
      */
     public boolean isMobileNO(String mobiles) {
         if (TextUtils.isEmpty(mobiles)) return false;
@@ -231,23 +232,24 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }
     }
-    int num = 0;
+
     private Boolean flag = false;
+
     private boolean LocalThrough(String phoneNum, String passWord, String veriFicodem) {
-        if(phoneNum.isEmpty()){
+        if (phoneNum.isEmpty()) {
             ToastUtils.showToast(R.string.phone_isempty);
             return true;
-        }else if (!isMobileNO(phoneNum)) {
+        } else if (!isMobileNO(phoneNum)) {
             ToastUtils.showToast(R.string.please_input_correct_phone_number);
             return true;
-        }else if(passWord.isEmpty()){
+        } else if (passWord.isEmpty()) {
             ToastUtils.showToast(R.string.password_isempty);
             return true;
-        }else if(passWord.length() < 6){
+        } else if (passWord.length() < 6) {
             ToastUtils.showToast(R.string.password_isshort);
             return true;
-        }else  if(isShow){
-            if(veriFicodem.isEmpty()){
+        } else if (isShow) {
+            if (veriFicodem.isEmpty()) {
                 ToastUtils.showToast(R.string.set_picture_verifycodes);
                 return true;
             }
@@ -255,41 +257,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         return false;
     }
 
-    private void   getSession(String Url) {
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
-                String result = OkClient.get(Url, new JSONObject());
-                JSONObject jsonObject = new JSONObject(result);
-                String str =  jsonObject.getString("login_num").toString();
-                int count = Integer.parseInt(str);
-                e.onNext(count);
-            }
-        }).compose(RxUtil.activityLifecycle(this))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(@NonNull Integer s) throws Exception {
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-
-            }
-        });
-    }
-
-
-    private void login () {
-
-    }
-
-    private void getVerifiCode(){
-
-    }
-    private void run(String url) {
-        Observable.create(new ObservableOnSubscribe<String >() {
+    private void loginRun(String url) {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 e.onNext(get(url, new JSONObject()));
@@ -301,79 +270,121 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     public void accept(@NonNull String s) throws Exception {
                         //JSONStringer js = new JSONStringer(s);
                         JSONObject jsonObject = new JSONObject(s);
-                       // ToastUtils.showToast("----"+count+"---------");
+                        ToastUtils.showToast("----" + jsonObject + "---------");
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+
                     }
                 });
+    }
+
+    String str1 = "http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3";
 
 
-/*        final Request request = new Request.Builder().url(s).build();
-        client.newCall(request).enqueue(new Callback() {
+    public void loginUUrl(String url) {
+        Request requst = new Request.Builder()
+                .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
+                .build();
+        client.newCall(requst).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                ToastUtils.showToast("登录失败");
-                return;
+
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast("网络不佳，登录失败");
+                    }
+                });
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) ;
-                 String responss =  response.body().string();
-                JSONObject jsonObjL = null;
+                String s = response.body().string().trim();
                 try {
-                    jsonObjL = new JSONObject(responss);
-                    String code = jsonObjL.getString("login").toString();
-                    String codepwd = jsonObjL.getString("pwd").toString();
-                    String codemsg = jsonObjL.getString("message").toString();
-                    String codepic = jsonObjL.getString("code").toString();
-                    if(code.equals("s_ok")){
+                    JSONObject jsonObject = new JSONObject(s);
+                    String login = jsonObject.getString("login");
+                    if ( login.equals("s_ok")) {
                         //请求成功
-                        JSONObject varJson = jsonObjL.getJSONObject("var");
-                        String tel =varJson.getString("tel").toString();
-                        String pwd =varJson.get("pwd").toString();
-                        String login_time = varJson.get("login_time").toString();
-                        String nick_name = varJson.get("nick_name").toString();
-                        //  todo   保存用户信息到本地
-                        ToastUtils.showToast("登录成功");
-                        finish();
-                    }else if(codepwd.equals("err")){
-                        ToastUtils.showToast(codemsg+"====失败 1");
-                    }else if(codepic.equals("err")){
-                        ToastUtils.showToast(codemsg+"====失败 2");
+                        JSONObject varJson = jsonObject.getJSONObject("var");
+                        String tel = varJson.getString("tel").toString();
+                        String pwd = varJson.get("pwd").toString();
+                        String loginTime = varJson.get("login_time").toString();
+                        String nickName = varJson.get("nick_name").toString();
+                        //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
+                        Editor editor = sPUser.edit();
+                        editor.putString("telphone", tel);
+                        editor.putString("password", Md5Utils.encryptpwd(pwd));
+                        editor.putString("logintime",loginTime);
+                        editor.putString("nickname",nickName);
+                        editor.commit();
+
                     }
+                    if (login.equals("err")) {
+                             String returnMsg = jsonObject.getString("message");//返回的信息
+                        if (returnMsg.equals("need_code")){
+                            LoginActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mPictureCodeLayout.setVisibility(View.VISIBLE);
+                                    setPicCode(pictureCodeUrl);
+                                }
+                            });
+
+                        }else {
+                            ToaltsThreadUIshow("测试:"+returnMsg);// todo 返回数据待改进
+                        }
+                        return;
+                        }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return;
                 }
 
+
             }
-        });*/
+        });
+    }
+
+    private void ToaltsThreadUIshow(Object s) {
+        LoginActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {//mLoginVerificodeEdt
+                ToastUtils.showToast(s+"");
+            }
+        });
     }
 
     Bitmap bitmap;
-    private Bitmap SetPicCode(final String url) {
-                Request requst = new Request.Builder()
-                        .url(url)
-                        .get()
-                        .build();
-                client.newCall(requst).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                    }
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        InputStream is = response.body().byteStream();//字节流
-                        bitmap = BitmapFactory.decodeStream(is);
-                        LoginActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {//mLoginVerificodeEdt
-                                mLoginImageVerificode.setImageBitmap(bitmap);
-                                LogUtil.v(TAG,"-----------更新验证码成功--------");
-                                mLoginFreshVerification.clearAnimation();
-                            }
-                        });
+    private Bitmap setPicCode(final String url) {
+        Request requst = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        client.newCall(requst).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                InputStream is = response.body().byteStream();//字节流
+                bitmap = BitmapFactory.decodeStream(is);
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {//mLoginVerificodeEdt
+                        mLoginImageVerificode.setImageBitmap(bitmap);
+                        LogUtil.v(TAG, "-----------更新验证码成功--------");
+                        mLoginFreshVerification.clearAnimation();
                     }
                 });
+
+            }
+        });
         return bitmap;
     }
+
     private void isLook() {
         mLoginPasswordEdt.setHorizontallyScrolling(true);//不可换行
         if (flag == true) {
@@ -391,7 +402,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     /**
      * 旋转动画
-     * @param  view
+     *
+     * @param view
      * @param setid
      */
     public void startRotateAnimation(View view, int setid) {

@@ -134,10 +134,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     private void viewPagerListener() {
         mVPger.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
             @Override
             public void onPageSelected(int position) {
                 int newPosition = position % imageViewList.size();
@@ -149,9 +146,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
         mVPger.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -238,12 +233,11 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         }
 
     }
-
     class MyAdapter extends PagerAdapter {
         //返回的int的值, 会作为ViewPager的总长度来使用.
         @Override
         public int getCount() {
-            return imageViewList.size();
+            return  imageViewList.size();
         }
 
         //判断是否使用缓存, 如果返回的是true, 使用缓存. 不去调用instantiateItem方法创建一个新的对象
@@ -258,18 +252,17 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         public Object instantiateItem(ViewGroup container, int position) {
             // 把position对应位置的ImageView添加到ViewPager中
             ImageView iv = imageViewList.get(position);
-            container.addView(iv);
+           container.addView(iv);
+
             return iv;
         }
         // 销毁一个条目
         //position 就是当前需要被销毁的条目的索引
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            // 把ImageView从ViewPager中移除掉
-            container.removeView((View) object);
+           container.removeView((View) object);
         }
     }
-
     private class MyGridViewAdapter extends BaseAdapter {
         @Override
         public int getCount() {
@@ -292,7 +285,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             tv_item_title.setText(title[position]);
             return viewGV;
         }
-
     }
     private void requestPermiss() {
         PermissionUtil.requestPermissions(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionUtil.OnRequestPermissionsResultCallback() {
@@ -303,8 +295,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             }
         });
     }
-
-
     private void checkVersion() {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
@@ -346,7 +336,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                     }
                 });
     }
-
     private void showVersionUpdate(final boolean forceUpdate, String versionName, String download_url, String description) {
         final AlertDialog.Builder builer = new AlertDialog.Builder(getActivity());
         String title = getString(R.string.hava_new_version);
@@ -389,4 +378,9 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         mHandler.removeCallbacksAndMessages(null);//移除消息,停止轮播
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mHandler.sendEmptyMessageDelayed(0, 3000);
+    }
 }

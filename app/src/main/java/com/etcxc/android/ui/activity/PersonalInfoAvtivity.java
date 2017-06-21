@@ -48,9 +48,7 @@ import java.io.IOException;
 public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView mPersonHead;
     private TextView mPersonName;
-    private String[] items = new String[]{"从相册选取", "拍照"};
     /*头像名称*/
-    private static final String IMAGE_FILE_NAME = "faceImage.jpg";
     private File file;
     private Uri uri;
     /* 请求码*/
@@ -86,7 +84,7 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
             uri = Uri.fromFile(file);
         } else {
             //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
-            uri = FileProvider.getUriForFile(App.get(), "com.yf.useravatar", file);
+            uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
         }
         if(file.exists()) {
             getImageToView();//初始化

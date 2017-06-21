@@ -3,8 +3,6 @@
  */
 package com.etcxc.android.bean;
 
-import java.util.Date;
-
 /**
  *2017-06-16 11:3:44
  */
@@ -12,7 +10,7 @@ public class Var {
 
     private String tel;
     private String pwd;
-    private Date login_time;
+    private String login_time;
     private String nick_name;
 
     public void setTel(String tel) {
@@ -31,11 +29,10 @@ public class Var {
         return pwd;
     }
 
-    public void setLogin_time(Date login_time) {
+    public void setLogin_time(String login_time) {
         this.login_time = login_time;
     }
-
-    public Date getLogin_time() {
+    public String setLogin_time() {
         return login_time;
     }
 

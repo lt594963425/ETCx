@@ -9,7 +9,6 @@ import com.etcxc.android.utils.PermissionUtil;
 
 /**
  * 申请权限Activity
- * Created by Yuan on 2016/3/23.<br/>
  */
 public class PermissionRequestingActivity extends Activity {
     private String[] mPermissions;
