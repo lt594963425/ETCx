@@ -86,4 +86,6 @@
     <string name="select_region">地区选择</string>
     <string name="request_failed">请求失败</string>
     <string name="please_select_region">请先选择所在地区</string>
+    <string name="use_camera">拍照</string>
+    <string name="get_photo_from_album">从相册中选取</string>
 </resources>

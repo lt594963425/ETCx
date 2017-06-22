@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -520,5 +523,12 @@ public class FileUtils {
 			}
 			file.delete();
 		}
+	}
+
+	/**
+	 * 拍照图片的名字
+	 */
+	public static String getTempPictureFileName() {
+		return new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date(System.currentTimeMillis())) + ".png";
 	}
 }
