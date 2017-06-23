@@ -3,6 +3,8 @@ package com.etcxc.android.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,10 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -526,9 +525,38 @@ public class FileUtils {
 	}
 
 	/**
-	 * 拍照图片的名字
+	 * 获取图片的旋转角度
 	 */
-	public static String getTempPictureFileName() {
-		return new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date(System.currentTimeMillis())) + ".png";
+	public static int getImageDegree(String path) {
+		int degree = 0;
+		try {
+			ExifInterface exifInterface = new ExifInterface(path);
+			int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+			switch (orientation) {
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					degree = 90;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					degree = 180;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					degree = 270;
+					break;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return degree;
+	}
+
+	/**
+	 * 将图片按照指定的角度进行旋转
+	 */
+	public static Bitmap rotateBitmapByDegree(Bitmap bitmap, int degree) {
+		Matrix matrix = new Matrix();
+		matrix.postRotate(degree);
+		Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//        if (!bitmap.isRecycled()) bitmap.recycle();
+		return newBitmap;
 	}
 }

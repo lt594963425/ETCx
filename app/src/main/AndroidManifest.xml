@@ -63,6 +63,7 @@
         <activity android:name=".ui.activity.SelectRegionActivity"
             android:theme="@style/BG_GRAY"
             />
+        <activity android:name=".ui.activity.LargeImageActivity"/>
 
         <!--微信登录-->
         <activity
@@ -71,6 +72,11 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent" />
+        <!--图片裁剪-->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <service
             android:name=".net.download.DService"

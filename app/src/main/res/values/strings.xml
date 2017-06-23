@@ -88,4 +88,8 @@
     <string name="please_select_region">请先选择所在地区</string>
     <string name="use_camera">拍照</string>
     <string name="get_photo_from_album">从相册中选取</string>
+    <string name="camera_not_found">找不到相机</string>
+    <string name="please_upload_idcard">请上传身份证照片</string>
+    <string name="please_upload_driven_license">请上传行驶证照片</string>
+    <string name="please_upload_org_license">请上传营业执照或组织机构代码证照片</string>
 </resources>
