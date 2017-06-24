@@ -3,6 +3,8 @@ package com.etcxc.android.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -520,5 +522,41 @@ public class FileUtils {
 			}
 			file.delete();
 		}
+	}
+
+	/**
+	 * 获取图片的旋转角度
+	 */
+	public static int getImageDegree(String path) {
+		int degree = 0;
+		try {
+			ExifInterface exifInterface = new ExifInterface(path);
+			int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+			switch (orientation) {
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					degree = 90;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					degree = 180;
+					break;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					degree = 270;
+					break;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return degree;
+	}
+
+	/**
+	 * 将图片按照指定的角度进行旋转
+	 */
+	public static Bitmap rotateBitmapByDegree(Bitmap bitmap, int degree) {
+		Matrix matrix = new Matrix();
+		matrix.postRotate(degree);
+		Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//        if (!bitmap.isRecycled()) bitmap.recycle();
+		return newBitmap;
 	}
 }

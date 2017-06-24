@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.utils.CropUtils;

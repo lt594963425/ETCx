@@ -23,4 +23,5 @@
     <color name="bottom_line_color">#e5e5e5</color>
     <color name="issue_finish_hint">#5a5a5a</color>
     <color name="issue_finish_time">#fc7520</color>
+    <color name="black">#000000</color>
 </resources>

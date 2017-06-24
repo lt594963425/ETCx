@@ -1,11 +1,16 @@
 package com.etcxc.android.utils;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.provider.MediaStore;
 import android.support.compat.BuildConfig;
 import android.text.TextUtils;
 
 import com.etcxc.android.base.App;
+
+import java.util.List;
 
 /**
  * 系统级工具类
@@ -48,5 +53,17 @@ public class SystemUtil {
             name = builder.toString();
         }
         return name;
+    }
+
+    /**
+     * 判断系统中是否存在可以启动的相机应用
+     *
+     * @return 存在返回true，不存在返回false
+     */
+    public static boolean hasCamera() {
+        PackageManager packageManager = App.get().getPackageManager();
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
     }
 }
