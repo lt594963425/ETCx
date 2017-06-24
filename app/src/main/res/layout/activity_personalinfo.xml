@@ -12,13 +12,13 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="115dp"
+        android:layout_height="100dp"
         android:background="#eff1f2">
 
         <ImageView
             android:id="@+id/person_userhead"
-            android:layout_width="89dp"
-            android:layout_height="89dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="25dp"
             android:clickable="true"
@@ -37,16 +37,20 @@
             android:textSize="20sp" />
     </FrameLayout>
 
-    <View
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
-    <Button
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/exit_login_btn"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#fc8337"
-        android:text="退出登录" />
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/exit_login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="20dp"
+            android:background="#fc8337"
+            android:layout_marginBottom="35dp"
+            android:text="退出登录" />
+    </RelativeLayout>
 </LinearLayout>

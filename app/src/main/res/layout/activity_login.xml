@@ -6,13 +6,12 @@
     android:background="@mipmap/bg_regist"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
         <RelativeLayout
             android:id="@+id/login_phonenumber_layout"
             android:layout_width="match_parent"
@@ -21,7 +20,6 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="40dp"
             android:gravity="center_vertical">
-
             <EditText
                 android:id="@+id/login_phonenumber_edt"
                 android:layout_width="wrap_content"
@@ -31,7 +29,8 @@
                 android:background="@null"
                 android:drawablePadding="16dp"
                 android:hint="@string/please_input_phonenumbers"
-                android:inputType="phone"
+                android:inputType="number"
+
                 android:maxLength="11"
                 android:textSize="14sp" />
 
@@ -54,6 +53,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+
             android:id="@+id/login_password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,6 +72,7 @@
                 android:background="@null"
                 android:hint="@string/please_input_passwords"
                 android:inputType="textPassword"
+                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
                 android:maxLength="16"
                 android:textSize="14sp" />
 
@@ -103,17 +104,18 @@
                 android:layout_marginTop="12dp"
                 android:background="@color/white" />
         </RelativeLayout>
-
         <RelativeLayout
-
+            android:visibility="gone"
             android:id="@+id/login_verificode_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/login_password_layout"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="18dp">
+            android:layout_marginTop="18dp"
+           >
             <EditText
+
                 android:id="@+id/login_verificode_edt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -122,14 +124,13 @@
                 android:layout_centerVertical="true"
                 android:background="@null"
                 android:hint="@string/set_picture_verifycodes"
-                android:inputType="textPassword"
                 android:maxLength="8"
                 android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/login_image_verificode"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_width="80dp"
+                android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
@@ -138,6 +139,7 @@
                 android:scaleType="fitXY"
                 android:src="@mipmap/code"
                 android:text="@string/get_verifycode" />
+
             <ImageView
                 android:id="@+id/login_fresh_verification"
                 android:layout_width="wrap_content"

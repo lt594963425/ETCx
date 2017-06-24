@@ -57,7 +57,6 @@ import io.reactivex.functions.Consumer;
 
 public class FragmentHome extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
     private Handler mHandler = new Handler();
-    private MainActivity mActivity;
     private GridView mHomeGV;
     private List<ImageView> imageViewList; // Viewpager的数据
     private ViewPager mVPger;
@@ -76,9 +75,10 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             ,App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate),App.get().getString(R.string.advice),
             App.get().getString(R.string.gridchek)};
     private String strDitle ="高速公路畅通无阻\n“0”元照进不误";
+    private MainActivity mainActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity = (MainActivity) getActivity();
+        mainActivity =(MainActivity)getActivity();
         View view = inflater.inflate(R.layout.fragment_home, null);
         ft = (FocusTextview) view.findViewById(R.id.ft_tv);
         ft.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
@@ -97,9 +97,9 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         mETCOnline.setOnClickListener(this);
         SpannableStringBuilder style=new SpannableStringBuilder(strDitle);
         //SpannableStringBuilder
-        style.setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style.setSpan(new TextAppearanceSpan(mActivity, R.style.style1), 10, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style.setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 11, 17, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style.setSpan(new TextAppearanceSpan(mainActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style.setSpan(new TextAppearanceSpan(mainActivity, R.style.style1), 10, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style.setSpan(new TextAppearanceSpan(mainActivity, R.style.style0), 11, 17, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         mETCDetile.setText(style);//将其添加到tv中
         mHomeGV.setAdapter(new MyGridViewAdapter());
         mHomeGV.setOnItemClickListener(this);
@@ -144,7 +144,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                 // 把当前的索引赋值给前一个索引变量, 方便下一次再切换.
                 previousPosition = newPosition;
             }
-
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
@@ -182,11 +181,11 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         View v;
         LayoutParams params;
         for (int i = 0; i < imageResIDs.length; i++) {
-            iv = new ImageView(mActivity);
+            iv = new ImageView(mainActivity);
             iv.setBackgroundResource(imageResIDs[i]);
             imageViewList.add(iv);
             // 每循环一次需要向LinearLayout中添加一个点的view对象
-            v = new View(mActivity);
+            v = new View(mainActivity);
             v.setBackgroundResource(R.drawable.point_bg);
             params = new LayoutParams(20, 20);
             if (i != 0) {
@@ -228,36 +227,27 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home_etcmore_llayout:
-                startActivity(new Intent(mActivity, ETCIssueActivity.class));
+                startActivity(new Intent(mainActivity, ETCIssueActivity.class));
                 break;
         }
 
     }
     class MyAdapter extends PagerAdapter {
-        //返回的int的值, 会作为ViewPager的总长度来使用.
         @Override
         public int getCount() {
             return  imageViewList.size();
         }
-
-        //判断是否使用缓存, 如果返回的是true, 使用缓存. 不去调用instantiateItem方法创建一个新的对象
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
         }
-
-        //初始化一个条目
-        //*position 就是当前需要加载条目的索引
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             // 把position对应位置的ImageView添加到ViewPager中
             ImageView iv = imageViewList.get(position);
            container.addView(iv);
-
             return iv;
         }
-        // 销毁一个条目
-        //position 就是当前需要被销毁的条目的索引
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
            container.removeView((View) object);
@@ -278,7 +268,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View viewGV = View.inflate(mActivity, R.layout.item_home_gridview, null);
+            View viewGV = View.inflate(mainActivity, R.layout.item_home_gridview, null);
             ImageView iv_home_gn = (ImageView) viewGV.findViewById(R.id.item_home_gv_iv);
             TextView tv_item_title = (TextView) viewGV.findViewById(R.id.item_home_gv_tv);
             iv_home_gn.setImageResource(image[position]);

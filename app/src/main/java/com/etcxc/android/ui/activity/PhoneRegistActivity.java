@@ -1,5 +1,7 @@
 package com.etcxc.android.ui.activity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -13,38 +15,58 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.etcxc.android.R;
+import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.utils.Md5Utils;
+import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static com.etcxc.android.utils.UIUtils.LEFT;
 
 /**
- * 手机注册页面
+ * 手机短信注册页面
  * Created by 刘涛 on 2017/6/9 0009.
  */
 
 public class PhoneRegistActivity extends BaseActivity implements View.OnClickListener {
-    private EditText mPhoneNumberEdit, mPswEdit, mVerifiCodeEdit;
+    //192.169.6.119/index.php/register/reg_sms/sms_report/tel/'tel'
+    //192.169.6.119/index.php/register/reg_sms/sms_report/tel/'tel'
+    private  String  loginSmsUrl = "http://192.168.6.58/register/register/register/";
+    private String  smsCodeUrl ="http://192.168.6.58/register/reg_sms/smsreport/tel/";
+    private EditText mPhoneNumberEdit, mPswEdit, mSmsCodeEdit;
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye, mPwdDeleteBtn;
     private Boolean flag = false;
-
+    SharedPreferences sPUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_regist);
-        initView();
+        sPUser  = getSharedPreferences("userInfo",Context.MODE_PRIVATE);
+        try {
+            initView();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
     private void initView() {
         setTitle(R.string.regist);
         mPhoneNumberEdit = find(R.id.phonenumber_edt);//手机号码
         mPswEdit = find(R.id.password_edt);
-        mVerifiCodeEdit = find(R.id.verificode_edt);
+        mSmsCodeEdit = find(R.id.verificode_edt);
         mRegistButton = find(R.id.regist_button);
         mVerificodeButton = find(R.id.get_verificode_button);
         mPhonenumberDelete = find(R.id.phonenumber_delete);//清空
@@ -52,7 +74,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mPwdDeleteBtn = find(R.id.iv_regist_password_delete);
         UIUtils.addIcon(mPhoneNumberEdit, R.drawable.vd_my, LEFT);
         UIUtils.addIcon(mPswEdit, R.drawable.vd_regist_password, LEFT);
-        UIUtils.addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha, LEFT);
+        UIUtils.addIcon(mSmsCodeEdit, R.drawable.vd_regist_captcha, LEFT);
         mRegistButton.setOnClickListener(this);
         mVerificodeButton.setOnClickListener(this);
         mPhonenumberDelete.setOnClickListener(this);
@@ -99,28 +121,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 mPswEdit.setText("");
                 break;
             case R.id.regist_button://注册
-                String phoneNum = mPhoneNumberEdit.getText().toString();
-                String passWord = mPswEdit.getText().toString().trim();
-                String veriFicode = mVerifiCodeEdit.getText().toString().trim();
-                if (phoneNum.isEmpty()) {
-                    ToastUtils.showToast(R.string.phone_isempty);
-                    return;
-                } else if (!isMobileNO(phoneNum)) {
-                    ToastUtils.showToast(R.string.please_input_correct_phone_number);
-                    return;
-                } else if (passWord.isEmpty()) {
-                    ToastUtils.showToast(R.string.password_isempty);
-                    return;
-                } else if (passWord.length() < 6) {
-                    ToastUtils.showToast(R.string.password_isshort);
-                    return;
-                } else if (veriFicode.isEmpty()) {
-                    ToastUtils.showToast(R.string.please_input_verificodem);
-                    return;
-                }
-                ToastUtils.showToast(R.string.regist);
-                //todo: 密码强弱长短校验
-                //todo:发验证码后端校验
+                phoneRegistButton();
                 break;
             case R.id.get_verificode_button://获取验证码
                 String phoneNum2 = mPhoneNumberEdit.getText().toString();
@@ -134,9 +135,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 TimeCount time = new TimeCount(60000, 1000);
                 time.start();
                 //todo：向后端请求获取短信验证码
-
+                getSmsCode(smsCodeUrl+phoneNum2);
                 break;
-
             case R.id.phonenumber_delete://置空手机号
                 mPhoneNumberEdit.setText("");
                 break;
@@ -148,13 +148,149 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                     mEye.setImageResource(R.drawable.vd_close_eyes);
                 } else {
                     mPswEdit.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-
                     flag = true;
                     mEye.setImageResource(R.drawable.vd_open_eyes);
                 }
         }
     }
 
+    private void phoneRegistButton() {
+        String smsID = PrefUtils.getString(App.get(),"pr_sms_id",null);
+        String phoneNum = mPhoneNumberEdit.getText().toString();
+        String passWord = mPswEdit.getText().toString().trim();
+        String smsCode = mSmsCodeEdit.getText().toString().trim();
+        //tel/'tel'/reg_sms_code/'reg_sms_code'/pwd/'pwd'/sms_id/'sms_id'
+        String data = "tel/" + phoneNum+"/reg_sms_code/"+smsCode + "/pwd/" + passWord+"/sms_id/"+smsID;
+        if (phoneNum.isEmpty()) {
+            ToastUtils.showToast(R.string.phone_isempty);
+            return;
+        } else if (!isMobileNO(phoneNum)) {
+            ToastUtils.showToast(R.string.please_input_correct_phone_number);
+            return;
+        } else if (passWord.isEmpty()) {
+            ToastUtils.showToast(R.string.password_isempty);
+            return;
+        } else if (passWord.length() < 6) {
+            ToastUtils.showToast(R.string.password_isshort);
+            return;
+        } else if (smsCode.isEmpty()) {
+            ToastUtils.showToast(R.string.set_verifycodes);
+            return;
+        }
+        try {
+            loginUUrl(loginSmsUrl+data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastUtils.showToast("url错误");
+        }
+    }
+
+    public void loginUUrl(String url) {
+            Request requst = new Request.Builder()
+                    .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
+                    .build();
+            client.newCall(requst).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    PhoneRegistActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.showToast("网络不佳，登录失败");
+                        }
+                    });
+                }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String s = response.body().string().trim();
+                    try {
+                        JSONObject jsonObject = new JSONObject(s);
+                        String code = jsonObject.getString("code");
+                        if ( code.equals("s_ok")) {
+                            //请求成功
+                            JSONObject varJson = jsonObject.getJSONObject("var");
+                            String tel = varJson.getString("tel");
+                            String pwd = varJson.getString("pwd");
+                            String regTime = varJson.getString("reg_time");
+                            String nickName = varJson.getString("nick_name");
+                            //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
+                            SharedPreferences.Editor editor = sPUser.edit();
+                            editor.putString("telphone", tel);
+                            editor.putString("password", Md5Utils.encryptpwd(pwd));
+                            editor.putString("regtime",regTime);
+                            editor.putString("nickname",nickName);
+                            editor.commit();
+                            ToaltsThreadUIshow("注册成功，请登录");
+                            finish();
+                        }
+                        if (code.equals("err")) {
+                            String returnMsg = jsonObject.getString("message");//返回的信息
+                               // todo 返回数据待改进
+                            if(returnMsg.equals("sms_code_error")){
+                                ToaltsThreadUIshow(R.string.smscodeerr);
+                            }else if(returnMsg.equals("telphone_unregistered")){
+                                ToaltsThreadUIshow(R.string.telphoneunregistered);
+                            }else if(returnMsg.equals("err_password")){
+                                ToaltsThreadUIshow(R.string.passworderr);
+                            }else if(returnMsg.equals("telphoner_has_been_registered")){
+                                ToaltsThreadUIshow("手机号码已经注册");
+                            }
+                            ToaltsThreadUIshow(returnMsg);
+                            return;
+                            }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+            });
+    }
+    public void getSmsCode(String url) {
+        Request requst = new Request.Builder()
+                .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
+                .build();
+        client.newCall(requst).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                PhoneRegistActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast("网络不佳，获取短信失败");
+                    }
+                });
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String s = response.body().string().trim();
+                try {
+                    JSONObject object = new JSONObject(s);
+                    String code = object.getString("code");
+                    if(code.equals("s_ok")){
+                        JSONObject  jsonvar =object.getJSONObject("var");
+                        String smsID = jsonvar.getString("sms_id");
+                        PrefUtils.setString(App.get(),"pr_sms_id",smsID);//rp_sms_id
+                        ToaltsThreadUIshow("发送成功");
+                    }
+                    if(code.equals("err")){
+                       // String msg = object.getString("");
+                        ToaltsThreadUIshow("手机已经注册或者网络不佳");
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToaltsThreadUIshow("测试测试+发送失败"+R.string.jsonexception);
+                    return;
+                }
+            }
+        });
+    }
+    private void ToaltsThreadUIshow(Object s) {
+        PhoneRegistActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {//mLoginVerificodeEdt
+                ToastUtils.showToast(s+"");
+            }
+        });
+    }
     /**
      * 监听手机号码的长度
      */

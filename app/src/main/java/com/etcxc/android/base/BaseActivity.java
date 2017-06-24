@@ -16,12 +16,15 @@ import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import okhttp3.OkHttpClient;
+
 
 /**
  * 封装Activity公共的操作
  */
 @SuppressWarnings("ResourceType")
 public abstract class BaseActivity extends RxAppCompatActivity {
+    protected final OkHttpClient client = new OkHttpClient();
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
 
@@ -62,6 +65,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getSupportActionBar() != null) getSupportActionBar().hide();
         LogUtil.i(TAG, "----------onCreate----------");
     }

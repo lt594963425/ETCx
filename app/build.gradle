@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion rootProject.ext.cfg.compileSdkVersion
     buildToolsVersion rootProject.ext.cfg.buildToolsVersion
@@ -15,8 +14,6 @@ android {
             enabled true
         }
     }
-
-
     buildTypes {
         debug {
 //            设置debug版本的报名为<应用id>.debug，这样就可以在设备上同时安装debug和release版本了。
@@ -46,16 +43,13 @@ android {
             }
         }
     }
-
     compileOptions {
         //使用JAVA8语法解析
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     signingConfigs {
         debug {
-
         }
         release {
               storeFile new File("C:/ETCXc.keystore")
@@ -65,12 +59,11 @@ android {
         }
     }
 }
-
+//gfghfghhgjjjhjkjkiiuuhgtf
 //平时打包的文件名包含的时间，只有年月日
 def releaseTime() {
     return new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+8"))
 }
-
 repositories {
     //...
     flatDir {

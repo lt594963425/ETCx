@@ -68,5 +68,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
                 break;
         }
+        getActivity().overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
     }
 }

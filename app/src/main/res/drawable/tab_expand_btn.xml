@@ -4,7 +4,5 @@
         <!-- 指定选择时和未被选择的图片 -->
         <item android:drawable="@drawable/vd_expand_on"
             android:state_selected="true"/>
-        <item android:drawable="@drawable/vd_expand" />
-
-
+        <item android:drawable="@drawable/vd_expand_off" />
 </selector>

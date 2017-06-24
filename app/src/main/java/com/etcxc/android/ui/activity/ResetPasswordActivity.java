@@ -1,6 +1,7 @@
 package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -17,25 +18,41 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
+import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.utils.Md5Utils;
+import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
  * 找回密码
  */
 public class ResetPasswordActivity extends BaseActivity implements View.OnClickListener {
+    private String smsUrl ="http://192.168.6.58/user_information_modify/inf_modify_sms/smsreport/tel/";
+    private String resetPwdUrl ="http://192.168.6.58/user_information_modify/user_information_modify/informationmodify/";
     private EditText mPhoneNumberEdit, mResetPwd, mVerifiCodeEdit;
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye,mResetPwdDelete;
+    private SharedPreferences sPUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
+        sPUser =getSharedPreferences("user_info",MODE_PRIVATE);
         initView();
     }
     //verificode_edt
@@ -107,9 +124,13 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 mResetPwd.setText("");
                 break;
             case R.id.reset_button://找回密码完成，跳回登录界面
+                String smsID = PrefUtils.getString(App.get(),"rp_sms_id",null);
+                //tel/15974255013/inf_modify_sms_code/190881/pwd/lt767435/sms_id/90743520170623203308
+                //data = /tel/'tel'/inf_modify_sms_code/'inf_modify_sms_code'/pwd/'pwd'/sms_id/'sms_id'
                 String phoneNum = mPhoneNumberEdit.getText().toString();
                 String passWord = mResetPwd.getText().toString().trim();
                 String veriFicode = mVerifiCodeEdit.getText().toString().trim();
+                String data = "tel/" + phoneNum + "/inf_modify_sms_code/"+veriFicode+"/pwd/" + passWord+"/sms_id/"+smsID;
                 if(phoneNum.isEmpty()){
                     ToastUtils.showToast(R.string.phone_isempty);
                     return;
@@ -117,7 +138,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
                     return;
                 }else if(veriFicode.isEmpty()){
-                    ToastUtils.showToast(R.string.please_input_verificodem);
+                    ToastUtils.showToast(R.string.set_verifycodes);
                     return;
                 }else if(passWord.isEmpty()){
                     ToastUtils.showToast(R.string.password_isempty);
@@ -126,17 +147,13 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.password_isshort);
                     return;
                 }
-                ToastUtils.showToast(R.string.regist);
-                //todo: 密码强弱长短校验
-                //todo:发验证码后端校验
-                //todo :修改密码成功，跳回重新登录界面
-
-
-                Intent intent = new Intent(this,LoginActivity.class);
-                startActivity(intent);
-                finish();
+                try {
+                    ResetPwdUrl(resetPwdUrl+data);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
-            case R.id.get_reset_verificode_button://获取验证码
+            case R.id.get_reset_verificode_button://获取短息验证码
                 String phoneNum2 = mPhoneNumberEdit.getText().toString();
                 if (!isMobileNO(phoneNum2)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
@@ -148,9 +165,12 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 TimeCount time = new TimeCount(60000, 1000);
                 time.start();
                 //todo：向后端请求获取短信验证码
-
+                try {
+                    getSmsCode(smsUrl+phoneNum2);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
-
             case R.id.reset_phonenumber_delete://置空手机号
                 mPhoneNumberEdit.setText("");
                 break;
@@ -166,6 +186,124 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     mEye.setImageResource(R.drawable.vd_open_eyes);
                 }
         }
+    }
+    public void ResetPwdUrl(String url) {
+        Request requst = new Request.Builder()
+                .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
+                .build();
+        client.newCall(requst).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                ResetPasswordActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast("网络不佳，登录失败");
+                        return;
+                    }
+                });
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String s = response.body().string().trim();
+                // ToaltsThreadUIshow(s);// todo 返回数据待改进
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    if(jsonObject==null) return;
+                    String code = jsonObject.getString("code");
+                    if ( code.equals("s_ok")) {
+                        //请求成功
+                        JSONObject varJson = jsonObject.getJSONObject("var");
+                        String tel = varJson.getString("tel");
+                        String pwd = varJson.getString("pwd");
+                        String lastmodifyTime = varJson.getString("last_modify_time");//标准的时间格式
+                        String nickName = varJson.getString("nick_name");
+                        //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
+                        SharedPreferences.Editor editor = sPUser.edit();
+                        editor.putString("telphone", tel);
+                        editor.putString("password", Md5Utils.encryptpwd(pwd));
+                        editor.putString("lastmodifyTime",lastmodifyTime);
+                        editor.putString("nickname",nickName);
+                        editor.commit();
+                        ToaltsThreadUIshow("找回密码成功");// todo 返回数据待改进
+                        Intent intent = new Intent(ResetPasswordActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    if (code.equals("err")) {
+                        String returnMsg = jsonObject.getString("message");//返回的信息
+                        if(returnMsg.equals("telphone_unregistered")){
+                            ToaltsThreadUIshow("手机尚未注册");
+                        } else if (returnMsg.equals("sms_code_error")){
+                            ToaltsThreadUIshow("输入验证码错误");
+                        }else if (returnMsg.equals("err_password")){
+                            ToaltsThreadUIshow("密码错误");//
+                        }else {
+                            ToaltsThreadUIshow(returnMsg);//
+                        }
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToaltsThreadUIshow("登录失败JSONException");// todo 返回数据待改进
+                    return;
+                }
+
+            }
+        });
+    }
+    public void getSmsCode(String url) {
+        Request requst = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(requst).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ResetPasswordActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast("网络不佳，注册失败");
+                    }
+                });
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String s = response.body().string().trim();
+                try {
+                    JSONObject object = new JSONObject(s);
+                    String code = object.getString("code");
+                    if(code.equals("s_ok")){//返回tel,sms_id
+                        JSONObject  jsonvar =object.getJSONObject("var");
+                        String smsID = jsonvar.getString("sms_id");
+                        PrefUtils.setString(App.get(),"rp_sms_id",smsID);//rp_sms_id
+                        ToaltsThreadUIshow("发送成功");
+                    }
+                    if(code.equals("err")){//返回失败原因
+                        String msg =object.getString("message");
+                        if(msg.equals("password_too_easy")){
+                            ToaltsThreadUIshow("密码太简单");
+                        }else if(msg.equals("telphone_unregistered")){
+                            ToaltsThreadUIshow("手机尚未注册");
+                        }
+                        else {
+                            ToaltsThreadUIshow("发送失败");
+                        }
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToaltsThreadUIshow("发送失败");
+                }
+            }
+        });
+    }
+    private void ToaltsThreadUIshow(Object s) {
+        ResetPasswordActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {//mLoginVerificodeEdt
+                ToastUtils.showToast(s+"");
+            }
+        });
     }
     /**
      * 监听手机号码的长度
@@ -212,6 +350,12 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             mVerificodeButton.setClickable(true);
             mVerificodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGreen));
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        flag =false;
     }
 }
 

@@ -86,7 +86,7 @@ public class FileUtils {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(fileSrc, options);
-		options.inSampleSize = calculateInSampleSize(options, 480, 800);
+		options.inSampleSize = calculateInSampleSize(options, 200, 200);//设置压缩比例
 		Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
 		options.inJustDecodeBounds = false;
 		Bitmap img = BitmapFactory.decodeFile(fileSrc, options);
@@ -95,20 +95,18 @@ public class FileUtils {
 		saveBitmap2File(img, filename);
 		return new File(filename);
 	}
-
 	/**
 	 * 设置压缩的图片的大小设置的参数
-	 *
 	 * @param options
 	 * @param reqWidth
 	 * @param reqHeight
 	 * @return
 	 */
 	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		int height = options.outHeight;
-		int width = options.outWidth;
-		int inSampleSize = 1;
-		if (height > reqHeight || width > reqWidth) {
+		int height = options.outHeight;//图片的原始高度
+		int width = options.outWidth;  //图片的原始宽度
+		int inSampleSize = 1;          //压缩比例
+		if (height > reqHeight || width > reqWidth) {  //
 			int heightRatio = Math.round(height) / reqHeight;
 			int widthRatio = Math.round(width) / reqWidth;
 			inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;

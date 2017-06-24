@@ -2,7 +2,6 @@ package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,10 +22,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
+import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.Md5Utils;
-import com.etcxc.android.utils.RxUtil;
+import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
@@ -41,11 +41,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -53,11 +48,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.etcxc.android.R.id.login_phonenumber_delete;
-import static com.etcxc.android.net.OkClient.get;
+import static com.etcxc.android.R.string.login;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
- *
+ * <p>
  * 登录页面
  */
 
@@ -76,31 +71,34 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private TextView mForgetPassword;//忘记密码
     private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
-    String pictureCodeUrl = "http://192.169.6.119/index.php/captcha";  //更换图形验证码url
-    String loginServerUrl = "http://192.169.6.119/login/login/login/";//登录的url
+    private String timeStr;
+    private SharedPreferences sPUser;
+    //http://192.169.6.119/login/captcha/index
+    String pictureCodeUrl = "http://192.168.6.58/login/login/captcha/code_key/";  //更换图形验证码url
+    String loginServerUrl = "http://192.168.6.58/login/login/login/";//登录的url
     private boolean isShow = false;
-  private  SharedPreferences sPUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        sPUser = getSharedPreferences("user_info", MODE_PRIVATE);
         initView();
     }
-
     private void initView() {
-        setTitle(R.string.login);
-        mLoginPhonenumberEdt = find(R.id.login_phonenumber_edt);
-        mLoginPhonenumberDelete = find(login_phonenumber_delete);
-        mLoginPasswordEdt = find(R.id.login_password_edt);
-        mLoginPasswordDelete = find(R.id.login_password_delete);
-        mLoginEye = find(R.id.login_eye);
-        mLoginVerificodeEdt = find(R.id.login_verificode_edt);
-        mLoginImageVerificode = find(R.id.login_image_verificode);
-        mLoginFreshVerification = find(R.id.login_fresh_verification);
-        mLoginMessage = find(R.id.login_message);
-        mLoginFast = find(R.id.login_fast);
-        mForgetPassword = find(R.id.forget_password);
-        mLoginButton = find(R.id.login_button);
+        setTitle(login);
+        mLoginPhonenumberEdt =  find(R.id.login_phonenumber_edt);
+        mLoginPhonenumberDelete =  find(login_phonenumber_delete);
+        mLoginPasswordEdt =  find(R.id.login_password_edt);
+        mLoginPasswordDelete =  find(R.id.login_password_delete);
+        mLoginEye =  find(R.id.login_eye);
+        mLoginVerificodeEdt =  find(R.id.login_verificode_edt);
+        mLoginImageVerificode =  find(R.id.login_image_verificode);
+        mLoginFreshVerification =  find(R.id.login_fresh_verification);
+        mLoginMessage =  find(R.id.login_message);
+        mLoginFast =  find(R.id.login_fast);
+        mForgetPassword =  find(R.id.forget_password);
+        mLoginButton =  find(R.id.login_button);
         // todo 密码输入超过三次增加图形验证码 校验 mPictureCodeLayout
         mPictureCodeLayout = find(R.id.login_verificode_layout);
         addIcon(mLoginPhonenumberEdt, R.drawable.vd_my);
@@ -110,6 +108,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void init() {
+
+        LogUtil.i(TAG, "------------------------------结果--------------------------------:" + timeStr);
+        //ToastUtils.showToast(timeStr);
         mLoginPhonenumberDelete.setOnClickListener(this);
         mLoginPasswordDelete.setOnClickListener(this);
         mLoginFreshVerification.setOnClickListener(this);
@@ -118,16 +119,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginMessage.setOnClickListener(this);
         mLoginFast.setOnClickListener(this);
         mForgetPassword.setOnClickListener(this);
-
         MyTextWatcher myTextWatcher = new MyTextWatcher();
         mLoginPhonenumberEdt.addTextChangedListener(myTextWatcher);
         mLoginPasswordEdt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 0 && !mLoginPasswordEdt.getText().toString().isEmpty()) {
@@ -138,7 +140,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 }
             }
         });
-        setPicCode(pictureCodeUrl);//初始化图形验证码
+
     }
 
     public void addIcon(TextView view, int resId) {
@@ -161,9 +163,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             case R.id.login_eye:
                 isLook();
                 break;
-            case R.id.login_fresh_verification:
+            case R.id.login_fresh_verification://图形验证码
+                long longTime = System.currentTimeMillis();
+                timeStr = String.valueOf(longTime);
+                PrefUtils.setString(App.get(), "code_key", timeStr);
                 startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
-                setPicCode(pictureCodeUrl);
+                setPicCode(pictureCodeUrl + timeStr);
                 break;
             case R.id.login_message:  //短信验证码登录
                 intent = new Intent(this, MessageLoginActivity.class);
@@ -180,21 +185,32 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
-            case R.id.login_button:  // 登录 tel/15974255013/pwd/123456/code/wrty/sms_code/123456
-
-                loginRun("http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3");
+            case R.id.login_button:  // 登录
+                String data;
+                String key2 = PrefUtils.getString(App.get(), "code_key", null);
+                //  loginRun("http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3");
                 String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
                 String passWord = mLoginPasswordEdt.getText().toString().trim();
-                String veriFicodem= mLoginVerificodeEdt.getText().toString().trim();//验证码
-                String data = "tel/" + phoneNum + "/pwd/" + passWord;
-                //判断
+                String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
+                if (veriFicodem.isEmpty()) {
+                    data = "tel/" + phoneNum + "/pwd/" + passWord;
+                } else {
+                    data = "tel/" + phoneNum + "/pwd/" + passWord + "/code/" + veriFicodem + "/code_key/" + key2;
+                }
+                LogUtil.i(TAG, "------------------------------结果--------------------------------:" + key2);
+                //判断tel/'tel'/pwd/'pwd'/code/'code'/code_key/'code_key''
                 if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
-                //String str2 = "tel/15974255013/pwd/123456/code/wrty/sms_code/123456";
-                loginUUrl(loginServerUrl+data);
+                try {//1498206929532
+                    loginUUrl(loginServerUrl + data);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtils.showToast("登录失败");
+                }
                 break;
         }
-        this.overridePendingTransition(R.anim.anim_in,R.anim.anim_out);
+        this.overridePendingTransition(R.anim.anim_in, R.anim.anim_out);
     }
+
     /**
      * 正则判断手机号码是否正确
      */
@@ -228,7 +244,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 temp = "";
             } else {
                 mLoginPhonenumberDelete.setVisibility(View.INVISIBLE);
-
             }
         }
     }
@@ -258,7 +273,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loginRun(String url) {
-        Observable.create(new ObservableOnSubscribe<String>() {
+/*        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 e.onNext(get(url, new JSONObject()));
@@ -277,7 +292,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     public void accept(@NonNull Throwable throwable) throws Exception {
 
                     }
-                });
+                });*/
     }
 
     String str1 = "http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3";
@@ -290,7 +305,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         client.newCall(requst).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
                 LoginActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -302,47 +316,61 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String s = response.body().string().trim();
+                LogUtil.i(TAG, "------------------------------结果--------------------------------:" + s);
                 try {
                     JSONObject jsonObject = new JSONObject(s);
-                    String login = jsonObject.getString("login");
-                    if ( login.equals("s_ok")) {
+                    if (jsonObject == null) return;
+                    String code = jsonObject.getString("code");
+                    if (code.equals("s_ok")) {
                         //请求成功
                         JSONObject varJson = jsonObject.getJSONObject("var");
-                        String tel = varJson.getString("tel").toString();
-                        String pwd = varJson.get("pwd").toString();
-                        String loginTime = varJson.get("login_time").toString();
-                        String nickName = varJson.get("nick_name").toString();
+                        String tel = varJson.getString("tel");
+                        String pwd = varJson.getString("pwd");
+                        String loginTime = varJson.getString("login_time");
+                        String nickName = varJson.getString("nick_name");
                         //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
-                        Editor editor = sPUser.edit();
+                        SharedPreferences.Editor editor = sPUser.edit();
                         editor.putString("telphone", tel);
                         editor.putString("password", Md5Utils.encryptpwd(pwd));
-                        editor.putString("logintime",loginTime);
-                        editor.putString("nickname",nickName);
+                        editor.putString("logintime", loginTime);
+                        editor.putString("nickname", nickName);
                         editor.commit();
-
+                        ToaltsThreadUIshow("登录成功");// todo 返回数据待改进
+                        finish();
                     }
-                    if (login.equals("err")) {
-                             String returnMsg = jsonObject.getString("message");//返回的信息
-                        if (returnMsg.equals("need_code")){
+                    if (code.equals("err")) {
+                        String returnMsg = jsonObject.getString("message");//返回的信息
+                        ToaltsThreadUIshow(returnMsg + "55555");
+                        if (returnMsg.equals("telphone_unregistered")) {
+                            ToaltsThreadUIshow("手机尚未注册");
+                        } else if (returnMsg.equals("need_captcha")) {
+                            long longTime = System.currentTimeMillis();
+                            timeStr = String.valueOf(longTime);
+                            PrefUtils.setString(App.get(), "code_key", timeStr);
                             LoginActivity.this.runOnUiThread(new Runnable() {
                                 @Override
-                                public void run() {
+                                public void run() {//mLoginVerificodeEdt
+                                    long longTime = System.currentTimeMillis();
+                                    timeStr = String.valueOf(longTime);
+                                    PrefUtils.setString(App.get(), "code_key", timeStr);
+                                    setPicCode(pictureCodeUrl + timeStr);
                                     mPictureCodeLayout.setVisibility(View.VISIBLE);
-                                    setPicCode(pictureCodeUrl);
+                                    ToastUtils.showToast("密码输入错误超过三次请输入验证码");
+                                    isShow = true;
                                 }
                             });
-
-                        }else {
-                            ToaltsThreadUIshow("测试:"+returnMsg);// todo 返回数据待改进
+                        } else if (returnMsg.equals("err_password")) {
+                            ToaltsThreadUIshow("密码错误");//
+                        } else if (returnMsg.equals("err_captcha")) {
+                            ToaltsThreadUIshow("输入验证码错误");
                         }
                         return;
-                        }
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    ToaltsThreadUIshow("登录失败JSONException" + s);// todo 返回数据待改进
                     return;
                 }
-
-
             }
         });
     }
@@ -351,13 +379,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         LoginActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {//mLoginVerificodeEdt
-                ToastUtils.showToast(s+"");
+                ToastUtils.showToast(s + "");
             }
         });
     }
 
     Bitmap bitmap;
+
     private Bitmap setPicCode(final String url) {
+
         Request requst = new Request.Builder()
                 .url(url)
                 .get()
@@ -379,7 +409,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         mLoginFreshVerification.clearAnimation();
                     }
                 });
-
             }
         });
         return bitmap;
@@ -415,9 +444,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-     /*
-       停止旋转
-      */
+    /*
+      停止旋转
+     */
     public void stopRotateAnimation(View v) {
         v.clearAnimation();
     }
@@ -425,16 +454,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isShow = false;
         stopRotateAnimation(mLoginFreshVerification);
         finish();
     }
 
     //将map型转为请求参数型
-    public static String urlencode(Map<String,String> data) {
+    public static String urlencode(Map<String, String> data) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry i : data.entrySet()) {
             try {
-                sb.append(i.getKey()).append("=").append(URLEncoder.encode(i.getValue()+"","UTF-8")).append("&");
+                sb.append(i.getKey()).append("=").append(URLEncoder.encode(i.getValue() + "", "UTF-8")).append("&");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

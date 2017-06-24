@@ -2,6 +2,7 @@ package com.etcxc.android.base;
 
 import android.view.MenuItem;
 
+import com.etcxc.android.ui.activity.MainActivity;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 /**
@@ -10,8 +11,7 @@ import com.trello.rxlifecycle2.components.support.RxFragment;
  */
 public abstract class BaseFragment extends RxFragment {
     protected final String TAG = this.getClass().getSimpleName();
-    protected BaseActivity mActivity = (BaseActivity) getActivity();
-
+    protected MainActivity mActivity = (MainActivity) getActivity();
     protected void setTitle(int titleId) {
         setTitle(getString(titleId));
     }

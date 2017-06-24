@@ -46,8 +46,6 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
         mCardColorSpinner.setAdapter(arr_adapter);
         mUserTypeGroup = find(R.id.user_type_radiogroup);
        find(R.id.commit_button).setOnClickListener(this);
-
-
     }
 
     @Override

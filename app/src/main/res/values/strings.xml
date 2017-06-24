@@ -18,7 +18,7 @@
     <string name="forget_password">忘记密码</string>
     <string name="phone_isempty">亲，请输入您的手机号码</string>
     <string name="password_isempty">亲，请输入密码</string>
-    <string name="please_input_verificodem">亲，请输入验证码</string>
+    <string name="please_input_verificodem">亲，请输入图形验证码</string>
     <string name="password_isshort">亲，您输入的密码太短了</string>
     <string name="please_input_phonenumbers">请输入您的手机号码</string>
     <string name="please_input_passwords">请您输入6～16位密码</string>
@@ -82,6 +82,7 @@
     <string name="pay">支付</string>
     <string name="upload_license">上传证件</string>
     <string name="edit_address">填写地址</string>
+    <string name="please_input_smscode">亲，请输入短信验证码</string>
     <string name="select_street">街道选择</string>
     <string name="select_region">地区选择</string>
     <string name="request_failed">请求失败</string>
@@ -92,4 +93,9 @@
     <string name="please_upload_idcard">请上传身份证照片</string>
     <string name="please_upload_driven_license">请上传行驶证照片</string>
     <string name="please_upload_org_license">请上传营业执照或组织机构代码证照片</string>
+    <string name="registcomlete">注册成功</string>
+    <string name="smscodeerr">短信验证码输入错误</string>
+    <string name="passworderr">密码错误</string>
+    <string name="telphoneunregistered">手机尚未注册</string>
+    <string name="jsonexception">jsonErr</string>
 </resources>
