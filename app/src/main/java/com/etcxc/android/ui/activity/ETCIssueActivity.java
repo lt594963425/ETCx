@@ -19,7 +19,7 @@ import java.util.List;
  * Created by xwpeng on 2017/6/17.
  */
 
-public class ETCIssueActivity extends BaseActivity implements View.OnClickListener{
+public class ETCIssueActivity extends BaseActivity implements View.OnClickListener {
     private final static String TAG = ETCIssueActivity.class.getSimpleName();
     private RadioGroup mUserTypeGroup;
     private EditText mCarCardEdit;
@@ -41,19 +41,22 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
         ls.add("黑底白字");
         ls.add("白底黑字");
         ls.add("绿底白字");
-        ArrayAdapter<String> arr_adapter= new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ls);
+        ArrayAdapter<String> arr_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ls);
         arr_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mCardColorSpinner.setAdapter(arr_adapter);
         mUserTypeGroup = find(R.id.user_type_radiogroup);
        find(R.id.commit_button).setOnClickListener(this);
+
+
     }
 
     @Override
     public void onClick(View v) {
-switch (v.getId()) {
-    case R.id.commit_button:
-        startActivity(new Intent(this, UploadLicenseActivity.class));
-        break;
-}
+        switch (v.getId()) {
+            case R.id.commit_button:
+               startActivity(new Intent(this, UploadLicenseActivity.class));
+                break;
+        }
     }
+
 }

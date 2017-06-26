@@ -26,6 +26,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.NetConfig.HOST;
+
 /**
  * 选择地区，街道都用这个，只是数据源于返回的结果有区别
  * Created by xwpeng on 2017/6/21.
@@ -41,6 +43,7 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
     private List<String> mPrivence = new ArrayList<>();
     private List<String> mCity = new ArrayList<>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +51,9 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
         String county = getIntent().getStringExtra("county");
         mIsRegionSelect = TextUtils.isEmpty(county);
         initView();
-        net(mIsRegionSelect
-                ? "http://192.169.6.119/transaction/transaction/areaprovince/"
-                : " http://192.169.6.119/transaction/transaction/areastreet/county/" + county);
+        net(HOST + (mIsRegionSelect
+                ?  "/transaction/transaction/areaprovince/"
+                : " /transaction/transaction/areastreet/county/") + county);
     }
 
     private List<String> parseRegion(String result) throws Exception {
@@ -130,10 +133,10 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
         mResult.add(content);
         switch (mResult.size()) {
             case 1:
-                net("http://192.169.6.119/transaction/transaction/areacity/province/" + content);
+                net(HOST + "/transaction/transaction/areacity/province/" + content);
                 break;
             case 2:
-                net("http://192.169.6.119/transaction/transaction/areacounty/city/" + content);
+                net(HOST + "/transaction/transaction/areacounty/city/" + content);
                 break;
             case 3:
                 String s = mResult.get(0) + " " + mResult.get(1) + " " + mResult.get(2);

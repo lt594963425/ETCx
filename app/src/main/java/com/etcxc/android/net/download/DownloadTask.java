@@ -1,5 +1,6 @@
 package com.etcxc.android.net.download;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.etcxc.android.utils.LogUtil;
@@ -28,7 +29,6 @@ public class DownloadTask {
     public static final String TAG = "DownloadTask";
     private static final int BUFFER_SIZE = 2048;
     private Call mCall;
-    private String mUrl;
     private DownloadOptions mOptions;
     private OnDownloadLister mOndownloadLister;
     //是否进行了cookies重试
@@ -41,7 +41,7 @@ public class DownloadTask {
     }
 
     public String getUrl() {
-        return mUrl;
+        return mOptions.url;
     }
 
     public void cancle() {
@@ -87,13 +87,13 @@ public class DownloadTask {
         mCall = assemblyCall();
         mCall.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, IOException e) {
                 mOndownloadLister.onFailed(mOptions, REASON_NET_FAILED);
                 LogUtil.e(TAG, e.getMessage());
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (isBreakpoint(mOptions)) {
                     //downloading2(options, response, lister);}
                 } else downloading(response);
@@ -148,9 +148,15 @@ public class DownloadTask {
                 while ((len = is.read(buf)) != -1) {
                     finished += len;
                     fos.write(buf, 0, len);
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     long t = System.currentTimeMillis();
-                    if (t - timeFlag > 1000) {
+                    if (t - timeFlag > 100) {
                         timeFlag = t;
+                        LogUtil.e(TAG, "" + finished);
                         mOndownloadLister.onProgress(mOptions, finished, total);
                     }
                 }
