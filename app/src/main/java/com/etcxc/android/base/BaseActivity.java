@@ -1,5 +1,6 @@
 package com.etcxc.android.base;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +28,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     protected final OkHttpClient client = new OkHttpClient();
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
-
+    private Dialog mDialog;
     protected XToolbar getToolbar() {
         return mXToolbar;
     }
@@ -120,4 +121,5 @@ public abstract class BaseActivity extends RxAppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
     }
+
 }

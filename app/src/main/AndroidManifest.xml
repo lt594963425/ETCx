@@ -101,7 +101,7 @@
             android:exported="false" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.etcxc.android"
+            android:authorities="com.etcxc.useravatar"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

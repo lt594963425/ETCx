@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.utils.PrefUtils;
 import com.shizhefei.view.largeimage.LargeImageView;
 
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
@@ -19,6 +20,7 @@ import static com.etcxc.android.utils.FileUtils.rotateBitmapByDegree;
 
 public class LargeImageActivity extends BaseActivity {
     private LargeImageView mLargeImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,7 @@ public class LargeImageActivity extends BaseActivity {
                 return 6;
             }
         });
+
         String path = getIntent().getStringExtra("path");
         if (!TextUtils.isEmpty(path)) {
             BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -45,4 +48,20 @@ public class LargeImageActivity extends BaseActivity {
         }
 
      }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PrefUtils.setBoolean(this,"isScal",false);
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        if (PrefUtils.getBoolean(this,"isScal",false)) {
+            this.overridePendingTransition(R.anim.anim_out, R.anim.zoom_exit);
+        }
+        super.onPause();
+    }
+
 }

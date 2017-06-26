@@ -287,7 +287,7 @@ public class OkClient {
     }
 
     public static OkHttpClient rightClient(String url) {
-         OkHttpClient client = new OkHttpClient.Builder()
+        OkHttpClient client = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(180, TimeUnit.SECONDS)
@@ -298,7 +298,7 @@ public class OkClient {
             client = client.newBuilder().addInterceptor(logging).build();
         }
         if (httpOrHttps(url)) {
-           client = client.newBuilder().sslSocketFactory(overlockCard().getSocketFactory(), x509TrustManager)
+            client = client.newBuilder().sslSocketFactory(overlockCard().getSocketFactory(), x509TrustManager)
                     .hostnameVerifier(new HostnameVerifier() {
                         @Override
                         public boolean verify(String hostname, SSLSession session) {

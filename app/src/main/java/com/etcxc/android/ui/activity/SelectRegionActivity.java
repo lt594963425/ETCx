@@ -105,8 +105,6 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
                     }
                 });
     }
-
-
     private void refresUi(List<String> datas) {
         mDatas.clear();
         mDatas.addAll(datas);

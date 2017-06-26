@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.download.DownloadConfig1;
 import com.etcxc.android.net.download.DownloadManger;
 import com.etcxc.android.net.download.DownloadOptions;
@@ -88,7 +90,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         for (int i = 0; i < count; i++) {
             TextView textView = new TextView(this);
             textView.setText(mTextViewArray[i]);
-            Drawable d = getResources().getDrawable(mImageViewArray[i]);
+            Drawable d = ContextCompat.getDrawable(this,mImageViewArray[i]);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             textView.setCompoundDrawables(null, d, null, null);
             textView.setCompoundDrawablePadding(UIUtils.dip2Px(8));
@@ -131,6 +133,18 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     public void onPageScrollStateChanged(int state) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
 
     }
 
@@ -301,6 +315,17 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
         }
         LogUtil.e(TAG, options.toString());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent messageEvent) {
+        f3.setName(messageEvent.message);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
     }
 }
 

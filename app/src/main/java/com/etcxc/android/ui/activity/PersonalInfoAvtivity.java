@@ -28,9 +28,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.etcxc.android.BuildConfig;
+import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
+import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.utils.CropUtils;
 import com.etcxc.android.utils.DialogPermission;
 import com.etcxc.android.utils.FileUtils;
@@ -38,11 +39,17 @@ import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SharedPreferenceMark;
 import com.etcxc.android.utils.ToastUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.io.IOException;
 
+import static com.etcxc.android.base.App.isLogin;
+
 /**
- * 用户信息修改页面
+ * 用户信息页面
  * Created by 刘涛 on 2017/6/17 0017.
  */
 
@@ -57,11 +64,12 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
     private static final int REQUEST_CODE_ALBUM = 2;
     private static final int REQUEST_CODE_CROUP_PHOTO = 3;
     private Toolbar mToolbar;
-   private Button mExitLogin;
+   private Button mExitLogin,mLogin;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personalinfo);
+        EventBus.getDefault().register(this);
         initView();
     }
     private void initView() {
@@ -75,10 +83,18 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
                 finish();
             }
         });
+        mLogin = (Button) findViewById(R.id.bt_login_rg);
         mPersonHead = (ImageView) findViewById(R.id.person_userhead);
         mPersonName = (TextView) findViewById(R.id.person_username);
         mExitLogin = (Button) findViewById(R.id.exit_login_btn);
         mPersonHead.setOnClickListener(this);
+        mExitLogin.setOnClickListener(this);
+        mLogin.setOnClickListener(this);
+        isLogin =MeManager.getIsLogin();
+        if(isLogin){
+            String name =MeManager.getSid();
+            mPersonName.setText(name);
+        }
         //适配7.0以上和以下的手机
         file = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
 
@@ -92,10 +108,7 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
             getImageToView();//初始化
         }else{
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(),  R.drawable.vd_head2, null);
-            //drawable.setTint(Color.BLACK);
             mPersonHead.setImageDrawable(drawable);
-//            Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
-//            mPersonHead.setImageBitmap(toRoundBitmap(b));
         }
     }
     @Override
@@ -104,8 +117,15 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
             case R.id.person_userhead:
                 show2Dialog();
                 break;
+            case R.id.bt_login_rg:
+                Intent intent3 = new Intent(this, LoginActivity.class);
+                startActivity(intent3);
+                break;
             case R.id.exit_login_btn:
-                ToastUtils.showToast("退出登录");
+                isLogin =false;
+                MeManager.setIsLgon(false);
+                ToastUtils.showToast(R.string.exitlogin);
+                finish();
                 break;
         }
     }
@@ -116,9 +136,9 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
         AlertDialog.Builder   builder = new AlertDialog.Builder(this);
         TextView takePicture = (TextView) longinDialogView.findViewById(R.id.take_picture);
         TextView selectPhoto = (TextView) longinDialogView.findViewById(R.id.select_photo);
-        builder.setTitle("设置头像");
+        builder.setTitle(R.string.sethead);
         builder.setView(longinDialogView);
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -174,15 +194,16 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
                 Toast.makeText(this, "没有得到相册图片", Toast.LENGTH_LONG).show();
             }
         } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {
+
             startPhotoZoom(uri);
         } else if (requestCode == REQUEST_CODE_CROUP_PHOTO) {
             // uploadAvatarFromPhoto();
+
             getImageToView();
         }
     }
     /**
-     * 裁剪拍照裁剪
-     *
+     * 裁剪拍照
      * @param uri
      */
     public void startPhotoZoom(Uri uri) {
@@ -192,8 +213,6 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
         intent.putExtra("crop", "true");// crop=true 有这句才能出来最后的裁剪页面.
         intent.putExtra("aspectX", 1);// 这两项为裁剪框的比例.
         intent.putExtra("aspectY", 1);// x:y=1:1
-//        intent.putExtra("outputX", 400);//图片输出大小
-//        intent.putExtra("outputY", 400);
         intent.putExtra("output", Uri.fromFile(file));
         intent.putExtra("outputFormat", "JPEG");// 返回格式
         startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
@@ -205,24 +224,23 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
     private void uploadAvatarFromPhotoRequest() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
         intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
     }
 
     /**
-     * album
+     * album,相册
      */
     private void uploadAvatarFromAlbumRequest() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);//ACTION_PICK
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, REQUEST_CODE_ALBUM);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-
             case PermissionUtil.REQUEST_SHOWCAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
@@ -290,6 +308,10 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
         //加载本地图片
         final File cover = FileUtils.getSmallBitmap(this, file.getPath());
         Uri uri = Uri.fromFile(cover);
+        //通知相册更新
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(uri);
+        this.sendBroadcast(intent);
         try {
             userBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
         } catch (IOException e) {
@@ -299,5 +321,13 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
         mPersonHead.setImageBitmap(toRoundBitmap(userBitmap));
         // todo 上传图片到服务器
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent messageEvent) {
+        mPersonName.setText(messageEvent.message);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

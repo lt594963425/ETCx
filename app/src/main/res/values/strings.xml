@@ -85,7 +85,6 @@
     <string name="please_input_smscode">亲，请输入短信验证码</string>
     <string name="select_street">街道选择</string>
     <string name="select_region">地区选择</string>
-    <string name="request_failed">请求失败</string>
     <string name="please_select_region">请先选择所在地区</string>
     <string name="use_camera">拍照</string>
     <string name="get_photo_from_album">从相册中选取</string>
@@ -98,5 +97,27 @@
     <string name="passworderr">密码错误</string>
     <string name="telphoneunregistered">手机尚未注册</string>
     <string name="jsonexception">jsonErr</string>
+    <string name="request_failed">请求失败</string>
+    <string name="send_faid">发送失败,请检查手机号码是否正确</string>
+    <string name="send_success">发送成功</string>
+    <string name="login_success">登录成功</string>
+    <string name="intenet_err">登录失败，请检查网络是否连接</string>
+    <string name="server_err">服务器维护中</string>
+    <string name="registing">注册中..</string>
+    <string name="para_err">参数错误</string>
+    <string name="find_faid">找回失败</string>
+    <string name="loading">加载中...</string>
+    <string name="find_success">找回成功,请重新登录</string>
+    <string name="pwd_easy">密码太简单</string>
+    <string name="now_login">立即登录</string>
+    <string name="err_captcha">输入验证码错误</string>
+    <string name="input_pwd_ismore">密码输入错误超过三次请输入验证码</string>
+    <string name="sethead">设置头像</string>
+    <string name="cancel">取消</string>
+    <string name="exitlogin">退出登录</string>
+    <string name="logining">登录中..</string>
+    <string name="nologin">你尚未登录</string>
+    <string name="nosethead">你暂未设置头像</string>
     <string name="net_erro">网络连接失败</string>
+    <string name="login_failed">登录失败</string>
 </resources>

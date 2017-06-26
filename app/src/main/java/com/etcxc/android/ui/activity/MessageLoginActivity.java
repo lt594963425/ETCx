@@ -1,8 +1,6 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -12,37 +10,39 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.Md5Utils;
+import com.etcxc.android.bean.MessageEvent;
+import com.etcxc.android.net.OkClient;
+import com.etcxc.android.utils.DialogUtils;
 import com.etcxc.android.utils.PrefUtils;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.base.App.isLogin;
+import static com.etcxc.android.net.OkClient.get;
 /**
  * Created by 刘涛 on 2017/6/14 0014.
  * 短信登录
@@ -59,13 +59,12 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private RelativeLayout mMsgVodeLayout;//图形验证码http://192.168.6.58/login/login/login/
     String loginServerUrl = "http://192.168.6.58/login/login/login/";//登录的url
     private String smsUrl = "http://192.168.6.58/login/sms/smsreport/tel/";//短信url
-    private SharedPreferences sPUser;
 
+    private Dialog mDialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_login);
-        sPUser = getSharedPreferences("user_info", MODE_PRIVATE);
         initView();
     }
 
@@ -126,7 +125,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                     return;
                 }
-                getSmsCode(smsUrl + phoneNum2);
+                getSmsCodeBtn(smsUrl + phoneNum2);
                 TimeCount time = new TimeCount(60000, 1000);
                 time.start();
                 break;
@@ -145,157 +144,113 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     return;
                 } else if (smsCode.isEmpty()) {
                     ToastUtils.showToast(R.string.please_input_smscode);
+                    return;
                 }
+                mDialog = DialogUtils.createLoadingDialog(MessageLoginActivity.this, getString(R.string.logining));
+                //DialogUtils.closeDialog(mDialog);
                 loginUUrl(loginServerUrl + data);
                 break;
         }
     }
-
-    public void getSmsCode(String url) {
-        Request requst = new Request.Builder()
-                .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
-                .build();
-        client.newCall(requst).enqueue(new Callback() {
+    public void getSmsCodeBtn(String url) {
+        Observable.create(new ObservableOnSubscribe<String>(){
             @Override
-            public void onFailure(Call call, IOException e) {
-                MessageLoginActivity.this.runOnUiThread(new Runnable() {
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                String result = get(url,new JSONObject());
+                e.onNext(result);
+            }
+        }).compose(RxUtil.io())
+                .compose(RxUtil.activityLifecycle(this))
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void run() {
-                        ToastUtils.showToast("网络不佳，登录失败");
+                    public void accept(@NonNull String s) throws Exception {
+                            JSONObject object = new JSONObject(s);
+                            String code = object.getString("code");
+                            if(code.equals("s_ok")){//返回tel,sms_id
+                                JSONObject jsonVar = object.getJSONObject("var");
+                                String smstel = jsonVar.getString("tel");
+                                String smsID = jsonVar.getString("sms_id");
+                                PrefUtils.setString(App.get(),"ml_tel",smstel);
+                                PrefUtils.setString(App.get(),"ml_sms_id",smsID);
+                                ToastUtils.showToast(R.string.send_success);
+                            }
+                            if(code.equals("err")){//返回失败原因
+                                String msg = object.getString("messsage");
+                                ToastUtils.showToast(R.string.send_faid+":"+msg);
+                                return;
+                            }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        ToastUtils.showToast(R.string.send_faid);
                     }
                 });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string().trim();
-                try {
-                    JSONObject object = new JSONObject(s);
-                    String code = object.getString("code");
-                    if(code.equals("s_ok")){//返回tel,sms_id
-                        JSONObject jsonVar = object.getJSONObject("var");
-                        String smstel = jsonVar.getString("tel");
-                        String smsID = jsonVar.getString("sms_id");
-                        PrefUtils.setString(App.get(),"ml_tel",smstel);
-                        PrefUtils.setString(App.get(),"ml_sms_id",smsID);
-                        ToaltsThreadUIshow("发送成功");
-                    }
-                    if(code.equals("err")){//返回失败原因
-                        String msg = object.getString("messsage");
-                        ToaltsThreadUIshow("发送失败:"+msg);
-                        return;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     public void loginUUrl(String url) {
-        Request requst = new Request.Builder()
-                .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
-                .build();
-        client.newCall(requst).enqueue(new Callback() {
+        Observable.create(new ObservableOnSubscribe<String >() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                MessageLoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastUtils.showToast("网络不佳，登录失败");
-                    }
-                });
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                String result = OkClient.get(url,new JSONObject());
+                e.onNext(result);
             }
-
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+        .subscribe(new Consumer<String>() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string().trim();
-                try {
-                    JSONObject jsonObject = new JSONObject(s);
-                    String code = jsonObject.getString("code");
-                    if (code.equals("s_ok")) {
-                       //请求成功
-                        JSONObject varJson = jsonObject.getJSONObject("var");
-                        String tel = varJson.getString("tel");
-                        String pwd = varJson.getString("pwd");
-                        String loginTime = varJson.getString("login_time");
-                        String nickName = varJson.getString("nick_name");
-                        //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
-                        SharedPreferences.Editor editor = sPUser.edit();
-                        editor.putString("telphone", tel);
-                        editor.putString("password", Md5Utils.encryptpwd(pwd));
-                        editor.putString("logintime", loginTime);
-                        editor.putString("nickname", nickName);
-                        editor.commit();
-                        ToaltsThreadUIshow("登录成功");
-                        finish();
-                    }
-                    if (code.equals("err")) {
-                        String returnMsg = jsonObject.getString("message");//返回的信息
-                       if(returnMsg.equals("telphone_unregistered")){
-                           ToaltsThreadUIshow("手机尚未注册");
-                           finish();
-                       }else{
-                            ToaltsThreadUIshow("登录失败："+returnMsg);
-                        }
-                        return;
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return;
+            public void accept(@NonNull String s) throws Exception {
+                parseJson(s);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                DialogUtils.closeDialog(mDialog);
+                ToastUtils.showToast(R.string.intenet_err);
+            }
+        });
+    }
+    private void parseJson(String s)  {
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            String code = jsonObject.getString("code");
+            if (code.equals("s_ok")) {
+                //请求成功
+                JSONObject varJson = jsonObject.getJSONObject("var");
+                String tel = varJson.getString("tel");
+                String pwd = varJson.getString("pwd");
+                String loginTime = varJson.getString("login_time");
+                String nickName = varJson.getString("nick_name");
+                EventBus.getDefault().post(new MessageEvent(tel));
+                isLogin =true;//登录成功
+                MeManager.setSid(tel);
+                MeManager.setName(nickName);
+                MeManager.setIsLgon(isLogin);
+                DialogUtils.closeDialog(mDialog);
+                ToastUtils.showToast(R.string.login_success);
+                finish();
+            }
+            if (code.equals("err")) {
+                String returnMsg = jsonObject.getString("message");
+                if(returnMsg.equals("telphone_unregistered")){
+                    DialogUtils.closeDialog(mDialog);
+                    ToastUtils.showToast(R.string.telphoneunregistered);
+                    finish();
+                }else{
+                    DialogUtils.closeDialog(mDialog);
+                    ToastUtils.showToast(R.string.login_failed);
                 }
-
-
+                return;
             }
-        });
+        } catch(JSONException e) {
+            e.printStackTrace();
+            ToastUtils.showToast(R.string.para_err);
+        }
     }
-
-    private void ToaltsThreadUIshow(Object s) {
-        MessageLoginActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {//mLoginVerificodeEdt
-                ToastUtils.showToast(s + "");
-            }
-        });
-    }
-
-    Bitmap bitmap;
-
-    private Bitmap setPicCode(final String url) {
-        Request requst = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-        client.newCall(requst).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                InputStream is = response.body().byteStream();//字节流
-                bitmap = BitmapFactory.decodeStream(is);
-                MessageLoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {//mLoginVerificodeEdt
-                        mMPicCodeIV.setImageBitmap(bitmap);
-                        LogUtil.v(TAG, "-----------更新验证码成功--------");
-                        mMRefrshCodeIv.clearAnimation();
-                    }
-                });
-
-            }
-        });
-        return bitmap;
-    }
-
     /**
      * 监听手机号码的长度
      */
     CharSequence temp;
-
-
     public class MyTextWatcher implements TextWatcher {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -317,22 +272,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             }
         }
     }
-
-    /**
-     * 旋转动画
-     *
-     * @param view
-     * @param setid
-     */
-    public void startRotateAnimation(View view, int setid) {
-        Animation rotateAnim = AnimationUtils.loadAnimation(this, setid);
-        LinearInterpolator lin = new LinearInterpolator();
-        rotateAnim.setInterpolator(lin);
-        if (rotateAnim != null) {
-            view.startAnimation(rotateAnim);
-        }
-    }
-
     /**
      * 倒计时获取验证码
      */
@@ -340,14 +279,12 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         public TimeCount(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
-
         @Override
         public void onTick(long millisUntilFinished) {//R.color.colorAccent #B6B6D8
             mGetMsgVeriFicodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGray));
             mGetMsgVeriFicodeButton.setClickable(false);
             mGetMsgVeriFicodeButton.setText("(" + millisUntilFinished / 1000 + ")" + getString(R.string.timeLate));
         }
-
         @Override
         public void onFinish() {
             mGetMsgVeriFicodeButton.setText(getString(R.string.reStartGetCode));
@@ -365,5 +302,11 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         Pattern p = Pattern.compile(regExp);
         Matcher m = p.matcher(mobiles);
         return m.matches();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
     }
 }

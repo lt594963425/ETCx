@@ -1,5 +1,6 @@
 package com.etcxc.android.base;
 
+import android.app.Activity;
 import android.view.MenuItem;
 
 import com.etcxc.android.ui.activity.MainActivity;
@@ -32,6 +33,11 @@ public abstract class BaseFragment extends RxFragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
     }
 
 }

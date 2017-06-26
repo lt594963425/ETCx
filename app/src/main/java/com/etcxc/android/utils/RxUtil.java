@@ -16,7 +16,6 @@ import io.reactivex.schedulers.Schedulers;
  * Created by xwpeng on 16/5/19.
  */
 public class RxUtil {
-
     private static <T> ObservableTransformer<T, T> schedulerTransformer(Scheduler scheduler) {
         return observable ->
             observable

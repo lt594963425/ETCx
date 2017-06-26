@@ -1,6 +1,6 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
+import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -20,22 +20,25 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.net.OkClient;
+import com.etcxc.android.utils.DialogUtils;
 import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -48,6 +51,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye,mResetPwdDelete;
     private SharedPreferences sPUser;
+    private Dialog mDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,8 +133,9 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 //data = /tel/'tel'/inf_modify_sms_code/'inf_modify_sms_code'/pwd/'pwd'/sms_id/'sms_id'
                 String phoneNum = mPhoneNumberEdit.getText().toString();
                 String passWord = mResetPwd.getText().toString().trim();
+                String pwd = Md5Utils.encryptpwd(passWord);
                 String veriFicode = mVerifiCodeEdit.getText().toString().trim();
-                String data = "tel/" + phoneNum + "/inf_modify_sms_code/"+veriFicode+"/pwd/" + passWord+"/sms_id/"+smsID;
+                String data = "tel/" + phoneNum + "/inf_modify_sms_code/"+veriFicode+"/pwd/" + pwd+"/sms_id/"+smsID;
                 if(phoneNum.isEmpty()){
                     ToastUtils.showToast(R.string.phone_isempty);
                     return;
@@ -147,11 +152,8 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.password_isshort);
                     return;
                 }
-                try {
+                   mDialog = DialogUtils.createLoadingDialog(this,getString(R.string.loading));
                     ResetPwdUrl(resetPwdUrl+data);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 break;
             case R.id.get_reset_verificode_button://获取短息验证码
                 String phoneNum2 = mPhoneNumberEdit.getText().toString();
@@ -188,122 +190,124 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         }
     }
     public void ResetPwdUrl(String url) {
-        Request requst = new Request.Builder()
-                .url(url)//http://192.169.6.119/login/login/login/tel/15974255013/pwd/123456/code/wrty
-                .build();
-        client.newCall(requst).enqueue(new Callback() {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                String result = OkClient.get(url,new JSONObject());
+                e.onNext(result);
+            }
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+                .subscribe(new Consumer<String>() {
 
-                ResetPasswordActivity.this.runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        ToastUtils.showToast("网络不佳，登录失败");
+                    public void accept(@NonNull String s) throws Exception {
+                        parseJson(s);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        ToastUtils.showToast(R.string.find_faid);
                         return;
                     }
                 });
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string().trim();
-                // ToaltsThreadUIshow(s);// todo 返回数据待改进
-                try {
-                    JSONObject jsonObject = new JSONObject(s);
-                    if(jsonObject==null) return;
-                    String code = jsonObject.getString("code");
-                    if ( code.equals("s_ok")) {
-                        //请求成功
-                        JSONObject varJson = jsonObject.getJSONObject("var");
-                        String tel = varJson.getString("tel");
-                        String pwd = varJson.getString("pwd");
-                        String lastmodifyTime = varJson.getString("last_modify_time");//标准的时间格式
-                        String nickName = varJson.getString("nick_name");
-                        //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
-                        SharedPreferences.Editor editor = sPUser.edit();
-                        editor.putString("telphone", tel);
-                        editor.putString("password", Md5Utils.encryptpwd(pwd));
-                        editor.putString("lastmodifyTime",lastmodifyTime);
-                        editor.putString("nickname",nickName);
-                        editor.commit();
-                        ToaltsThreadUIshow("找回密码成功");// todo 返回数据待改进
-                        Intent intent = new Intent(ResetPasswordActivity.this,LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                    if (code.equals("err")) {
-                        String returnMsg = jsonObject.getString("message");//返回的信息
-                        if(returnMsg.equals("telphone_unregistered")){
-                            ToaltsThreadUIshow("手机尚未注册");
-                        } else if (returnMsg.equals("sms_code_error")){
-                            ToaltsThreadUIshow("输入验证码错误");
-                        }else if (returnMsg.equals("err_password")){
-                            ToaltsThreadUIshow("密码错误");//
-                        }else {
-                            ToaltsThreadUIshow(returnMsg);//
-                        }
-                        return;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToaltsThreadUIshow("登录失败JSONException");// todo 返回数据待改进
-                    return;
-                }
-
-            }
-        });
     }
+
+    private void parseJson(@NonNull String s) {
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            if(jsonObject==null) return;
+            String code = jsonObject.getString("code");
+            if ( code.equals("s_ok")) {
+                JSONObject varJson = jsonObject.getJSONObject("var");
+                String tel = varJson.getString("tel");
+                String pwd = varJson.getString("pwd");
+                String lastmodifyTime = varJson.getString("last_modify_time");//标准的时间格式
+                String nickName = varJson.getString("nick_name");
+                SharedPreferences.Editor editor = sPUser.edit();
+                editor.putString("telphone", tel);
+                editor.putString("password", pwd);
+                editor.putString("lastmodifyTime",lastmodifyTime);
+                editor.putString("nickname",nickName);
+                editor.commit();
+                DialogUtils.closeDialog(mDialog);
+                ToastUtils.showToast(R.string.find_success);
+                finish();
+            }
+            if (code.equals("err")) {
+                String returnMsg = jsonObject.getString("message");
+                if(returnMsg.equals("telphone_unregistered")){
+                    DialogUtils.closeDialog(mDialog);
+                    ToastUtils.showToast(R.string.telphoneunregistered);
+                } else if (returnMsg.equals("sms_code_error")){
+                    DialogUtils.closeDialog(mDialog);
+                    ToastUtils.showToast(R.string.smscodeerr);
+                }else if (returnMsg.equals("err_password")){
+                    DialogUtils.closeDialog(mDialog);
+                    ToastUtils.showToast(R.string.passworderr);//
+                }else {
+                    DialogUtils.closeDialog(mDialog);
+                    ToastUtils.showToast(returnMsg);
+                }
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DialogUtils.closeDialog(mDialog);
+            ToastUtils.showToast(R.string.find_faid);// todo 返回数据待改进
+            return;
+        }
+    }
+
     public void getSmsCode(String url) {
-        Request requst = new Request.Builder()
-                .url(url)
-                .build();
-        client.newCall(requst).enqueue(new Callback() {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                ResetPasswordActivity.this.runOnUiThread(new Runnable() {
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                String result = OkClient.get(url,new JSONObject());
+                e.onNext(result);
+            }
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void run() {
-                        ToastUtils.showToast("网络不佳，注册失败");
+                    public void accept(@NonNull String s) throws Exception {
+                        parseSmsCodeJson(s);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+
+                        ToastUtils.showToast(R.string.send_faid);
                     }
                 });
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string().trim();
-                try {
-                    JSONObject object = new JSONObject(s);
-                    String code = object.getString("code");
-                    if(code.equals("s_ok")){//返回tel,sms_id
-                        JSONObject  jsonvar =object.getJSONObject("var");
-                        String smsID = jsonvar.getString("sms_id");
-                        PrefUtils.setString(App.get(),"rp_sms_id",smsID);//rp_sms_id
-                        ToaltsThreadUIshow("发送成功");
-                    }
-                    if(code.equals("err")){//返回失败原因
-                        String msg =object.getString("message");
-                        if(msg.equals("password_too_easy")){
-                            ToaltsThreadUIshow("密码太简单");
-                        }else if(msg.equals("telphone_unregistered")){
-                            ToaltsThreadUIshow("手机尚未注册");
-                        }
-                        else {
-                            ToaltsThreadUIshow("发送失败");
-                        }
-                        return;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToaltsThreadUIshow("发送失败");
-                }
-            }
-        });
     }
-    private void ToaltsThreadUIshow(Object s) {
-        ResetPasswordActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {//mLoginVerificodeEdt
-                ToastUtils.showToast(s+"");
+
+    private void parseSmsCodeJson(@NonNull String s) {
+        try {
+            JSONObject object = new JSONObject(s);
+            String code = object.getString("code");
+            if(code.equals("s_ok")){//返回tel,sms_id
+                JSONObject  jsonvar =object.getJSONObject("var");
+                String smsID = jsonvar.getString("sms_id");
+                PrefUtils.setString(App.get(),"rp_sms_id",smsID);//rp_sms_id
+                ToastUtils.showToast(R.string.send_success);
             }
-        });
+            if(code.equals("err")){
+                String msg =object.getString("message");
+                if(msg.equals("password_too_easy")){
+                    ToastUtils.showToast(R.string.pwd_easy);
+                }else if(msg.equals("telphone_unregistered")){
+                    ToastUtils.showToast(R.string.telphoneunregistered);
+                }
+                else {
+                    ToastUtils.showToast(R.string.send_faid);
+                }
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ToastUtils.showToast(R.string.send_faid);
+        }
     }
     /**
      * 监听手机号码的长度

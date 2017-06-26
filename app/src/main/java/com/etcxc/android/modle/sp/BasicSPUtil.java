@@ -32,7 +32,7 @@ public abstract class BasicSPUtil {
     }
 
     public boolean getBoolean(String key, boolean defValue) {
-        return mSP.getBoolean(key, defValue);
+        return mSP.getBoolean(Base64Util.encode(key), defValue);
     }
 
     public void putFloat(String key, float value) {

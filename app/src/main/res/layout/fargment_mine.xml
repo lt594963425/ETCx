@@ -9,14 +9,15 @@
     <FrameLayout
         android:id="@+id/mine_layout"
         android:layout_width="match_parent"
-        android:layout_height="115dp"
+        android:layout_height="100dp"
         android:background="#ffffff">
 
         <ImageView
+
             android:layout_marginLeft="25dp"
             android:id="@+id/userhead"
-            android:layout_width="89dp"
-            android:layout_height="89dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_vertical"
             android:clickable="true"
             app:srcCompat="@drawable/vd_head2" />
@@ -30,21 +31,8 @@
             android:layout_marginLeft="140dp"
             android:clickable="true"
             android:textSize="20sp"
-            android:text="立即登录"
+            android:text="@string/now_login"
             android:textColor="#fc8337" />
     </FrameLayout>
-    <Button
-        android:layout_marginTop="3dp"
-        android:textColor="#fc8337"
-        android:id="@+id/bt_login_rg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="登录" />
-    <Button
-        android:layout_marginTop="3dp"
-        android:textColor="#fc8337"
-        android:id="@+id/bt_f2_rg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="注册" />
+
 </LinearLayout>

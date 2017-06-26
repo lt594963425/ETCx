@@ -1,8 +1,6 @@
 package com.etcxc.android.base;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.etcxc.android.utils.LogUtil;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -13,9 +11,8 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  * Created by xwpeng on 2017/5/25.
  */
 public class App extends Application {
-
+    public static  Boolean isLogin =false;//未登录状态false ，登录状态true
     public  static Boolean  userTag = false;
-
     private static final String TAG = "App";
     private static App sInstance = null;
     public App() {

@@ -57,7 +57,6 @@ import io.reactivex.functions.Consumer;
 
 public class FragmentHome extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
     private Handler mHandler = new Handler();
-    private MainActivity mActivity;
     private GridView mHomeGV;
     private List<ImageView> imageViewList; // Viewpager的数据
     private ViewPager mVPger;
@@ -76,6 +75,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             ,App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate),App.get().getString(R.string.advice),
             App.get().getString(R.string.gridchek)};
     private String strDitle ="高速公路畅通无阻\n“0”元照进不误";
+    private MainActivity mActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
@@ -251,25 +251,18 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
         }
-
-        //初始化一个条目
-        //*position 就是当前需要加载条目的索引
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             // 把position对应位置的ImageView添加到ViewPager中
             ImageView iv = imageViewList.get(position);
-            container.addView(iv);
+           container.addView(iv);
             return iv;
         }
-        // 销毁一个条目
-        //position 就是当前需要被销毁的条目的索引
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            // 把ImageView从ViewPager中移除掉
-            container.removeView((View) object);
+           container.removeView((View) object);
         }
     }
-
     private class MyGridViewAdapter extends BaseAdapter {
         @Override
         public int getCount() {
@@ -346,7 +339,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                     }
                 });
     }
-
     private void showVersionUpdate(final boolean forceUpdate, String versionName, String download_url, String description) {
         final AlertDialog.Builder builer = new AlertDialog.Builder(getActivity());
         String title = getString(R.string.hava_new_version);
@@ -389,4 +381,8 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         mHandler.removeCallbacksAndMessages(null);//移除消息,停止轮播
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }
