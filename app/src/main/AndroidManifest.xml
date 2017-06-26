@@ -81,8 +81,8 @@
         <service
             android:name=".net.download.DService"
             android:exported="false">
-            <intent-filter>
-                <action android:name="com.etcxc.android.action.DSERVICE" />
+                <intent-filter>
+                    <action android:name="com.etcxc.android.action.DSERVICE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

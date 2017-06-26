@@ -1,15 +1,21 @@
 package com.etcxc.android.utils;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.compat.BuildConfig;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
+import com.etcxc.android.BuildConfig;
 import com.etcxc.android.base.App;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -66,4 +72,42 @@ public class SystemUtil {
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
+
+    /**
+     * 安装apk
+     */
+    public static void installApk(Context context, File file) {
+        if (file == null) {
+            LogUtil.w(TAG, "installApk: file is null.");
+            return;
+        }
+        if (file.exists()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            Uri uri = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                    ? FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", file)
+                    : Uri.fromFile(file);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            context.startActivity(intent);
+        } else {
+            LogUtil.w(TAG, "installApk: failed, path=" + file.getAbsolutePath());
+        }
+    }
+
+    public static final File downloadDir() {
+        File f1 = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            f1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            if (f1.exists()) {
+                f1 = new File(f1, "XC");
+                if (!f1.exists()) {
+                    f1.mkdir();
+                }
+            }
+        }
+        return f1;
+    }
+
 }

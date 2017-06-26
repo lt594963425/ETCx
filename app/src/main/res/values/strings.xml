@@ -92,4 +92,5 @@
     <string name="please_upload_idcard">请上传身份证照片</string>
     <string name="please_upload_driven_license">请上传行驶证照片</string>
     <string name="please_upload_org_license">请上传营业执照或组织机构代码证照片</string>
+    <string name="net_erro">网络连接失败</string>
 </resources>

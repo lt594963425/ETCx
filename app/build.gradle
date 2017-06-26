@@ -104,5 +104,7 @@ dependencies {
     compile 'com.github.yalantis:ucrop:2.2.1'
     //高清大图
     compile 'com.shizhefei:LargeImageView:1.0.4'
+    //eventBus
+    compile 'org.greenrobot:eventbus:3.0.0'
 }
 

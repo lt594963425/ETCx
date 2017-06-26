@@ -23,9 +23,12 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.upload.UploadTask;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
@@ -34,6 +37,12 @@ import com.yalantis.ucrop.UCrop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 import static com.etcxc.android.utils.FileUtils.rotateBitmapByDegree;
@@ -102,9 +111,12 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
      * fixme:加载太卡，考虑延迟加载
      */
     private void showOldImage() {
-        if (cropExists(CROPENAME_DRIVEN)) setImageFromUri(mDriveImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_DRIVEN)));
-        if (cropExists(CROPENAME_ORG)) setImageFromUri(mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_ORG)));
-        if (cropExists(CROPENAME_IDCARD)) setImageFromUri(mIsOrg ? mSecondImageView : mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_IDCARD)));
+        if (cropExists(CROPENAME_DRIVEN))
+            setImageFromUri(mDriveImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_DRIVEN)));
+        if (cropExists(CROPENAME_ORG))
+            setImageFromUri(mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_ORG)));
+        if (cropExists(CROPENAME_IDCARD))
+            setImageFromUri(mIsOrg ? mSecondImageView : mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_IDCARD)));
     }
 
     private void setListener() {
@@ -124,6 +136,29 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         return file.exists() && file.length() > 0;
     }
 
+    private void upload() {
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                UploadTask u = new UploadTask();
+                e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_IDCARD), ""));
+                e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_DRIVEN), ""));
+                if (mIsOrg)
+                    e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_ORG), ""));
+            }
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        LogUtil.e(TAG, s);
+                   ToastUtils.showToast(s);
+                    }
+                });
+    }
+
+    private final static String UPLOAD_PATH = NetConfig.HOST + "/transaction/transaction/upload/";
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -132,7 +167,8 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 boolean orgOK = cropExists(CROPENAME_ORG);
                 boolean idCradOk = cropExists(CROPENAME_IDCARD);
                 if (drivenOK && (mIsOrg ? idCradOk && orgOK : idCradOk)) {
-                    startActivity(new Intent(this, ContactPhoneActivity.class));
+                    upload();
+//                    startActivity(new Intent(this, ContactPhoneActivity.class));
                 } else {
                     int toastStr = drivenOK
                             ? idCradOk ? R.string.please_upload_org_license : R.string.please_upload_idcard
@@ -166,7 +202,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     }
 
     private void previewLargeImage(String fileName) {
-        if (cropExists(fileName))  {
+        if (cropExists(fileName)) {
             Intent i = new Intent(this, LargeImageActivity.class);
             i.putExtra("path", mCachePath + File.separator + fileName);
             startActivity(i);

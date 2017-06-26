@@ -5,8 +5,6 @@ import android.content.Intent;
 import com.etcxc.android.base.App;
 import com.etcxc.android.net.Actions;
 
-import static android.R.attr.tag;
-
 /**
  * 下载管理类
  * Created by xwpeng on 2017/6/15.
@@ -27,7 +25,7 @@ public class DownloadManger {
         Intent intent = new Intent();
         intent.setAction(Actions.ACTION_DSERVICE);
         intent.setPackage(App.get().getPackageName());
-        intent.putExtra("tag", tag);
+        intent.putExtra("url", url);
         intent.putExtra("cancel", true);
         App.get().startService(intent);
     }

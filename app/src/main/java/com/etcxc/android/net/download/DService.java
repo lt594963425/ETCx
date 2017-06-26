@@ -4,10 +4,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
-import com.etcxc.android.net.Actions;
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,10 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class DService extends Service {
     private static final String TAG = "DService";
     private volatile List<DownloadTask> mTasks = Collections.synchronizedList(new CopyOnWriteArrayList<DownloadTask>());
-    @Override
-    public void onCreate() {
-        super.onCreate();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -32,9 +27,7 @@ public class DService extends Service {
             String url = intent.getStringExtra("url");
             if (TextUtils.isEmpty(url)) return super.onStartCommand(intent, flags, startId);
                 for (DownloadTask task : mTasks) {
-                    if (url.equals(task.getUrl())) {
-                        task.cancle();
-                    }
+                    if (url.equals(task.getUrl())) task.cancle();
                 }
         } else {
             DownloadOptions options = intent.getParcelableExtra("options");
@@ -64,6 +57,7 @@ public class DService extends Service {
         public void onQueue(DownloadOptions o) {
             o.step = DownloadConfig1.STEP_QUEUE;
             broadcast(o);
+
         }
 
         @Override
@@ -136,10 +130,8 @@ public class DService extends Service {
     private DownloadNotification dn;
 
     private void broadcast(DownloadOptions options) {
-        Intent intent = new Intent(Actions.ACTION_DOWNLOAD);
-        intent.putExtra(DownloadConfig1.KEY_DOWNLOAD, options);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-        showNotificationIfNeeded(options);
+//        showNotificationIfNeeded(options);
+        EventBus.getDefault().post(options);
     }
 
     private void showNotificationIfNeeded(DownloadOptions o) {
