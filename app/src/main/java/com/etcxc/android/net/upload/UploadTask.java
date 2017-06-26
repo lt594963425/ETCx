@@ -4,6 +4,7 @@ import com.etcxc.android.utils.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -39,6 +40,26 @@ public class UploadTask {
                 .url(url)
 //                .addHeader("Cookie", cookie)
                 .post(requestBody)
+                .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS);
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        builder.addInterceptor(logging).build();
+        return builder.build().newCall(request);
+    }
+
+    public static Call getUploadCall(String url, String cookie , List<File> files) {
+        MultipartBody.Builder partBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+        for (File file : files) {
+            partBuilder.addFormDataPart("image[]", file.getName(), RequestBody.create(MediaType.parse("image"), file));
+        }
+        Request request = new Request.Builder()
+                .url(url)
+//                .addHeader("Cookie", cookie)
+                .post(partBuilder.build())
                 .build();
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)

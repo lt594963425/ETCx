@@ -37,6 +37,8 @@ import com.yalantis.ucrop.UCrop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -74,6 +76,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private final static int CLICK_IDCARD = 1;
     private final static int CLICK_ORG = 2;
     private final static int CLICK_DRIVEN = 4;
+    private final static String UPLOAD_PATH = NetConfig.HOST + "/transaction/transaction/upload/veh_code/湘A88888/veh_code_colour/蓝底白字";
 
 
     @Override
@@ -141,10 +144,16 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 UploadTask u = new UploadTask();
-                e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_IDCARD), ""));
+          /*      e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_IDCARD), ""));
                 e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_DRIVEN), ""));
                 if (mIsOrg)
                     e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_ORG), ""));
+            }*/
+                List<File> files = new ArrayList<>();
+                files.add(new File(mCachePath, CROPENAME_IDCARD));
+                files.add(new File(mCachePath, CROPENAME_DRIVEN));
+                if (mIsOrg) files.add(new File(mCachePath, CROPENAME_ORG));
+                e.onNext(UploadTask.getUploadCall(UPLOAD_PATH, "", files).execute().body().string());
             }
         }).compose(RxUtil.activityLifecycle(this))
                 .compose(RxUtil.io())
@@ -156,8 +165,6 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                     }
                 });
     }
-
-    private final static String UPLOAD_PATH = NetConfig.HOST + "/transaction/transaction/upload/";
 
     @Override
     public void onClick(View v) {
