@@ -3,8 +3,12 @@ package com.etcxc.android.net;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 
 import com.etcxc.android.base.App;
+
+import java.io.File;
+import java.util.Map;
 
 /**
  * 网络相关的一些配置
@@ -48,5 +52,15 @@ public class NetConfig {
     public static boolean isAvailable() {
         NetworkInfo info = getNetworkInfo();
         return info != null && info.isAvailable();
+    }
+
+    public static String consistUrl(@NonNull String func, Map<String, String> params) {
+        StringBuilder builder = new StringBuilder(HOST).append(func);
+        if (params != null) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                 builder.append(File.separator).append(entry.getKey()).append(File.separator).append(entry.getValue());
+            }
+        }
+        return builder.toString();
     }
 }

@@ -2,12 +2,34 @@ package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
+import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkClient;
+import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.RxUtil;
+import com.etcxc.android.utils.SystemUtil;
+import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.util.regex.Matcher;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * 联系手机验证录入
@@ -16,23 +38,131 @@ import com.etcxc.android.utils.UIUtils;
 
 public class ContactPhoneActivity extends BaseActivity implements View.OnClickListener{
     private final static String TAG = ContactPhoneActivity.class.getSimpleName();
-    private EditText mEditText;
+    private EditText mPhoneEditText;
+    private final static String FUNC_SEND_CODE = "/transaction/tran_sms/smsreport";
+    private final static String FUNC_COMMIT_CONTACT_PHONE = "/transaction/transaction/transactiontel";
+    private String mSmsId;
+    private Button mGetVerifyCodeButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_phone);
         setTitle(R.string.post_address_contact_phone);
-        mEditText = find(R.id.phone_number_edittext);
-        UIUtils.addIcon(mEditText, R.drawable.vd_contact_phone_delete, UIUtils.RIGHT);
+        mPhoneEditText = find(R.id.phone_number_edittext);
+        UIUtils.addIcon(mPhoneEditText, R.drawable.vd_contact_phone_delete, UIUtils.RIGHT);
+        String uid = MeManager.getUid();
+        if (!TextUtils.isEmpty(uid)) mPhoneEditText.setText(uid);
+        mGetVerifyCodeButton = find(R.id.get_verificode_button);
+        setListener();
+    }
+
+    private void setListener() {
         find(R.id.commit_button).setOnClickListener(this);
+        mGetVerifyCodeButton.setOnClickListener(this);
+    }
+
+
+    private String verifyPhoneEdit() {
+        String tel1 = mPhoneEditText.getText().toString();
+        if (TextUtils.isEmpty(tel1)) {
+            ToastUtils.showToast("手机号码不能为空");
+            return "";
+        }
+        Matcher m = SystemUtil.phonePattern.matcher(tel1);
+        if (m.matches()) {
+           return tel1;
+        } else ToastUtils.showToast(R.string.please_input_phonenumber);
+        return "";
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
-                startActivity(new Intent(this, PostAddressActivity.class));
+                String tel1 = verifyPhoneEdit();
+                if (!TextUtils.isEmpty(tel1)) {
+                            EditText verifyEdit = find(R.id.verificode_edittext);
+                    String verifyCode = verifyEdit.getText().toString();
+                    if (TextUtils.isEmpty(verifyCode)) ToastUtils.showToast(R.string.set_verifycodes);
+                    else commitNet(tel1, verifyCode);
+                }
+                break;
+            case R.id.get_verificode_button:
+                String tel = verifyPhoneEdit();
+                if (!TextUtils.isEmpty(tel)) sendCode(tel);
                 break;
         }
+    }
+
+    private void sendCode(String tel) {
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(FUNC_SEND_CODE)
+                        .append(File.separator).append("tel").append(File.separator).append(tel);
+                e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));
+            }
+        }).compose(RxUtil.io())
+                .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String s) throws Exception {
+                JSONObject jsonObject = new JSONObject(s);
+                String code = jsonObject.getString("code");
+                if ("s_ok".equals(code)) {
+                    jsonObject = jsonObject.getJSONObject("var");
+                    mSmsId = jsonObject.getString("tran_sms_id");
+                    mGetVerifyCodeButton.setEnabled(false);
+                    CountDownTimer ct= new CountDownTimer(60000, 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                        mGetVerifyCodeButton.setText(millisUntilFinished / 1000 + "S后再试");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            mGetVerifyCodeButton.setText(R.string.reget_verify_code);
+                            mGetVerifyCodeButton.setEnabled(true);
+                        }
+                    };
+                    ct.start();
+                } else  ToastUtils.showToast(R.string.request_failed);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                LogUtil.e(TAG, "net", throwable);
+                ToastUtils.showToast(R.string.request_failed);
+            }
+        });
+    }
+
+    private void commitNet(String tel,String verifyCode) {
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(FUNC_COMMIT_CONTACT_PHONE)
+                        .append(File.separator).append("tran_sms_code").append(File.separator).append(verifyCode)
+                        .append(File.separator).append("tran_sms_id").append(File.separator).append(mSmsId)
+                        .append(File.separator).append("veh_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
+                        .append(File.separator).append("veh_code_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""))
+                        .append(File.separator).append("tran_tel").append(File.separator).append(tel);
+                e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));
+            }
+        }).compose(RxUtil.io())
+                .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String s) throws Exception {
+                JSONObject jsonObject = new JSONObject(s);
+                String code = jsonObject.getString("code");
+                if ("s_ok".equals(code)) startActivity(new Intent(ContactPhoneActivity.this, PostAddressActivity.class));
+                else ToastUtils.showToast(R.string.request_failed);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                LogUtil.e(TAG, "net", throwable);
+                ToastUtils.showToast(R.string.request_failed);
+            }
+        });
     }
 }

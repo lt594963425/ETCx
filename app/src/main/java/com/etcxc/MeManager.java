@@ -1,4 +1,5 @@
 package com.etcxc;
+
 import com.etcxc.android.modle.sp.PublicSPUtil;
 
 /**
@@ -16,6 +17,7 @@ public class MeManager {
     public static String getSid() {
         return PublicSPUtil.getInstance().getString(KEY_Sid, null);
     }
+
     public static String getUid() {
         return PublicSPUtil.getInstance().getString(KEY_Uid, null);
     }
@@ -28,6 +30,7 @@ public class MeManager {
     public static void setSid(String sid) {
         PublicSPUtil.getInstance().putString(KEY_Sid, sid);
     }
+
     public static void setUid(String uid) {
         PublicSPUtil.getInstance().putString(KEY_Uid, uid);
     }

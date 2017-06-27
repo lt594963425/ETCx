@@ -23,6 +23,7 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.upload.UploadTask;
 import com.etcxc.android.utils.FileUtils;
@@ -33,6 +34,8 @@ import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.yalantis.ucrop.UCrop;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,7 +65,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private final static String TAG = UploadLicenseActivity.class.getSimpleName();
     private final static int REQUEST_CAMERA = 1;
     private final static int REQUEST_ALBUM = 2;
-    private boolean mIsOrg = true;//是组织用户吗？
+    private boolean mIsOrg;//是组织用户吗？
     private ImageView mFristImageView, mFristCamera, mSecondImageView, mSecondCamera, mDriveImageView, mDriveCamera;
     private int mClickFlag;
     private Uri uri;
@@ -76,7 +79,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private final static int CLICK_IDCARD = 1;
     private final static int CLICK_ORG = 2;
     private final static int CLICK_DRIVEN = 4;
-    private final static String UPLOAD_PATH = NetConfig.HOST + "/transaction/transaction/upload/veh_code/湘A88888/veh_code_colour/蓝底白字";
+    private final static String FUNC = "/transaction/transaction/upload";
 
 
     @Override
@@ -84,8 +87,14 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_license);
         mCachePath = FileUtils.getCachePath(this);
+        initData();
         initView();
         setListener();
+    }
+
+    private void initData() {
+        Intent intent = getIntent();
+       mIsOrg = intent.getBooleanExtra("isOrg", false);
     }
 
     private void initView() {
@@ -153,15 +162,26 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 files.add(new File(mCachePath, CROPENAME_IDCARD));
                 files.add(new File(mCachePath, CROPENAME_DRIVEN));
                 if (mIsOrg) files.add(new File(mCachePath, CROPENAME_ORG));
-                e.onNext(UploadTask.getUploadCall(UPLOAD_PATH, "", files).execute().body().string());
+                StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST).append(FUNC)
+                        .append(File.separator).append("veh_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
+                        .append(File.separator).append("veh_code_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""));
+                e.onNext(UploadTask.getUploadCall(urlBuilder.toString(), "", files).execute().body().string());
             }
         }).compose(RxUtil.activityLifecycle(this))
                 .compose(RxUtil.io())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        LogUtil.e(TAG, s);
-                   ToastUtils.showToast(s);
+                        JSONObject jsonObject = new JSONObject(s);
+                        String code = jsonObject.getString("code");
+                        if ("s_ok".equals(code)) startActivity(new Intent(UploadLicenseActivity.this, ContactPhoneActivity.class));
+                        else ToastUtils.showToast(R.string.request_failed);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        LogUtil.e(TAG, "upload", throwable);
+                        ToastUtils.showToast(R.string.request_failed);
                     }
                 });
     }
@@ -175,7 +195,6 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 boolean idCradOk = cropExists(CROPENAME_IDCARD);
                 if (drivenOK && (mIsOrg ? idCradOk && orgOK : idCradOk)) {
                     upload();
-//                    startActivity(new Intent(this, ContactPhoneActivity.class));
                 } else {
                     int toastStr = drivenOK
                             ? idCradOk ? R.string.please_upload_org_license : R.string.please_upload_idcard
