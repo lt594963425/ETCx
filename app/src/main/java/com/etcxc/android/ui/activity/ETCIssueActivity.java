@@ -92,7 +92,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             .append(FUNC)
                             .append(File.separator).append("veh_plate_code").append(File.separator).append(carCard)
                             .append(File.separator).append("veh_plate_colour").append(File.separator).append(mCarColor)
-                            .append(File.separator).append("user_type").append(File.separator).append(mPersonalRadiobutton.isChecked() ? 0 : 1);
+                            .append(File.separator).append("user_type").append(File.separator).append(mPersonalRadiobutton.isChecked() ? 1 : 0);
                     net(urlBuilder.toString());
                 } else ToastUtils.showToast(getString(R.string.please_input_correct));
                 break;

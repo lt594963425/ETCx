@@ -3,10 +3,13 @@ package com.etcxc.android.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
@@ -18,7 +21,6 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
 
 import org.json.JSONObject;
 
@@ -36,29 +38,48 @@ import io.reactivex.functions.Consumer;
  * Created by xwpeng on 2017/6/20.
  */
 
-public class ContactPhoneActivity extends BaseActivity implements View.OnClickListener{
+public class ContactPhoneActivity extends BaseActivity implements View.OnClickListener {
     private final static String TAG = ContactPhoneActivity.class.getSimpleName();
     private EditText mPhoneEditText;
     private final static String FUNC_SEND_CODE = "/transaction/tran_sms/smsreport";
     private final static String FUNC_COMMIT_CONTACT_PHONE = "/transaction/transaction/transactiontel";
     private String mSmsId;
     private Button mGetVerifyCodeButton;
+    private ImageView mDeleteImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_phone);
         setTitle(R.string.post_address_contact_phone);
         mPhoneEditText = find(R.id.phone_number_edittext);
-        UIUtils.addIcon(mPhoneEditText, R.drawable.vd_contact_phone_delete, UIUtils.RIGHT);
         String uid = MeManager.getUid();
         if (!TextUtils.isEmpty(uid)) mPhoneEditText.setText(uid);
         mGetVerifyCodeButton = find(R.id.get_verificode_button);
+        mDeleteImageView = find(R.id.phone_number_delete);
         setListener();
     }
 
     private void setListener() {
         find(R.id.commit_button).setOnClickListener(this);
         mGetVerifyCodeButton.setOnClickListener(this);
+        mDeleteImageView.setOnClickListener(this);
+        mPhoneEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mDeleteImageView.setVisibility(TextUtils.isEmpty(s.toString()) ? View.GONE : View.VISIBLE);
+            }
+        });
     }
 
 
@@ -70,7 +91,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         }
         Matcher m = SystemUtil.phonePattern.matcher(tel1);
         if (m.matches()) {
-           return tel1;
+            return tel1;
         } else ToastUtils.showToast(R.string.please_input_phonenumber);
         return "";
     }
@@ -81,15 +102,19 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
             case R.id.commit_button:
                 String tel1 = verifyPhoneEdit();
                 if (!TextUtils.isEmpty(tel1)) {
-                            EditText verifyEdit = find(R.id.verificode_edittext);
+                    EditText verifyEdit = find(R.id.verificode_edittext);
                     String verifyCode = verifyEdit.getText().toString();
-                    if (TextUtils.isEmpty(verifyCode)) ToastUtils.showToast(R.string.set_verifycodes);
+                    if (TextUtils.isEmpty(verifyCode))
+                        ToastUtils.showToast(R.string.set_verifycodes);
                     else commitNet(tel1, verifyCode);
                 }
                 break;
             case R.id.get_verificode_button:
                 String tel = verifyPhoneEdit();
                 if (!TextUtils.isEmpty(tel)) sendCode(tel);
+                break;
+            case R.id.phone_number_delete:
+                mPhoneEditText.setText("");
                 break;
         }
     }
@@ -112,10 +137,10 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                     jsonObject = jsonObject.getJSONObject("var");
                     mSmsId = jsonObject.getString("tran_sms_id");
                     mGetVerifyCodeButton.setEnabled(false);
-                    CountDownTimer ct= new CountDownTimer(60000, 1000) {
+                    CountDownTimer ct = new CountDownTimer(60000, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
-                        mGetVerifyCodeButton.setText(millisUntilFinished / 1000 + "S后再试");
+                            mGetVerifyCodeButton.setText(millisUntilFinished / 1000 + "S后再试");
                         }
 
                         @Override
@@ -125,7 +150,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                         }
                     };
                     ct.start();
-                } else  ToastUtils.showToast(R.string.request_failed);
+                } else ToastUtils.showToast(R.string.request_failed);
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -136,15 +161,15 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         });
     }
 
-    private void commitNet(String tel,String verifyCode) {
+    private void commitNet(String tel, String verifyCode) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(FUNC_COMMIT_CONTACT_PHONE)
                         .append(File.separator).append("tran_sms_code").append(File.separator).append(verifyCode)
                         .append(File.separator).append("tran_sms_id").append(File.separator).append(mSmsId)
-                        .append(File.separator).append("veh_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
-                        .append(File.separator).append("veh_code_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""))
+                        .append(File.separator).append("veh_plate_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
+                        .append(File.separator).append("veh_plate_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""))
                         .append(File.separator).append("tran_tel").append(File.separator).append(tel);
                 e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));
             }
@@ -154,7 +179,8 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
             public void accept(@NonNull String s) throws Exception {
                 JSONObject jsonObject = new JSONObject(s);
                 String code = jsonObject.getString("code");
-                if ("s_ok".equals(code)) startActivity(new Intent(ContactPhoneActivity.this, PostAddressActivity.class));
+                if ("s_ok".equals(code))
+                    startActivity(new Intent(ContactPhoneActivity.this, PostAddressActivity.class));
                 else ToastUtils.showToast(R.string.request_failed);
             }
         }, new Consumer<Throwable>() {

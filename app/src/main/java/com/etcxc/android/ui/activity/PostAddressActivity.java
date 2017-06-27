@@ -20,6 +20,8 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
     private TextView mRegionResultTextView, mStreetResultTextView;
     public final static int REQUEST_REGION = 1;
     public final static int REQUEST_STREET = 2;
+    private final static String FUNC_POSTADDRESS = "/transaction/transaction/transactionmail";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
