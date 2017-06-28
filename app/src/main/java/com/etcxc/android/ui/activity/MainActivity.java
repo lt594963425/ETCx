@@ -23,7 +23,6 @@ import android.widget.TextView;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.download.DownloadConfig1;
 import com.etcxc.android.net.download.DownloadManger;
 import com.etcxc.android.net.download.DownloadOptions;
@@ -317,10 +316,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         LogUtil.e(TAG, options.toString());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent messageEvent) {
-        f3.setName(messageEvent.message);
-    }
 
     @Override
     protected void onDestroy() {

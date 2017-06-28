@@ -20,18 +20,31 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.activity.MainActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.OfficailActivity" />
-        <activity android:name=".ui.activity.PhoneRegistActivity" />
-        <activity android:name=".ui.activity.LoginActivity" />
-        <activity android:name=".ui.activity.MessageLoginActivity" />
-        <activity android:name=".ui.activity.SetPasswordActivity" />
-        <activity android:name=".ui.activity.PersonalInfoAvtivity" />
+        <activity
+            android:name=".ui.activity.OfficailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.PhoneRegistActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.MessageLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.SetPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.PersonalInfoAvtivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
             android:screenOrientation="portrait"
@@ -63,10 +76,7 @@
         <activity
             android:name=".ui.activity.SelectRegionActivity"
             android:theme="@style/BG_GRAY" />
-        <activity android:name=".ui.activity.SelectRegionActivity"
-            android:theme="@style/BG_GRAY"
-            />
-        <activity android:name=".ui.activity.LargeImageActivity"/>
+        <activity android:name=".ui.activity.LargeImageActivity" />
 
         <!--微信登录-->
         <activity
@@ -79,13 +89,13 @@
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service
             android:name=".net.download.DService"
             android:exported="false">
-                <intent-filter>
-                    <action android:name="com.etcxc.android.action.DSERVICE" />
+            <intent-filter>
+                <action android:name="com.etcxc.android.action.DSERVICE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

@@ -42,12 +42,21 @@ public class MeManager {
     }
     private static final int clear_crash = 1;
     private static final int clear_logout = 2;
-
+    public static void deleteinfo(String str) {
+        PublicSPUtil.getInstance().delete(str);
+    }
     /**
      * todo：分情况对个人配置信息进行清除
      */
     private static void clear(int cause) {
-
+        switch (cause){
+            case clear_crash:
+                deleteinfo(KEY_Uid);
+                break;
+            case clear_logout://删除sid
+                deleteinfo(KEY_Sid);
+                break;
+        }
     }
 
     public static void crashClear() {

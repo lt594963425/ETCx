@@ -46,6 +46,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.IOException;
 
+import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.base.App.isLogin;
 
 /**
@@ -90,27 +91,33 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
         mPersonHead.setOnClickListener(this);
         mExitLogin.setOnClickListener(this);
         mLogin.setOnClickListener(this);
-        isLogin =MeManager.getIsLogin();
+        setstatus();
+
+    }
+
+    private void setstatus() {
+        isLogin = MeManager.getIsLogin();
         if(isLogin){
             String name =MeManager.getSid();
             mPersonName.setText(name);
-        }
-        //适配7.0以上和以下的手机
-        file = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
+            //适配7.0以上和以下的手机
+            file = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            uri = Uri.fromFile(file);
-        } else {
-            //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
-            uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
-        }
-        if(file.exists()) {
-            getImageToView();//初始化
-        }else{
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                uri = Uri.fromFile(file);
+            } else {
+                //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
+                uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
+            }
+            if(file.exists()) {
+                getImageToView();//初始化
+            }
+        }else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(),  R.drawable.vd_head2, null);
             mPersonHead.setImageDrawable(drawable);
         }
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -123,7 +130,9 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
                 break;
             case R.id.exit_login_btn:
                 isLogin =false;
-                MeManager.setIsLgon(false);
+                setIsLgon(isLogin);
+                MeManager.logoutClear();
+                EventBus.getDefault().post(new MessageEvent("立即登录"));
                 ToastUtils.showToast(R.string.exitlogin);
                 finish();
                 break;
@@ -324,7 +333,19 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent messageEvent) {
         mPersonName.setText(messageEvent.message);
+        Boolean bl =MeManager.getIsLogin();
+        if(!bl){
+            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(),  R.drawable.vd_head2, null);
+            mPersonHead.setImageDrawable(drawable);
+        }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setstatus();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

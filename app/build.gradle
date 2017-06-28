@@ -99,5 +99,8 @@ dependencies {
     compile 'com.shizhefei:LargeImageView:1.0.4'
     //eventBus
     compile 'org.greenrobot:eventbus:3.0.0'
+    //轮播图+glide
+    compile 'com.youth.banner:banner:1.4.9'
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
 }
 

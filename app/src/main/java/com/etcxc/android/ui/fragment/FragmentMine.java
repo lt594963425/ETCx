@@ -1,9 +1,11 @@
 package com.etcxc.android.ui.fragment;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.FileProvider;
@@ -19,6 +21,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.LargeImageActivity;
+import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
@@ -27,7 +30,6 @@ import com.etcxc.android.utils.ToastUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 
@@ -41,11 +43,13 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private ImageView userHead;
     private TextView username;
     private FrameLayout mMinewLauout;
+    private Handler mHandler = new Handler();
+    private MainActivity mActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        mActivity =(MainActivity) getActivity();
         View view = inflater.inflate(R.layout.fargment_mine, null);
-        mMinewLauout    = (FrameLayout) view.findViewById(R.id.mine_layout);
+        mMinewLauout = (FrameLayout) view.findViewById(R.id.mine_layout);
         userHead = (ImageView) view.findViewById(R.id.userhead);
         username = (TextView) view.findViewById(R.id.username);
 
@@ -53,83 +57,103 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         return view;
     }
     private void initView() {
-        //从本地加载个人信
-        isLogin = MeManager.getIsLogin();
-        if(isLogin){
-            String name = MeManager.getSid();
-            username.setText(name);
-        }
+
+        mHandler.postDelayed(LOAD_DATA,500);
         userHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
 
-        setStartHead();
+
     }
+    private Runnable LOAD_DATA = new Runnable() {
+        @Override
+        public void run() {
+            //从本地加载个人信
+            if (MeManager.getIsLogin()) {
+                username.setText(MeManager.getSid());
+                initData();
+            } else {
+                username.setText("立即登录");
+            }
 
+        }
+    };
 
-    public void setStartHead() {
-        file = new File(getCachePath(getActivity()), "user-avatar.jpg");
+    public void initData() {
+        file = new File(getCachePath(mActivity), "user-avatar.jpg");
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             uri = Uri.fromFile(file);
         } else {
             uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
         }
-        if(file.exists()) {
+        if (file.exists()) {
             getImageToView();//初始化
-        }else{
-            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(),  R.drawable.vd_head2, null);
+        } else {
+            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
             userHead.setImageDrawable(drawable);
         }
     }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser){
+            mHandler.removeCallbacks(LOAD_DATA);
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_layout:  //用户信息页面
-                Intent intent1 = new Intent(getActivity(), PersonalInfoAvtivity.class);
+                Intent intent1 = new Intent(mActivity, PersonalInfoAvtivity.class);
                 startActivity(intent1);
                 break;
             case R.id.userhead: //头像
-               String path = FileUtils.getCachePath(getActivity())+File.separator+"user-avatar.jpg";
+                String path = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
                 File file = new File(path);
-                if (!file.exists()){
+                if (!file.exists()) {
                     ToastUtils.showToast(R.string.nosethead);
                     return;
                 }
-                PrefUtils.setBoolean(getActivity(),"isScal",true);
+                PrefUtils.setBoolean(mActivity, "isScal", true);
                 //加载本地图片
-                Intent intent4 = new Intent(getActivity(), LargeImageActivity.class);
-                intent4.putExtra("path", FileUtils.getCachePath(getActivity())+File.separator+"user-avatar.jpg");
+                Intent intent4 = new Intent(mActivity, LargeImageActivity.class);
+                intent4.putExtra("path", FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg");
                 startActivity(intent4);
-                getActivity().overridePendingTransition(R.anim.zoom_enter,R.anim.anim_out);
+                mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
                 break;
             case R.id.username:
                 break;
         }
 
     }
-    public void setName(String name){
-        username.setText(name);
-    }
+
     /**
      * 保存裁剪之后的图片数据
+     *
      * @param uri
      */
     private Bitmap userBitmap;
+
     private void getImageToView() {
         //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(getActivity(), file.getPath());
+        final File cover = FileUtils.getSmallBitmap(mActivity, file.getPath());
         Uri uri = Uri.fromFile(cover);
         try {
-            userBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            userBitmap = MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(), uri);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(userBitmap!= null){
+        if (userBitmap != null) {
             userHead.setImageBitmap(FileUtils.toRoundBitmap(userBitmap));
         }
     }
+
     @Override
     public void onResume() {
-        setStartHead();
+//        initDta(); Handler handler = new Handler();
+        mHandler.postDelayed(LOAD_DATA,500);
         super.onResume();
     }
 

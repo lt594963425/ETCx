@@ -26,7 +26,9 @@ public abstract class BasicSPUtil {
     }
 
     protected abstract String spFileName();
-
+    public void  delete (String str){
+        mSP.edit().remove(str).commit();
+    }
     public void putBoolean(String key, boolean value) {
         mSP.edit().putBoolean(Base64Util.encode(key), value).apply();
     }

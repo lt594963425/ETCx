@@ -187,7 +187,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     }
                 });
     }
-
     public void loginUUrl(String url) {
         Observable.create(new ObservableOnSubscribe<String >() {
             @Override

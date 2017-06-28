@@ -427,6 +427,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
         return sb.toString();
     }
+
     /**
      * 判断手机号码是否正确
      */
