@@ -212,6 +212,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 }
                 //判断tel/'tel'/pwd/'pwd'/code/'code'/code_key/'code_key''
                 if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
+
                 mDialog = DialogUtils.createLoadingDialog(LoginActivity.this,  getString(R.string.logining));
                 loginRun(loginServerUrl + data);
                 break;

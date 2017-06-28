@@ -30,6 +30,7 @@ import com.etcxc.android.utils.ToastUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 
@@ -52,23 +53,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mMinewLauout = (FrameLayout) view.findViewById(R.id.mine_layout);
         userHead = (ImageView) view.findViewById(R.id.userhead);
         username = (TextView) view.findViewById(R.id.username);
-
+        isLogin =MeManager.getIsLogin();
         initView();
         return view;
     }
     private void initView() {
-
-        mHandler.postDelayed(LOAD_DATA,500);
         userHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
-
-
+        mHandler.postDelayed(LOAD_DATA,500);
     }
     private Runnable LOAD_DATA = new Runnable() {
         @Override
         public void run() {
             //从本地加载个人信
-            if (MeManager.getIsLogin()) {
+            if (isLogin) {
                 username.setText(MeManager.getSid());
                 initData();
             } else {
@@ -110,6 +108,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 startActivity(intent1);
                 break;
             case R.id.userhead: //头像
+                if(!isLogin){
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                }
                 String path = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
                 File file = new File(path);
                 if (!file.exists()) {
@@ -152,7 +154,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onResume() {
-//        initDta(); Handler handler = new Handler();
         mHandler.postDelayed(LOAD_DATA,500);
         super.onResume();
     }

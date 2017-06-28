@@ -67,10 +67,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             R.drawable.vd_activate,
             R.drawable.vd_complaint_and_advice,
             R.drawable.vd_gridchek,};
-    private Integer [] imageResIDs = {
-            R.mipmap.advinfo,
-            R.mipmap.advinfo_one,
-            R.mipmap.advinfo_two};
     private  String[] title = {
             App.get().getString(R.string.bussiness),App.get().getString(R.string.rechargerecord)
             ,App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate),App.get().getString(R.string.advice),
@@ -98,19 +94,17 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     private void initView() {
         mETCOnline.setOnClickListener(this);
         SpannableStringBuilder style=new SpannableStringBuilder(strDitle);
-        style.setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style.setSpan(new TextAppearanceSpan(mActivity, R.style.style1), 10, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style.setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 11, 17, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style
+                .setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style
+                .setSpan(new TextAppearanceSpan(mActivity, R.style.style1), 10, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style
+                .setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 11, 17, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         mETCDetile.setText(style);//将其添加到tv中
         mHomeGV.setAdapter(new MyGridViewAdapter(image,title,getActivity()));
         mHomeGV.setOnItemClickListener(this);
     }
 
-    @Override
-    public void onStart() {
-
-        super.onStart();
-    }
 
     /**
      * GridView
@@ -236,22 +230,20 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             });
         }
     }
-
     @Override
-    public void onPause() {
-
-        super.onPause();
+    public void onStart() {
+     banner.startAutoPlay();
+        super.onStart();
     }
 
     @Override
-    public void onResume() {
-
-        super.onResume();
+    public void onStop() {
+        banner.stopAutoPlay();
+        super.onStop();
     }
 
     @Override
     public void onDestroy() {
-
         super.onDestroy();
 
     }

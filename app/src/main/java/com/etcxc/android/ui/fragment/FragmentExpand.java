@@ -2,6 +2,7 @@ package com.etcxc.android.ui.fragment;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
@@ -27,27 +28,30 @@ public class FragmentExpand extends BaseFragment {
     private RecyclerView mRecyclerview;
     private MyRecylerAdapter mAdapter;
     private ArrayList<String> mDatas;
-
+    private Handler mHandler = new Handler();
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
-        initData();
         View view = inflater.inflate(R.layout.fragment_expand, null);
         mRecyclerview = (RecyclerView) view.findViewById(R.id.expand_recyclerView);
-
         mRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity));
-
         mRecyclerview.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(mRecyclerview);
-
-        mAdapter = new MyRecylerAdapter(mDatas);
-        mRecyclerview.setAdapter(mAdapter);
+        initData();
+        mHandler.postDelayed(LOAD_DATA,500);
         return view;
 
     }
 
+    private Runnable LOAD_DATA = new Runnable() {
+        @Override
+        public void run() {
+            mAdapter = new MyRecylerAdapter(mDatas);
+            mRecyclerview.setAdapter(mAdapter);
+        }
+    };
     protected void initData() {
         mDatas = new ArrayList<String>();
         for (int i = 'A'; i < 'z'; i++) {
@@ -74,6 +78,7 @@ public class FragmentExpand extends BaseFragment {
             holder.mTextView.setText("迅畅在想你" + ":" + datas.get(position));
         }
 
+
         @Override
         public int getItemCount() {
             return datas.size();
@@ -89,5 +94,13 @@ public class FragmentExpand extends BaseFragment {
             }
         }
     }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser){
+            mHandler.removeCallbacks(LOAD_DATA);
+        }
+    }
+
 }
 
