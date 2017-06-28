@@ -21,7 +21,7 @@ import com.etcxc.android.utils.LogUtil;
 public class IssuePayActivity extends BaseActivity implements View.OnClickListener{
     private TextView mSumPayTextView;
     private EditText mRechargeEdittext;
-    private boolean mIsTruck = true;
+//    private boolean mIsTruck = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +34,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
         mSumPayTextView = find(R.id.issue_pay_amount_text);
         mRechargeEdittext = find(R.id.recharge_amount_edittext);
         String str = mRechargeEdittext.getText().toString();
-        mSumPayTextView.setText(getString(R.string.sum_pay, strToInt(str) + (mIsTruck ? 200 : 0)));
+        mSumPayTextView.setText(getString(R.string.sum_pay, strToInt(str) + (200)));
         mRechargeEdittext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -48,14 +48,14 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void afterTextChanged(Editable s) {
-                mSumPayTextView.setText(getString(R.string.sum_pay, strToInt(str) + (mIsTruck ? 200 : 0)));
+                mSumPayTextView.setText(getString(R.string.sum_pay, strToInt(str) + 200));
             }
         });
         find(R.id.commit_button).setOnClickListener(this);
-        if (mIsTruck) {
+    /*    if (mIsTruck) {
             find(R.id.obu_price_textview).setVisibility(View.GONE);
             find(R.id.issue_pay_hint_textView).setVisibility(View.GONE);
-        }
+        }*/
     }
 
     private int strToInt(String s) {

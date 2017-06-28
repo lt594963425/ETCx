@@ -53,7 +53,7 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
         initView();
         net(HOST + (mIsRegionSelect
                 ?  "/transaction/transaction/areaprovince/"
-                : " /transaction/transaction/areastreet/county/") + county);
+                : "/transaction/transaction/areastreet/county/") + county);
     }
 
     private List<String> parseRegion(String result) throws Exception {

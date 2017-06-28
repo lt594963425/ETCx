@@ -1,9 +1,9 @@
 package com.etcxc.android.base;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.view.MenuItem;
 
-import com.etcxc.android.ui.activity.MainActivity;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 /**
@@ -12,7 +12,7 @@ import com.trello.rxlifecycle2.components.support.RxFragment;
  */
 public abstract class BaseFragment extends RxFragment {
     protected final String TAG = this.getClass().getSimpleName();
-    protected MainActivity mActivity = (MainActivity) getActivity();
+    protected BaseActivity mActivity = (BaseActivity) getActivity();
     protected void setTitle(int titleId) {
         setTitle(getString(titleId));
     }
@@ -38,6 +38,65 @@ public abstract class BaseFragment extends RxFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+        super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+        super.onDestroy();
+    }
+
+    //	加载对话框相关
+    private ProgressDialog mProgressDialog;
+
+    protected ProgressDialog getProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.cancel();
+        } else {
+            mProgressDialog = new ProgressDialog(mActivity);
+        }
+        return mProgressDialog;
+    }
+
+    protected void showProgressDialog(CharSequence message) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(mActivity);
+        }
+        mProgressDialog.setMessage(message);
+        if (!isUnavailable() && !mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    protected void showProgressDialog(CharSequence message, boolean cancelable) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(mActivity);
+        }
+        mProgressDialog.setCancelable(cancelable);
+        mProgressDialog.setMessage(message);
+        if (!isUnavailable() && !mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    protected void showProgressDialog(int message) {
+        showProgressDialog(getText(message));
+    }
+
+    protected void closeProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.cancel();
+        }
     }
 
 }

@@ -315,12 +315,5 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         }
         LogUtil.e(TAG, options.toString());
     }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
-    }
 }
 

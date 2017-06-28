@@ -69,7 +69,7 @@
     <string name="region">所在地区</string>
     <string name="street">街道</string>
     <string name="detailedly_address">详细地址(5到60个字)</string>
-    <string name="obu_price">OBU车载单元200元</string>
+    <string name="advance_money">预收金额200元</string>
     <string name="sum_pay">合计:&#160;&#160;%1$d&#160;&#160;元</string>
     <string name="wechat_pay">微信支付</string>
     <string name="alipay">支付宝</string>
@@ -85,7 +85,7 @@
     <string name="please_input_smscode">亲，请输入短信验证码</string>
     <string name="select_street">街道选择</string>
     <string name="select_region">地区选择</string>
-    <string name="please_select_region">请先选择所在地区</string>
+    <string name="please_select_region_before">请先选择所在地区</string>
     <string name="use_camera">拍照</string>
     <string name="get_photo_from_album">从相册中选取</string>
     <string name="camera_not_found">找不到相机</string>
@@ -122,4 +122,14 @@
     <string name="please_input_correct">请填写正确的车牌号码</string>
     <string name="reget_verify_code">重新获取验证码</string>
     <string name="login_failed">登录失败</string>
+    <string name="receiver_notallow_empty">收件人不能为空</string>
+    <string name="receiver_length_limit">收件人：2-15个字符限制</string>
+    <string name="receiver_phone_notallow_empty">联系手机不能为空</string>
+    <string name="phone_number_notallow_empty">手机号码不能为空</string>
+    <string name="please_select_street">请选择街道</string>
+    <string name="please_select_region">请选择地区</string>
+    <string name="please_input_detail_address">请输入详细地址</string>
+    <string name="detail_address_length_limit">详细地址:5到60个字符限制</string>
+    <string name="please_select_pay_method">请选择付款方式</string>
+    <string name="issue_pay_hint">预收金额200元，将作为客车用户的OBU车载单元押金（3年内可无理由退款，OBU车载单元将于3个工作日内寄到）或货车用户的充值金额（直接充入您的湘通卡内）</string>
 </resources>

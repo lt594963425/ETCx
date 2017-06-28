@@ -1,6 +1,7 @@
 package com.etcxc.android.base;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -87,6 +88,9 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onDestroy() {
         LogUtil.i(TAG, "----------onDestroy----------");
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
         super.onDestroy();
     }
 
@@ -119,6 +123,49 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+    }
+
+    //	加载对话框相关
+    private ProgressDialog mProgressDialog;
+
+    protected ProgressDialog getProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.cancel();
+        } else {
+            mProgressDialog = new ProgressDialog(this);
+        }
+        return mProgressDialog;
+    }
+
+    protected void showProgressDialog(CharSequence message) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+        }
+        mProgressDialog.setMessage(message);
+        if (!isFinishing() && !mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    protected void showProgressDialog(CharSequence message, boolean cancelable) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+        }
+        mProgressDialog.setCancelable(cancelable);
+        mProgressDialog.setMessage(message);
+        if (!isFinishing() && !mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    protected void showProgressDialog(int message) {
+        showProgressDialog(getText(message));
+    }
+
+    protected void closeProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.cancel();
         }
     }
 

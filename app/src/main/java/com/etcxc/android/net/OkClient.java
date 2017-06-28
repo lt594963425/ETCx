@@ -338,6 +338,8 @@ public class OkClient {
                 return true;
             }
         } catch (URISyntaxException e) {
+            // FIXME:
+//java.net.URISyntaxException: Illegal character in path at index 68: http://192.168.6.58/transaction/transaction/transactionmail/address/  vvvvgggg/area_county/上虞市/veh_plate_code/湘A12345/area_city/绍兴市/receiver/cccccf/mail_tel/17375851912/area_street/汤浦镇/veh_plate_colour/黄底黑字/area_province/浙江省
             LogUtil.e(TAG, "httpOrHttps " + url, e);
         }
         return false;

@@ -93,7 +93,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         banner = (Banner) view.findViewById(R.id.home_banner);
         banner.setImages(new ArrayList<>(Arrays.asList(imagess))).setImageLoader(new GlideImageLoader()).start();
         initView();
-        //
         return view;
     }
     private void initView() {

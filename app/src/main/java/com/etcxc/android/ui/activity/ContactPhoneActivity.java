@@ -86,13 +86,13 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
     private String verifyPhoneEdit() {
         String tel1 = mPhoneEditText.getText().toString();
         if (TextUtils.isEmpty(tel1)) {
-            ToastUtils.showToast("手机号码不能为空");
+            ToastUtils.showToast(getString(R.string.phone_number_notallow_empty));
             return "";
         }
         Matcher m = SystemUtil.phonePattern.matcher(tel1);
         if (m.matches()) {
             return tel1;
-        } else ToastUtils.showToast(R.string.please_input_phonenumber);
+        } else ToastUtils.showToast(R.string.please_input_correct_phone_number);
         return "";
     }
 
