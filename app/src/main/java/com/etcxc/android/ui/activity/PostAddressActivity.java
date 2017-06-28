@@ -180,6 +180,7 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void commitNet(Map<String, String> params) {
+        showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -190,6 +191,7 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
                         if ("s_ok".equals(code))
@@ -200,6 +202,7 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
+                        closeProgressDialog();
                         ToastUtils.showToast(R.string.request_failed);
                     }
                 });

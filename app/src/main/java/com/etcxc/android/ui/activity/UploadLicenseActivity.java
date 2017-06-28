@@ -149,6 +149,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     }
 
     private void upload() {
+        showProgressDialog(getString(R.string.uploading));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -176,12 +177,14 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                         String code = jsonObject.getString("code");
                         if ("s_ok".equals(code)) startActivity(new Intent(UploadLicenseActivity.this, ContactPhoneActivity.class));
                         else ToastUtils.showToast(R.string.request_failed);
+                        closeProgressDialog();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "upload", throwable);
                         ToastUtils.showToast(R.string.request_failed);
+                        closeProgressDialog();
                     }
                 });
     }

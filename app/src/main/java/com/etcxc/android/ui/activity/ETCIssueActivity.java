@@ -85,7 +85,6 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
-//                startActivity(new Intent(ETCIssueActivity.this, UploadLicenseActivity.class));
                 String carCard = mCarCardEdit.getText().toString();
                 if (okCarCard(carCard)) {
                     StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST)
@@ -100,6 +99,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void net(String url) {
+        showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -119,12 +119,14 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             intent.putExtra("isOrg", !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
                         } else ToastUtils.showToast(R.string.request_failed);
+                        closeProgressDialog();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         ToastUtils.showToast(R.string.request_failed);
+                        closeProgressDialog();
                     }
                 });
     }
