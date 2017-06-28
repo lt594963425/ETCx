@@ -162,6 +162,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void commitNet(String tel, String verifyCode) {
+        showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -182,12 +183,14 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 if ("s_ok".equals(code))
                     startActivity(new Intent(ContactPhoneActivity.this, PostAddressActivity.class));
                 else ToastUtils.showToast(R.string.request_failed);
+                closeProgressDialog();
             }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
                 LogUtil.e(TAG, "net", throwable);
                 ToastUtils.showToast(R.string.request_failed);
+                closeProgressDialog();
             }
         });
     }
