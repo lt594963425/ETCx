@@ -2,7 +2,10 @@ package com.etcxc.android.base;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
@@ -98,5 +101,18 @@ public abstract class BaseFragment extends RxFragment {
             mProgressDialog.cancel();
         }
     }
+
+
+    private View mView;
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mView = view;
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    protected <T extends View> T find(int id) {
+        return (T) mView.findViewById(id);
+    }
+
 
 }

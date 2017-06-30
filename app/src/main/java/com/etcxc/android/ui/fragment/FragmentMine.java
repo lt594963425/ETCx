@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
+import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
@@ -46,20 +48,29 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private MainActivity mActivity;
+    private View mAboutUsView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity =(MainActivity) getActivity();
-        View view = inflater.inflate(R.layout.fargment_mine, null);
-        mMinewLauout = (FrameLayout) view.findViewById(R.id.mine_layout);
-        userHead = (ImageView) view.findViewById(R.id.userhead);
-        username = (TextView) view.findViewById(R.id.username);
-        isLogin =MeManager.getIsLogin();
-        initView();
-        return view;
+       return inflater.inflate(R.layout.fargment_mine, null);
     }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView();
+    }
+
     private void initView() {
+        mMinewLauout = find(R.id.mine_layout);
+        userHead = find(R.id.userhead);
+        username = find(R.id.username);
+        mAboutUsView = find(R.id.mine_about_us);
+        isLogin = MeManager.getIsLogin();
         userHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
+        mAboutUsView.setOnClickListener(this);
         mHandler.postDelayed(LOAD_DATA,500);
     }
     private Runnable LOAD_DATA = new Runnable() {
@@ -126,6 +137,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
                 break;
             case R.id.username:
+                break;
+            case R.id.mine_about_us:
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
                 break;
         }
 

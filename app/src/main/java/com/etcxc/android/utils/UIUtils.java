@@ -9,7 +9,7 @@ import com.etcxc.android.base.App;
 
 /**
  * Created by 刘涛  on 2017/5/27 0027.
- *  封装和ui相关的操作
+ * 封装和ui相关的操作
  */
 public class UIUtils {
     /**
@@ -53,6 +53,7 @@ public class UIUtils {
     public static String getPackageName() {
         return getContext().getPackageName();
     }
+
     /**
      * dip-->px
      */
@@ -73,9 +74,14 @@ public class UIUtils {
     }
 
 
-    public final static int LEFT = 0, RIGHT = 1, TOP = 3, BOTTOM = 4 ;
+    public final static int LEFT = 0, RIGHT = 1, TOP = 3, BOTTOM = 4;
+
     public static void addIcon(TextView view, int resId, int orientation) {
-        if (view == null ) return;
+        addIcon(view, resId, orientation, 16);
+    }
+
+    public static void addIcon(TextView view, int resId, int orientation, int padding) {
+        if (view == null) return;
         VectorDrawableCompat drawable = VectorDrawableCompat.create(App.get().getResources(), resId, null);
         switch (orientation) {
             case LEFT:
@@ -91,6 +97,6 @@ public class UIUtils {
                 view.setCompoundDrawablesWithIntrinsicBounds(null, null, null, drawable);
                 break;
         }
-        view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
+        view.setCompoundDrawablePadding(UIUtils.dip2Px(padding));
     }
 }
