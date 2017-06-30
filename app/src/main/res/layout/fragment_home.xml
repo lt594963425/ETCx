@@ -58,7 +58,7 @@
 
             <View
                 android:background="@android:color/transparent"
-                android:layout_width="2dp"
+                android:layout_width="1dp"
                 android:layout_height="match_parent" />
 
             <TextView
@@ -88,7 +88,7 @@
 
             <View
                 android:background="@android:color/transparent"
-                android:layout_width="2dp"
+                android:layout_width="1dp"
                 android:layout_height="match_parent" />
             <TextView
                 android:id="@+id/home_etccirclesave_tv"

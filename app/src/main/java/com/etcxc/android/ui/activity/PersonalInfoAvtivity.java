@@ -122,6 +122,10 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.person_userhead:
+                if(!isLogin){
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                }
                 show2Dialog();
                 break;
             case R.id.bt_login_rg:
@@ -129,6 +133,10 @@ public class PersonalInfoAvtivity extends AppCompatActivity implements View.OnCl
                 startActivity(intent3);
                 break;
             case R.id.exit_login_btn:
+                if(!isLogin){
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                }
                 isLogin =false;
                 setIsLgon(isLogin);
                 MeManager.logoutClear();
