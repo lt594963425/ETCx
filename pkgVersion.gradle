@@ -1,4 +1,4 @@
 ext {
-    pkg = [versionCode: 1,
-           versionName: "1.1.0.0"]
+    pkg = [versionCode: 2,
+           versionName: "1.2.0.0"]
 }
