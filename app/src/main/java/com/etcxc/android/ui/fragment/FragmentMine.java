@@ -13,8 +13,10 @@ import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.etcxc.MeManager;
@@ -25,9 +27,11 @@ import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
+import com.etcxc.android.ui.adapter.MineListViewAdapter;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,28 +44,31 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
  * Created by 刘涛 on 2017/6/2 0002.
  */
 
-public class FragmentMine extends BaseFragment implements View.OnClickListener {
+public class FragmentMine extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private static int[] image = {
             R.drawable.vd_mine_harvestaddress,
             R.drawable.vd_mine_recommendfriend,
             R.drawable.vd_mine_changepassword,
             R.drawable.vd_mine_changephone,
-            R.drawable.vd_mine_networktelephone,};
-    private  String[] title = {
-            App.get().getString(R.string.harvestaddress),App.get().getString(R.string.recommendfriend)
-            ,App.get().getString(R.string.changepassword), App.get().getString(R.string.changephone),
-            App.get().getString(R.string.networktelephone)};
+            R.drawable.vd_mine_networktelephone,
+            R.drawable.vd_mine_aboutus};
+    private String[] title = {
+            App.get().getString(R.string.harvestaddress), App.get().getString(R.string.recommendfriend)
+            , App.get().getString(R.string.changepassword), App.get().getString(R.string.changephone),
+            App.get().getString(R.string.networktelephone), App.get().getString(R.string.about_us)};
     private File file;
     private Uri uri;
     private ImageView userHead;
-    private TextView username,mAboutUsView;
+    private TextView username;
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private MainActivity mActivity;
+    private ListView mlistView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity =(MainActivity) getActivity();
-         return inflater.inflate(R.layout.fargment_mine, null);
+        mActivity = (MainActivity) getActivity();
+        return inflater.inflate(R.layout.fargment_mine, null);
     }
 
     @Override
@@ -71,15 +78,16 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     private void initView() {
+        mlistView = find(R.id.mine_listview);
+        mlistView.setDividerHeight(UIUtils.px2Dip(10));
         mMinewLauout = find(R.id.mine_layout);
         userHead = find(R.id.userhead);
         username = find(R.id.username);
-        mAboutUsView = find(R.id.mine_about_us);
-        isLogin = MeManager.getIsLogin();
         userHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
-        mAboutUsView.setOnClickListener(this);
-        mHandler.postDelayed(LOAD_DATA,500);
+        mHandler.postDelayed(LOAD_DATA, 500);
+        mlistView.setAdapter(new MineListViewAdapter(getActivity(), image, title));
+        mlistView.setOnItemClickListener(this);
     }
 
     /**
@@ -89,11 +97,13 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         @Override
         public void run() {
             //从本地加载个人信
-            if (isLogin) {
+            if (MeManager.getIsLogin()) {
                 username.setText(MeManager.getSid());
                 initData();
             } else {
-                username.setText(R.string.now_login);
+                VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
+                userHead.setImageDrawable(drawable);
+                username.setText("立即登录");
             }
 
         }
@@ -153,9 +163,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.username:
                 break;
-            case R.id.mine_about_us:
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
-                break;
         }
 
     }
@@ -166,7 +173,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
      * @param uri
      */
     private Bitmap userBitmap;
-
     private void getImageToView() {
         //加载本地图片
         final File cover = FileUtils.getSmallBitmap(mActivity, file.getPath());
@@ -194,5 +200,29 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:// 我的收获地址
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                break;
+            case 1:// 推荐好友
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                break;
+            case 2://修改密码
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                break;
+            case 3:// 修改手机
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                break;
+            case 4: //网点查询
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                break;
+            case 5: //关于我们
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                break;
+        }
     }
 }

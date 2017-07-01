@@ -98,7 +98,7 @@
     <string name="telphoneunregistered">手机尚未注册</string>
     <string name="jsonexception">jsonErr</string>
     <string name="request_failed">请求失败</string>
-    <string name="send_faid">发送失败,请检查手机号码是否正确</string>
+    <string name="send_faid">请求失败,请检查手机号码是否正确</string>
     <string name="send_success">发送成功</string>
     <string name="login_success">登录成功</string>
     <string name="intenet_err">登录失败，请检查网络是否连接</string>
@@ -141,4 +141,5 @@
     <string name="changepassword">修改密码</string>
     <string name="changephone">修改手机号码</string>
     <string name="networktelephone">网点电话</string>
+    <string name="right">修改</string>
 </resources>

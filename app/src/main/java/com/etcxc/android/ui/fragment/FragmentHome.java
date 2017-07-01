@@ -28,7 +28,6 @@ import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.MyGridViewAdapter;
-import com.etcxc.android.ui.view.FocusTextview;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -59,7 +58,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     private ViewPager mVPger;
     private TextView mETCRecharge, mETCSave, mETCDetile;
     private View mETCOnline;
-    private FocusTextview ft;
     private static int[] image = {
             R.drawable.vd_brief_description_of_business,
             R.drawable.vd_recharge_record,
@@ -78,8 +76,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
         View view = inflater.inflate(R.layout.fragment_home, null);
-        ft = (FocusTextview) view.findViewById(R.id.ft_tv);
-        ft.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
         mETCOnline = view.findViewById(R.id.home_etcmore_llayout);//ETC在线办理
         mETCRecharge = (TextView) view.findViewById(R.id.home_etcrecharge_tv);//ETC充值
         mETCSave = (TextView) view.findViewById(R.id.home_etccirclesave_tv);//ETC圈存

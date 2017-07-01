@@ -8,6 +8,7 @@
     android:padding="2dp">
 
     <ImageView
+        android:focusable="false"
         android:id="@+id/item_home_gv_iv"
         android:layout_width="50dp"
         android:layout_height="50dp"

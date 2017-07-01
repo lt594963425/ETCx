@@ -8,7 +8,6 @@
      <include layout="@layout/activity_login"
          android:id="@+id/login_page"/>
     <LinearLayout
-
         android:id="@+id/info_page"
         android:visibility="invisible"
         android:layout_width="match_parent"
@@ -18,11 +17,13 @@
             android:id="@+id/person_toolbar"
             layout="@layout/toolbar">
         </include>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="#eff1f2">
+            android:background="#ffffff">
 
             <ImageView
                 android:id="@+id/person_userhead"

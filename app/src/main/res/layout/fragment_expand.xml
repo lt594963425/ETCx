@@ -4,11 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.etcxc.android.ui.view.XRecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/expand_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:scrollbars="none">
-    </com.etcxc.android.ui.view.XRecyclerView>
+    </android.support.v7.widget.RecyclerView>
 </LinearLayout>

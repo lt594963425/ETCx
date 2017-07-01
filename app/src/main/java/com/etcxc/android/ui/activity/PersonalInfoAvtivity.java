@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
@@ -107,7 +108,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
     private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
     private String timeStr;
-    private String codeUrl;
+
     String pictureCodeUrl = "http://192.168.6.58/login/login/captcha/code_key/";  //更换图形验证码url
     String loginServerUrl = "http://192.168.6.58/login/login/login/";//登录的url
     private boolean isShowPictureCode = false;
@@ -184,6 +185,84 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         mPersonHead.setOnClickListener(this);
         mExitLogin.setOnClickListener(this);
         setstatus();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        Intent intent;
+        switch (v.getId()) {
+            case R.id.login_phonenumber_delete:
+                mLoginPhonenumberEdt.setText("");
+                break;
+            case R.id.login_password_delete:
+                mLoginPasswordEdt.setText("");
+                break;
+            case R.id.login_eye:
+                isLook();
+                break;
+            case R.id.login_fresh_verification://图形验证码
+                long longTime = System.currentTimeMillis();
+                timeStr = String.valueOf(longTime);
+                PrefUtils.setString(App.get(), "code_key", timeStr);
+                startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
+                setPicCode(pictureCodeUrl + timeStr);
+
+                break;
+            case R.id.login_message:  //短信验证码登录
+                intent = new Intent(this, MessageLoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                break;
+            case R.id.login_fast:
+                intent = new Intent(this, PhoneRegistActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                break;
+            case R.id.forget_password:
+                intent = new Intent(this, ResetPasswordActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                break;
+            case R.id.login_button:  // 登录
+                String data;
+                String key2 = PrefUtils.getString(App.get(), "code_key", null);
+                String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
+                String passWord = mLoginPasswordEdt.getText().toString().trim();
+                String pwd = Md5Utils.encryptpwd(passWord);
+                String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
+                if (veriFicodem.isEmpty()) {
+                    data = "tel/" + phoneNum +
+                            "/pwd/" + pwd;
+                } else {
+                    data = "tel/" + phoneNum +
+                            "/pwd/" + pwd +
+                            "/code/" + veriFicodem +
+                            "/code_key/" + key2;
+                }
+                if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
+                loginRun(loginServerUrl + data);
+                break;
+            case R.id.person_userhead:
+                if (!isLogin) {
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                }
+                show2Dialog();
+                break;
+            case R.id.exit_login_btn:
+                if (!isLogin) {
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                }
+                MeManager.logoutClear();
+                MeManager.loginClear();
+                setIsLgon(false);
+                ToastUtils.showToast(R.string.exitlogin);
+                finish();
+                break;
+        }
+        this.overridePendingTransition(R.anim.anim_in, R.anim.anim_out);
     }
     private void setBarBack(Toolbar toolbar) {
         setSupportActionBar(toolbar);
@@ -344,8 +423,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
                 long longTime = System.currentTimeMillis();
                 timeStr = String.valueOf(longTime);
                 PrefUtils.setString(App.get(), "code_key", timeStr);
-                Glide.with(this).load(codeUrl).error(R.mipmap.code).into(mLoginImageVerificode);
-                //setPicCode(pictureCodeUrl + timeStr);
+                setPicCode(pictureCodeUrl + timeStr);
                 mPictureCodeLayout.setVisibility(View.VISIBLE);
                 closeProgressDialog();
                 ToastUtils.showToast(R.string.input_pwd_ismore);
@@ -366,7 +444,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
 
     Bitmap bitmap;
     private Bitmap setPicCode(final String url) {
-        showProgressDialog("获取中...");
         Request requst = new Request.Builder()
                 .url(url)
                 .get()
@@ -374,7 +451,14 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         client.newCall(requst).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                closeProgressDialog();
+               PersonalInfoAvtivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast(R.string.request_failed);
+                        mLoginFreshVerification.clearAnimation();
+                    }
+                });
+
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -385,7 +469,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
                     public void run() {//mLoginVerificodeEdt
                         mLoginImageVerificode.setImageBitmap(bitmap);
                         mLoginFreshVerification.clearAnimation();
-                        closeProgressDialog();
                     }
                 });
             }
@@ -454,86 +537,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         return m.matches();
     }
 
-
-    @Override
-    public void onClick(View v) {
-        Intent intent;
-        switch (v.getId()) {
-            case R.id.login_phonenumber_delete:
-                mLoginPhonenumberEdt.setText("");
-                break;
-            case R.id.login_password_delete:
-                mLoginPasswordEdt.setText("");
-                break;
-            case R.id.login_eye:
-                isLook();
-                break;
-            case R.id.login_fresh_verification://图形验证码
-                long longTime = System.currentTimeMillis();
-                timeStr = String.valueOf(longTime);
-                PrefUtils.setString(App.get(), "code_key", timeStr);
-                startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
-                codeUrl = pictureCodeUrl + timeStr;
-                Glide.with(this).load(codeUrl).error(R.mipmap.code).into(mLoginImageVerificode);
-                mLoginFreshVerification.clearAnimation();
-                //setPicCode();
-                break;
-            case R.id.login_message:  //短信验证码登录
-                intent = new Intent(this, MessageLoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                break;
-            case R.id.login_fast:
-                intent = new Intent(this, PhoneRegistActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                break;
-            case R.id.forget_password:
-                intent = new Intent(this, ResetPasswordActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                break;
-            case R.id.login_button:  // 登录
-                String data;
-                String key2 = PrefUtils.getString(App.get(), "code_key", null);
-                String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
-                String passWord = mLoginPasswordEdt.getText().toString().trim();
-                String pwd = Md5Utils.encryptpwd(passWord);
-                String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
-                if (veriFicodem.isEmpty()) {
-                    data = "tel/" + phoneNum +
-                            "/pwd/" + pwd;
-                } else {
-                    data = "tel/" + phoneNum +
-                            "/pwd/" + pwd +
-                            "/code/" + veriFicodem +
-                            "/code_key/" + key2;
-                }
-                if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
-                loginRun(loginServerUrl + data);
-                break;
-            case R.id.person_userhead:
-                if (!isLogin) {
-                    ToastUtils.showToast(R.string.nologin);
-                    return;
-                }
-                show2Dialog();
-                break;
-            case R.id.exit_login_btn:
-                if (!isLogin) {
-                    ToastUtils.showToast(R.string.nologin);
-                    return;
-                }
-                MeManager.logoutClear();
-                MeManager.loginClear();
-                setIsLgon(false);
-                EventBus.getDefault().post(new MessageEvent("立即登录"));
-                ToastUtils.showToast(R.string.exitlogin);
-                finish();
-                break;
-        }
-        this.overridePendingTransition(R.anim.anim_in, R.anim.anim_out);
-    }
     //用户信息操作界面
     private void setstatus() {
         isLogin = MeManager.getIsLogin();
@@ -550,17 +553,13 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
                 uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
             }
             if (file.exists()) {
-               Glide.with(this)
-                       .load(uri)
-                       .transform(new GlideCircleTransform(this))
-                       .error(R.drawable.vd_head2)
-                       .into(mPersonHead);
-                //getImageToView();//初始化
+                getImageToView();//初始化
             }
         } else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
             mPersonHead.setImageDrawable(drawable);
         }
+
     }
     private void show2Dialog() {
         //动态加载布局生成View对象
@@ -624,9 +623,14 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
 
             startPhotoZoom(uri);
         } else if (requestCode == REQUEST_CODE_CROUP_PHOTO) {
-            // uploadAvatarFromPhoto();
-
-            getImageToView();
+            Glide.with(this.getApplicationContext())
+                    .load(uri)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .error(R.drawable.vd_head2)
+                    .dontAnimate()
+                    .transform(new GlideCircleTransform(this))
+                    .into(mPersonHead);
         }
     }
 
