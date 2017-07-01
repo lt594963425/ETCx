@@ -19,7 +19,6 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.utils.DialogUtils;
 import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
@@ -191,11 +190,11 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             ToastUtils.showToast(R.string.set_verifycodes);
             return;
         }
-        mDialog = DialogUtils.createLoadingDialog(PhoneRegistActivity.this, getString(R.string.registing));
         loginUUrl(loginSmsUrl + data);
     }
 
     public void loginUUrl(String url) {
+        showProgressDialog(getString(R.string.registing));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -212,7 +211,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-                        DialogUtils.closeDialog(mDialog);
+                        closeProgressDialog();
                         ToastUtils.showToast(R.string.intenet_err);
                     }
                 });
@@ -236,34 +235,34 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 editor.putString("regtime", regTime);
                 editor.putString("nickname", nickName);
                 editor.commit();
-                DialogUtils.closeDialog(mDialog);
-                ToaltsThreadUIshow("注册成功，请登录");
+                closeProgressDialog();
+                ToastUtils.showToast(R.string.login);
                 finish();
             }
             if (code.equals("err")) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
                 // todo 返回数据待改进
                 if (returnMsg.equals("sms_code_error")) {
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.smscodeerr);
                 } else if (returnMsg.equals("telphone_unregistered")) {
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.telphoneunregistered);
                 } else if (returnMsg.equals("err_password")) {
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.passworderr);
                 } else if (returnMsg.equals("telphoner_has_been_registered")) {
-                    DialogUtils.closeDialog(mDialog);
-                    ToastUtils.showToast("手机号码已经注册");
+                    closeProgressDialog();
+                    ToastUtils.showToast(R.string.isregist);
                 }else {
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(returnMsg);
                 }
                 return;
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            DialogUtils.closeDialog(mDialog);
+            closeProgressDialog();
             ToastUtils.showToast(R.string.para_err);
         }
     }
@@ -278,7 +277,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 PhoneRegistActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtils.showToast("网络不佳，获取短信失败");
+                        ToaltsThreadUIshow(R.string.send_faid);;
                     }
                 });
             }
@@ -293,16 +292,17 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                         JSONObject jsonvar = object.getJSONObject("var");
                         String smsID = jsonvar.getString("sms_id");
                         PrefUtils.setString(App.get(), "pr_sms_id", smsID);//rp_sms_id
-                        ToaltsThreadUIshow("发送成功");
+                        ToaltsThreadUIshow(R.string.send_success);
                     }
                     if (code.equals("err")) {
                         // String msg = object.getString("");
-                        ToaltsThreadUIshow("手机已经注册或者网络不佳");
+                        ToaltsThreadUIshow(R.string.request_failed);
                         return;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ToaltsThreadUIshow("测试测试+发送失败" + R.string.jsonexception);
+                    ToaltsThreadUIshow(R.string.request_failed);
+
                     return;
                 }
             }

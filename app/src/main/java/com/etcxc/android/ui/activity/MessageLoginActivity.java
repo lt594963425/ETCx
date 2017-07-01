@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,7 +21,6 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.utils.DialogUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -43,6 +41,7 @@ import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.net.OkClient.get;
+
 /**
  * Created by 刘涛 on 2017/6/14 0014.
  * 短信登录
@@ -61,6 +60,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private String smsUrl = "http://192.168.6.58/login/sms/smsreport/tel/";//短信url
 
     private Dialog mDialog;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,16 +69,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void initView() {//message_login_toolbar
-        Toolbar mToolbar = find(R.id.message_login_toolbar);
-        mToolbar.setTitle(R.string.messagelogin);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        setTitle(R.string.messagelogin);
         mMPhoneNumberEdt = find(R.id.message_phonenumber_edt);
         mMPhoneNumberDelete = find(R.id.message_phonenumber_delete);
         mMVeriFicodeEdt = find(R.id.message_verificode_edt);
@@ -107,6 +98,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
         view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
+
     //({R.id.message_phonenumber_delete, R.id.get_msg_verificode_button, R.id.message_login_button})
     private boolean isUser = false;
 
@@ -130,11 +122,11 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 time.start();
                 break;
             case R.id.message_login_button://登录
-                String smsid =PrefUtils.getString(App.get(),"ml_sms_id",null);
+                String smsid = PrefUtils.getString(App.get(), "ml_sms_id", null);
                 //loginRun("http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3");
                 String smsCode = mMVeriFicodeEdt.getText().toString().trim();//短信验证码
                 String phoneNum = mMPhoneNumberEdt.getText().toString().trim();//手机号码
-                String data = "tel/" + phoneNum + "/sms_code/" + smsCode+"/sms_id/"+smsid;
+                String data = "tel/" + phoneNum + "/sms_code/" + smsCode + "/sms_id/" + smsid;
                 //判断
                 if (phoneNum.isEmpty()) {
                     ToastUtils.showToast(R.string.phone_isempty);
@@ -146,17 +138,16 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     ToastUtils.showToast(R.string.please_input_smscode);
                     return;
                 }
-                mDialog = DialogUtils.createLoadingDialog(MessageLoginActivity.this, getString(R.string.logining));
-                //DialogUtils.closeDialog(mDialog);
                 loginUUrl(loginServerUrl + data);
                 break;
         }
     }
+
     public void getSmsCodeBtn(String url) {
-        Observable.create(new ObservableOnSubscribe<String>(){
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = get(url,new JSONObject());
+                String result = get(url, new JSONObject());
                 e.onNext(result);
             }
         }).compose(RxUtil.io())
@@ -164,21 +155,21 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                            JSONObject object = new JSONObject(s);
-                            String code = object.getString("code");
-                            if(code.equals("s_ok")){//返回tel,sms_id
-                                JSONObject jsonVar = object.getJSONObject("var");
-                                String smstel = jsonVar.getString("tel");
-                                String smsID = jsonVar.getString("sms_id");
-                                PrefUtils.setString(App.get(),"ml_tel",smstel);
-                                PrefUtils.setString(App.get(),"ml_sms_id",smsID);
-                                ToastUtils.showToast(R.string.send_success);
-                            }
-                            if(code.equals("err")){//返回失败原因
-                                String msg = object.getString("messsage");
-                                ToastUtils.showToast(R.string.send_faid+":"+msg);
-                                return;
-                            }
+                        JSONObject object = new JSONObject(s);
+                        String code = object.getString("code");
+                        if (code.equals("s_ok")) {//返回tel,sms_id
+                            JSONObject jsonVar = object.getJSONObject("var");
+                            String smstel = jsonVar.getString("tel");
+                            String smsID = jsonVar.getString("sms_id");
+                            PrefUtils.setString(App.get(), "ml_tel", smstel);
+                            PrefUtils.setString(App.get(), "ml_sms_id", smsID);
+                            ToastUtils.showToast(R.string.send_success);
+                        }
+                        if (code.equals("err")) {//返回失败原因
+                            String msg = object.getString("messsage");
+                            ToastUtils.showToast(R.string.send_faid + ":" + msg);
+                            return;
+                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -187,29 +178,32 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     }
                 });
     }
+
     public void loginUUrl(String url) {
-        Observable.create(new ObservableOnSubscribe<String >() {
+        showProgressDialog(getString(R.string.logining));
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(url,new JSONObject());
+                String result = OkClient.get(url, new JSONObject());
                 e.onNext(result);
             }
         }).compose(RxUtil.activityLifecycle(this))
                 .compose(RxUtil.io())
-        .subscribe(new Consumer<String>() {
-            @Override
-            public void accept(@NonNull String s) throws Exception {
-                parseJson(s);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-                DialogUtils.closeDialog(mDialog);
-                ToastUtils.showToast(R.string.intenet_err);
-            }
-        });
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        parseJson(s);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        closeProgressDialog();
+                        ToastUtils.showToast(R.string.intenet_err);
+                    }
+                });
     }
-    private void parseJson(String s)  {
+
+    private void parseJson(String s) {
         try {
             JSONObject jsonObject = new JSONObject(s);
             String code = jsonObject.getString("code");
@@ -221,35 +215,37 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 String loginTime = varJson.getString("login_time");
                 String nickName = varJson.getString("nick_name");
                 EventBus.getDefault().post(new MessageEvent(tel));
-                isLogin =true;//登录成功
+                isLogin = true;//登录成功
                 MeManager.setSid(tel);
                 MeManager.setName(nickName);
                 MeManager.setIsLgon(isLogin);
-                DialogUtils.closeDialog(mDialog);
+                closeProgressDialog();
                 ToastUtils.showToast(R.string.login_success);
                 finish();
             }
             if (code.equals("err")) {
                 String returnMsg = jsonObject.getString("message");
-                if(returnMsg.equals("telphone_unregistered")){
-                    DialogUtils.closeDialog(mDialog);
+                if (returnMsg.equals("telphone_unregistered")) {
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.telphoneunregistered);
                     finish();
-                }else{
-                    DialogUtils.closeDialog(mDialog);
+                } else {
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.login_failed);
                 }
                 return;
             }
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             ToastUtils.showToast(R.string.para_err);
         }
     }
+
     /**
      * 监听手机号码的长度
      */
     CharSequence temp;
+
     public class MyTextWatcher implements TextWatcher {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -271,6 +267,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             }
         }
     }
+
     /**
      * 倒计时获取验证码
      */
@@ -278,12 +275,14 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         public TimeCount(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
+
         @Override
         public void onTick(long millisUntilFinished) {//R.color.colorAccent #B6B6D8
             mGetMsgVeriFicodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGray));
             mGetMsgVeriFicodeButton.setClickable(false);
             mGetMsgVeriFicodeButton.setText("(" + millisUntilFinished / 1000 + ")" + getString(R.string.timeLate));
         }
+
         @Override
         public void onFinish() {
             mGetMsgVeriFicodeButton.setText(getString(R.string.reStartGetCode));

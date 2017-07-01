@@ -42,6 +42,7 @@ public class MeManager {
     }
     private static final int clear_crash = 1;
     private static final int clear_logout = 2;
+    private static final int clear_login = 3;
     public static void deleteinfo(String str) {
         PublicSPUtil.getInstance().delete(str);
     }
@@ -56,6 +57,9 @@ public class MeManager {
             case clear_logout://删除sid
                 deleteinfo(KEY_Sid);
                 break;
+            case clear_login:
+                deleteinfo(KEY_IsLogin);
+                break;
         }
     }
 
@@ -65,5 +69,8 @@ public class MeManager {
 
     public static void logoutClear() {
         clear(clear_logout);
+    }
+    public static void loginClear() {
+        clear(clear_login);
     }
 }

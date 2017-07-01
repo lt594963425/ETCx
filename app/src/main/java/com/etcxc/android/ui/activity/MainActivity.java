@@ -1,10 +1,13 @@
 package com.etcxc.android.ui.activity;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
@@ -59,6 +62,7 @@ import io.reactivex.functions.Consumer;
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
     private FragmentTabHost mTabHost;
+    private static  final int LOGOUT = 1;//退出
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +79,14 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.addOnPageChangeListener(this);
         //让ViewPager切换到第1个页面
         mViewPager.setCurrentItem(0, false);
-        mViewPager.setOffscreenPageLimit(3);
         mTabHost = find(android.R.id.tabhost);
+        mViewPager.setOffscreenPageLimit(3);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
         initTabs();
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initTabs() {
         Class mFragmentArray[] = {FragmentHome.class, FragmentExpand.class, FragmentMine.class};
         int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_expand_btn, R.drawable.tab_mine_btn};
@@ -89,6 +94,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
             TextView textView = new TextView(this);
+           // textView.setBackground(getDrawable(R.drawable.tab_etc_textcolor));
             textView.setText(mTextViewArray[i]);
             Drawable d = ContextCompat.getDrawable(this,mImageViewArray[i]);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
@@ -135,19 +141,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     public void onPageScrollStateChanged(int state) {
 
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
     @Override
     public void onTabChanged(String tabId) {
         int position = mTabHost.getCurrentTab();
@@ -276,14 +269,15 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-    }
 
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DownloadOptions options) {
         if (options == null) return;
@@ -315,6 +309,12 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
         }
         LogUtil.e(TAG, options.toString());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        f3.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
 

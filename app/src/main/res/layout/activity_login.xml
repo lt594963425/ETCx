@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     android:background="@mipmap/bg_regist"
     android:orientation="vertical">
-
-    <include layout="@layout/toolbar" />
-
+    <include layout="@layout/toolbar"
+        android:id="@+id/login_toolbar"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -36,12 +35,12 @@
 
             <ImageView
                 android:id="@+id/login_phonenumber_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
-                android:paddingLeft="16dp"
                 android:visibility="invisible"
+                android:padding="5dp"
                 app:srcCompat="@drawable/vd_regist_delete" />
 
             <View
@@ -78,21 +77,22 @@
 
             <ImageView
                 android:id="@+id/login_password_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_alignParentTop="true"
-                android:layout_marginRight="12dp"
+                android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/login_eye"
                 android:layout_toStartOf="@+id/login_eye"
                 android:clickable="true"
-                android:paddingLeft="6dp"
+                android:padding="5dp"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/vd_regist_delete" />
 
             <ImageView
+                android:padding="5dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:id="@+id/login_eye"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
                 app:srcCompat="@drawable/vd_regist_close_eye" />
@@ -214,7 +214,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="26dp"
             android:layout_marginRight="26dp"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="80dp"
             android:background="@drawable/bg_regist_button"
             android:text="@string/login"
             android:textColor="@color/white" />

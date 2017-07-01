@@ -34,9 +34,6 @@
             android:name=".ui.activity.PhoneRegistActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.LoginActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.activity.MessageLoginActivity"
             android:screenOrientation="portrait" />
         <activity

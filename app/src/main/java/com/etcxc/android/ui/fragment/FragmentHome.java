@@ -103,6 +103,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         mETCDetile.setText(style);//将其添加到tv中
         mHomeGV.setAdapter(new MyGridViewAdapter(image,title,getActivity()));
         mHomeGV.setOnItemClickListener(this);
+
     }
 
 

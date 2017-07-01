@@ -41,19 +41,27 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
  */
 
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
+    private static int[] image = {
+            R.drawable.vd_mine_harvestaddress,
+            R.drawable.vd_mine_recommendfriend,
+            R.drawable.vd_mine_changepassword,
+            R.drawable.vd_mine_changephone,
+            R.drawable.vd_mine_networktelephone,};
+    private  String[] title = {
+            App.get().getString(R.string.harvestaddress),App.get().getString(R.string.recommendfriend)
+            ,App.get().getString(R.string.changepassword), App.get().getString(R.string.changephone),
+            App.get().getString(R.string.networktelephone)};
     private File file;
     private Uri uri;
     private ImageView userHead;
-    private TextView username;
+    private TextView username,mAboutUsView;
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private MainActivity mActivity;
-    private View mAboutUsView;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity =(MainActivity) getActivity();
-       return inflater.inflate(R.layout.fargment_mine, null);
+         return inflater.inflate(R.layout.fargment_mine, null);
     }
 
     @Override
@@ -73,6 +81,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mAboutUsView.setOnClickListener(this);
         mHandler.postDelayed(LOAD_DATA,500);
     }
+
+    /**
+     * 启动延时加载
+     */
     private Runnable LOAD_DATA = new Runnable() {
         @Override
         public void run() {
@@ -81,12 +93,15 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 username.setText(MeManager.getSid());
                 initData();
             } else {
-                username.setText("立即登录");
+                username.setText(R.string.now_login);
             }
 
         }
     };
 
+    /**
+     * 初始数据
+     */
     public void initData() {
         file = new File(getCachePath(mActivity), "user-avatar.jpg");
 
@@ -106,7 +121,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser){
+        if (!isVisibleToUser) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
     }
@@ -116,10 +131,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.mine_layout:  //用户信息页面
                 Intent intent1 = new Intent(mActivity, PersonalInfoAvtivity.class);
-                startActivity(intent1);
+                startActivityForResult(intent1, 0);
                 break;
             case R.id.userhead: //头像
-                if(!isLogin){
+                if (!isLogin) {
                     ToastUtils.showToast(R.string.nologin);
                     return;
                 }
@@ -166,10 +181,18 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * 回调
+     */
     @Override
-    public void onResume() {
-        mHandler.postDelayed(LOAD_DATA,500);
-        super.onResume();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 0:
+                mHandler.postDelayed(LOAD_DATA, 200);
+                break;
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
-
 }

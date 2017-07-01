@@ -11,6 +11,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  * Created by xwpeng on 2017/5/25.
  */
 public class App extends Application {
+
     public static  Boolean isLogin =false;//未登录状态false ，登录状态true
     public  static Boolean  userTag = false;
     private static final String TAG = "App";

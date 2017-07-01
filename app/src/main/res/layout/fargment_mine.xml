@@ -13,11 +13,12 @@
         android:background="#ffffff">
 
         <ImageView
-            android:layout_marginLeft="25dp"
+
             android:id="@+id/userhead"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="25dp"
             android:clickable="true"
             app:srcCompat="@drawable/vd_head2" />
 
@@ -33,6 +34,11 @@
             android:text="@string/now_login"
             android:textColor="#fc8337" />
     </FrameLayout>
+    <ListView
+        android:id="@+id/mine_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
     <TextView
         android:id="@+id/mine_about_us"
         android:layout_width="match_parent"
@@ -43,5 +49,4 @@
         android:background="@color/white"
         android:text="@string/about_us"
         />
-
 </LinearLayout>

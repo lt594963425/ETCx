@@ -5,9 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@mipmap/bg_regist"
     android:orientation="vertical">
-    <include
-        android:id="@+id/message_login_toolbar"
-        layout="@layout/toolbar"></include>
+    <include layout="@layout/toolbar" />
     <!--手机号码-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -36,12 +34,11 @@
 
             <ImageView
                 android:id="@+id/message_phonenumber_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
-                android:paddingLeft="16dp"
-                android:visibility="invisible"
+                android:padding="5dp"
                 app:srcCompat="@drawable/vd_regist_delete" />
 
             <View
