@@ -58,4 +58,5 @@ public class RxUtil {
             flowable.compose(fragment.bindUntilEvent(FragmentEvent.DESTROY));
     }
 
+
 }

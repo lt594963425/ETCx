@@ -16,6 +16,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -109,12 +112,14 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
             //mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
         }
     }
+    ImageView mImageView;
     private View getTabItemView(int i) {
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
-        ImageView mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
+        mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
         TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
         mImageView.setBackgroundResource(mImageViewArray[i]);
         mTextView.setText(mTextViewArray[i]);
+
         return view;
     }
     FragmentHome f1;
@@ -142,9 +147,10 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     public void onPageSelected(int position) {
         TabWidget widget = mTabHost.getTabWidget();
         int oldFocusability = widget.getDescendantFocusability();
-        widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);//设置View覆盖子类控件而直接获得焦点
+        widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mTabHost.setCurrentTab(position);//根据位置Postion设置当前的Tab
         widget.setDescendantFocusability(oldFocusability);//设置取消分割线
+
     }
 
     @Override
@@ -161,13 +167,21 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
             case 1:
                 setTitle(R.string.expand);
+                startRoationAmin(position);
                 break;
             case 2:
                 setTitle(R.string.mime);
                 break;
         }
     }
-
+    private void startRoationAmin(int position) {
+        ImageView iv = (ImageView) mTabHost.getTabWidget().getChildTabViewAt(position).findViewById(R.id.tab_imageview);
+        Animation anim =new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        anim.setFillAfter(true); // 设置保持动画最后的状态
+        anim.setDuration(300); // 设置动画时间
+        anim.setInterpolator(new AccelerateInterpolator());
+        iv.startAnimation(anim);
+    }
     private void checkVersion() {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
@@ -320,7 +334,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         }
         LogUtil.e(TAG, options.toString());
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         f3.onActivityResult(requestCode,resultCode,data);

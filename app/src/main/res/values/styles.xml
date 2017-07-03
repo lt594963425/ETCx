@@ -27,12 +27,24 @@
             @android:style/TextAppearance.Holo.Widget.ActionBar.Menu
         </item>
     </style>
-
-    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <!--toolbar的样式-->
+    <style name="toolbar_theme" parent="@style/ThemeOverlay.AppCompat.Light">
         <item name="android:textSize">18sp</item>
-        <item name="android:textColor">#fc7520</item>
+        <!--修改toolbar的Title(大标题)颜色-->
+        <item name="android:textColorPrimary">@color/colorOrange</item>
+        <!--修改toolbar的subtitle(小标题)颜色-->
+        <item name="subtitleTextColor">@color/colorOrange</item>
+        <!--修改toolbar的图标颜色.-->
+        <item name="colorControlNormal">@color/colorOrange</item>
     </style>
-
+    <style name="popup_theme" parent="@style/ThemeOverlay.AppCompat.Light">
+        <!--设置背景-->
+        <item name="android:background">@android:color/white</item>
+        <!--设置字体颜色-->
+        <item name="android:textColor">@color/colorOrange</item>
+        <!--设置不覆盖锚点-->
+        <item name="overlapAnchor">false</item>
+    </style>
     <style name="TranslucentActivityTheme" parent="AppTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>

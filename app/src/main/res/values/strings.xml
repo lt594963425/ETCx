@@ -144,4 +144,8 @@
     <string name="right">修改</string>
     <string name="smsshare">短信</string>
     <string name="moreshare">更多分享</string>
+    <string name="select_share_type">选择分享类型</string>
+    <string name="userhead">设置头像</string>
+    <string name="share">分享</string>
+    <string name="sharecontent">分享我们的app下载连接连接，后台提供，待添加。。。。。迅畅官网：</string>
 </resources>

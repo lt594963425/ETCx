@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/jy"
+        android:title="加好友"
+        android:icon="@drawable/vd_mine_recommendfriend"
+         />
+    <item
+        android:id="@+id/sao"
+        app:icon="@drawable/vd_mine_aboutus"
+        android:title="扫一扫" />
+    <item
+        android:id="@+id/find"
+        android:icon="@drawable/vd_mine_changephone"
+        android:title="查找" />
+    <item
+        android:id="@+id/local"
+        app:icon="@drawable/vd_mine_harvestaddress"
+
+        android:title="定位" />
+
+</menu>

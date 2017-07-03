@@ -41,6 +41,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PersonalInfoAvtivity"
+
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"

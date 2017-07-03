@@ -31,7 +31,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     protected XToolbar getToolbar() {
         return mXToolbar;
     }
-
     private void initToolbar() {
         mXToolbar = find(R.id.toolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -53,6 +52,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+
             return true;
         }
         return super.onOptionsItemSelected(item);

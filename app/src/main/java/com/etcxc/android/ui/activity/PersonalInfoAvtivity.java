@@ -26,6 +26,8 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -116,7 +118,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
     private ImageView mPersonHead;
     private TextView mPersonName;
     /*头像名称*/
-    private File file;
+    private File mFile;
     private Uri uri;
     /* 请求码*/
     private static final int REQUEST_CODE_TAKE_PHOTO = 1;
@@ -177,7 +179,9 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
     private void initUserInfoView() {
         //登录之后显示的页面info_page
         mToolbar2 = (Toolbar) findViewById(R.id.person_toolbar);
+        setSupportActionBar(mToolbar2);
         mToolbar2.setTitle(R.string.personinfo);
+        mToolbar2.inflateMenu(R.menu.menu);
         setBarBack(mToolbar2);
         mPersonHead = (ImageView) findViewById(R.id.person_userhead);
         mPersonName = (TextView) findViewById(R.id.person_username);
@@ -186,7 +190,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         mExitLogin.setOnClickListener(this);
         setstatus();
     }
-
 
     @Override
     public void onClick(View v) {
@@ -411,7 +414,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
             MeManager.setName(nickName);
             MeManager.setIsLgon(isLogin);
             closeProgressDialog();
-            ToastUtils.showToast("登录成功");
+            ToastUtils.showToast(R.string.login_success);
             finish();
         }
         if (code.equals("err")) {
@@ -544,15 +547,15 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
             String name = MeManager.getSid();
             mPersonName.setText(name);
             //适配7.0以上和以下的手机
-            file = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
+            mFile = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                uri = Uri.fromFile(file);
+                uri = Uri.fromFile(mFile);
             } else {
                 //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
-                uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
+                uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", mFile);
             }
-            if (file.exists()) {
+            if (mFile.exists()) {
                 getImageToView();//初始化
             }
         } else {
@@ -645,7 +648,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         intent.putExtra("crop", "true");// crop=true 有这句才能出来最后的裁剪页面.
         intent.putExtra("aspectX", 1);// 这两项为裁剪框的比例.
         intent.putExtra("aspectY", 1);// x:y=1:1
-        intent.putExtra("output", Uri.fromFile(file));
+        intent.putExtra("output", Uri.fromFile(mFile));
         intent.putExtra("outputFormat", "JPEG");// 返回格式
         startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
     }
@@ -742,7 +745,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
 
     private void getImageToView() {
         //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(this, file.getPath());
+        final File cover = FileUtils.getSmallBitmap(this, mFile.getPath());
         Uri uri = Uri.fromFile(cover);
         //通知相册更新
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -782,4 +785,15 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         stopRotateAnimation(mLoginFreshVerification);
         finish();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //写一个menu的资源文件.然后创建就行了.
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
 }

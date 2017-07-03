@@ -1,31 +1,24 @@
 package com.etcxc.android.ui.fragment;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
@@ -34,66 +27,53 @@ import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
 
 import java.io.File;
 import java.io.IOException;
 
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
-
-
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
-
-public class FragmentMine extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
-    private static int[] image = {
-            R.drawable.vd_mine_harvestaddress,
-            R.drawable.vd_mine_recommendfriend,
-            R.drawable.vd_mine_changepassword,
-            R.drawable.vd_mine_changephone,
-            R.drawable.vd_mine_networktelephone,
-            R.drawable.vd_mine_aboutus};
-    private String[] title = {
-            App.get().getString(R.string.harvestaddress), App.get().getString(R.string.recommendfriend)
-            , App.get().getString(R.string.changepassword), App.get().getString(R.string.changephone),
-            App.get().getString(R.string.networktelephone), App.get().getString(R.string.about_us)};
-    private File file;
-    private Uri uri;
-    private ImageView userHead;
-    private TextView username;
+public class FragmentMine extends BaseFragment implements View.OnClickListener{
+    private File mFile;
+    private ImageView mUserHead;
+    private TextView mUsername;
     private FrameLayout mMinewLauout;
+    //TODO: 2017/7/3
     private Handler mHandler = new Handler();
-    private MainActivity mActivity;
-    private ListView mlistView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.fargment_mine, null);
     }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
     }
-
     private void initView() {
-        mlistView = find(R.id.mine_listview);
-        mlistView.setDividerHeight(UIUtils.px2Dip(10));
+        ImageView harvestAddress =find(R.id.mine_harvestaddress_toright);
+        ImageView recommendFriend =find(R.id.mine_recommendfriend_toright);
+        ImageView changePassWord =find(R.id.mine_changepassword_toright);
+        ImageView changePhone =find(R.id.mine_changephone_toright);
+        ImageView netWorkTelePhone =find(R.id.mine_networktelephone_toright);
+        ImageView aboutUs =find(R.id.mine_aboutus_toright);
         mMinewLauout = find(R.id.mine_layout);
-        userHead = find(R.id.userhead);
-        username = find(R.id.username);
-        userHead.setOnClickListener(this);
+        mUserHead = find(R.id.userhead);
+        mUsername = find(R.id.username);
+        harvestAddress.setOnClickListener(this);
+        recommendFriend.setOnClickListener(this);
+        changePassWord.setOnClickListener(this);
+        changePhone.setOnClickListener(this);
+        netWorkTelePhone.setOnClickListener(this);
+        aboutUs.setOnClickListener(this);
+        mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
         mHandler.postDelayed(LOAD_DATA, 500);
-        mlistView.setAdapter(new MineListViewAdapter(getActivity(), image, title));
-        mlistView.setOnItemClickListener(this);
-
     }
-
     /**
      * 启动延时加载
      */
@@ -102,12 +82,12 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
         public void run() {
             //从本地加载个人信
             if (MeManager.getIsLogin()) {
-                username.setText(MeManager.getSid());
+                mUsername.setText(MeManager.getSid());
                 initData();
             } else {
                 VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-                userHead.setImageDrawable(drawable);
-                username.setText("立即登录");
+                mUserHead.setImageDrawable(drawable);
+                mUsername.setText("立即登录");
             }
 
         }
@@ -117,18 +97,12 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
      * 初始数据
      */
     public void initData() {
-        file = new File(getCachePath(mActivity), "user-avatar.jpg");
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            uri = Uri.fromFile(file);
-        } else {
-            uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", file);
-        }
-        if (file.exists()) {
+        mFile = new File(getCachePath(mActivity), "user-avatar.jpg");
+        if (mFile.exists()) {
             getImageToView();//初始化
         } else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-            userHead.setImageDrawable(drawable);
+            mUserHead.setImageDrawable(drawable);
         }
     }
 
@@ -165,7 +139,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
                 startActivity(intent4);
                 mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
                 break;
-            case R.id.username:
+            case R.id.mine_harvestaddress_toright:  // 我的收获地址
+                break;
+            case R.id.mine_recommendfriend_toright: // 推荐好友
+
+                showShareDialog();
+                break;
+            case R.id.mine_changepassword_toright:  //修改密码
+                break;
+            case R.id.mine_changephone_toright:     // 修改手机
+                break;
+            case R.id.mine_networktelephone_toright://网点查询
+                break;
+            case R.id.mine_aboutus_toright:         //关于我们
+                startActivity(new Intent(mActivity, AboutUsActivity.class));
                 break;
         }
 
@@ -177,9 +164,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
      * @param uri
      */
     private Bitmap userBitmap;
+
     private void getImageToView() {
         //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(mActivity, file.getPath());
+        final File cover = FileUtils.getSmallBitmap(mActivity, mFile.getPath());
         Uri uri = Uri.fromFile(cover);
         try {
             userBitmap = MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(), uri);
@@ -187,7 +175,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
             e.printStackTrace();
         }
         if (userBitmap != null) {
-            userHead.setImageBitmap(FileUtils.toRoundBitmap(userBitmap));
+            mUserHead.setImageBitmap(FileUtils.toRoundBitmap(userBitmap));
         }
     }
 
@@ -205,131 +193,70 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position) {
-            case 0:// 我的收获地址
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
-                break;
-            case 1:// 推荐好友
-                showShareDialog();
-                break;
-            case 2://修改密码
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
-                break;
-            case 3:// 修改手机
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
-                break;
-            case 4: //网点查询
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
-                break;
-            case 5: //关于我们
-
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
-                break;
-        }
-    }
-
     /**
      * 弹出分享列表
      */
-    private void showShareDialog(){
+    private void showShareDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("选择分享类型");
-        builder.setItems(new String[]{this.getString(R.string.smsshare),this.getString(R.string.moreshare)}, new DialogInterface.OnClickListener() {
+        builder.setTitle(this.getString(R.string.select_share_type));
+        builder.setItems(new String[]{this.getString(R.string.smsshare), this.getString(R.string.moreshare)}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
                 dialog.dismiss();
                 switch (which) {
-
                     case 0:
-                        sendSMS("http://www.xckjetc.com/");
+                        String url = "http://www.xckjetc.com/";
+                        String smsBody = "我正在浏览这个,觉得真不错,推荐给你哦~ 地址:" + url;
+                        sendSMS(url,smsBody);
                         break;
                     case 1:
-                        Intent intent=new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_SUBJECT,"分享");
-                        intent.putExtra(Intent.EXTRA_TEXT, "分享我们的app下载连接连接，后台提供，待添加。。。。。迅畅官网："+"http://www.xckjetc.com/");
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(Intent.createChooser(intent, "分享"));
+                        String  content =getString(R.string.sharecontent) + "http://www.xckjetc.com/";
+                        String imagePath = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
+                        shareMore(imagePath,content);
                         break;
                     default:
                         break;
                 }
-
             }
         });
-        builder.setNegativeButton( "取消" ,  new  DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
-            public   void  onClick(DialogInterface dialog,  int  which) {
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
         builder.create().show();
     }
 
-
+    private void shareMore(String str,String content) {
+        //由文件得到uri
+        Uri imageUri = Uri.fromFile(new File(str));
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        if(imageUri !=null){
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        intent.setType("image/*");
+        }else{
+            intent.setType("text/plain");
+        }
+        intent.putExtra(Intent.EXTRA_TEXT,content);
+        startActivity(Intent.createChooser(intent, getString(R.string.share)));
+    }
 
     /**
      * 发短信
      */
-    private   void  sendSMS(String webUrl){
-        String smsBody = "我正在浏览这个,觉得真不错,推荐给你哦~ 地址:" + webUrl;
-        Uri smsToUri = Uri.parse( "smsto:" );
-        Intent sendIntent =  new  Intent(Intent.ACTION_VIEW, smsToUri);
+    private void sendSMS(String webUrl,String smsBody) {
+
+        Uri smsToUri = Uri.parse("smsto:");
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
         //sendIntent.putExtra("address", "123456"); // 电话号码，这行去掉的话，默认就没有电话
         //短信内容
-        sendIntent.putExtra( "sms_body", smsBody);
-        sendIntent.setType( "vnd.android-dir/mms-sms" );
-        startActivityForResult(sendIntent, 1002 );
-    }
-    class MineListViewAdapter extends BaseAdapter {
-        private int [] image ;
-        private String [] title ;
-        private Context context;
-        public MineListViewAdapter( Context context,int[] image, String[] title) {
-            this.image = image;
-            this.title = title;
-            this.context =context;
-        }
-        @Override
-        public int getCount() {
-            return title.length;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder vH = null;
-            if(convertView ==null) {
-                vH = new ViewHolder();
-                convertView= LayoutInflater.from(context).inflate(R.layout.item_mine_listview, parent, false);
-                vH.image = (ImageView) convertView.findViewById(R.id.mine_lv_iv);
-                vH.title = (TextView) convertView.findViewById(R.id.mine_lv_tv);
-                convertView.setTag(vH);
-            }else {
-                vH = (ViewHolder) convertView.getTag();
-            }
-            vH.image.setImageResource(image[position]);
-            vH.title.setText(title[position]);
-
-            return convertView;
-        }
-        public final class ViewHolder {
-            public ImageView image;
-            public TextView title;
-        }
+        sendIntent.putExtra("sms_body", smsBody);
+        sendIntent.setType("vnd.android-dir/mms-sms");
+        startActivityForResult(sendIntent, 1002);
     }
 }

@@ -6,12 +6,16 @@
     android:background="#f0f0f0"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp" />
+
     <FrameLayout
-        android:descendantFocusability="afterDescendants"
         android:id="@+id/mine_layout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="#ffffff">
+        android:background="#ffffff"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/userhead"
@@ -20,29 +24,277 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="25dp"
             android:clickable="true"
+            android:contentDescription="@string/userhead"
             app:srcCompat="@drawable/vd_head2" />
 
         <TextView
-            android:focusable="false"
             android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="140dp"
-            android:clickable="true"
-            android:textSize="20sp"
+            android:focusable="false"
             android:text="@string/now_login"
-            android:textColor="#fc8337" />
+            android:textColor="@color/colorOrange"
+            android:textSize="20sp" />
     </FrameLayout>
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="17dp"/>
-    <ListView
-        android:scrollbars="none"
-        android:divider="#f0f0f0"
-        android:id="@+id/mine_listview"
+        android:layout_height="20dp" />
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </ListView>
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview">
+
+        <ImageView
+            android:id="@+id/mine_iv_harvestaddress"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/harvestaddress"
+            android:padding="13dp"
+            app:srcCompat="@drawable/vd_mine_harvestaddress" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_harvestaddress"
+            android:gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="15dp"
+            android:text="@string/harvestaddress"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/mine_harvestaddress_toright"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/harvestaddress"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview">
+
+        <ImageView
+            android:id="@+id/mine_iv_recommendfriend"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/recommendfriend"
+            android:padding="13dp"
+            app:srcCompat="@drawable/vd_mine_recommendfriend" />
+
+        <TextView
+            android:id="@+id/mine_tv_recommendfriend"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_recommendfriend"
+            android:gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="15dp"
+            android:text="@string/recommendfriend"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/mine_recommendfriend_toright"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/recommendfriend"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview">
+
+        <ImageView
+            android:id="@+id/mine_iv_changepassword"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/changepassword"
+            android:padding="13dp"
+            app:srcCompat="@drawable/vd_mine_changepassword" />
+
+        <TextView
+            android:id="@+id/mine_tv_changepasswords"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_changepassword"
+            android:gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="15dp"
+            android:text="@string/changepassword"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/mine_changepassword_toright"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/changepassword"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview">
+
+        <ImageView
+            android:id="@+id/mine_iv_changephone"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/changephone"
+            android:padding="13dp"
+            app:srcCompat="@drawable/vd_mine_changephone" />
+
+        <TextView
+            android:id="@+id/mine_tv_changephone"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_changephone"
+            android:gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="15dp"
+            android:text="@string/changephone"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/mine_changephone_toright"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/changephone"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview">
+
+        <ImageView
+            android:id="@+id/mine_iv_networktelephone"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/networktelephone"
+            android:padding="13dp"
+            app:srcCompat="@drawable/vd_mine_networktelephone" />
+
+        <TextView
+            android:id="@+id/mine_tv_networktelephone"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_networktelephone"
+            android:gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="15dp"
+            android:text="@string/networktelephone"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/mine_networktelephone_toright"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/networktelephone"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview">
+
+        <ImageView
+            android:id="@+id/mine_iv_aboutus"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/about_us"
+            android:padding="13dp"
+            app:srcCompat="@drawable/vd_mine_aboutus" />
+
+        <TextView
+            android:id="@+id/mine_tv_aboutus"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_aboutus"
+            android:gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="15dp"
+            android:text="@string/about_us"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/mine_aboutus_toright"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/about_us"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
 </LinearLayout>
