@@ -2,19 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <include layout="@layout/toolbar" />
     <LinearLayout
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_about_us"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="44dp"
-            />
+            android:src="@mipmap/ic_about_us" />
 
         <TextView
             android:id="@+id/about_us_logo"
@@ -40,15 +39,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
-            android:padding="16dp"
-            android:textColor="@color/textcolor"
-            android:textSize="15sp"
             android:background="@color/white"
+            android:padding="16dp"
             android:text="@string/check_update"
-            />
+            android:textColor="@color/textcolor"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
+        android:id="@+id/ffff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -57,14 +56,14 @@
         android:text="迅畅（湖南）交通信息科技服务有限公司"
         android:textColor="@color/textcolor"
         android:textSize="12sp" />
-
     <TextView
+        android:layout_above="@+id/ffff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="35dp"
         android:text="Copyright@2017"
         android:textColor="@color/textcolor"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:layout_marginBottom="3dp"
+        />
 </RelativeLayout>

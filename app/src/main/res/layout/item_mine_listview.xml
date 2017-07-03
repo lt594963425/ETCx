@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@drawable/bg_listview"
+   >
+
+    <ImageView
+        android:id="@+id/mine_lv_iv"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/harvestaddress"
+        android:padding="13dp"
+        app:srcCompat="@drawable/vd_mine_harvestaddress" />
+
+    <TextView
+        android:paddingLeft="2dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:id="@+id/mine_lv_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_toRightOf="@id/mine_lv_iv"
+        android:paddingRight="15dp"
+        android:text="@string/harvestaddress"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:contentDescription="@string/right"
+        android:focusable="false"
+        android:padding="15dp"
+        app:srcCompat="@drawable/vd_mine_toright" />
+</RelativeLayout>

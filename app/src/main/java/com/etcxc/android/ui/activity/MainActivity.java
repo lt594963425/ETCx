@@ -1,27 +1,31 @@
 package com.etcxc.android.ui.activity;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
+import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.download.DownloadConfig1;
 import com.etcxc.android.net.download.DownloadManger;
@@ -35,7 +39,6 @@ import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,7 +62,20 @@ import io.reactivex.functions.Consumer;
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
     private FragmentTabHost mTabHost;
-
+    private FrameLayout mTabcontent;
+    private static  final int LOGOUT = 1;//退出
+    Class mFragmentArray[] = {
+            FragmentHome.class,
+            FragmentExpand.class,
+            FragmentMine.class};
+    int mImageViewArray[] = {
+            R.drawable.tab_home_btn,
+            R.drawable.tab_expand_btn,
+            R.drawable.tab_mine_btn};
+    String mTextViewArray[] = {
+            App.get().getString(R.string.index_home),
+            App.get().getString(R.string.index_expand),
+            App.get().getString(R.string.mime)};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,34 +89,34 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         getToolbar().setBackgroundColor(getResources().getColor(R.color.textcolor));
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        //让ViewPager切换到第1个页面
         mViewPager.setCurrentItem(0, false);
-        mViewPager.setOffscreenPageLimit(3);
         mTabHost = find(android.R.id.tabhost);
+        mTabcontent =find(android.R.id.tabcontent);
+        mViewPager.setOffscreenPageLimit(3);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
+
         mTabHost.setOnTabChangedListener(this);
         initTabs();
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initTabs() {
-        Class mFragmentArray[] = {FragmentHome.class, FragmentExpand.class, FragmentMine.class};
-        int mImageViewArray[] = {R.drawable.tab_home_btn, R.drawable.tab_expand_btn, R.drawable.tab_mine_btn};
-        String mTextViewArray[] = {getString(R.string.index_home), getString(R.string.index_expand), getString(R.string.mime)};
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
-            TextView textView = new TextView(this);
-            textView.setText(mTextViewArray[i]);
-            Drawable d = ContextCompat.getDrawable(this,mImageViewArray[i]);
-            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-            textView.setCompoundDrawables(null, d, null, null);
-            textView.setCompoundDrawablePadding(UIUtils.dip2Px(8));
-            textView.setPadding(0, UIUtils.dip2Px(8), 0, UIUtils.dip2Px(8));
-            textView.setGravity(Gravity.CENTER);
-            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextViewArray[i]).setIndicator(textView);
+            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
             mTabHost.addTab(tabSpec, mFragmentArray[i], null);
+            mTabHost.setTag(i);
+            //mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
         }
     }
-
+    private View getTabItemView(int i) {
+        View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
+        ImageView mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
+        TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
+        mImageView.setBackgroundResource(mImageViewArray[i]);
+        mTextView.setText(mTextViewArray[i]);
+        return view;
+    }
     FragmentHome f1;
     FragmentExpand f2;
     FragmentMine f3;
@@ -135,19 +151,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     public void onPageScrollStateChanged(int state) {
 
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
     @Override
     public void onTabChanged(String tabId) {
         int position = mTabHost.getCurrentTab();
@@ -276,14 +279,15 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-    }
 
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DownloadOptions options) {
         if (options == null) return;
@@ -315,6 +319,12 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
         }
         LogUtil.e(TAG, options.toString());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        f3.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
 

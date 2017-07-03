@@ -21,7 +21,6 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.utils.DialogUtils;
 import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
@@ -152,7 +151,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.password_isshort);
                     return;
                 }
-                   mDialog = DialogUtils.createLoadingDialog(this,getString(R.string.loading));
+
                     ResetPwdUrl(resetPwdUrl+data);
                 break;
             case R.id.get_reset_verificode_button://获取短息验证码
@@ -190,6 +189,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         }
     }
     public void ResetPwdUrl(String url) {
+        showProgressDialog(getString(R.string.loading));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -207,6 +207,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
+                        closeProgressDialog();
                         ToastUtils.showToast(R.string.find_faid);
                         return;
                     }
@@ -230,30 +231,30 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 editor.putString("lastmodifyTime",lastmodifyTime);
                 editor.putString("nickname",nickName);
                 editor.commit();
-                DialogUtils.closeDialog(mDialog);
+                closeProgressDialog();
                 ToastUtils.showToast(R.string.find_success);
                 finish();
             }
             if (code.equals("err")) {
                 String returnMsg = jsonObject.getString("message");
                 if(returnMsg.equals("telphone_unregistered")){
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.telphoneunregistered);
                 } else if (returnMsg.equals("sms_code_error")){
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.smscodeerr);
                 }else if (returnMsg.equals("err_password")){
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.passworderr);//
                 }else {
-                    DialogUtils.closeDialog(mDialog);
+                    closeProgressDialog();
                     ToastUtils.showToast(returnMsg);
                 }
                 return;
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            DialogUtils.closeDialog(mDialog);
+            closeProgressDialog();
             ToastUtils.showToast(R.string.find_faid);// todo 返回数据待改进
             return;
         }

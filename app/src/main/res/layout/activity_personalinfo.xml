@@ -1,66 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f0f0f0"
     android:orientation="vertical">
-
-    <include
-        android:id="@+id/person_toolbar"
-        layout="@layout/toolbar"></include>
-
-    <FrameLayout
+     <include layout="@layout/activity_login"
+         android:id="@+id/login_page"/>
+    <LinearLayout
+        android:id="@+id/info_page"
+        android:visibility="invisible"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="#eff1f2">
-
-        <ImageView
-            android:id="@+id/person_userhead"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="25dp"
-            android:clickable="true"
-            app:srcCompat="@drawable/vd_head2" />
-
-        <TextView
-            android:id="@+id/person_username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="140dp"
-            android:clickable="true"
-            android:text="立即登录"
-            android:textColor="#fc8337"
-            android:textSize="20sp" />
-    </FrameLayout>
-    <Button
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="#fc8337"
-        android:clickable="true"
-        android:layout_marginTop="3dp"
-        android:textColor="#000000"
-        android:id="@+id/bt_login_rg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="登录" />
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/exit_login_btn"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <include
+            android:id="@+id/person_toolbar"
+            layout="@layout/toolbar">
+        </include>
+        <View
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="20dp"
-            android:background="#fc8337"
-            android:layout_marginBottom="35dp"
-            android:text="退出登录" />
-    </RelativeLayout>
-</LinearLayout>
+            android:layout_height="1dp"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="#ffffff">
+
+            <ImageView
+                android:id="@+id/person_userhead"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="25dp"
+                android:clickable="true"
+                app:srcCompat="@drawable/vd_head2" />
+
+            <TextView
+                android:id="@+id/person_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="140dp"
+                android:clickable="true"
+                android:text="@string/now_login"
+                android:textColor="#fc8337"
+                android:textSize="20sp" />
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:background="@drawable/bg_regist_button"
+                android:id="@+id/exit_login_btn"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="30dp"
+                android:text="@string/exitlogin" />
+        </RelativeLayout>
+    </LinearLayout>
+</FrameLayout>

@@ -1,16 +1,16 @@
 package com.etcxc.android.ui.view;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 
 /**
  *Created by 刘涛 on 2017/6/13 0013.
  *
  */
-public class FocusTextview extends android.support.v7.widget.AppCompatTextView {
+public class FocusTextview extends TextView {
 
 
 	public FocusTextview(Context context) {
@@ -31,16 +31,4 @@ public class FocusTextview extends android.support.v7.widget.AppCompatTextView {
 	public boolean isFocused() {
 		return true;
 	}
-
-	@Override
-	protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-		if(focused)
-			super.onFocusChanged(focused, direction, previouslyFocusedRect);
-	}
-	@Override
-	public void onWindowFocusChanged(boolean focused) {
-		if(focused)
-			super.onWindowFocusChanged(focused);
-	}
-
 }

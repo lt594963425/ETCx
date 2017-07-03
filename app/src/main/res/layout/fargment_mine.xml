@@ -7,21 +7,23 @@
     android:orientation="vertical">
 
     <FrameLayout
+        android:descendantFocusability="afterDescendants"
         android:id="@+id/mine_layout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="#ffffff">
 
         <ImageView
-            android:layout_marginLeft="25dp"
             android:id="@+id/userhead"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="25dp"
             android:clickable="true"
             app:srcCompat="@drawable/vd_head2" />
 
         <TextView
+            android:focusable="false"
             android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,15 +35,14 @@
             android:text="@string/now_login"
             android:textColor="#fc8337" />
     </FrameLayout>
-    <TextView
-        android:id="@+id/mine_about_us"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:padding="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/white"
-        android:text="@string/about_us"
-        />
-
+        android:layout_height="17dp"/>
+    <ListView
+        android:scrollbars="none"
+        android:divider="#f0f0f0"
+        android:id="@+id/mine_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
 </LinearLayout>
