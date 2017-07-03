@@ -142,4 +142,6 @@
     <string name="changephone">修改手机号码</string>
     <string name="networktelephone">网点电话</string>
     <string name="right">修改</string>
+    <string name="smsshare">短信</string>
+    <string name="moreshare">更多分享</string>
 </resources>

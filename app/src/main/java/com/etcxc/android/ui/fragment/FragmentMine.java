@@ -1,5 +1,7 @@
 package com.etcxc.android.ui.fragment;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -10,10 +12,12 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -27,7 +31,6 @@ import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
-import com.etcxc.android.ui.adapter.MineListViewAdapter;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
@@ -88,6 +91,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
         mHandler.postDelayed(LOAD_DATA, 500);
         mlistView.setAdapter(new MineListViewAdapter(getActivity(), image, title));
         mlistView.setOnItemClickListener(this);
+
     }
 
     /**
@@ -209,7 +213,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
                 startActivity(new Intent(mActivity, AboutUsActivity.class));
                 break;
             case 1:// 推荐好友
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                showShareDialog();
                 break;
             case 2://修改密码
                 startActivity(new Intent(mActivity, AboutUsActivity.class));
@@ -221,8 +225,111 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener, 
                 startActivity(new Intent(mActivity, AboutUsActivity.class));
                 break;
             case 5: //关于我们
+
                 startActivity(new Intent(mActivity, AboutUsActivity.class));
                 break;
+        }
+    }
+
+    /**
+     * 弹出分享列表
+     */
+    private void showShareDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("选择分享类型");
+        builder.setItems(new String[]{this.getString(R.string.smsshare),this.getString(R.string.moreshare)}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                dialog.dismiss();
+                switch (which) {
+
+                    case 0:
+                        sendSMS("http://www.xckjetc.com/");
+                        break;
+                    case 1:
+                        Intent intent=new Intent(Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_SUBJECT,"分享");
+                        intent.putExtra(Intent.EXTRA_TEXT, "分享我们的app下载连接连接，后台提供，待添加。。。。。迅畅官网："+"http://www.xckjetc.com/");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(Intent.createChooser(intent, "分享"));
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        });
+        builder.setNegativeButton( "取消" ,  new  DialogInterface.OnClickListener() {
+            @Override
+            public   void  onClick(DialogInterface dialog,  int  which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+
+
+    /**
+     * 发短信
+     */
+    private   void  sendSMS(String webUrl){
+        String smsBody = "我正在浏览这个,觉得真不错,推荐给你哦~ 地址:" + webUrl;
+        Uri smsToUri = Uri.parse( "smsto:" );
+        Intent sendIntent =  new  Intent(Intent.ACTION_VIEW, smsToUri);
+        //sendIntent.putExtra("address", "123456"); // 电话号码，这行去掉的话，默认就没有电话
+        //短信内容
+        sendIntent.putExtra( "sms_body", smsBody);
+        sendIntent.setType( "vnd.android-dir/mms-sms" );
+        startActivityForResult(sendIntent, 1002 );
+    }
+    class MineListViewAdapter extends BaseAdapter {
+        private int [] image ;
+        private String [] title ;
+        private Context context;
+        public MineListViewAdapter( Context context,int[] image, String[] title) {
+            this.image = image;
+            this.title = title;
+            this.context =context;
+        }
+        @Override
+        public int getCount() {
+            return title.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder vH = null;
+            if(convertView ==null) {
+                vH = new ViewHolder();
+                convertView= LayoutInflater.from(context).inflate(R.layout.item_mine_listview, parent, false);
+                vH.image = (ImageView) convertView.findViewById(R.id.mine_lv_iv);
+                vH.title = (TextView) convertView.findViewById(R.id.mine_lv_tv);
+                convertView.setTag(vH);
+            }else {
+                vH = (ViewHolder) convertView.getTag();
+            }
+            vH.image.setImageResource(image[position]);
+            vH.title.setText(title[position]);
+
+            return convertView;
+        }
+        public final class ViewHolder {
+            public ImageView image;
+            public TextView title;
         }
     }
 }

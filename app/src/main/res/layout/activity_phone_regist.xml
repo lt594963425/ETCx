@@ -28,6 +28,7 @@
                 android:background="@null"
                 android:drawablePadding="16dp"
                 android:textSize="14sp"
+                android:textColorHint="@color/white"
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="number"
                 android:maxLength="11"
@@ -68,9 +69,11 @@
                 android:layout_alignParentLeft="true"
                 android:background="@null"
                 android:textSize="14sp"
+                android:textColorHint="@color/white"
                 android:hint="@string/set_verifycodes"
                 android:maxLength="8" />
             <Button
+
                 android:id="@+id/get_verificode_button"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
@@ -108,6 +111,7 @@
                 android:layout_toLeftOf="@+id/eye"
                 android:background="@null"
                 android:textSize="14sp"
+                android:textColorHint="@color/white"
                 android:hint="@string/please_input_passwords"
                 android:inputType="textPassword"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."

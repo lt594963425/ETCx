@@ -27,9 +27,9 @@
                 android:layout_toLeftOf="@+id/login_phonenumber_delete"
                 android:background="@null"
                 android:drawablePadding="16dp"
+                android:textColorHint="@color/white"
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="number"
-
                 android:maxLength="11"
                 android:textSize="14sp" />
 
@@ -70,6 +70,7 @@
                 android:layout_toLeftOf="@+id/login_eye"
                 android:background="@null"
                 android:hint="@string/please_input_passwords"
+                android:textColorHint="@color/white"
                 android:inputType="textPassword"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
                 android:maxLength="16"
@@ -170,6 +171,7 @@
             android:gravity="center_vertical">
 
             <TextView
+                android:textColor="@color/white"
                 android:id="@+id/login_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -184,6 +186,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textColor="@color/white"
                     android:id="@+id/login_fast"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -197,6 +200,7 @@
                     android:background="@color/white" />
 
                 <TextView
+                    android:textColor="@color/white"
                     android:id="@+id/forget_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

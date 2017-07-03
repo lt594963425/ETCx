@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -57,7 +56,6 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     private ImageView mPhonenumberDelete, mEye, mPwdDeleteBtn;
     private Boolean flag = false;
     SharedPreferences sPUser;
-    private Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -29,6 +29,7 @@
                 android:layout_toLeftOf="@+id/message_phonenumber_delete"
                 android:background="@null"
                 android:drawablePadding="16dp"
+                android:textColorHint="@color/white"
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="phone"
                 android:maxLength="11"
@@ -62,6 +63,7 @@
             android:gravity="center">
 
             <EditText
+                android:textColorHint="@color/white"
                 android:id="@+id/message_verificode_edt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

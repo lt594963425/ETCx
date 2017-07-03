@@ -14,7 +14,7 @@
     <color name="red_btn_color_disable">#7fff54</color>
     <color name="red_btn_color_pressed">#ffd242</color>
     <color name="red_btn_color_normal">#ffff54</color>
-    <color name="colorGray">#b6b6d8</color>
+    <color name="colorGray">#999999</color>
     <color name="colorGreen">#4EB84A</color>
     <color name="colorrechargegreen">#45b367</color>
     <color name="colorcircleblue">#5fb2d1</color>

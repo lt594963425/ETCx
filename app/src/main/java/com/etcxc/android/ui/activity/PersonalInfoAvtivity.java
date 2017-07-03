@@ -563,8 +563,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
     }
     private void show2Dialog() {
         //动态加载布局生成View对象
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View longinDialogView = layoutInflater.inflate(R.layout.cameral_album, null);
+        View longinDialogView = LayoutInflater.from(this).inflate(R.layout.cameral_album, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         TextView takePicture = (TextView) longinDialogView.findViewById(R.id.take_picture);
         TextView selectPhoto = (TextView) longinDialogView.findViewById(R.id.select_photo);

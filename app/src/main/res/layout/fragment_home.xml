@@ -13,8 +13,6 @@
         app:indicator_height="7dp"
         app:indicator_margin="5dp"
         app:indicator_width="7dp" />
-
-
     <GridView
         android:id="@+id/home_gridview"
         android:layout_width="match_parent"

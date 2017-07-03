@@ -21,8 +21,8 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
         setContentView(R.layout.activity_about_us);
         initView();
     }
-
     private void initView() {
+        setTitle(R.string.about_us);
         mLogoTextView = find(R.id.about_us_logo);
         mVersionCodeTextView = find(R.id.about_us_versioncode);
         mCheckUpdateTextView = find(R.id.about_us_check_update);
