@@ -20,11 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +28,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -60,6 +57,7 @@ import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SharedPreferenceMark;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
+import com.etcxc.android.utils.myTextWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -73,8 +71,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -82,24 +78,28 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.R.id.login_phonenumber_delete;
 import static com.etcxc.android.base.App.isLogin;
+import static com.etcxc.android.utils.UIUtils.LEFT;
+import static com.etcxc.android.utils.UIUtils.addIcon;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
+import static com.etcxc.android.utils.UIUtils.isMobileNO;
+import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * 用户信息页面
  * Created by 刘涛 on 2017/6/17 0017.
  */
 
-public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickListener {
+public class PersonalInfoActivity extends BaseActivity implements View.OnClickListener {
     //登录信息操作界面
     protected final String TAG = ((Object) this).getClass().getSimpleName();
-    private final OkHttpClient client = new OkHttpClient();
-    private EditText mLoginPhonenumberEdt, mLoginPasswordEdt, mLoginVerificodeEdt; // 手机号码,密码 ,输入图形验证码
+    private AutoCompleteTextView mLoginPhonenumberEdt;
+    private EditText mLoginVerificodeEdt,mLoginPasswordEdt; // 手机号码,密码 ,输入图形验证码
     private ImageView mLoginPhonenumberDelete, mLoginPasswordDelete;//   删除
     private ImageView mLoginEye; //可见与不可见
     private ImageView mLoginImageVerificode;//图形取验证码
@@ -110,7 +110,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
     private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
     private String timeStr;
-
     String pictureCodeUrl = "http://192.168.6.58/login/login/captcha/code_key/";  //更换图形验证码url
     String loginServerUrl = "http://192.168.6.58/login/login/login/";//登录的url
     private boolean isShowPictureCode = false;
@@ -137,6 +136,11 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         initView();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     private void initView() {
         mLoginPaget = (LinearLayout) findViewById(R.id.login_page);
         mInfoPager = (LinearLayout) findViewById(R.id.info_page);
@@ -155,7 +159,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         mToolbar1 = find(R.id.login_toolbar);
         setTitle(R.string.login);
         setBarBack(mToolbar1);
-        mLoginPhonenumberEdt = find(R.id.login_phonenumber_edt);
+        mLoginPhonenumberEdt = find(R.id.login_phonenumber_edt);//
         mLoginPhonenumberDelete = find(login_phonenumber_delete);
         mLoginPasswordEdt = find(R.id.login_password_edt);
         mLoginPasswordDelete = find(R.id.login_password_delete);
@@ -169,12 +173,26 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         mLoginButton = find(R.id.login_button);
         // todo 密码输入超过三次增加图形验证码 校验 mPictureCodeLayout
         mPictureCodeLayout = find(R.id.login_verificode_layout);
-        addIcon(mLoginPhonenumberEdt, R.drawable.vd_my);
-        addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password);
-        addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha);
+        addIcon(mLoginPhonenumberEdt, R.drawable.vd_my,LEFT);
+        addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password,LEFT);
+        addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha,LEFT);
+        initAutoComplete(this,"history",mLoginPhonenumberEdt);
         init();
     }
+    private void init() {
+        //ToastUtils.showToast(timeStr);
+        mLoginPhonenumberDelete.setOnClickListener(this);
+        mLoginPasswordDelete.setOnClickListener(this);
+        mLoginFreshVerification.setOnClickListener(this);
+        mLoginButton.setOnClickListener(this);
+        mLoginEye.setOnClickListener(this);
+        mLoginMessage.setOnClickListener(this);
+        mLoginFast.setOnClickListener(this);
+        mForgetPassword.setOnClickListener(this);
+        mLoginPhonenumberEdt.addTextChangedListener( new myTextWatcher(mLoginPhonenumberEdt,mLoginPhonenumberDelete));
+        mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt,mLoginPasswordDelete));
 
+    }
 
     private void initUserInfoView() {
         //登录之后显示的页面info_page
@@ -202,7 +220,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
                 mLoginPasswordEdt.setText("");
                 break;
             case R.id.login_eye:
-                isLook();
+                UIUtils.isLook(mLoginPasswordEdt,mLoginEye,R.drawable.vd_close_eyes,R.drawable.vd_open_eyes);
                 break;
             case R.id.login_fresh_verification://图形验证码
                 long longTime = System.currentTimeMillis();
@@ -210,7 +228,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
                 PrefUtils.setString(App.get(), "code_key", timeStr);
                 startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
                 setPicCode(pictureCodeUrl + timeStr);
-
                 break;
             case R.id.login_message:  //短信验证码登录
                 intent = new Intent(this, MessageLoginActivity.class);
@@ -244,6 +261,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
                             "/code_key/" + key2;
                 }
                 if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
+                saveHistory(this,"history",phoneNum);
                 loginRun(loginServerUrl + data);
                 break;
             case R.id.person_userhead:
@@ -278,75 +296,8 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         });
     }
 
-    private void init() {
-        //ToastUtils.showToast(timeStr);
-        mLoginPhonenumberDelete.setOnClickListener(this);
-        mLoginPasswordDelete.setOnClickListener(this);
-        mLoginFreshVerification.setOnClickListener(this);
-        mLoginButton.setOnClickListener(this);
-        mLoginEye.setOnClickListener(this);
-        mLoginMessage.setOnClickListener(this);
-        mLoginFast.setOnClickListener(this);
-        mForgetPassword.setOnClickListener(this);
-       MyTextWatcher myTextWatcher = new MyTextWatcher();
-        mLoginPhonenumberEdt.addTextChangedListener(myTextWatcher);
-        mLoginPasswordEdt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0 && !mLoginPasswordEdt.getText().toString().isEmpty()) {
-                    mLoginPasswordDelete.setVisibility(View.VISIBLE);
-                } else {
-                    mLoginPasswordDelete.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
-    }
-
-    public void addIcon(TextView view, int resId) {
-        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), resId, null);
-        //drawable.setTint(Color.BLACK);
-        view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-        view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
-    }
-
-    /**
-     * 监听手机号码的长度
-     */
-    CharSequence temp;
-
-    public class MyTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            temp = s;
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (temp.length() > 0 && !mLoginPhonenumberEdt.getText().toString().isEmpty()) {
-                mLoginPhonenumberDelete.setVisibility(View.VISIBLE);
-                temp = "";
-            } else {
-                mLoginPhonenumberDelete.setVisibility(View.INVISIBLE);
-            }
 
 
-        }
-    }
-
-    private Boolean flag = false;
 
     private boolean LocalThrough(String phoneNum, String passWord, String veriFicodem) {
         if (phoneNum.isEmpty()) {
@@ -454,7 +405,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         client.newCall(requst).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-               PersonalInfoAvtivity.this.runOnUiThread(new Runnable() {
+               PersonalInfoActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         ToastUtils.showToast(R.string.request_failed);
@@ -467,7 +418,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
             public void onResponse(Call call, Response response) throws IOException {
                 InputStream is = response.body().byteStream();//字节流
                 bitmap = BitmapFactory.decodeStream(is);
-                PersonalInfoAvtivity.this.runOnUiThread(new Runnable() {
+                PersonalInfoActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {//mLoginVerificodeEdt
                         mLoginImageVerificode.setImageBitmap(bitmap);
@@ -479,19 +430,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         return bitmap;
     }
 
-    private void isLook() {
-        mLoginPasswordEdt.setHorizontallyScrolling(true);//不可换行
-        if (flag == true) {
-            mLoginPasswordEdt.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            flag = false;
-            mLoginEye.setImageResource(R.drawable.vd_close_eyes);
-        } else {
-            mLoginPasswordEdt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-
-            flag = true;
-            mLoginEye.setImageResource(R.drawable.vd_open_eyes);
-        }
-    }
 
 
     /**
@@ -529,16 +467,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         return sb.toString();
     }
 
-    /**
-     * 判断手机号码是否正确
-     */
-    public boolean isMobileNO(String mobiles) {
-        if (TextUtils.isEmpty(mobiles)) return false;
-        String regExp = "((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[3,7])|(18[0-9]))\\d{8}$";
-        Pattern p = Pattern.compile(regExp);
-        Matcher m = p.matcher(mobiles);
-        return m.matches();
-    }
+
 
     //用户信息操作界面
     private void setstatus() {
@@ -578,7 +507,7 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (PermissionUtil.hasCameraPermission(PersonalInfoAvtivity.this)) {
+                if (PermissionUtil.hasCameraPermission(PersonalInfoActivity.this)) {
                     uploadAvatarFromPhotoRequest();
                 }
                 dialog.dismiss();
@@ -770,13 +699,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
             mPersonHead.setImageDrawable(drawable);
         }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setstatus();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -787,7 +709,6 @@ public class PersonalInfoAvtivity extends BaseActivity implements View.OnClickLi
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //写一个menu的资源文件.然后创建就行了.
         getMenuInflater().inflate(R.menu.menu,menu);
         return super.onCreateOptionsMenu(menu);
     }

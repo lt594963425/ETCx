@@ -9,9 +9,10 @@
     <include layout="@layout/toolbar" />
     <!--手机号码-->
     <RelativeLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <RelativeLayout
             android:id="@+id/message_phonenumber_layout"
             android:layout_width="match_parent"
@@ -21,10 +22,10 @@
             android:layout_marginTop="40dp"
             android:gravity="center_vertical">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/message_phonenumber_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/message_phonenumber_delete"
                 android:background="@null"
@@ -33,22 +34,23 @@
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="phone"
                 android:maxLength="11"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/message_phonenumber_delete"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
-                android:padding="5dp"
-                app:srcCompat="@drawable/vd_regist_delete" />
+                android:padding="10dp"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/vd_delete" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
                 android:layout_below="@+id/message_phonenumber_edt"
-                android:layout_marginTop="12dp"
+
                 android:background="@color/white" />
         </RelativeLayout>
         <!--验证码-->
@@ -66,28 +68,28 @@
                 android:textColorHint="@color/white"
                 android:id="@+id/message_verificode_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:layout_alignParentLeft="true"
                 android:layout_marginTop="10dp"
                 android:background="@null"
                 android:hint="@string/set_verifycodes"
                 android:maxLength="8"
-                android:textSize="12sp" />
+                android:textSize="16sp" />
 
             <Button
-                android:id="@+id/get_msg_verificode_button"
+                android:id="@+id/get_msg_sms_code_button"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
-                android:background="@drawable/bg_regist_button"
+                android:background="@drawable/bg_button"
                 android:text="@string/get_verifycode"
                 android:textColor="@color/white" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:layout_below="@+id/get_msg_verificode_button"
+                android:layout_below="@+id/get_msg_sms_code_button"
                 android:layout_marginTop="12dp"
                 android:background="@color/white" />
         </RelativeLayout>
@@ -158,7 +160,7 @@
             android:layout_marginLeft="26dp"
             android:layout_marginRight="26dp"
             android:layout_marginTop="120dp"
-            android:background="@drawable/bg_regist_button"
+            android:background="@drawable/bg_button"
             android:text="@string/login"
             android:textColor="@color/white" />
 

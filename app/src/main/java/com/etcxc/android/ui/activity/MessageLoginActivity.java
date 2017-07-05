@@ -2,13 +2,11 @@ package com.etcxc.android.ui.activity;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,15 +21,16 @@ import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
+import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
+import com.etcxc.android.utils.myTextWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -41,6 +40,9 @@ import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.net.OkClient.get;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
+import static com.etcxc.android.utils.UIUtils.isMobileNO;
+import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -48,7 +50,7 @@ import static com.etcxc.android.net.OkClient.get;
  */
 
 public class MessageLoginActivity extends BaseActivity implements View.OnClickListener {
-    private EditText mMPhoneNumberEdt;
+    private AutoCompleteTextView mMPhoneNumberEdt;
     private ImageView mMPhoneNumberDelete, mMPicCodeIV, mMRefrshCodeIv;
     private EditText mMVeriFicodeEdt;
     private Button mGetMsgVeriFicodeButton;
@@ -73,7 +75,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         mMPhoneNumberEdt = find(R.id.message_phonenumber_edt);
         mMPhoneNumberDelete = find(R.id.message_phonenumber_delete);
         mMVeriFicodeEdt = find(R.id.message_verificode_edt);
-        mGetMsgVeriFicodeButton = find(R.id.get_msg_verificode_button);
+        mGetMsgVeriFicodeButton = find(R.id.get_msg_sms_code_button);
         mMLoginButton = find(R.id.message_login_button);
         mMsgVodeLayout = find(R.id.message_verificode_layout);
         mMPhoneNumberDelete.setOnClickListener(this);
@@ -86,29 +88,26 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         mMRefrshCodeIv = find(R.id.message_login_fresh_verification); //刷新图形验证码 message_login_fresh_verificatio
         addIcon(mMPicCodeEdt, R.drawable.vd_regist_captcha);
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
-        addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);
-        MyTextWatcher myTextWatcher = new MyTextWatcher();
-        mMPhoneNumberEdt.addTextChangedListener(myTextWatcher);
-
+        addIcon(mMVeriFicodeEdt,R.drawable.vd_regist_captcha);
+        mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt,mMPhoneNumberDelete));
+        initAutoComplete(this,"history",mMPhoneNumberEdt);
     }
+
 
     public void addIcon(TextView view, int resId) {
         VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), resId, null);
-        //drawable.setTint(Color.BLACK);
         view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
         view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
 
-    //({R.id.message_phonenumber_delete, R.id.get_msg_verificode_button, R.id.message_login_button})
-    private boolean isUser = false;
-
+   private ArrayList<String> list;
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.message_phonenumber_delete:
                 mMPhoneNumberEdt.setText("");
                 break;
-            case R.id.get_msg_verificode_button://获取短信验证码 //http://192.169.6.119/login/sms/smsreport/tel/'tel'
+            case R.id.get_msg_sms_code_button://获取短信验证码 //http://192.169.6.119/login/sms/smsreport/tel/'tel'
                 String phoneNum2 = mMPhoneNumberEdt.getText().toString().trim();
                 if (!isMobileNO(phoneNum2)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
@@ -117,9 +116,10 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                     return;
                 }
-                getSmsCodeBtn(smsUrl + phoneNum2);
-                TimeCount time = new TimeCount(60000, 1000);
+                saveHistory(UIUtils.getContext(),"history",phoneNum2);
+                TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
                 time.start();
+                getSmsCodeBtn(smsUrl + phoneNum2);
                 break;
             case R.id.message_login_button://登录
                 String smsid = PrefUtils.getString(App.get(), "ml_sms_id", null);
@@ -163,11 +163,11 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                             String smsID = jsonVar.getString("sms_id");
                             PrefUtils.setString(App.get(), "ml_tel", smstel);
                             PrefUtils.setString(App.get(), "ml_sms_id", smsID);
-                            ToastUtils.showToast(R.string.send_success);
+                          return;
                         }
                         if (code.equals("err")) {//返回失败原因
                             String msg = object.getString("messsage");
-                            ToastUtils.showToast(R.string.send_faid + ":" + msg);
+                           ToastUtils.showToast(R.string.send_faid );
                             return;
                         }
                     }
@@ -175,6 +175,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         ToastUtils.showToast(R.string.send_faid);
+                        return;
                     }
                 });
     }
@@ -220,7 +221,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 MeManager.setName(nickName);
                 MeManager.setIsLgon(isLogin);
                 closeProgressDialog();
-                ToastUtils.showToast(R.string.login_success);
+                ToastUtils.showToast(R.string.regist_success);
                 finish();
             }
             if (code.equals("err")) {
@@ -241,66 +242,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
-    /**
-     * 监听手机号码的长度
-     */
-    CharSequence temp;
-
-    public class MyTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            temp = s;
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (temp.length() > 0 && !mMPhoneNumberEdt.getText().toString().isEmpty()) {
-                mMPhoneNumberDelete.setVisibility(View.VISIBLE);
-                temp = "";
-            } else {
-                mMPhoneNumberDelete.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
-
-    /**
-     * 倒计时获取验证码
-     */
-    public class TimeCount extends CountDownTimer {
-        public TimeCount(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-
-        @Override
-        public void onTick(long millisUntilFinished) {//R.color.colorAccent #B6B6D8
-            mGetMsgVeriFicodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGray));
-            mGetMsgVeriFicodeButton.setClickable(false);
-            mGetMsgVeriFicodeButton.setText("(" + millisUntilFinished / 1000 + ")" + getString(R.string.timeLate));
-        }
-
-        @Override
-        public void onFinish() {
-            mGetMsgVeriFicodeButton.setText(getString(R.string.reStartGetCode));
-            mGetMsgVeriFicodeButton.setClickable(true);
-            mGetMsgVeriFicodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGreen));
-        }
-    }
-
-    /**
-     * 判断手机号码是否正确
-     */
-    public boolean isMobileNO(String mobiles) {
-        if (TextUtils.isEmpty(mobiles)) return false;
-        String regExp = "((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$";
-        Pattern p = Pattern.compile(regExp);
-        Matcher m = p.matcher(mobiles);
-        return m.matches();
-    }
 
     @Override
     protected void onDestroy() {

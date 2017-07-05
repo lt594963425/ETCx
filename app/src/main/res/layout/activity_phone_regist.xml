@@ -6,11 +6,13 @@
     android:background="@mipmap/bg_regist"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <RelativeLayout
             android:id="@+id/phonenumber_layout"
@@ -21,34 +23,36 @@
             android:layout_marginTop="50dp"
             android:gravity="center_vertical">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/phonenumber_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/phonenumber_delete"
                 android:background="@null"
                 android:drawablePadding="16dp"
-                android:textSize="14sp"
-                android:textColorHint="@color/white"
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="number"
                 android:maxLength="11"
-                android:layout_alignTop="@+id/phonenumber_delete"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:textColorHint="@color/white"
+                android:textSize="14sp" />
+
             <ImageView
                 android:id="@+id/phonenumber_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
-                android:paddingLeft="16dp"
+                android:padding="10dp"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/vd_regist_delete" />
+                app:srcCompat="@drawable/vd_delete" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
                 android:layout_below="@+id/phonenumber_edt"
-                android:layout_marginTop="12dp"
+
                 android:background="@color/white" />
         </RelativeLayout>
 
@@ -61,25 +65,27 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="10dp"
             android:gravity="center_vertical">
+
             <EditText
-                android:layout_marginTop="8dp"
                 android:id="@+id/verificode_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
+                android:layout_marginTop="8dp"
                 android:background="@null"
-                android:textSize="14sp"
-                android:textColorHint="@color/white"
                 android:hint="@string/set_verifycodes"
-                android:maxLength="8" />
+                android:maxLength="8"
+                android:textColorHint="@color/white"
+                android:textSize="14sp" />
+
             <Button
 
-                android:id="@+id/get_verificode_button"
+                android:id="@+id/telregist_get_verificode_button"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
-                android:background="@drawable/bg_regist_button"
+                android:background="@drawable/bg_button"
                 android:text="@string/get_verifycode"
                 android:textColor="@color/white" />
 
@@ -87,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2px"
                 android:layout_below="@+id/get_verificode_button"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="45dp"
                 android:background="@color/white" />
 
         </RelativeLayout>
@@ -101,49 +107,46 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="14dp"
             android:gravity="center_vertical">
+
             <EditText
-                android:layout_marginTop="8dp"
-                android:drawablePadding="16dp"
                 android:id="@+id/password_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
+                android:layout_marginTop="8dp"
                 android:layout_toLeftOf="@+id/eye"
                 android:background="@null"
-                android:textSize="14sp"
-                android:textColorHint="@color/white"
+                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
+                android:drawablePadding="16dp"
                 android:hint="@string/please_input_passwords"
                 android:inputType="textPassword"
-                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
-                android:maxLength="16" />
+                android:maxLength="16"
+                android:textColorHint="@color/white"
+                android:textSize="14sp" />
+
             <ImageView
                 android:id="@+id/iv_regist_password_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:layout_toLeftOf="@+id/eye"
-                android:layout_toStartOf="@+id/eye"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+               android:layout_marginRight="43dp"
                 android:layout_marginTop="5dp"
                 android:clickable="true"
-                android:layout_marginRight="30dp"
-                android:paddingLeft="6dp"
-                android:padding="5dp"
-                android:visibility="invisible"
-                android:layout_alignParentRight="true"
-                app:srcCompat="@drawable/vd_regist_delete" />
+                android:padding="10dp"
+                app:srcCompat="@drawable/vd_delete" />
             <ImageView
-                android:layout_marginTop="5dp"
-                android:padding="5dp"
                 android:id="@+id/eye"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
                 app:srcCompat="@drawable/vd_regist_close_eye" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:layout_below="@+id/eye"
+                android:layout_below="@+id/password_edt"
                 android:layout_marginTop="8dp"
                 android:background="@color/white" />
         </RelativeLayout>
@@ -156,7 +159,7 @@
             android:layout_marginLeft="26dp"
             android:layout_marginRight="26dp"
             android:layout_marginTop="90dp"
-            android:background="@drawable/bg_regist_button"
+            android:background="@drawable/bg_button"
             android:text="@string/regist"
             android:textColor="@color/white" />
 

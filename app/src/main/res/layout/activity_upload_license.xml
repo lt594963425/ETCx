@@ -145,7 +145,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="33dp"
-        android:background="@drawable/bg_regist_button"
+        android:background="@drawable/bg_button"
         android:gravity="center"
         android:text="@string/upload"
         android:textColor="@color/white"

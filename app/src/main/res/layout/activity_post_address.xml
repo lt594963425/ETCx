@@ -156,7 +156,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="139dp"
-        android:background="@drawable/bg_regist_button"
+        android:background="@drawable/bg_button"
         android:gravity="center"
         android:text="@string/next_step"
         android:textColor="@color/white"

@@ -1,21 +1,14 @@
 package com.etcxc.android.ui.activity;
 
-import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
@@ -24,20 +17,27 @@ import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
+import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
+import com.etcxc.android.utils.myTextWatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+
+import static com.etcxc.android.R.drawable.vd_close_eyes;
+import static com.etcxc.android.R.drawable.vd_open_eyes;
+import static com.etcxc.android.utils.UIUtils.LEFT;
+import static com.etcxc.android.utils.UIUtils.addIcon;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
+import static com.etcxc.android.utils.UIUtils.isLook;
+import static com.etcxc.android.utils.UIUtils.isMobileNO;
+import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -46,11 +46,11 @@ import io.reactivex.functions.Consumer;
 public class ResetPasswordActivity extends BaseActivity implements View.OnClickListener {
     private String smsUrl ="http://192.168.6.58/user_information_modify/inf_modify_sms/smsreport/tel/";
     private String resetPwdUrl ="http://192.168.6.58/user_information_modify/user_information_modify/informationmodify/";
-    private EditText mPhoneNumberEdit, mResetPwd, mVerifiCodeEdit;
+    private EditText  mResetPwd, mVerifiCodeEdit;
+    private AutoCompleteTextView mPhoneNumberEdit;
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye,mResetPwdDelete;
     private SharedPreferences sPUser;
-    private Dialog mDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +58,6 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         sPUser =getSharedPreferences("user_info",MODE_PRIVATE);
         initView();
     }
-    //verificode_edt
     private void initView() {
         Toolbar mToolbar = find(R.id.reset_password_toolbar);
         mToolbar.setTitle(R.string.retrieve_password);
@@ -78,48 +77,21 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         mVerifiCodeEdit = find(R.id.reset_verificode_edt);
         mVerificodeButton = find(R.id.get_reset_verificode_button);
         mRegistButton =  find(R.id.reset_button);
-        addIcon(mPhoneNumberEdit, R.drawable.vd_my);
-        addIcon(mResetPwd, R.drawable.vd_regist_password);
-        addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha);
+        addIcon(mPhoneNumberEdit, R.drawable.vd_my,LEFT);
+        addIcon(mResetPwd, R.drawable.vd_regist_password,LEFT);
+        addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha,LEFT);
         mRegistButton.setOnClickListener(this);
         mVerificodeButton.setOnClickListener(this);
         mPhonenumberDelete.setOnClickListener(this);
         mEye.setOnClickListener(this);
         mResetPwdDelete.setOnClickListener(this);
-        MyTextWatcher myTextWatcher = new MyTextWatcher();
-        mPhoneNumberEdit.addTextChangedListener(myTextWatcher);
-        mResetPwd.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() > 0 && !mResetPwd.getText().toString().isEmpty()) {
-                    mResetPwdDelete.setVisibility(View.VISIBLE);
-                } else {
-                    mResetPwdDelete.setVisibility(View.INVISIBLE);
-                }
-            }
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        });
+        mPhoneNumberEdit.addTextChangedListener(new myTextWatcher(mPhoneNumberEdit,mPhonenumberDelete));
+        mResetPwd.addTextChangedListener(new myTextWatcher(mResetPwd,mResetPwdDelete));  // mResetPwd  mResetPwdDelete
+        initAutoComplete(this,"history",mPhoneNumberEdit);
+
     }
-    public void addIcon(TextView view, int resId) {
-        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), resId, null);
-        //drawable.setTint(Color.BLACK);
-        view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-        view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
-    }
-    /**
-     * 判断手机号码是否正确
-     */
-    public boolean isMobileNO(String mobiles) {
-        if (TextUtils.isEmpty(mobiles)) return false;
-        String regExp ="((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$" ;//;
-        Pattern p = Pattern.compile(regExp);
-        Matcher m = p.matcher(mobiles);
-        return m.matches();
-    }
-    private Boolean flag = false;
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -163,7 +135,8 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                     return;
                 }
-                TimeCount time = new TimeCount(60000, 1000);
+              saveHistory(this,"history",phoneNum2);
+                TimeCount time = new TimeCount(mVerificodeButton,60000, 1000);
                 time.start();
                 //todo：向后端请求获取短信验证码
                 try {
@@ -176,16 +149,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 mPhoneNumberEdit.setText("");
                 break;
             case R.id.reset_eye:
-                mResetPwd.setHorizontallyScrolling(true);//不可换行
-                if (flag == true) {
-                    mResetPwd.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    flag = false;
-                    mEye.setImageResource(R.drawable.vd_close_eyes);
-                } else {
-                    mResetPwd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    flag = true;
-                    mEye.setImageResource(R.drawable.vd_open_eyes);
-                }
+                isLook(mResetPwd,mEye,vd_close_eyes,vd_open_eyes);
         }
     }
     public void ResetPwdUrl(String url) {
@@ -282,7 +246,6 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     }
                 });
     }
-
     private void parseSmsCodeJson(@NonNull String s) {
         try {
             JSONObject object = new JSONObject(s);
@@ -310,57 +273,9 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             ToastUtils.showToast(R.string.send_faid);
         }
     }
-    /**
-     * 监听手机号码的长度
-     */
-    CharSequence temp;
-    public class MyTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            temp = s;
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            if (temp.length() > 0 && !mPhoneNumberEdit.getText().toString().isEmpty()) {
-                mPhonenumberDelete.setVisibility(View.VISIBLE);
-                temp = "";
-            } else {
-                mPhonenumberDelete.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
-    /**
-     * 倒计时
-     */
-    public class TimeCount extends CountDownTimer {
-
-        public TimeCount(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-        @Override
-        public void onTick(long millisUntilFinished) {//R.color.colorAccent #B6B6D8
-            mVerificodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGray));
-            mVerificodeButton.setClickable(false);
-            mVerificodeButton.setText("(" + millisUntilFinished / 1000 + ")" + getString(R.string.timeLate));
-        }
-        @Override
-        public void onFinish() {
-            mVerificodeButton.setText(getString(R.string.reStartGetCode));
-            mVerificodeButton.setClickable(true);
-            mVerificodeButton.setBackgroundColor(UIUtils.getColor(R.color.colorGreen));
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        flag =false;
     }
 }
 

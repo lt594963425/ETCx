@@ -21,9 +21,11 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.AboutUsActivity;
+import com.etcxc.android.ui.activity.ChangePasswordActivity;
+import com.etcxc.android.ui.activity.ChangePhoneActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.MainActivity;
-import com.etcxc.android.ui.activity.PersonalInfoAvtivity;
+import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
@@ -33,12 +35,13 @@ import java.io.IOException;
 
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
+
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
-public class FragmentMine extends BaseFragment implements View.OnClickListener{
+public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private File mFile;
-    private ImageView mUserHead;
+    private ImageView mUserHead,mHarvestAddress, mRecommendFriend,mChangePassWord,mChangePhone,mNetWorkTelePhone,mAboutUs;
     private TextView mUsername;
     private FrameLayout mMinewLauout;
     //TODO: 2017/7/3
@@ -46,34 +49,38 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity = (MainActivity) getActivity();
+        mActivity =(MainActivity)getActivity();
         return inflater.inflate(R.layout.fargment_mine, null);
     }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
     }
+
     private void initView() {
-        ImageView harvestAddress =find(R.id.mine_harvestaddress_toright);
-        ImageView recommendFriend =find(R.id.mine_recommendfriend_toright);
-        ImageView changePassWord =find(R.id.mine_changepassword_toright);
-        ImageView changePhone =find(R.id.mine_changephone_toright);
-        ImageView netWorkTelePhone =find(R.id.mine_networktelephone_toright);
-        ImageView aboutUs =find(R.id.mine_aboutus_toright);
+        mHarvestAddress = find(R.id.mine_harvestaddress_toright);
+        mRecommendFriend = find(R.id.mine_recommendfriend_toright);
+        mChangePassWord = find(R.id.mine_changepassword_toright);
+        mChangePhone  = find(R.id.mine_changephone_toright);
+        mNetWorkTelePhone  = find(R.id.mine_networktelephone_toright);
+        mAboutUs  = find(R.id.mine_aboutus_toright);
         mMinewLauout = find(R.id.mine_layout);
         mUserHead = find(R.id.userhead);
         mUsername = find(R.id.username);
-        harvestAddress.setOnClickListener(this);
-        recommendFriend.setOnClickListener(this);
-        changePassWord.setOnClickListener(this);
-        changePhone.setOnClickListener(this);
-        netWorkTelePhone.setOnClickListener(this);
-        aboutUs.setOnClickListener(this);
+        mHarvestAddress.setOnClickListener(this);
+        mRecommendFriend.setOnClickListener(this);
+        mChangePassWord.setOnClickListener(this);
+        mChangePhone.setOnClickListener(this);
+        mNetWorkTelePhone.setOnClickListener(this);
+        mAboutUs.setOnClickListener(this);
         mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
+
         mHandler.postDelayed(LOAD_DATA, 500);
     }
+
     /**
      * 启动延时加载
      */
@@ -87,7 +94,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
             } else {
                 VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
                 mUserHead.setImageDrawable(drawable);
-                mUsername.setText("立即登录");
+                mUsername.setText(R.string.now_login);
             }
 
         }
@@ -97,7 +104,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
      * 初始数据
      */
     public void initData() {
-        mFile = new File(getCachePath(mActivity), "user-avatar.jpg");
+        mFile = new File(getCachePath((MainActivity)getActivity()), "user-avatar.jpg");
         if (mFile.exists()) {
             getImageToView();//初始化
         } else {
@@ -109,7 +116,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser) {
+        if (!isVisibleToUser&&mHandler !=null) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
     }
@@ -118,7 +125,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_layout:  //用户信息页面
-                Intent intent1 = new Intent(mActivity, PersonalInfoAvtivity.class);
+                Intent intent1 = new Intent( mActivity, PersonalInfoActivity.class);
                 startActivityForResult(intent1, 0);
                 break;
             case R.id.userhead: //头像
@@ -142,17 +149,18 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
-
                 showShareDialog();
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
+                startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
+                startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
                 break;
             case R.id.mine_networktelephone_toright://网点查询
                 break;
             case R.id.mine_aboutus_toright:         //关于我们
-                startActivity(new Intent(mActivity, AboutUsActivity.class));
+                startActivity(new Intent(getActivity(), AboutUsActivity.class));
                 break;
         }
 
@@ -167,10 +175,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
 
     private void getImageToView() {
         //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(mActivity, mFile.getPath());
+        final File cover = FileUtils.getSmallBitmap(getActivity(), mFile.getPath());
         Uri uri = Uri.fromFile(cover);
         try {
-            userBitmap = MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(), uri);
+            userBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -193,6 +201,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     /**
      * 弹出分享列表
      */
@@ -208,12 +217,12 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
                     case 0:
                         String url = "http://www.xckjetc.com/";
                         String smsBody = "我正在浏览这个,觉得真不错,推荐给你哦~ 地址:" + url;
-                        sendSMS(url,smsBody);
+                        sendSMS(url, smsBody);
                         break;
                     case 1:
-                        String  content =getString(R.string.sharecontent) + "http://www.xckjetc.com/";
+                        String content = getString(R.string.sharecontent) + "http://www.xckjetc.com/";
                         String imagePath = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
-                        shareMore(imagePath,content);
+                        shareMore(imagePath, content);
                         break;
                     default:
                         break;
@@ -229,34 +238,37 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener{
         builder.create().show();
     }
 
-    private void shareMore(String str,String content) {
+    private void shareMore(String str, String content) {
         //由文件得到uri
         Uri imageUri = Uri.fromFile(new File(str));
         Intent intent = new Intent(Intent.ACTION_SEND);
-        if(imageUri !=null){
-        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-        intent.setType("image/*");
-        }else{
+        if (imageUri != null) {
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, imageUri);
+            intent.setType("image/*");
+            intent.putExtra("sms_body", content);
+        } else {
             intent.setType("text/plain");
         }
-        intent.putExtra(Intent.EXTRA_TEXT,content);
+        intent.putExtra(Intent.EXTRA_TEXT, content);
         startActivity(Intent.createChooser(intent, getString(R.string.share)));
     }
 
     /**
      * 发短信
      */
-    private void sendSMS(String webUrl,String smsBody) {
-
+    private void sendSMS(String webUrl, String smsBody) {
         Uri smsToUri = Uri.parse("smsto:");
         Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
-        //sendIntent.putExtra("address", "123456"); // 电话号码，这行去掉的话，默认就没有电话
-        //短信内容
-        sendIntent.putExtra("sms_body", smsBody);
+        sendIntent.putExtra("sms_body", smsBody+webUrl);
         sendIntent.setType("vnd.android-dir/mms-sms");
         startActivityForResult(sendIntent, 1002);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

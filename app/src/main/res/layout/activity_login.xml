@@ -8,6 +8,8 @@
     <include layout="@layout/toolbar"
         android:id="@+id/login_toolbar"/>
     <RelativeLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -19,10 +21,10 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="40dp"
             android:gravity="center_vertical">
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/login_phonenumber_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/login_phonenumber_delete"
                 android:background="@null"
@@ -41,18 +43,16 @@
                 android:clickable="true"
                 android:visibility="invisible"
                 android:padding="5dp"
-                app:srcCompat="@drawable/vd_regist_delete" />
+                app:srcCompat="@drawable/vd_delete" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
                 android:layout_below="@+id/login_phonenumber_edt"
-                android:layout_marginTop="12dp"
                 android:background="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
-
             android:id="@+id/login_password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,11 +61,10 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="24dp"
             android:gravity="center_vertical">
-
             <EditText
                 android:id="@+id/login_password_edt"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/login_eye"
                 android:background="@null"
@@ -74,8 +73,7 @@
                 android:inputType="textPassword"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
                 android:maxLength="16"
-                android:textSize="14sp" />
-
+                android:textSize="16sp" />
             <ImageView
                 android:id="@+id/login_password_delete"
                 android:layout_width="25dp"
@@ -87,7 +85,7 @@
                 android:clickable="true"
                 android:padding="5dp"
                 android:visibility="invisible"
-                app:srcCompat="@drawable/vd_regist_delete" />
+                app:srcCompat="@drawable/vd_delete" />
 
             <ImageView
                 android:padding="5dp"
@@ -102,7 +100,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="2px"
                 android:layout_below="@+id/login_password_edt"
-                android:layout_marginTop="12dp"
                 android:background="@color/white" />
         </RelativeLayout>
         <RelativeLayout
@@ -219,7 +216,7 @@
             android:layout_marginLeft="26dp"
             android:layout_marginRight="26dp"
             android:layout_marginTop="80dp"
-            android:background="@drawable/bg_regist_button"
+            android:background="@drawable/bg_button"
             android:text="@string/login"
             android:textColor="@color/white" />
 

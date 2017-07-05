@@ -40,9 +40,15 @@
             android:name=".ui.activity.SetPasswordActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.PersonalInfoAvtivity"
-
+            android:name=".ui.activity.PersonalInfoActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.ChangePasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.ChangePhoneActivity"
+            android:screenOrientation="portrait" />
+        />
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
             android:screenOrientation="portrait"

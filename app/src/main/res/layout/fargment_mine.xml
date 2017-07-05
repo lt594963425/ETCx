@@ -11,6 +11,7 @@
         android:layout_height="15dp" />
 
     <FrameLayout
+        android:clickable="true"
         android:id="@+id/mine_layout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -70,12 +71,12 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:clickable="true"
             android:id="@+id/mine_harvestaddress_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:clickable="true"
             android:contentDescription="@string/harvestaddress"
             android:focusable="false"
             android:padding="15dp"
@@ -113,12 +114,12 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:clickable="true"
             android:id="@+id/mine_recommendfriend_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:clickable="true"
             android:contentDescription="@string/recommendfriend"
             android:focusable="false"
             android:padding="15dp"
@@ -156,12 +157,12 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:clickable="true"
             android:id="@+id/mine_changepassword_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:clickable="true"
             android:contentDescription="@string/changepassword"
             android:focusable="false"
             android:padding="15dp"
@@ -199,13 +200,13 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:clickable="true"
             android:id="@+id/mine_changephone_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
+            android:clickable="true"
             android:contentDescription="@string/changephone"
             android:focusable="false"
             android:padding="15dp"
@@ -243,12 +244,12 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:clickable="true"
             android:id="@+id/mine_networktelephone_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:clickable="true"
             android:contentDescription="@string/networktelephone"
             android:focusable="false"
             android:padding="15dp"
@@ -286,12 +287,12 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:clickable="true"
             android:id="@+id/mine_aboutus_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:clickable="true"
             android:contentDescription="@string/about_us"
             android:focusable="false"
             android:padding="15dp"

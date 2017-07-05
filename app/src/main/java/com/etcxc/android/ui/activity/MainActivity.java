@@ -97,7 +97,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mTabcontent =find(android.R.id.tabcontent);
         mViewPager.setOffscreenPageLimit(3);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
-
         mTabHost.setOnTabChangedListener(this);
         initTabs();
     }
@@ -109,7 +108,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextViewArray[i]).setIndicator(getTabItemView(i));
             mTabHost.addTab(tabSpec, mFragmentArray[i], null);
             mTabHost.setTag(i);
-            //mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
+            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);//背景状态
         }
     }
     ImageView mImageView;
@@ -167,18 +166,18 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
                 break;
             case 1:
                 setTitle(R.string.expand);
-                startRoationAmin(position);
+                startRoationAnim(position);
                 break;
             case 2:
                 setTitle(R.string.mime);
                 break;
         }
     }
-    private void startRoationAmin(int position) {
+    private void startRoationAnim(int position) {
         ImageView iv = (ImageView) mTabHost.getTabWidget().getChildTabViewAt(position).findViewById(R.id.tab_imageview);
         Animation anim =new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        anim.setFillAfter(true); // 设置保持动画最后的状态
-        anim.setDuration(300); // 设置动画时间
+        anim.setFillAfter(true);
+        anim.setDuration(300);
         anim.setInterpolator(new AccelerateInterpolator());
         iv.startAnimation(anim);
     }

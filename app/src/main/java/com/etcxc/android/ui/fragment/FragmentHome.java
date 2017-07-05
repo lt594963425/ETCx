@@ -134,6 +134,15 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             case R.id.home_etcmore_llayout:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));
                 break;
+            case R.id.home_etcrecharge_tv:
+
+                break;
+            case R.id.home_etccirclesave_tv:
+                startActivity(new Intent(mActivity, ETCIssueActivity.class));
+                break;
+            case R.id.home_detile_tv:
+                startActivity(new Intent(mActivity, ETCIssueActivity.class));
+                break;
         }
 
     }
