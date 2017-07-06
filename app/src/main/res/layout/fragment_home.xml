@@ -102,17 +102,4 @@
                 android:textSize="23sp" />
         </LinearLayout>
     </LinearLayout>
-
-    <com.etcxc.android.ui.view.FocusTextview
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/home_etcmore_llayout"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:scrollHorizontally="true"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:ellipsize="marquee"
-        android:lines="1"
-        android:text="****迅畅在线***** 唯一一家支持对ETC用户进行终身技术服务的团队 ************"
-        android:textColor="#c8374d" />
 </RelativeLayout>

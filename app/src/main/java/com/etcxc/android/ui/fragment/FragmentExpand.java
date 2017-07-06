@@ -83,8 +83,6 @@ public class FragmentExpand extends BaseFragment {
         public int getItemCount() {
             return datas.size();
         }
-
-        //自定义的ViewHolder，持有每个Item的的所有界面元素
         public class ViewHolder extends RecyclerView.ViewHolder {
             public TextView mTextView;
 

@@ -25,6 +25,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
+import com.etcxc.android.ui.activity.ETCRechargeActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.MyGridViewAdapter;
@@ -76,7 +77,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
         View view = inflater.inflate(R.layout.fragment_home, null);
-        mETCOnline = view.findViewById(R.id.home_etcmore_llayout);//ETC在线办理
+        mETCOnline = view.findViewById(R.id.home_etconline_tv);//ETC在线办理
         mETCRecharge = (TextView) view.findViewById(R.id.home_etcrecharge_tv);//ETC充值
         mETCSave = (TextView) view.findViewById(R.id.home_etccirclesave_tv);//ETC圈存
         mETCDetile= (TextView) view.findViewById(R.id.home_detile_tv);//0元照进不误
@@ -89,6 +90,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     }
     private void initView() {
         mETCOnline.setOnClickListener(this);
+        mETCRecharge.setOnClickListener(this);
         SpannableStringBuilder style=new SpannableStringBuilder(strDitle);
         style
                 .setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -131,11 +133,11 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.home_etcmore_llayout:
+            case R.id.home_etconline_tv:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));
                 break;
             case R.id.home_etcrecharge_tv:
-
+                startActivity(new Intent(mActivity, ETCRechargeActivity.class));
                 break;
             case R.id.home_etccirclesave_tv:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));

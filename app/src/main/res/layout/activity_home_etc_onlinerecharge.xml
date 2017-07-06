@@ -6,7 +6,9 @@
     android:background="@color/colorbg"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar" />
+    <include
+        android:id="@+id/etc_toolbar"
+        layout="@layout/toolbar" />
 
     <View
         android:layout_width="match_parent"
@@ -16,6 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -29,6 +33,7 @@
             android:textSize="16sp" />
 
         <EditText
+            android:id="@+id/recharge_cardnum_edt"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
@@ -38,6 +43,7 @@
             android:textSize="16sp" />
 
         <ImageView
+            android:id="@+id/add_cardnum_img"
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:layout_marginRight="8dp"
@@ -64,56 +70,80 @@
             android:textSize="16sp" />
 
         <EditText
+            android:id="@+id/recharge_money_Edt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginRight="6dp"
             android:background="@null" />
     </LinearLayout>
-
     <View
-        android:layout_width="wrap_content"
-        android:layout_height="2dp" />
-
-    <android.support.v7.widget.RecyclerView
-        android:padding="5dp"
-        android:background="@color/white"
-        android:id="@+id/recharge_recyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="1dp" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recharge_money_recylerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="5dp">
     </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="75dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_weight="2"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@string/recharge_detial"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
 
-            <TextView
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recharge_detial"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/recharge_detail_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="@string/recharge_total"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recharge_total"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/recharge_total_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
 
         <Button
+            android:id="@+id/recharge_add_detail_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
@@ -129,11 +159,11 @@
             android:textSize="16sp" />
     </LinearLayout>
     <android.support.v7.widget.RecyclerView
-        android:padding="5dp"
-        android:background="@color/white"
-        android:id="@+id/prepaid_recharge_recyle"
+        android:id="@+id/prepaid_recharge_recylerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="5dp">
     </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>
