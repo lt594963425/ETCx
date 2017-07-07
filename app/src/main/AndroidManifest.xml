@@ -56,10 +56,6 @@
         <activity
             android:name=".ui.activity.SelectPayWaysActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.ETCRechargeActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.SelectPayWaysActivity"
-            android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.HistoryRechargeCardActivity"
             android:screenOrientation="portrait"/>
         <activity
