@@ -20,6 +20,7 @@
     <string name="password_isempty">亲，请输入密码</string>
     <string name="please_input_verificodem">亲，请输入图形验证码</string>
     <string name="password_isshort">亲，您输入的密码太短了</string>
+    <string name="password_issame">亲，您输入的新密码和原密码不能一样哦</string>
     <string name="please_input_phonenumbers">请输入您的手机号码</string>
     <string name="please_input_passwords">请您输入6～16位密码</string>
     <string name="set_verifycodes">请输入您的短信验证码</string>
@@ -162,5 +163,9 @@
     <string name="recharge_total">合计：</string>
     <string name="please_select">选择支付方式</string>
     <string name="please_select_pay_methods">选择支付方式：</string>
+    <string name="my_receipt_address">我的收获地址</string>
+    <string name="modify_pwd">修改密码中...</string>
+    <string name="modify_pwd_fail">修改密码失败</string>
+    <string name="modify_pwd_succ">修改密码成功</string>
 
 </resources>

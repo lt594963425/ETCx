@@ -26,6 +26,7 @@ import com.etcxc.android.ui.activity.ChangePhoneActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
+import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
@@ -41,7 +42,7 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private File mFile;
-    private ImageView mUserHead,mHarvestAddress, mRecommendFriend,mChangePassWord,mChangePhone,mNetWorkTelePhone,mAboutUs;
+    private ImageView mUserHead, mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mNetWorkTelePhone, mAboutUs;
     private TextView mUsername;
     private FrameLayout mMinewLauout;
     //TODO: 2017/7/3
@@ -49,7 +50,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity =(MainActivity)getActivity();
+        mActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.fargment_mine, null);
     }
 
@@ -63,9 +64,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mHarvestAddress = find(R.id.mine_harvestaddress_toright);
         mRecommendFriend = find(R.id.mine_recommendfriend_toright);
         mChangePassWord = find(R.id.mine_changepassword_toright);
-        mChangePhone  = find(R.id.mine_changephone_toright);
-        mNetWorkTelePhone  = find(R.id.mine_networktelephone_toright);
-        mAboutUs  = find(R.id.mine_aboutus_toright);
+        mChangePhone = find(R.id.mine_changephone_toright);
+        mNetWorkTelePhone = find(R.id.mine_networktelephone_toright);
+        mAboutUs = find(R.id.mine_aboutus_toright);
         mMinewLauout = find(R.id.mine_layout);
         mUserHead = find(R.id.userhead);
         mUsername = find(R.id.username);
@@ -104,7 +105,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
      * 初始数据
      */
     public void initData() {
-        mFile = new File(getCachePath((MainActivity)getActivity()), "user-avatar.jpg");
+        mFile = new File(getCachePath((MainActivity) getActivity()), "user-avatar.jpg");
         if (mFile.exists()) {
             getImageToView();//初始化
         } else {
@@ -116,7 +117,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser&&mHandler !=null) {
+        if (!isVisibleToUser && mHandler != null) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
     }
@@ -125,7 +126,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_layout:  //用户信息页面
-                Intent intent1 = new Intent( mActivity, PersonalInfoActivity.class);
+                Intent intent1 = new Intent(mActivity, PersonalInfoActivity.class);
                 startActivityForResult(intent1, 0);
                 break;
             case R.id.userhead: //头像
@@ -147,12 +148,25 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
+                if (!MeManager.getIsLogin()) {
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                } else {
+                    startActivity(new Intent(mActivity, ReceiptAddressActivity.class));
+                }
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
                 showShareDialog();
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
-                startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
+                if (!MeManager.getIsLogin()) {
+                    //未登录：点击修改密码跳入登录页面
+                    Intent intent = new Intent(mActivity, PersonalInfoActivity.class);
+                    startActivityForResult(intent, 0);
+                } else {
+                    //已登录：点击修改密码进入修改密码页面
+                    startActivity(new Intent(mActivity, ChangePasswordActivity.class));
+                }
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
                 startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
@@ -262,7 +276,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private void sendSMS(String webUrl, String smsBody) {
         Uri smsToUri = Uri.parse("smsto:");
         Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
-        sendIntent.putExtra("sms_body", smsBody+webUrl);
+        sendIntent.putExtra("sms_body", smsBody + webUrl);
         sendIntent.setType("vnd.android-dir/mms-sms");
         startActivityForResult(sendIntent, 1002);
     }
