@@ -180,7 +180,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         init();
     }
     private void init() {
-        //ToastUtils.showToast(timeStr);
         mLoginPhonenumberDelete.setOnClickListener(this);
         mLoginPasswordDelete.setOnClickListener(this);
         mLoginFreshVerification.setOnClickListener(this);

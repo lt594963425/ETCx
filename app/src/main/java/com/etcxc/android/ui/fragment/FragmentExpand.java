@@ -100,5 +100,10 @@ public class FragmentExpand extends BaseFragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        mRecyclerview.smoothScrollToPosition(0);
+        super.onResume();
+    }
 }
 

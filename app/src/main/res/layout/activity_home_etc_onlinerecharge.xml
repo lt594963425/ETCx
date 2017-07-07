@@ -6,9 +6,40 @@
     android:background="@color/colorbg"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/etc_toolbar"
-        layout="@layout/toolbar" />
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/etc_back"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_return" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/home_etcrecharge"
+            android:textColor="@color/colorOrange"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/etc_card_recharge"
+            android:layout_width="67dp"
+            android:layout_height="35dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_recylerview_pressed"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/recharge"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -29,16 +60,19 @@
             android:layout_marginLeft="15dp"
             android:gravity="center_vertical"
             android:text="@string/hunan_cardnum"
+
             android:textColor="@color/black"
             android:textSize="16sp" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/recharge_cardnum_edt"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@null"
+            android:inputType="number"
             android:hint="@string/hint_input_cardnum"
+            android:maxLength="20"
             android:textColorHint="@color/colorGray"
             android:textSize="16sp" />
 
@@ -47,8 +81,9 @@
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:layout_marginRight="8dp"
+            android:clickable="true"
             android:padding="10dp"
-            app:srcCompat="@drawable/vd_expand_on" />
+            app:srcCompat="@drawable/vd_select_card" />
     </LinearLayout>
 
     <View
@@ -70,22 +105,34 @@
             android:textSize="16sp" />
 
         <EditText
+            android:inputType="numberDecimal"
             android:id="@+id/recharge_money_Edt"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="6dp"
-            android:background="@null" />
+            android:layout_weight="1"
+            android:background="@null"
+            android:text="200.00" />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:text="元"
+            android:textColor="@color/black" />
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recharge_money_recylerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="5dp">
-    </android.support.v7.widget.RecyclerView>
+        android:padding="5dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -115,6 +162,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:textColor="@color/black"
                     android:id="@+id/recharge_detail_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -134,36 +182,37 @@
                     android:text="@string/recharge_total"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
-
                 <TextView
+                    android:textColor="@color/black"
+                    android:text="@string/orgin_money"
                     android:id="@+id/recharge_total_money"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
 
-        <Button
+        <TextView
             android:id="@+id/recharge_add_detail_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="1"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_button"
             android:drawableLeft="@drawable/vd_add"
             android:gravity="center_vertical"
             android:lines="1"
-            android:paddingLeft="25dp"
+            android:paddingLeft="15dp"
             android:paddingRight="10dp"
             android:text="@string/add"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="17sp" />
     </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/prepaid_recharge_recylerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="5dp">
-    </android.support.v7.widget.RecyclerView>
-
+        android:padding="5dp" />
 </LinearLayout>

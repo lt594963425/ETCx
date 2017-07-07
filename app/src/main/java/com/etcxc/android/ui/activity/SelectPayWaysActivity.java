@@ -42,6 +42,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
         } else if (mPayWechat.isChecked()) {  //微信支付
             ToastUtils.showToast(R.string.wechat_pay);
         }
+        // 支付
     }
 
 }

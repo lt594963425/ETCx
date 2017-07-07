@@ -29,9 +29,9 @@ import okhttp3.Response;
 import static android.R.attr.path;
 import static com.etcxc.android.base.App.WX_APP_ID;
 import static com.etcxc.android.base.App.WX_APP_SECRET;
-import static com.etcxc.android.base.App.userTag;
 
 /**
+ * 微信登录
  * Created by 刘涛 on 2017/6/5 0005.
  */
 
@@ -79,8 +79,6 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                     String code = sendResp.token;
                     getAccess_token(code);
                 }
-                userTag = true;
-                PrefUtils.setBoolean(App.get(), "userTag", userTag);
                 finish();
 
                 break;

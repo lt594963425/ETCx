@@ -9,8 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- android:hardwareAccelerated="false" -->
+    <!--android:hardwareAccelerated="false"-->
     <application
         android:name=".base.App"
         android:allowBackup="true"
@@ -57,13 +56,18 @@
         <activity
             android:name=".ui.activity.SelectPayWaysActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.ETCRechargeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.SelectPayWaysActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.HistoryRechargeCardActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/TranslucentActivityTheme">
             <intent-filter>
                 <action android:name="com.etcxc.android.action.PAGE_REQUEST_PERMISSIONS" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -94,7 +98,7 @@
             android:name=".ui.activity.AboutUsActivity"
             android:theme="@style/BG_GRAY" />
 
-        <!-- 微信登录 -->
+        <!--微信登录-->
         <activity
             android:name=".ui.activity.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -112,7 +116,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.etcxc.android.action.DSERVICE" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

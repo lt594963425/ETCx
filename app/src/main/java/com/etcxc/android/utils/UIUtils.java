@@ -1,20 +1,29 @@
 package com.etcxc.android.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.etcxc.android.base.App;
+import com.etcxc.android.bean.OrderRechargeInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,8 +32,6 @@ import java.util.regex.Pattern;
  * 封装和ui相关的操作
  */
 public class UIUtils {
-
-
     /**
      * 得到上下文
      */
@@ -149,10 +156,33 @@ public class UIUtils {
             sp.edit().putString("history", sb.toString()).commit();
         }
     }
+
+    //保存卡号
+    public static void saveCardHistory(Context context,String field, String text) {
+        SharedPreferences sp = context.getSharedPreferences("card_history", 0);
+        String phonehistory = sp.getString(field, "");
+        if (!phonehistory.contains(text + ",")) {
+            StringBuilder sb = new StringBuilder(phonehistory);
+            sb.insert(0, text + ",");
+            sp.edit().putString("cardhistory", sb.toString()).commit();
+        }
+    }
+    //初始化用户号码
     public static void initAutoComplete(Context context,String field,AutoCompleteTextView auto) {
         SharedPreferences sp = context.getSharedPreferences("phone_history", 0);
-        String longhistory = sp.getString(field, "");
+        initAutoTextView(context, field, auto, sp);
+    }
+    //初始化用户号码
+    public static void initAutoCompleteCard(Context context,String field,AutoCompleteTextView auto) {
+        SharedPreferences sp = context.getSharedPreferences("card_history", 0);
+        initAutoTextView(context, field, auto, sp);
+    }
+    private static void initAutoTextView(Context context, String field, AutoCompleteTextView auto, SharedPreferences sp) {
+        String longhistory = sp.getString(field, " ");
         String[]  hisArrays = longhistory.split(",");
+        if(hisArrays.length< 2){
+            return;
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, hisArrays);
         if(hisArrays.length > 50){
             String[] newArrays = new String[50];
@@ -161,7 +191,7 @@ public class UIUtils {
         }
         auto.setAdapter(adapter);
         auto.setDropDownHeight(350);
-        auto.setThreshold(2);
+        auto.setThreshold(1);
         auto.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -172,6 +202,7 @@ public class UIUtils {
             }
         });
     }
+
     /**
      * 判断手机号码是否正确
      */
@@ -181,5 +212,85 @@ public class UIUtils {
         Pattern p = Pattern.compile(regExp);
         Matcher m = p.matcher(mobiles);
         return m.matches();
+    }
+
+    //存
+    public static void saveInfoList(Context con,ArrayList<OrderRechargeInfo> list) {
+        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String jsonStr=gson.toJson(list); //将List转换成Json
+        SharedPreferences.Editor editor = sp.edit() ;
+        editor.putString("KEY_INFO_list", jsonStr) ; //存入json串
+        editor.commit() ;  //提交
+    }
+    //取或查
+    public static ArrayList<OrderRechargeInfo>  getInfoList(Context con){
+        ArrayList<OrderRechargeInfo> infoList = new ArrayList<>();
+        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String InfoListString =  sp.getString("KEY_INFO_list","");
+        if(InfoListString != null){
+            infoList = gson.fromJson(InfoListString, new TypeToken<List<OrderRechargeInfo>>() {}.getType()); //将json字符串转换成List集合
+            return infoList;
+        }
+        return null;
+    }
+    //删除
+    public static void delete(Context con,int position){
+        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List",Activity.MODE_PRIVATE);
+        String InfoListStringJson = sp.getString("KEY_INFO_list","");
+        if(InfoListStringJson!="")  //防空判断
+        {
+            Gson gson = new Gson();
+            List<OrderRechargeInfo> peopleList = gson.fromJson(InfoListStringJson, new TypeToken<List<OrderRechargeInfo>>() {
+            }.getType()); //1.2. 取出并转换成List
+            peopleList.remove(position) ; //3.移除第position个的javabean
+            String jsonStr=gson.toJson(peopleList); //4.将删除完的List转换成Json
+            SharedPreferences.Editor editor = sp.edit() ;
+            editor.putString("KEY_INFO_list", jsonStr) ; //存入json串
+            editor.commit() ;  //提交
+        }
+    }
+    /**限定xiao数点*/
+    public static void setPricePoint(final EditText editText) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before,
+                                      int count) {
+                if (s.toString().contains(".")) {
+                    if (s.length() - 1 - s.toString().indexOf(".") > 2) {
+                        s = s.toString().subSequence(0,
+                                s.toString().indexOf(".") + 3);
+                        editText.setText(s);
+                        editText.setSelection(s.length());
+                    }
+                }
+                if (s.toString().trim().substring(0).equals(".")) {
+                    s = "0" + s;
+                    editText.setText(s);
+                    editText.setSelection(2);
+                }
+                if (s.toString().startsWith("0")
+                        && s.toString().trim().length() > 1) {
+                    if (!s.toString().substring(1, 2).equals(".")) {
+                        editText.setText(s.subSequence(0, 1));
+                        editText.setSelection(1);
+                        return;
+                    }
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+
+            }
+
+        });
+
     }
 }

@@ -11,18 +11,15 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  * Created by xwpeng on 2017/5/25.
  */
 public class App extends Application {
-
     public static  Boolean isLogin =false;//未登录状态false ，登录状态true
-    public  static Boolean  userTag = false;
     private static final String TAG = "App";
     private static App sInstance = null;
-    public App() {
-        sInstance = this;
-    }
     public  static final String WX_APP_ID = "wx21d6d90cd6a3a206";
     public static final String WX_APP_SECRET = "2e08ae5ae947e7bb99bfd32e24e1e7cd";
     public static IWXAPI WXapi;
-
+    public App() {
+        sInstance = this;
+    }
     @Override
     public void onCreate() {
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);

@@ -20,7 +20,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -65,8 +64,6 @@ import io.reactivex.functions.Consumer;
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
     private FragmentTabHost mTabHost;
-    private FrameLayout mTabcontent;
-    private static  final int LOGOUT = 1;//退出
     Class mFragmentArray[] = {
             FragmentHome.class,
             FragmentExpand.class,
@@ -89,12 +86,10 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     private void initView() {
         setToolbarBack(false);
-        getToolbar().setBackgroundColor(getResources().getColor(R.color.textcolor));
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(0, false);
         mTabHost = find(android.R.id.tabhost);
-        mTabcontent =find(android.R.id.tabcontent);
         mViewPager.setOffscreenPageLimit(3);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
@@ -124,7 +119,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     FragmentHome f1;
     FragmentExpand f2;
     FragmentMine f3;
-
     private void initPage() {
         ArrayList<Fragment> list = new ArrayList();
         f1 = new FragmentHome();
