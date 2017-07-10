@@ -27,6 +27,7 @@ import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
+import com.etcxc.android.ui.activity.ShareActivity;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
@@ -79,6 +80,12 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
 
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mHandler.postDelayed(LOAD_DATA, 500);
     }
 
@@ -156,7 +163,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 }
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
-                showShareDialog();
+                startActivity(new Intent(mActivity,ShareActivity.class));
+//                showShareDialog();
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {

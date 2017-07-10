@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:paddingLeft="46dp"
+    android:paddingRight="46dp"
+    android:gravity="center"
+    android:paddingTop="30dp"
+    android:paddingBottom="30dp"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_wechat"
+        android:gravity="center"
+        android:drawableTop="@mipmap/wechat"
+        android:text="@string/wechat"
+        android:textColor="@color/colorGray"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:textColor="@color/colorGray"
+        android:id="@+id/tv_wechat_timeline"
+        android:gravity="center"
+        android:drawableTop="@mipmap/wechat"
+        android:text="@string/wechat_timeline"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:textColor="@color/colorGray"
+        android:id="@+id/tv_qq"
+        android:gravity="center"
+        android:drawableTop="@mipmap/wechat"
+        android:text="@string/qq"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:textColor="@color/colorGray"
+        android:id="@+id/tv_sms"
+        android:gravity="center"
+        android:drawableTop="@mipmap/wechat"
+        android:text="@string/sms"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

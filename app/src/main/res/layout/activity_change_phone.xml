@@ -14,44 +14,44 @@
         android:layout_width="match_parent"
         android:layout_height="18dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white"
-        android:orientation="horizontal">
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:background="@color/white"-->
+        <!--android:orientation="horizontal">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="25dp"
-            android:gravity="center_vertical"
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:layout_marginLeft="25dp"-->
+            <!--android:gravity="center_vertical"-->
 
-            android:text="@string/origin_phone"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
+            <!--android:text="@string/origin_phone"-->
+            <!--android:textColor="@color/black"-->
+            <!--android:textSize="18sp" />-->
 
-        <AutoCompleteTextView
-            android:id="@+id/old_phone_edt"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:inputType="number"
-            android:maxLength="11" />
+        <!--<AutoCompleteTextView-->
+            <!--android:id="@+id/old_phone_edt"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@null"-->
+            <!--android:inputType="number"-->
+            <!--android:maxLength="11" />-->
 
-        <ImageView
+        <!--<ImageView-->
 
-            android:id="@+id/old_phone_delete"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:clickable="true"
-            android:padding="16dp"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/vd_delete_black" />
+            <!--android:id="@+id/old_phone_delete"-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:clickable="true"-->
+            <!--android:padding="16dp"-->
+            <!--android:visibility="invisible"-->
+            <!--app:srcCompat="@drawable/vd_delete_black" />-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <View
         android:layout_width="match_parent"
@@ -113,16 +113,18 @@
         android:background="@color/white"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:padding="14dp"
-            app:srcCompat="@drawable/vd_captcha_black" />
+        <!--<ImageView-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:padding="14dp"-->
+            <!--app:srcCompat="@drawable/vd_captcha_black" />-->
 
         <EditText
+            android:layout_marginLeft="24dp"
             android:id="@+id/new_captcha_edt"
             android:layout_width="0dp"
+            android:hint="@string/set_verifycode"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null" />

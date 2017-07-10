@@ -25,4 +25,5 @@
     <color name="issue_finish_hint">#5a5a5a</color>
     <color name="issue_finish_time">#fc7520</color>
     <color name="black">#000000</color>
+    <color name="bg_gray">#f0f0f0</color>
 </resources>
