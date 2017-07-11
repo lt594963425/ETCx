@@ -148,15 +148,9 @@ public class DownloadTask {
                 while ((len = is.read(buf)) != -1) {
                     finished += len;
                     fos.write(buf, 0, len);
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     long t = System.currentTimeMillis();
                     if (t - timeFlag > 100) {
                         timeFlag = t;
-                        LogUtil.e(TAG, "" + finished);
                         mOndownloadLister.onProgress(mOptions, finished, total);
                     }
                 }
