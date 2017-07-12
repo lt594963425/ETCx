@@ -11,11 +11,11 @@
         android:layout_height="15dp" />
 
     <FrameLayout
-        android:clickable="true"
         android:id="@+id/mine_layout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="#ffffff"
+        android:clickable="true"
         android:descendantFocusability="blocksDescendants">
 
         <ImageView
@@ -46,9 +46,11 @@
         android:layout_height="20dp" />
 
     <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mine_harvestaddress_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview">
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/mine_iv_harvestaddress"
@@ -71,12 +73,10 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/mine_harvestaddress_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:clickable="true"
             android:contentDescription="@string/harvestaddress"
             android:focusable="false"
             android:padding="15dp"
@@ -88,9 +88,11 @@
         android:layout_height="1dp" />
 
     <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mine_recommendfriend_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview">
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/mine_iv_recommendfriend"
@@ -114,12 +116,11 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/mine_recommendfriend_toright"
+
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:clickable="true"
             android:contentDescription="@string/recommendfriend"
             android:focusable="false"
             android:padding="15dp"
@@ -131,9 +132,11 @@
         android:layout_height="1dp" />
 
     <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mine_changepassword_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview">
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/mine_iv_changepassword"
@@ -157,12 +160,11 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/mine_changepassword_toright"
+
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:clickable="true"
             android:contentDescription="@string/changepassword"
             android:focusable="false"
             android:padding="15dp"
@@ -174,9 +176,11 @@
         android:layout_height="1dp" />
 
     <RelativeLayout
+        android:id="@+id/mine_changephone_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview">
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/mine_iv_changephone"
@@ -200,13 +204,11 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/mine_changephone_toright"
+
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:clickable="true"
+            android:layout_marginRight="5dp"
             android:contentDescription="@string/changephone"
             android:focusable="false"
             android:padding="15dp"
@@ -218,9 +220,11 @@
         android:layout_height="1dp" />
 
     <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mine_networktelephone_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview">
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/mine_iv_networktelephone"
@@ -244,12 +248,11 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/mine_networktelephone_toright"
+
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:clickable="true"
             android:contentDescription="@string/networktelephone"
             android:focusable="false"
             android:padding="15dp"
@@ -261,9 +264,11 @@
         android:layout_height="1dp" />
 
     <RelativeLayout
+        android:id="@+id/mine_aboutus_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview">
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
 
         <ImageView
             android:id="@+id/mine_iv_aboutus"
@@ -287,12 +292,10 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/mine_aboutus_toright"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:clickable="true"
             android:contentDescription="@string/about_us"
             android:focusable="false"
             android:padding="15dp"

@@ -21,6 +21,7 @@ import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +44,7 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.view.GlideCircleTransform;
@@ -58,6 +60,9 @@ import com.etcxc.android.utils.SharedPreferenceMark;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.myTextWatcher;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -95,7 +100,7 @@ import static com.etcxc.android.utils.UIUtils.saveHistory;
  * Created by 刘涛 on 2017/6/17 0017.
  */
 
-public class PersonalInfoActivity extends BaseActivity implements View.OnClickListener {
+public class PersonalInfoActivity extends BaseActivity implements View.OnClickListener, Toolbar.OnMenuItemClickListener {
     //登录信息操作界面
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private AutoCompleteTextView mLoginPhonenumberEdt;
@@ -205,6 +210,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         mExitLogin = (Button) findViewById(R.id.exit_login_btn);
         mPersonHead.setOnClickListener(this);
         mExitLogin.setOnClickListener(this);
+        mToolbar2.setOnMenuItemClickListener(this);
         setstatus();
     }
 
@@ -716,4 +722,32 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+         switch (item.getItemId()){
+             case R.id.jy:
+                 WXLogin();
+                 break;
+         }
+        return false;
+    }
+
+    private static final String WEIXIN_SCOPE = "snsapi_userinfo";// 用于请求用户信息的作用域
+    private static final String WEIXIN_STATE = "login_state"; // 自定义
+    private void WXLogin() {
+        IWXAPI WXapi = WXAPIFactory.createWXAPI(this, Constants.WX_APP_ID, true);
+        WXapi.registerApp(Constants.WX_APP_ID);
+        if (WXapi != null && WXapi.isWXAppInstalled()) {
+            SendAuth.Req req;
+            req = new SendAuth.Req();
+            req.scope = WEIXIN_SCOPE;
+            req.state = WEIXIN_STATE;
+            WXapi.sendReq(req);
+            Log.i(TAG, "。。。。。。。。。。。。WxLogin()，微信登录。。。。。。。");
+            ToastUtils.showToast("请稍后");
+        } else
+            ToastUtils.showToast("用户未安装微信");
+
+
+    }
 }

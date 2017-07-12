@@ -177,11 +177,22 @@
     <string name="modify_pwd_fail">修改密码失败</string>
     <string name="modify_pwd_succ">修改密码成功</string>
     <string name="password_issame">亲，你输入的新密码和原密码不能一样哦</string>
+    <string name="app_tip">提示</string>
+    <!-- WXPayEntryActivity -->
+    <string name="pay_result_tip">这个界面用于显示第三方app通过微信支付的结果</string>
+    <string name="pay_result_callback_msg" formatted="false">微信支付结果：%s</string>
+    <string name="is_zero">充值的额度小于0元</string>
+    <string name="is_charge_big">单张卡充值金额不能大于¥20000.00元</string>
+    <string name="add_card_ing">添加中...</string>
+    <string name="add_succ">添加成功</string>
+    <string name="add_faid">添加失败</string>
+    <string name="pay_faid">支付失败-</string>
     <string name="phone_issame">亲，你输入的新手机号和原手机号不能一样哦</string>
     <string name="my_share">我的推荐</string>
     <string name="wechat">微信</string>
     <string name="wechat_timeline">朋友圈</string>
     <string name="qq">QQ</string>
     <string name="sms">短信</string>
+    <string name="input_recharge_info">请输入卡号或者充值金额</string>
 
 </resources>

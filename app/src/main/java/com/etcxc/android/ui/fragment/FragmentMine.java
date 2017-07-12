@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.etcxc.MeManager;
@@ -42,8 +43,9 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
  * Created by 刘涛 on 2017/6/2 0002.
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
+    private RelativeLayout  mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mNetWorkTelePhone, mAboutUs;
     private File mFile;
-    private ImageView mUserHead, mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mNetWorkTelePhone, mAboutUs;
+    private ImageView mUserHead;
     private TextView mUsername;
     private FrameLayout mMinewLauout;
     //TODO: 2017/7/3
@@ -80,12 +82,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
 
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         mHandler.postDelayed(LOAD_DATA, 500);
     }
 
@@ -163,8 +159,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 }
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
-                startActivity(new Intent(mActivity,ShareActivity.class));
-//                showShareDialog();
+                //showShareDialog();
+                startActivity(new Intent(mActivity, ShareActivity.class));
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {

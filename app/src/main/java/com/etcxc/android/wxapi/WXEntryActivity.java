@@ -4,18 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
-import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.base.Constants;
 import com.etcxc.android.utils.ToastUtils;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
 
 /**
  * Created by ${caoyu} on 2017/7/8.
@@ -34,8 +32,8 @@ public class WXEntryActivity extends AppCompatActivity  implements IWXAPIEventHa
         setContentView(R.layout.activity_wxentry);
         Log.d(TAG, "onCreate: ");
 
-        mWxApi = WXAPIFactory.createWXAPI(this, App.WX_APP_ID, false);
-        mWxApi.registerApp(App.WX_APP_ID);
+        mWxApi = WXAPIFactory.createWXAPI(this, Constants.WX_APP_ID, false);
+        mWxApi.registerApp(Constants.WX_APP_ID);
         mWxApi.handleIntent(getIntent(), this);
     }
 

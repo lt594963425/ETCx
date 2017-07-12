@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -60,9 +59,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private RelativeLayout mMsgVodeLayout;//图形验证码http://192.168.6.58/login/login/login/
     String loginServerUrl = "http://192.168.6.58/login/login/login/";//登录的url
     private String smsUrl = "http://192.168.6.58/login/sms/smsreport/tel/";//短信url
-
-    private Dialog mDialog;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

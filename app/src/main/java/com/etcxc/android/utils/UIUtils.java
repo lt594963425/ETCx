@@ -251,7 +251,7 @@ public class UIUtils {
             editor.commit() ;  //提交
         }
     }
-    /**限定xiao数点*/
+    /**限定Xiao数点*/
     public static void setPricePoint(final EditText editText) {
         editText.addTextChangedListener(new TextWatcher() {
             @Override

@@ -12,6 +12,23 @@ public class OrderRechargeInfo {
     private String carnumber;
     private String etccarnumber;
     private String rechargemoney;
+    private String alloney;
+
+    public String getAlloney() {
+        return alloney;
+    }
+
+    public String getRechargemoney() {
+        return rechargemoney;
+    }
+
+    public void setRechargemoney(String rechargemoney) {
+        this.rechargemoney = rechargemoney;
+    }
+
+    public void setAlloney(String alloney) {
+        this.alloney = alloney;
+    }
 
     public String getRechargename() {
         return rechargename;
@@ -37,11 +54,4 @@ public class OrderRechargeInfo {
         this.etccarnumber = etccarnumber;
     }
 
-    public String getRechargemoney() {
-        return rechargemoney;
-    }
-
-    public void setRechargemoney(String rechargemoney) {
-        this.rechargemoney = rechargemoney;
-    }
 }

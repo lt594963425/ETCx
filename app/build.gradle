@@ -1,7 +1,16 @@
 apply plugin: 'com.android.application'
 android {
+    signingConfigs {
+        release {
+            keyAlias 'ETCXcKey'
+            keyPassword 'xcdeetc'
+            storeFile file('C:/ETCXc.keystore')
+            storePassword 'xcdeetc'
+        }
+    }
     compileSdkVersion rootProject.ext.cfg.compileSdkVersion
     buildToolsVersion rootProject.ext.cfg.buildToolsVersion
+
     defaultConfig {
         applicationId rootProject.ext.cfg.applicationId
         minSdkVersion rootProject.ext.cfg.minSdkVersion
@@ -15,23 +24,30 @@ android {
         }
     }
     buildTypes {
+//        debug {
+////            设置debug版本的报名为<应用id>.debug，这样就可以在设备上同时安装debug和release版本了。
+////            applicationIdSuffix ".debug"
+//            versionNameSuffix ".${releaseTime()}.debug"
+//            zipAlignEnabled false
+//            shrinkResources false
+//            minifyEnabled false
+//            signingConfig signingConfigs.release
+//            pseudoLocalesEnabled true
+//            zipAlignEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
+//        }
+//        release {
+//            minifyEnabled false
+//            signingConfig signingConfigs.release
+//            pseudoLocalesEnabled true
+//            zipAlignEnabled true
+//            proguardFile 'D:/ETC_HN_Project/ETCx/app/proguard-rules.pro'
+//        }
         debug {
-//            设置debug版本的报名为<应用id>.debug，这样就可以在设备上同时安装debug和release版本了。
-//            applicationIdSuffix ".debug"
-            versionNameSuffix ".${releaseTime()}.debug"
-            zipAlignEnabled false
-            shrinkResources false
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
-            signingConfig signingConfigs.debug
-            multiDexEnabled true
+            signingConfig signingConfigs.release
         }
         release {
-            minifyEnabled true
-            zipAlignEnabled true
-            shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            multiDexEnabled false
+            signingConfig signingConfigs.release
         }
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
@@ -43,20 +59,11 @@ android {
             }
         }
     }
+    useLibrary 'org.apache.http.legacy'
     compileOptions {
         //使用JAVA8语法解析
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    signingConfigs {
-        debug {
-        }
-        release {
-              storeFile new File("C:/ETCXc.keystore")
-              storePassword "etc+xc"
-              keyAlias "ETCXcKey"
-              keyPassword "etc+xc"
-        }
     }
 }
 //gfghfghhgjjjhjkjkiiuuhgtf
@@ -75,6 +82,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'com.android.support:cardview-v7:21.0.2'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -86,7 +94,6 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     //微信登录
-    compile files('libs/libammsdk.jar')
     //结合组件生命周期管理Rx
     compile 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
     compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.1.0'
@@ -101,6 +108,9 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     //轮播图+glide
     compile 'com.youth.banner:banner:1.4.9'
-    compile 'com.github.bumptech.glide:glide:3.5.2'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    //支付
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+
 }
 

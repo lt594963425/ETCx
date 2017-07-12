@@ -4,21 +4,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toolbar;
-
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.utils.BottomDialog;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.WXShareUtils;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXTextObject;
-
-import static com.etcxc.android.base.App.WX_APP_ID;
 
 public class ShareActivity extends BaseActivity implements View.OnClickListener {
     private Button btn_share;
@@ -80,7 +71,6 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
         tv_wechat_timeline = (TextView) v.findViewById(R.id.tv_wechat_timeline);
         tv_qq = (TextView) v.findViewById(R.id.tv_qq);
         tv_sms = (TextView) v.findViewById(R.id.tv_sms);
-
         tv_wechat.setOnClickListener(this);
         tv_wechat_timeline.setOnClickListener(this);
         tv_qq.setOnClickListener(this);

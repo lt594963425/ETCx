@@ -11,7 +11,6 @@
     <color name="colorbg">#f0f0f0</color>
     <color name="white_color_disable">#7fffff</color>
     <color name="white">#ffffff</color>
-    <!-- 白色 -->
     <color name="red_btn_color_disable">#7fff54</color>
     <color name="red_btn_color_pressed">#ffd242</color>
     <color name="red_btn_color_normal">#ffff54</color>
@@ -25,5 +24,6 @@
     <color name="issue_finish_hint">#5a5a5a</color>
     <color name="issue_finish_time">#fc7520</color>
     <color name="black">#000000</color>
+    <color name="navpage">#FFE1E8EB</color>
     <color name="bg_gray">#f0f0f0</color>
 </resources>

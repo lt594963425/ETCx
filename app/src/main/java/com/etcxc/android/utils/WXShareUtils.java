@@ -1,18 +1,15 @@
 package com.etcxc.android.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.text.TextUtils;
 
-import com.etcxc.android.base.App;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXImageObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXTextObject;
+import com.etcxc.android.base.Constants;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXTextObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import static com.etcxc.android.base.App.WX_APP_ID;
+import static com.etcxc.android.base.Constants.WX_APP_ID;
 
 /**
  * Created by ${caoyu} on 2017/7/8.
@@ -27,13 +24,12 @@ public class WXShareUtils {
      * @param type         true:朋友 false:朋友圈
      */
     public static void shareText(Context context,String shareContent, boolean type) {
-        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, WX_APP_ID);
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, Constants.WX_APP_ID);
         iwxapi.registerApp(WX_APP_ID);
         if (!iwxapi.isWXAppInstalled()){
             ToastUtils.showToast("您尚未安装微信客户端");
             return;
         }
-
         WXTextObject textObj = new WXTextObject();
         textObj.text = shareContent;
 

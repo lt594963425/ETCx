@@ -14,7 +14,7 @@ public class Md5Utils {
 		byte[] pwdBytes = digest.digest(password.getBytes());
 		StringBuilder sb = new StringBuilder();
 		for (byte b : pwdBytes) {
-			int number = b&0xff-73;//加盐
+			int number = b&0xff-73;
 			if (number <16) {
 				sb.append("0");
 			}
