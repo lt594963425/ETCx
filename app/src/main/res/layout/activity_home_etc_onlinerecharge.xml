@@ -7,10 +7,10 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/etc_back"
@@ -43,7 +43,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="20dp" />
+        android:layout_height="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,9 +60,7 @@
             android:layout_marginLeft="15dp"
             android:gravity="center_vertical"
             android:text="@string/hunan_cardnum"
-
-            android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <AutoCompleteTextView
             android:id="@+id/recharge_cardnum_edt"
@@ -70,11 +68,12 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@null"
-            android:inputType="number"
             android:hint="@string/hint_input_cardnum"
+            android:inputType="number"
             android:maxLength="20"
+            android:textColor="@color/textcolor"
             android:textColorHint="@color/colorGray"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/add_cardnum_img"
@@ -101,26 +100,27 @@
             android:layout_marginLeft="15dp"
             android:gravity="center_vertical"
             android:text="@string/recharge_amount"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
         <EditText
-            android:inputType="numberDecimal"
             android:id="@+id/recharge_money_Edt"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="6dp"
             android:layout_weight="1"
             android:background="@null"
-            android:text="200.00" />
+            android:inputType="numberDecimal"
+            android:text="200.00"
+            android:textColor="@color/textcolor"
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_marginRight="8dp"
             android:gravity="center"
-            android:text="元"
-            android:textColor="@color/black" />
+            android:textColor="@color/textcolor"
+            android:text="元" />
     </LinearLayout>
 
     <View
@@ -158,11 +158,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/recharge_detial"
-                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
-                    android:textColor="@color/black"
                     android:id="@+id/recharge_detail_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -180,14 +178,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/recharge_total"
-                    android:textColor="@color/black"
                     android:textSize="16sp" />
+
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="@string/orgin_money"
                     android:id="@+id/recharge_total_money"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/orgin_money" />
             </LinearLayout>
         </LinearLayout>
 

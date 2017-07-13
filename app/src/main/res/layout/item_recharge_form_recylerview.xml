@@ -24,7 +24,7 @@
                 android:layout_height="27dp"
                 android:gravity="center_vertical"
                 android:text="李小姐"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/item_car_number"
@@ -34,7 +34,7 @@
                 android:layout_toRightOf="@+id/item_card_name"
                 android:gravity="center_vertical"
                 android:text="湘A123456252"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/item_recharge_card_number"
@@ -43,7 +43,7 @@
                 android:layout_below="@+id/item_card_name"
                 android:gravity="center_vertical"
                 android:text="41234567891234567890"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -61,8 +61,7 @@
                 app:srcCompat="@drawable/vd_coin_recharge" />
             <TextView
                 android:id="@+id/item_money_number"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="4dp"

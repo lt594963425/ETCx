@@ -22,10 +22,12 @@ public class TimeCount extends CountDownTimer{
         view.setBackgroundResource(R.drawable.bg_gray);
         view.setClickable(false);
         view.setText("(" + millisUntilFinished / 1000 + ")" + getString(R.string.timeLate));
+        view.setTextSize(UIUtils.px2Dip(39));
     }
     @Override
     public void onFinish() {
         view.setText(getString(R.string.reStartGetCode));
+        view.setTextSize(UIUtils.px2Dip(39));
         view.setClickable(true);
         view.setBackgroundColor(UIUtils.getColor(R.color.colorGreen));
     }
