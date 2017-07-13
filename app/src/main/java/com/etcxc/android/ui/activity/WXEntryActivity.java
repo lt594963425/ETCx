@@ -1,34 +1,29 @@
 package com.etcxc.android.ui.activity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
-
 import com.etcxc.android.base.App;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PrefUtils;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.SendAuth;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
 import static android.R.attr.path;
-import static com.etcxc.android.base.App.WX_APP_ID;
-import static com.etcxc.android.base.App.WX_APP_SECRET;
+import static com.etcxc.android.base.Constants.WX_APP_ID;
+import static com.etcxc.android.base.Constants.WX_APP_SECRET;
+
 
 /**
  * 微信登录
@@ -76,7 +71,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                 Toast.makeText(this, result, Toast.LENGTH_LONG).show();
                 SendAuth.Resp sendResp = (SendAuth.Resp) resp;
                 if (sendResp != null) {
-                    String code = sendResp.token;
+                    String code = sendResp.code;
                     getAccess_token(code);
                 }
                 finish();

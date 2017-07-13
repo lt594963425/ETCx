@@ -42,6 +42,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     private IWXAPI mWxApi;
     private String url = "http://192.168.6.126:9999/pay/pay/payment/pay_message/";
     private String urls;
+    public StringBuilder mStrBuilder ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +65,14 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     // 支付
     @Override
     public void onClick(View v) {
+        mStrBuilder = new StringBuilder();
         if (setData()) return;
         if (mPayAlipay.isChecked()) {   //支付宝
             ToastUtils.showToast(R.string.alipay);
         }
         if (mPayWechat.isChecked()) {  //微信支付
-            wxPay(urls);//card_num/123456789/fee
+            showProgressDialog(getString(R.string.wx_pay_loading));
+            wxPay(urls);
 
         }
     }
@@ -77,15 +80,11 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     private boolean setData() {
         ArrayList<OrderRechargeInfo> list = UIUtils.getInfoList(this);
         if (list == null && list.size() < 1) {
+            ToastUtils.showToast(R.string.add_recharge_info);
             return true;
         }
-
-        Log.e(TAG,"支付单list:"+list.size());
-        StringBuilder sb = new StringBuilder();
-        String urslsss = "http://192.168.6.126:9999/pay/pay/payment/pay_message/" +
-                "\"face_card_num\"=>\"43011440220100005589\",\"fee\"=>\"2\"/total_fee/2/singular/1";
         if (list.size() == 1) {
-            sb.append("\"face_card_num\"").append("=>")
+            mStrBuilder.append("\"face_card_num\"").append("=>")
                     .append("\"" + list.get(0).getEtccarnumber() + "\"")
                     .append(",").append("\"fee\"").append("=>")
                     .append("\"" + (int) (Double.parseDouble(list.get(0).getRechargemoney()) * 100) + "\"")
@@ -97,31 +96,24 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
 
             for (int i = 0; i < list.size(); i++) {
                 if (i == list.size() - 1) {
-                    sb.append("\"face_card_num\"");
-                    sb.append("=>");
-                    sb.append("\"" + list.get(i).getEtccarnumber() + "\"");
-                    sb.append(",");
-                    sb.append("\"fee\"");
-                    sb.append("=>");
-                    sb.append("\"" + (int) (Double.parseDouble(list.get(i).getRechargemoney()) * 100) + "\"");
-                    sb.append("/total_fee/");
-                    sb.append((int) (Double.parseDouble(list.get(0).getAlloney())));
-                    sb.append("/singular/");
-                    sb.append(list.size());
+                    mStrBuilder.append("\"face_card_num\"")
+                    .append("=>")
+                    .append("\"" + list.get(i).getEtccarnumber() + "\"").append(",")
+                    .append("\"fee\"").append("=>")
+                    .append("\"" + (int) (Double.parseDouble(list.get(i).getRechargemoney()) * 100) + "\"")
+                    .append("/total_fee/")
+                    .append((int) (Double.parseDouble(list.get(0).getAlloney())))
+                    .append("/singular/").append(list.size());
                     break;
                 }
-                sb.append("\"face_card_num\"");
-                sb.append("=>");
-                sb.append("\"" + list.get(0).getEtccarnumber() + "\"");
-                sb.append(",");
-                sb.append("\"fee\"");
-                sb.append("=>");
-                sb.append("\"" + (int) (Double.parseDouble(list.get(0).getRechargemoney()) * 100) + "\"");
-                sb.append(";");
-
+                mStrBuilder.append("\"face_card_num\"").append("=>")
+                .append("\"" + list.get(0).getEtccarnumber() + "\"")
+                .append(",").append("\"fee\"").append("=>")
+                .append("\"" + (int) (Double.parseDouble(list.get(0).getRechargemoney()) * 100) + "\"")
+                .append(";");
             }
         }
-        urls = url + sb.toString();
+        urls = url + mStrBuilder.toString();
         Log.e(TAG, urls + ",list.length:" + list.size());
         return false;
     }
@@ -141,49 +133,57 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                     }
                 });
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String s = response.body().string();
                 Log.e(TAG, "" + s);
-                try {
-                    JSONObject jsonObject = new JSONObject(s);
-                    if (jsonObject == null) {
-                        return;
-                    }
-                    String code = jsonObject.getString("code");
-                    if (code.equals("s_ok")) {
-                        JSONObject varObject = jsonObject.getJSONObject("var");
-                        mWxApi = WXAPIFactory.createWXAPI(SelectPayWaysActivity.this, Constants.WX_APP_ID, true);
-                        mWxApi.registerApp(Constants.WX_APP_ID);
-                        PayReq req = new PayReq();
-                        req.appId = Constants.WX_APP_ID;
-                        req.partnerId = Constants.WX_PARTNER_ID;
-                        req.sign = varObject.getString("sign");
-                        req.prepayId = varObject.getString("prepay_id");
-                        req.nonceStr = varObject.getString("nonce_str");
-                        req.timeStamp = String.valueOf(varObject.getInt("time_start"));
-                        req.packageValue = "Sign=WXPay";// 固定值Sign=WXPay，可以直接写死，服务器返回的也是这个固定值
-                        Boolean b = mWxApi.sendReq(req);//调起支付
-                        Log.e(TAG, "支付结果" + b+"，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
-                                ",time_start" + req.timeStamp + ",sign" + req.sign + ",nonce_str" + req.nonceStr);
-                        finish();
-                    }
-                    if (code.equals("err")) {
-                        String returnMsg = jsonObject.getString("message");//返回的信息
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {//mLoginVerificodeEdt
-                                ToastUtils.showToast(returnMsg);
-                            }
-                        });
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                parseJsonResult(s);
             }
         });
+    }
+
+    private void parseJsonResult(String s) {
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            if (jsonObject == null) {
+                return;
+            }
+            String code = jsonObject.getString("code");
+            if (code.equals("s_ok")) {
+                JSONObject varObject = jsonObject.getJSONObject("var");
+                mWxApi = WXAPIFactory.createWXAPI(SelectPayWaysActivity.this, Constants.WX_APP_ID, true);
+                mWxApi.registerApp(Constants.WX_APP_ID);
+                PayReq req = new PayReq();
+                req.appId = Constants.WX_APP_ID;
+                req.partnerId = Constants.WX_PARTNER_ID;
+                req.sign = varObject.getString("sign");
+                req.prepayId = varObject.getString("prepay_id");
+                req.nonceStr = varObject.getString("nonce_str");
+                req.timeStamp = String.valueOf(varObject.getInt("time_start"));
+                req.packageValue = "Sign=WXPay";
+                Boolean b = mWxApi.sendReq(req);
+                Log.e(TAG, getString(R.string.pay_result_log) + b+"，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
+                        ",time_start" + req.timeStamp + ",sign" + req.sign + ",nonce_str" + req.nonceStr);
+                if(b){
+                    closeProgressDialog();
+                }
+                finish();
+            }
+            if (code.equals("err")) {
+                String returnMsg = jsonObject.getString("message");
+                closeProgressDialog();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {//mLoginVerificodeEdt
+                        ToastUtils.showToast(returnMsg);
+                    }
+                });
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            closeProgressDialog();
+        }
     }
 }

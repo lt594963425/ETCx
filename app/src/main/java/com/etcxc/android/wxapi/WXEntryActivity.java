@@ -4,24 +4,19 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.etcxc.android.R;
-import com.etcxc.android.base.Constants;
 import com.etcxc.android.base.App;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
 
 
 /**
  * Created by ${caoyu} on 2017/7/8.
  */
-import com.tencent.mm.sdk.modelbase.BaseReq;
-import com.tencent.mm.sdk.modelbase.BaseResp;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
+
 
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
     private static final String TAG = "WXEntryActivity";

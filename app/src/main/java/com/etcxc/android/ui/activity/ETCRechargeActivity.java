@@ -116,7 +116,6 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
             mRechaergeDetailNum.setText(mInfoList.size()+"");
             mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
         }
-        Log.e(TAG,"初始化：list:"+mInfoList.size());
     }
 
     //选择的充值金额
@@ -143,58 +142,63 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 startActivityForResult(new Intent(this, HistoryRechargeCardActivity.class), 1);
                 break;
             case R.id.recharge_add_detail_btn: //增加充值定单
-                mMoneyNumber = mRechaergeMoneyEdt.getText().toString().trim();
-                mRechargeCardNumber = mRechaergeCardEdt.getText().toString().trim();
-                if (TextUtils.isEmpty(mRechargeCardNumber)) {
-                    ToastUtils.showToast(R.string.card_isempty);
-                    return;
-                } else if (TextUtils.isEmpty(mMoneyNumber)) {
-                    ToastUtils.showToast(R.string.money_isempty);
-                    return;
-                } else if (parseDouble(mMoneyNumber) > 20000.00) {
-                    ToastUtils.showToast(R.string .is_charge_big);
-                    return;
-                }else if(!(parseDouble(mMoneyNumber)> 0.00)){
-                    ToastUtils.showToast(R.string .is_zero);
-                }
-
-                mInfoList = new ArrayList<>();
-                mInfoList = getInfoList(this);
-
-                 allMoney = parseDouble(mMoneyNumber);
-                if (mInfoList != null) {
-                    for (int i = 0; i < mInfoList.size(); i++) {
-                        OrderRechargeInfo info;
-                        info = mInfoList.get(i);
-                        String cardNumber = info.getEtccarnumber();
-                        String money = info.getRechargemoney();
-                        allMoney = allMoney + parseDouble(money);
-                        if (mRechargeCardNumber.equals(cardNumber)) {
-                            double totalMoney = parseDouble(money) + parseDouble(mMoneyNumber);
-                            if (totalMoney > 20000.00) {
-                                ToastUtils.showToast(R.string .is_charge_big);
-                                return;
-                            }
-                            delete(this, i);
-                            myRechaergeRecylerViewAdapter.removeData(i);
-                            mMoneyNumber = String.valueOf(df.format(totalMoney));
-                        }
-                    }//
-                }
-
-                showProgressDialog(getString(R.string.add_card_ing));
-                Log.e(TAG,"+++++++++++++++++++++++++金钱："+(int)(parseDouble(mMoneyNumber)*100));//这里是分
-                net(infoUrl+"card_num/"+mRechargeCardNumber+"/fee/"+(int)(parseDouble(mMoneyNumber)*100));
+                addRechargeDetail();
                 break;
             case R.id.etc_card_recharge:  //充值
-                if (mInfoList.size()==0){
+                if (getInfoList(this) == null||getInfoList(this).size()<1){
                     ToastUtils.showToast(R.string.input_recharge_info);
                     return;
                 }
-                Log.e(TAG,"添加的信息："+mInfoList.size());
+                Log.e(TAG,"添加的信息："+getInfoList(this).size());
                 startActivity(new Intent(this, SelectPayWaysActivity.class));
                 break;
         }
+    }
+    private void addRechargeDetail() {
+        if (LocalThrough()) return;
+        mInfoList = new ArrayList<>();
+        mInfoList = getInfoList(this);
+        allMoney = parseDouble(mMoneyNumber);
+        if (mInfoList != null) {
+            for (int i = 0; i < mInfoList.size(); i++) {
+                OrderRechargeInfo info;
+                info = mInfoList.get(i);
+                String cardNumber = info.getEtccarnumber();
+                String money = info.getRechargemoney();
+                allMoney = allMoney + parseDouble(money);
+                if (mRechargeCardNumber.equals(cardNumber)) {
+                    double totalMoney = parseDouble(money) + parseDouble(mMoneyNumber);
+                    if (totalMoney > 20000.00) {
+                        ToastUtils.showToast(R.string .is_charge_big);
+                        return;
+                    }
+                    delete(this, i);
+                    myRechaergeRecylerViewAdapter.removeData(i);
+                    mMoneyNumber = String.valueOf(df.format(totalMoney));
+                }
+            }
+        }
+        showProgressDialog(getString(R.string.add_card_ing));
+        Log.e(TAG,"+++++++++++++++++++++++++金钱："+(int)(parseDouble(mMoneyNumber)*100));//这里是分
+        net(infoUrl+"card_num/"+mRechargeCardNumber+"/fee/"+(int)(parseDouble(mMoneyNumber)*100));
+    }
+
+    private boolean LocalThrough() {
+        mMoneyNumber = mRechaergeMoneyEdt.getText().toString().trim();
+        mRechargeCardNumber = mRechaergeCardEdt.getText().toString().trim();
+        if (TextUtils.isEmpty(mRechargeCardNumber)) {
+            ToastUtils.showToast(R.string.card_isempty);
+            return true;
+        } else if (TextUtils.isEmpty(mMoneyNumber)) {
+            ToastUtils.showToast(R.string.money_isempty);
+            return true;
+        } else if (parseDouble(mMoneyNumber) > 20000.00) {
+            ToastUtils.showToast(R.string .is_charge_big);
+            return true;
+        }else if(!(parseDouble(mMoneyNumber)> 0.00)){
+            ToastUtils.showToast(R.string .is_zero);
+        }
+        return false;
     }
 
     private void net(String url) {
@@ -220,7 +224,6 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                     }
                 });
     }
-
     private void parseResultJson(String s) {
         try {
             JSONObject jsonObject = new JSONObject(s);
