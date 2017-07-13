@@ -8,7 +8,9 @@
     android:background="@color/bg_gray"
     tools:context="com.etcxc.android.ui.activity.ShareActivity">
 
-    <include layout="@layout/toolbar" />
+    <include
+        android:id="@+id/share_toolbar"
+        layout="@layout/toolbar" />
 
     <LinearLayout
         android:layout_marginTop="120dp"

@@ -53,7 +53,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
     private Button mSavePhoneBtn;
     private ImageView mOldPhoneDle, mNewPhoneDle;
 
-    private String smsCodeUrl = NetConfig.HOST + "/login/tel_change_sms/smsReport/tel/";
+    private String smsCodeUrl = NetConfig.HOST + "/login/tel_change_sms/smsReport/new_tel/";
     private String telChangeUrl = "/login/login/telchange";
     private String smsCode;//验证码
     private String smsID;//验证码id
@@ -119,7 +119,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                 } else if (phone.equals(MeManager.getSid())) {
                     ToastUtils.showToast(R.string.phone_issame);
-                } else if (TextUtils.isEmpty(smsID)) {
+                } else if (TextUtils.isEmpty(smsCode)) {
                     ToastUtils.showToast(R.string.please_input_smscode);
                 } else {
                     Map<String, String> params = new HashMap<>();
@@ -134,6 +134,10 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
     }
 
 
+    /**
+     * 获取验证码
+     * @param url
+     */
     public void getSmsCode(String url) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
@@ -175,6 +179,10 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                 });
     }
 
+    /**
+     * 修改手机号
+     * @param params
+     */
     private void telChange(Map<String, String> params) {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {

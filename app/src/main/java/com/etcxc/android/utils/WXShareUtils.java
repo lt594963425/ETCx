@@ -1,59 +1,146 @@
 package com.etcxc.android.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
-import com.etcxc.android.base.Constants;
-import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.opensdk.modelmsg.WXTextObject;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import static com.etcxc.android.base.Constants.WX_APP_ID;
+import com.etcxc.android.R;
+import com.etcxc.android.base.App;
+
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+
+
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+
+
+
+import static com.etcxc.android.base.App.WX_APP_ID;
 
 /**
+ * 微信分享
  * Created by ${caoyu} on 2017/7/8.
  */
 
-public class WXShareUtils {
+public class WXShareUtils extends Activity {
+    SendMessageToWX.Req req;
 
-    /**
-     * 分享文字
-     *
-     * @param shareContent 分享内容
-     * @param type         true:朋友 false:朋友圈
-     */
-    public static void shareText(Context context,String shareContent, boolean type) {
-        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, Constants.WX_APP_ID);
-        iwxapi.registerApp(WX_APP_ID);
-        if (!iwxapi.isWXAppInstalled()){
-            ToastUtils.showToast("您尚未安装微信客户端");
-            return;
+    private static WXShareUtils instance = null;
+
+    public static synchronized WXShareUtils getInstance() {
+        if (instance == null) {
+            instance = new WXShareUtils();
         }
-        WXTextObject textObj = new WXTextObject();
-        textObj.text = shareContent;
+        return instance;
+    }
 
-        WXMediaMessage msg = new WXMediaMessage();
-        msg.mediaObject = textObj;
-        // 发送文本类型的消息时，title字段不起作用
-        // msg.title = "Title";
-        msg.description = shareContent;
-
-        // 构造一个Req
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = "text"; // transaction字段用于唯一标识一个请求
-        req.message = msg;
-        req.scene = type ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
-        iwxapi.sendReq(req);
+    public IWXAPI getWxApi(Context context){
+        return App.WXapi;
     }
 
     /**
-     * 构建一个唯一标志
-     *
-     * @param type 分享的类型分字符串
-     * @return 返回唯一字符串
+     * 微信文本分享
+     * @param mContext
+     * @param text  内容
+     * @param description 消息描述
+     * @param tag 0:好友 1:朋友圈
      */
-    private static String buildTransaction(String type) {
+    public void doTextSend(Context mContext,String text,String description,int tag) {
+        //初始化一个微信WXWebpageObject对象，填写url
+        WXTextObject textObject = new WXTextObject();
+        textObject.text = text;
+
+        //用WXWebpageObject对象初始化一个WXMediaMessage对象，填写标题，描述
+        WXMediaMessage msg = new WXMediaMessage(textObject);
+        //此处填写消息标题
+        msg.mediaObject = textObject;
+        //此处填写消息描述
+        msg.description = buildTransaction(description);
+
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+        msg.setThumbImage(bitmap);
+        //构造一个Req
+        req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("text");
+        req.message = msg;
+        if(tag == 0){
+            req.scene = SendMessageToWX.Req.WXSceneSession;
+        }else if(tag == 1){
+            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        }
+        App.WXapi.sendReq(req);
+    }
+
+    /**
+     * 微信url分享
+     *
+     * @param mContext
+     */
+    public void doUrlSend(Context mContext,String url,String title,String description,int tag) {
+        //初始化一个微信WXWebpageObject对象，填写url
+        WXWebpageObject webpageObject = new WXWebpageObject();
+        webpageObject.webpageUrl = url;
+
+        //用WXWebpageObject对象初始化一个WXMediaMessage对象，填写标题，描述
+        WXMediaMessage msg = new WXMediaMessage(webpageObject);
+        //此处填写消息标题
+        msg.title = title;
+        //此处填写消息描述
+        msg.description = description;
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.mipmap.ic_launcher);
+        msg.setThumbImage(bitmap);
+        //构造一个Req
+        req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("webpage");
+        req.message = msg;
+        if(tag == 0){
+            req.scene = SendMessageToWX.Req.WXSceneSession;
+        }else if(tag == 1){
+            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        }
+        App.WXapi.sendReq(req);
+
+    }
+
+    /**
+     * 论坛微信url分享
+     *
+     * @param mContext
+     */
+    public void shareUrlSend(Context mContext,String url,String title,String description,Bitmap bitmap,int tag) {
+        //初始化一个微信WXWebpageObject对象，填写url
+        WXWebpageObject webpageObject = new WXWebpageObject();
+        webpageObject.webpageUrl = url;
+
+        //用WXWebpageObject对象初始化一个WXMediaMessage对象，填写标题，描述
+        WXMediaMessage msg = new WXMediaMessage(webpageObject);
+        //此处填写消息标题
+        msg.title = title;
+        //此处填写消息描述
+        msg.description = description;
+        Bitmap img = bitmap;
+        msg.setThumbImage(img);
+        //构造一个Req
+        req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("webpage");
+        req.message = msg;
+        if(tag == 0){
+            req.scene = SendMessageToWX.Req.WXSceneSession;
+        }else if(tag == 1){
+            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        }
+        App.WXapi.sendReq(req);
+    }
+
+    private String buildTransaction(final String type) {
         return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
     }
+
+
+
 }
