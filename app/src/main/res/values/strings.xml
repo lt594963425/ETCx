@@ -186,5 +186,7 @@
     <string name="share_error">分享失败</string>
     <string name="share_complete">分享成功</string>c
     <string name="share_cancel">取消分享</string>
+    <string name="download_success">下载成功</string>
+    <string name="download_cancle">下载取消</string>
 
 </resources>

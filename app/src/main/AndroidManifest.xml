@@ -153,7 +153,7 @@
             android:exported="false" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.etcxc.useravatar"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -169,6 +169,8 @@
             android:name=".wxapi.WXEntryActivity"
             android:exported="true"
             android:launchMode="singleTop" />
+
+        <activity android:name=".ui.activity.ShareActivity"/>
     </application>
 
 </manifest>
