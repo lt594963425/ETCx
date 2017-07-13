@@ -194,5 +194,7 @@
     <string name="qq">QQ</string>
     <string name="sms">短信</string>
     <string name="input_recharge_info">请输入卡号或者充值金额</string>
+    <string name="download_success">下载成功</string>
+    <string name="download_cancle">下载取消</string>
 
 </resources>

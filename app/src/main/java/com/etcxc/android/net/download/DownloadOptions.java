@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ *
  * Created by xwpeng on 17-2-8.
  */
 
@@ -23,9 +24,7 @@ public class DownloadOptions implements Parcelable {
     public int step;
     public int reason;//下载失败的原因，分为网络错误，取消下载
 
-    public DownloadOptions() {
-
-    }
+    public DownloadOptions() {}
 
     protected DownloadOptions(Parcel in) {
         url = in.readString();
@@ -136,23 +135,6 @@ public long finished;
             p.showNotification = this.showNotification;
             return p;
         }
-    }
-
-
-
-    @Override
-    public String toString() {
-        return "DownloadOptions{" +
-                ", url='" + url + '\'' +
-                ", targetPath='" + targetPath + '\'' +
-                ", cookie='" + cookie + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                ", finished=" + finished +
-                ", total=" + total +
-                ", showNotification=" + showNotification +
-                ", step=" + step +
-                '}';
     }
 
     @Override

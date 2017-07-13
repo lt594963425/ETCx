@@ -33,7 +33,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * 对okhttp封装
@@ -41,7 +40,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 public class OkClient {
     private static final String TAG = "OkClient";
-    private static final String HTTP_PREFIX = "http://";
+    public static final String HTTP_PREFIX = "http://";
     private static final String HTTPS = "https";
     private static final String MEDIATYPE_TEXT = "text";
     private static final String MEDIATYPE_APPLICATION = "application";
@@ -292,11 +291,12 @@ public class OkClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(180, TimeUnit.SECONDS)
                 .build();
-        if (true) {
+      /*  if (true) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            //如果想要详细的信息，把级别改成BODY，但是会造成全接收完传输内容才会回调Response,下载会有明显延时更新效果
+            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
             client = client.newBuilder().addInterceptor(logging).build();
-        }
+        }*/
         if (httpOrHttps(url)) {
             client = client.newBuilder().sslSocketFactory(overlockCard().getSocketFactory(), x509TrustManager)
                     .hostnameVerifier(new HostnameVerifier() {
