@@ -33,3 +33,24 @@
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 -keep class com.etcxc.android.ui.view.XToolbar { *; }
+# glide 的混淆代码
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+# banner 的混淆代码
+-keep class com.youth.banner.** {
+    *;
+ }
+
+# 微信混淆
+ -keep class com.tencent.mm.opensdk.** {
+    *;
+ }
+ -keep class com.tencent.wxop.** {
+    *;
+ }
+ -keep class com.tencent.mm.sdk.** {
+    *;
+ }

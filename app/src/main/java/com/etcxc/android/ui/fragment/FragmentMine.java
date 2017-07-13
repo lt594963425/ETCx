@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,7 +8,6 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,8 +161,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 }
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
-                startActivity(new Intent(mActivity,ShareActivity.class));
-//                showShareDialog();
+                startActivity(new Intent(mActivity, ShareActivity.class));
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {
@@ -177,7 +174,12 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 }
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
-                startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
+                if (!MeManager.getIsLogin()) {
+                    ToastUtils.showToast(R.string.nologin);
+                    return;
+                } else {
+                    startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
+                }
                 break;
             case R.id.mine_networktelephone_toright://网点查询
                 break;
@@ -222,71 +224,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    /**
-     * 弹出分享列表
-     */
-    private void showShareDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(this.getString(R.string.select_share_type));
-        builder.setItems(new String[]{this.getString(R.string.smsshare), this.getString(R.string.moreshare)}, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
-                dialog.dismiss();
-                switch (which) {
-                    case 0:
-                        String url = "http://www.xckjetc.com/";
-                        String smsBody = "我正在浏览这个,觉得真不错,推荐给你哦~ 地址:" + url;
-                        sendSMS(url, smsBody);
-                        break;
-                    case 1:
-                        String content = getString(R.string.sharecontent) + "http://www.xckjetc.com/";
-                        String imagePath = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
-                        shareMore(imagePath, content);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.create().show();
-    }
-
-    private void shareMore(String str, String content) {
-        //由文件得到uri
-        Uri imageUri = Uri.fromFile(new File(str));
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        if (imageUri != null) {
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-            intent.setType("image/*");
-            intent.putExtra("sms_body", content);
-        } else {
-            intent.setType("text/plain");
-        }
-        intent.putExtra(Intent.EXTRA_TEXT, content);
-        startActivity(Intent.createChooser(intent, getString(R.string.share)));
-    }
-
-    /**
-     * 发短信
-     */
-    private void sendSMS(String webUrl, String smsBody) {
-        Uri smsToUri = Uri.parse("smsto:");
-        Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
-        sendIntent.putExtra("sms_body", smsBody + webUrl);
-        sendIntent.setType("vnd.android-dir/mms-sms");
-        startActivityForResult(sendIntent, 1002);
     }
 
     @Override

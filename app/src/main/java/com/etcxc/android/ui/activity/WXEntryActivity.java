@@ -9,10 +9,11 @@ import android.widget.Toast;
 import com.etcxc.android.base.App;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PrefUtils;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
+
+import com.tencent.mm.sdk.modelbase.BaseReq;
+import com.tencent.mm.sdk.modelbase.BaseResp;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.SendAuth;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import org.json.JSONException;
@@ -76,7 +77,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
                 Toast.makeText(this, result, Toast.LENGTH_LONG).show();
                 SendAuth.Resp sendResp = (SendAuth.Resp) resp;
                 if (sendResp != null) {
-                    String code = sendResp.token;
+                    String code = sendResp.code;
                     getAccess_token(code);
                 }
                 finish();

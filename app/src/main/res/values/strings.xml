@@ -183,5 +183,8 @@
     <string name="wechat_timeline">朋友圈</string>
     <string name="qq">QQ</string>
     <string name="sms">短信</string>
+    <string name="share_error">分享失败</string>
+    <string name="share_complete">分享成功</string>c
+    <string name="share_cancel">取消分享</string>
 
 </resources>
