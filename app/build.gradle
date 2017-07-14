@@ -1,18 +1,8 @@
 apply plugin: 'com.android.application'
 android {
-    signingConfigs {
-        release {
-            keyAlias 'ETCXcKey'
-            keyPassword 'xcdeetc'
-            storeFile file('C:/ETCXc.keystore')
-            storePassword 'xcdeetc'
-        }
-    }
     compileSdkVersion rootProject.ext.cfg.compileSdkVersion
     buildToolsVersion rootProject.ext.cfg.buildToolsVersion
-
     defaultConfig {
-        multiDexEnabled true
         applicationId rootProject.ext.cfg.applicationId
         minSdkVersion rootProject.ext.cfg.minSdkVersion
         targetSdkVersion rootProject.ext.cfg.targetSdkVersion
@@ -32,37 +22,51 @@ android {
             zipAlignEnabled false
             shrinkResources false
             minifyEnabled false
-            signingConfig signingConfigs.release
-            pseudoLocalesEnabled true
-            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
+            signingConfig signingConfigs.debug
+            multiDexEnabled true
         }
         release {
-            minifyEnabled false
-            signingConfig signingConfigs.release
-            pseudoLocalesEnabled true
+            versionNameSuffix ".${releaseTime()}.release"
+            minifyEnabled true
             zipAlignEnabled true
-            proguardFile 'D:/ETC_HN_Project/ETCx/app/proguard-rules.pro'
+            shrinkResources false
+//            proguardFile 'D:/Android/project/ETCXc/app/proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            multiDexEnabled false
         }
-
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}_${variant.flavorName}.apk"
+                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}.apk"
                     output.outputFile = new File(outputFile.parent, fileName)
                 }
             }
         }
     }
-    useLibrary 'org.apache.http.legacy'
     compileOptions {
         //使用JAVA8语法解析
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    signingConfigs {
+        debug {
+            storeFile file('C:/ETCXc.keystore')
+            storePassword "xcdeetc"
+            keyAlias "ETCXcKey"
+            keyPassword "xcdeetc"
+        }
+        release {
+            storeFile file('C:/ETCXc.keystore')
+            storePassword "xcdeetc"
+            keyAlias "ETCXcKey"
+            keyPassword "xcdeetc"
+        }
+    }
 }
-//gfghfghhgjjjhjkjkiiuuhgtf
+
 //平时打包的文件名包含的时间，只有年月日
 def releaseTime() {
     return new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+8"))
@@ -78,7 +82,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:cardview-v7:21.0.2'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -90,6 +93,7 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     //微信登录
+    compile files('libs/libammsdk.jar')
     //结合组件生命周期管理Rx
     compile 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
     compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.1.0'
