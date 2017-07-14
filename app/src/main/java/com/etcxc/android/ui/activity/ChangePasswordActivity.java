@@ -11,18 +11,14 @@ import android.widget.ImageView;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.Md5Utils;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.myTextWatcher;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,13 +27,12 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.net.NetConfig.HOST;
 import static com.etcxc.android.utils.UIUtils.isLook;
-import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
 /**
  * Created by 刘涛 on 2017/7/4 0004.
+ *
  */
 
 public class ChangePasswordActivity extends BaseActivity implements View.OnClickListener {

@@ -11,17 +11,19 @@
 
     <LinearLayout
         android:id="@+id/info_page"
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
+
         <include
             android:id="@+id/person_toolbar"
-            layout="@layout/toolbar">
-        </include>
+            layout="@layout/toolbar"></include>
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="15dp"/>
+            android:layout_height="15dp" />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -54,12 +56,12 @@
             android:layout_height="match_parent">
 
             <Button
-                android:background="@drawable/bg_button"
                 android:id="@+id/exit_login_btn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="30dp"
+                android:background="@drawable/bg_button"
                 android:text="@string/exitlogin" />
         </RelativeLayout>
     </LinearLayout>

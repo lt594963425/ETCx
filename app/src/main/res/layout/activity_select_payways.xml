@@ -6,20 +6,18 @@
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
-
     <View
         android:layout_width="match_parent"
-        android:layout_height="25dp" />
-
+        android:layout_height="10dp" />
     <TextView
         android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:paddingLeft="20dp"
         android:textSize="16sp"
         android:gravity="center_vertical"
         android:text="@string/please_select_pay_methods"
-        android:textColor="@color/black" />
+   />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp" />
@@ -34,9 +32,11 @@
             android:layout_height="45dp"
             android:layout_marginLeft="30dp"
             android:checked="true"
+            android:textColor="@color/textcolor"
             android:gravity="center_vertical"
             android:text="@string/alipay" />
         <RadioButton
+            android:textColor="@color/textcolor"
              android:id="@+id/pay_wechat"
             android:layout_width="match_parent"
             android:layout_height="45dp"
@@ -46,6 +46,7 @@
     </RadioGroup>
 
     <Button
+        android:textColor="@color/white"
         android:id="@+id/etc_pay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
