@@ -118,7 +118,6 @@
             android:name=".ui.activity.AboutUsActivity"
             android:theme="@style/BG_GRAY" />
 
-
         <!-- 图片裁剪 -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
@@ -157,18 +156,22 @@
         <activity
             android:name=".ui.activity.ReceiptAddressActivity"
             android:screenOrientation="portrait" />
-        <!--微信配置-->
+        <!-- 微信配置 -->
         <activity
             android:name=".wxapi.WXEntryActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop" />
-
-        <activity android:name=".ui.activity.ShareActivity"/>
+        <activity android:name=".ui.activity.ShareActivity" />
         <activity
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
+        <activity android:name=".ui.activity.CreditForLoadActivity" />
+        <activity android:name=".ui.activity.NFCReaderActivity" />
+        <activity android:name=".ui.activity.BluetoothReaderActivity" />
+        <activity android:name=".ui.activity.CardInfoActivity" />
+        <activity android:name=".ui.activity.CreditForLoadFinishActivity"></activity>
     </application>
 
 </manifest>

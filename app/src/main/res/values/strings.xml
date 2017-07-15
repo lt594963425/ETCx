@@ -199,8 +199,15 @@
     <string name="share_error">分享失败</string>
     <string name="share_complete">分享成功</string>c
     <string name="share_cancel">取消分享</string>
-    <string name="input_recharge_info">请添加订单信息</string>
+    <string name="input_recharge_info">请输入卡号或者充值金额</string>
     <string name="download_success">下载成功</string>
     <string name="download_cancle">下载取消</string>
     <string name="add_recharge_info">请先添加充值订单</string>
+    <string name="load_nfc">NFC圈存</string>
+    <string name="load_bluetooth_box">蓝牙盒子圈存</string>
+    <string name="nfc_text">在读卡过程中，请将卡紧贴手机背面</string>
+    <string name="replace_device">更换设备</string>
+    <string name="read_card">读卡</string>
+    <string name="name">姓名:</string>
+    <string name="card_info">卡信息</string>
 </resources>

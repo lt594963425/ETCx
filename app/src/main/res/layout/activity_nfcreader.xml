@@ -1,9 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_gray"
+    android:orientation="vertical"
     tools:context="com.etcxc.android.ui.activity.NFCReaderActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <include layout="@layout/toolbar"/>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginTop="57dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/nfc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:textSize="16sp"
+            android:textColor="@color/colorGray"
+            android:text="@string/nfc_text"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <Button
+        android:layout_marginBottom="34dp"
+        style="?android:attr/borderlessButtonStyle"
+        android:id="@+id/btn_replace_device"
+        android:elevation="@null"
+        android:text="@string/replace_device"
+        android:textSize="16sp"
+        android:textColor="@color/colorGray"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/bg_white_line"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+</LinearLayout>

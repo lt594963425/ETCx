@@ -24,6 +24,7 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
+import com.etcxc.android.ui.activity.CreditForLoadActivity;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
 import com.etcxc.android.ui.activity.MainActivity;
@@ -91,6 +92,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     private void initView() {
         mETCOnline.setOnClickListener(this);
         mETCRecharge.setOnClickListener(this);
+        mETCSave.setOnClickListener(this);
         SpannableStringBuilder style=new SpannableStringBuilder(strDitle);
         style
                 .setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -140,7 +142,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                 startActivity(new Intent(mActivity, ETCRechargeActivity.class));
                 break;
             case R.id.home_etccirclesave_tv:
-                startActivity(new Intent(mActivity, ETCIssueActivity.class));
+                startActivity(new Intent(mActivity, CreditForLoadActivity.class));
                 break;
             case R.id.home_detile_tv:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));

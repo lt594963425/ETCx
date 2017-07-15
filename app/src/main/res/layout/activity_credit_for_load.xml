@@ -1,9 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_gray"
+    android:orientation="vertical"
     tools:context="com.etcxc.android.ui.activity.CreditForLoadActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <include layout="@layout/toolbar" />
+
+    <RelativeLayout
+        android:id="@+id/load_nfc"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
+
+        <ImageView
+            android:id="@+id/mine_iv_networktelephone"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="25dp"
+            android:contentDescription="@string/networktelephone"
+            android:padding="10dp"
+            app:srcCompat="@drawable/vd_nfc" />
+
+        <TextView
+            android:id="@+id/mine_tv_networktelephone"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_networktelephone"
+            android:gravity="center"
+            android:paddingRight="15dp"
+            android:text="@string/load_nfc"
+            android:textSize="18sp" />
+
+        <ImageView
+
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/networktelephone"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:id="@+id/load_bluetooth_box"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_listview"
+        android:descendantFocusability="blocksDescendants">
+
+        <ImageView
+            android:id="@+id/mine_iv_aboutus"
+            android:layout_width="50dp"
+            android:layout_marginLeft="25dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/about_us"
+            android:padding="10dp"
+            app:srcCompat="@drawable/vd_bluetooth" />
+
+        <TextView
+            android:id="@+id/mine_tv_aboutus"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/mine_iv_aboutus"
+            android:gravity="center"
+            android:paddingRight="15dp"
+            android:text="@string/load_bluetooth_box"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:contentDescription="@string/about_us"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+</LinearLayout>
