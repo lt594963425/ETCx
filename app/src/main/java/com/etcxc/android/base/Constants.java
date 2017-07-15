@@ -18,4 +18,6 @@ public class Constants {
      */
     public static final String QQ_APP_ID = "1106278726";
     public static final String QQ_APP_KEY = "18cyPpxYhCO0LUUK";
+    //友盟
+    public  static final  String UM_APP_KEY ="59683d1d07fe656c9a000787";
 }

@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.etcxc.android">
 
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.REAL_GET_TASKS"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -118,6 +125,7 @@
             android:name=".ui.activity.AboutUsActivity"
             android:theme="@style/BG_GRAY" />
 
+
         <!-- 图片裁剪 -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
@@ -172,6 +180,32 @@
         <activity android:name=".ui.activity.BluetoothReaderActivity" />
         <activity android:name=".ui.activity.CardInfoActivity" />
         <activity android:name=".ui.activity.CreditForLoadFinishActivity"></activity>
+            android:launchMode="singleTop"/>
+        //友盟
+        <meta-data android:value="59683d1d07fe656c9a000787" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="59683d1d07fe656c9a000787">
+        </meta-data>
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="535f7eeb5d24886caf7d22d295a44216">
+        </meta-data>
+        <receiver
+            android:name=".base.MyReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK" />
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+                <category android:name="com.hdl.jpushdemo" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

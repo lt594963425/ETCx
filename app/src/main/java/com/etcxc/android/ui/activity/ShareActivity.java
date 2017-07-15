@@ -26,6 +26,7 @@ import com.tencent.connect.share.QQShare;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
+import com.umeng.analytics.MobclickAgent;
 
 public class ShareActivity extends BaseActivity implements View.OnClickListener {
     private Button btn_share;
@@ -81,10 +82,12 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
                 dialog.dismiss();
                 break;
             case R.id.tv_qq:
+                MobclickAgent.onEvent(this, "QQShare" );
                 shareToQQ();
                 dialog.dismiss();
                 break;
             case R.id.tv_sms:
+                MobclickAgent.onEvent(this, "SMSShare" );
                 String smsBody = "我正在浏览这个,觉得真不错,推荐给你哦~ 地址:" + SHARE_URL;
                 sendSMS(SHARE_URL, smsBody);
                 dialog.dismiss();

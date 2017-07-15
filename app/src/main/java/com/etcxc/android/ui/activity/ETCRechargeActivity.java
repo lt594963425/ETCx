@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,6 +23,8 @@ import com.etcxc.android.ui.adapter.MyRecylerViewAdapter;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.myTextWatcher;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,18 +49,24 @@ import static java.lang.Double.parseDouble;
  * 充值
  * Created by 刘涛 on 2017/7/5 0005.
  */
-
 public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAdapter.OnItemClickListener, View.OnClickListener, MyRechaergeRecylerViewAdapter.OnItemRechargeClickListener {
+    private static final int SELECT_SUCCESS = 1;
+    private static final int RECHARGE_SUCCESS = 2;
     private AutoCompleteTextView mRechaergeCardEdt;
     private EditText mRechaergeMoneyEdt;
-    private ImageView mAddCardImg;
+    private ImageView mAddCardImg, mCardNumDelete;
     private RecyclerView mRechaergeMoneyRecyler, mRechaergePrepaidRecyler;
     private TextView mRechaergeDetailNum, mRechaergeTotalMoney, mRechaergeAddDetailBtn;
     private String[] money = {"50", "100", "500", "1000", "1500", "2000"};
     private TextView mRecharge;
     private ArrayList<OrderRechargeInfo> mInfoList;
+    private String mRechargeCardNumber;
+    private String mMoneyNumber;
+    private double allMoney;
     private MyRechaergeRecylerViewAdapter myRechaergeRecylerViewAdapter;
-    String infoUrl ="http://192.168.6.126:9999/pay/pay/addcard/";
+    private DecimalFormat df;
+    String infoUrl = "http://192.168.6.126:9999/pay/pay/addcard/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +75,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     }
 
     private void initView() {
+        df = new DecimalFormat("0.00");
         setBarBack(find(R.id.etc_back));
         mRecharge = find(R.id.etc_card_recharge);
         mRechaergeCardEdt = find(R.id.recharge_cardnum_edt);//卡号
@@ -75,6 +83,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         mRechaergeMoneyEdt = find(R.id.recharge_money_Edt);// 输入的充值金额
         mRechaergeMoneyRecyler = find(R.id.recharge_money_recylerview);//选择金额
         mRechaergeDetailNum = find(R.id.recharge_detail_num); //充值明细(单数)
+        mCardNumDelete = find(R.id.card_num_delete);
         mRechaergeTotalMoney = find(R.id.recharge_total_money); //合计
         mRechaergeAddDetailBtn = find(R.id.recharge_add_detail_btn); //添加
         mRechaergePrepaidRecyler = find(R.id.prepaid_recharge_recylerview); //待支付的订单列表
@@ -99,26 +108,27 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         myRechaergeRecylerViewAdapter = new MyRechaergeRecylerViewAdapter(this, mInfoList);
         mRechaergePrepaidRecyler.setAdapter(myRechaergeRecylerViewAdapter);
         myRechaergeRecylerViewAdapter.setmOnItemRechargeClickListener(this);
+        mRechaergeCardEdt.addTextChangedListener(new myTextWatcher(mRechaergeCardEdt, mCardNumDelete));
+        mCardNumDelete.setOnClickListener(this);
     }
 
     private void initData() {
         mInfoList = new ArrayList<>();
         mInfoList = getInfoList(this);
-        OrderRechargeInfo infos = new OrderRechargeInfo();
+        OrderRechargeInfo infos;
         if (mInfoList != null) {
-            DecimalFormat df = new DecimalFormat("0.00");
             double allMoney = 0;
             for (int i = 0; i < mInfoList.size(); i++) {
                 infos = mInfoList.get(i);
                 String money = infos.getRechargemoney();
                 allMoney = allMoney + parseDouble(money);
             }
-            mRechaergeDetailNum.setText(mInfoList.size()+"");
+            mRechaergeDetailNum.setText(mInfoList.size() + "");
             mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
         }
+
     }
 
-    //选择的充值金额
     @Override
     public void onItemClick(View view, int position) {//view = -1
         mRechaergeMoneyEdt.setText(money[position]);
@@ -131,29 +141,31 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         initData();
         ToastUtils.showToast("删除");
     }
-    DecimalFormat df = new DecimalFormat("0.00");
-    String mMoneyNumber;
-    double allMoney;
-    String mRechargeCardNumber;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_cardnum_img: //添加历史卡号
-                startActivityForResult(new Intent(this, HistoryRechargeCardActivity.class), 1);
+                startActivityForResult(new Intent(this, HistoryRechargeCardActivity.class), SELECT_SUCCESS);
                 break;
             case R.id.recharge_add_detail_btn: //增加充值定单
                 addRechargeDetail();
                 break;
             case R.id.etc_card_recharge:  //充值
-                if (getInfoList(this) == null||getInfoList(this).size()<1){
+                MobclickAgent.onEvent(this, "RechargeClick" );
+                if (getInfoList(this) == null || getInfoList(this).size() < 1) {
                     ToastUtils.showToast(R.string.input_recharge_info);
                     return;
                 }
-                Log.e(TAG,"添加的信息："+getInfoList(this).size());
-                startActivity(new Intent(this, SelectPayWaysActivity.class));
+                Log.e(TAG, "添加订单信息：" + getInfoList(this).size());
+                startActivityForResult(new Intent(this, SelectPayWaysActivity.class), RECHARGE_SUCCESS);
+                break;
+            case R.id.card_num_delete:
+                mRechaergeCardEdt.setText("");
                 break;
         }
     }
+
     private void addRechargeDetail() {
         if (LocalThrough()) return;
         mInfoList = new ArrayList<>();
@@ -169,7 +181,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 if (mRechargeCardNumber.equals(cardNumber)) {
                     double totalMoney = parseDouble(money) + parseDouble(mMoneyNumber);
                     if (totalMoney > 20000.00) {
-                        ToastUtils.showToast(R.string .is_charge_big);
+                        ToastUtils.showToast(R.string.is_charge_big);
                         return;
                     }
                     delete(this, i);
@@ -179,8 +191,8 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
             }
         }
         showProgressDialog(getString(R.string.add_card_ing));
-        Log.e(TAG,"+++++++++++++++++++++++++金钱："+(int)(parseDouble(mMoneyNumber)*100));//这里是分
-        net(infoUrl+"card_num/"+mRechargeCardNumber+"/fee/"+(int)(parseDouble(mMoneyNumber)*100));
+        Log.e(TAG, "+++++++++++++++++++++++++金钱：" + (int) (parseDouble(mMoneyNumber) * 100));//这里是分
+        net(infoUrl + "card_num/" + mRechargeCardNumber + "/fee/" + (int) (parseDouble(mMoneyNumber) * 100));
     }
 
     private boolean LocalThrough() {
@@ -193,10 +205,12 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
             ToastUtils.showToast(R.string.money_isempty);
             return true;
         } else if (parseDouble(mMoneyNumber) > 20000.00) {
-            ToastUtils.showToast(R.string .is_charge_big);
+            ToastUtils.showToast(R.string.is_charge_big);
             return true;
-        }else if(!(parseDouble(mMoneyNumber)> 0.00)){
-            ToastUtils.showToast(R.string .is_zero);
+        } else if (!(parseDouble(mMoneyNumber) > 0.00)) {
+            Log.e(TAG, "+++++++++++++++++++++" + mMoneyNumber);
+            ToastUtils.showToast(R.string.is_zero);
+            return true;
         }
         return false;
     }
@@ -224,6 +238,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                     }
                 });
     }
+
     private void parseResultJson(String s) {
         try {
             JSONObject jsonObject = new JSONObject(s);
@@ -237,8 +252,8 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 info.setCarnumber(jsonVar.getJSONArray("veh_plate_code").getString(0));
                 info.setRechargename(jsonVar.getJSONArray("user_name").getString(0));
                 info.setRechargemoney(mMoneyNumber);
-                info.setAlloney(String.valueOf((int)(allMoney*100)));//
-                Log.e(TAG,"显示的结果：单个充值："+mMoneyNumber+"总数"+String.valueOf((int)(allMoney*100)));
+                info.setAlloney(String.valueOf((int) (allMoney * 100)));//
+                Log.e(TAG, "显示的结果：单个充值：" + mMoneyNumber + "总数" + String.valueOf((int) (allMoney * 100)));
                 if (mInfoList == null) {
                     myRechaergeRecylerViewAdapter.addData(info, 0, mRechaergeDetailNum);
                 } else {
@@ -249,6 +264,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
                 saveCardHistory(this, "cardhistory", mRechargeCardNumber);
                 ToastUtils.showToast(R.string.add_succ);
+
             }
             if (code.equals("err")) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
@@ -268,7 +284,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case 1:
+            case SELECT_SUCCESS:
                 if (data != null) {
                     String result = data.getStringExtra("number");
                     mRechaergeCardEdt.setText(result);
@@ -277,4 +293,5 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

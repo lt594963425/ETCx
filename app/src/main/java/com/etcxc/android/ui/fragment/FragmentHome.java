@@ -12,6 +12,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
+import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
 
 import org.json.JSONObject;
@@ -52,9 +55,11 @@ import io.reactivex.functions.Consumer;
  */
 
 public class FragmentHome extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
-    String[] imagess = new String[]{"http://pic29.photophoto.cn/20131125/0022005500418920_b.jpg",
-            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558030884&di=b10f693abcebd09dfb309d89702672e5&imgtype=0&src=http%3A%2F%2Fpic29.nipic.com%2F20130511%2F12011435_141504339147_2.jpg",
-            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558204252&di=8a6ce8463360d42b7518665a469391fc&imgtype=0&src=http%3A%2F%2Fpic.58pic.com%2F58pic%2F11%2F04%2F37%2F04658PICQHc.jpg",
+    String[] imagess = new String[]{
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg"};
     private GridView mHomeGV;
     private ViewPager mVPger;
@@ -118,6 +123,8 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position){
             case 0:   //业务办理
+                Log.e(TAG,""+ UIUtils.getDeviceInfo(mActivity));
+                ToastUtils.showToast(""+position);
                 break;
             case 1:   //充值记录
                 break;
@@ -137,9 +144,11 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         switch (v.getId()) {
             case R.id.home_etconline_tv:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));
+                MobclickAgent.onEvent(mActivity, "mETCIssueClick" );
                 break;
             case R.id.home_etcrecharge_tv:
                 startActivity(new Intent(mActivity, ETCRechargeActivity.class));
+                MobclickAgent.onEvent(mActivity, "mETCRechargeClick" );
                 break;
             case R.id.home_etccirclesave_tv:
                 startActivity(new Intent(mActivity, CreditForLoadActivity.class));
@@ -251,7 +260,15 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         banner.stopAutoPlay();
         super.onStop();
     }
-
+    @Override
+    public void onResume() {
+        MobclickAgent.onPageStart("FragmentExpand");
+        super.onResume();
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("FragmentExpand");
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

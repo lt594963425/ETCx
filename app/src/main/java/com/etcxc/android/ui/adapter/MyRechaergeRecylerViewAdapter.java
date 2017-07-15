@@ -108,7 +108,7 @@ public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechae
         if (list.size() < 1 && list.size() != 0) {
             list.remove(0);
             notifyDataSetChanged();
-        } else if (list.size() == 0) {//当列表没有数据提示用户，免得造成系统崩溃
+        } else if (list.size() == 0) {
             Toast.makeText(con, R.string.nothing_isempty, Toast.LENGTH_SHORT).show();
         } else {//更新列表
             list.remove(position);

@@ -1,16 +1,17 @@
 package com.etcxc.android.wxapi;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-
+import com.umeng.analytics.MobclickAgent;
 
 
 /**
@@ -47,6 +48,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
             case BaseResp.ErrCode.ERR_OK:
                 //正确返回
                 result = getString(R.string.share_complete);
+                MobclickAgent.onEvent(this, "WXShare" );
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
                 //用户取消

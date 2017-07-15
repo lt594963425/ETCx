@@ -1,7 +1,6 @@
 package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
@@ -84,7 +82,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.request_failed);
+                        ToastUtils.showToast(R.string.request_faileds);
                     }
                 });
     }
@@ -97,7 +95,6 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         mStreet = jsonObject.getJSONArray("var").getJSONObject(0).getString("area_street");//街道
         mDetailaddress = jsonObject.getJSONArray("var").getJSONObject(0).getString("address");//详细地址
         mPhoneNumber = jsonObject.getJSONArray("var").getJSONObject(0).getString("mail_tel");//收件人联系电话
-
         mReceiverEdit.setText(mReceiver);
         mPhoneNumberEdit.setText(mPhoneNumber);
         mDetailAddressEdit.setText(mDetailaddress);
@@ -215,7 +212,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.request_failed);
+                        ToastUtils.showToast(R.string.request_faileds);
                     }
                 });
     }

@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,7 +8,6 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,23 +30,22 @@ import com.etcxc.android.ui.activity.ShareActivity;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.io.IOException;
 
-import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
-    private RelativeLayout  mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mNetWorkTelePhone, mAboutUs;
+    private RelativeLayout  mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mAboutUs;
     private File mFile;
     private ImageView mUserHead;
     private TextView mUsername;
     private FrameLayout mMinewLauout;
-    //TODO: 2017/7/3
     private Handler mHandler = new Handler();
 
     @Override
@@ -68,7 +65,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mRecommendFriend = find(R.id.mine_recommendfriend_toright);
         mChangePassWord = find(R.id.mine_changepassword_toright);
         mChangePhone = find(R.id.mine_changephone_toright);
-        mNetWorkTelePhone = find(R.id.mine_networktelephone_toright);
         mAboutUs = find(R.id.mine_aboutus_toright);
         mMinewLauout = find(R.id.mine_layout);
         mUserHead = find(R.id.userhead);
@@ -77,11 +73,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mRecommendFriend.setOnClickListener(this);
         mChangePassWord.setOnClickListener(this);
         mChangePhone.setOnClickListener(this);
-        mNetWorkTelePhone.setOnClickListener(this);
         mAboutUs.setOnClickListener(this);
         mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
-
         mHandler.postDelayed(LOAD_DATA, 500);
     }
 
@@ -91,7 +85,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private Runnable LOAD_DATA = new Runnable() {
         @Override
         public void run() {
-            //从本地加载个人信
             if (MeManager.getIsLogin()) {
                 mUsername.setText(MeManager.getSid());
                 initData();
@@ -100,13 +93,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 mUserHead.setImageDrawable(drawable);
                 mUsername.setText(R.string.now_login);
             }
-
         }
     };
 
-    /**
-     * 初始数据
-     */
     public void initData() {
         mFile = new File(getCachePath((MainActivity) getActivity()), "user-avatar.jpg");
         if (mFile.exists()) {
@@ -133,22 +122,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 startActivityForResult(intent1, 0);
                 break;
             case R.id.userhead: //头像
-                if (!isLogin) {
-                    ToastUtils.showToast(R.string.nologin);
-                    return;
-                }
-                String path = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
-                File file = new File(path);
-                if (!file.exists()) {
-                    ToastUtils.showToast(R.string.nosethead);
-                    return;
-                }
-                PrefUtils.setBoolean(mActivity, "isScal", true);
-                //加载本地图片
-                Intent intent4 = new Intent(mActivity, LargeImageActivity.class);
-                intent4.putExtra("path", FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg");
-                startActivity(intent4);
-                mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
+                startLoadHead();
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 if (!MeManager.getIsLogin()) {
@@ -180,13 +154,31 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
                 }
                 break;
-            case R.id.mine_networktelephone_toright://网点查询
-                break;
             case R.id.mine_aboutus_toright:         //关于我们
                 startActivity(new Intent(getActivity(), AboutUsActivity.class));
                 break;
         }
 
+    }
+    private void startLoadHead() {
+        if (!MeManager.getIsLogin()) {
+            ToastUtils.showToast(R.string.nologin);
+            Intent intent2 = new Intent(mActivity, PersonalInfoActivity.class);
+            startActivityForResult(intent2, 0);
+            return;
+        }
+        String path = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
+        File file = new File(path);
+        if (!file.exists()) {
+            ToastUtils.showToast(R.string.nosethead);
+            return;
+        }
+        PrefUtils.setBoolean(mActivity, "isScal", true);
+        //加载本地图片
+        Intent intent4 = new Intent(mActivity, LargeImageActivity.class);
+        intent4.putExtra("path", FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg");
+        startActivity(intent4);
+        mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
     }
 
     /**
@@ -224,7 +216,15 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
+    @Override
+    public void onResume() {
+        MobclickAgent.onPageStart("FragmentExpand");
+        super.onResume();
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("FragmentExpand");
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.MainActivity;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 
@@ -103,7 +104,12 @@ public class FragmentExpand extends BaseFragment {
     @Override
     public void onResume() {
         mRecyclerview.smoothScrollToPosition(0);
+        MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("FragmentExpand");
     }
 }
 

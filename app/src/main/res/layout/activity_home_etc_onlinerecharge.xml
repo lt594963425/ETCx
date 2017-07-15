@@ -74,12 +74,20 @@
             android:textColor="@color/textcolor"
             android:textColorHint="@color/colorGray"
             android:textSize="15sp" />
-
+        <ImageView
+            android:visibility="invisible"
+            android:id="@+id/card_num_delete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:padding="12dp"
+            app:srcCompat="@drawable/vd_delete_black" />
         <ImageView
             android:id="@+id/add_cardnum_img"
             android:layout_width="48dp"
             android:layout_height="match_parent"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="1dp"
             android:clickable="true"
             android:padding="10dp"
             app:srcCompat="@drawable/vd_select_card" />

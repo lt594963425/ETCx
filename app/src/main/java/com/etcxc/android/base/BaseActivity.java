@@ -16,6 +16,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+import com.umeng.analytics.MobclickAgent;
 
 import okhttp3.OkHttpClient;
 
@@ -28,9 +29,11 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     protected final OkHttpClient client = new OkHttpClient();
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
+
     protected XToolbar getToolbar() {
         return mXToolbar;
     }
+
     private void initToolbar() {
         mXToolbar = find(R.id.toolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -65,13 +68,19 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        MobclickAgent.enableEncrypt(true);
         if (getSupportActionBar() != null) getSupportActionBar().hide();
         LogUtil.i(TAG, "----------onCreate----------");
     }
 
     @Override
+    protected void onResume() {
+        MobclickAgent.onResume(this);
+        super.onResume();
+    }
+    @Override
     protected void onPause() {
+        MobclickAgent.onPause(this);
         super.onPause();
         LogUtil.i(TAG, "----------onPause----------");
         if (isFinishing()) LogUtil.i(TAG, "----------onPausem, finishing----------");
@@ -116,7 +125,9 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         LogUtil.i(TAG, "----------onNewIntent----------");
     }
 
-    /** 沉浸式状态栏*/
+    /**
+     * 沉浸式状态栏
+     */
     protected void initState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -166,5 +177,14 @@ public abstract class BaseActivity extends RxAppCompatActivity {
             mProgressDialog.cancel();
         }
     }
+
+    public void showToobar() {
+        mXToolbar.setVisibility(View.VISIBLE);
+    }
+
+    public void hindToobar() {
+        mXToolbar.setVisibility(View.GONE);
+    }
+
 
 }

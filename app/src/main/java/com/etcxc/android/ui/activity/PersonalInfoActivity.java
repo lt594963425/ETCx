@@ -63,6 +63,7 @@ import com.etcxc.android.utils.myTextWatcher;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -89,6 +90,7 @@ import okhttp3.Response;
 import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.R.id.login_phonenumber_delete;
 import static com.etcxc.android.base.App.isLogin;
+import static com.etcxc.android.base.App.onProfileSignIn;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -250,24 +252,8 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 startActivity(intent);
                 break;
             case R.id.login_button:  // 登录
-                String data;
-                String key2 = PrefUtils.getString(App.get(), "code_key", null);
-                String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
-                String passWord = mLoginPasswordEdt.getText().toString().trim();
-                String pwd = Md5Utils.encryptpwd(passWord);
-                String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
-                if (veriFicodem.isEmpty()) {
-                    data = "tel/" + phoneNum +
-                            "/pwd/" + pwd;
-                } else {
-                    data = "tel/" + phoneNum +
-                            "/pwd/" + pwd +
-                            "/code/" + veriFicodem +
-                            "/code_key/" + key2;
-                }
-                if (LocalThrough(phoneNum, passWord, veriFicodem)) return;
-                saveHistory(this,"history",phoneNum);
-                loginRun(loginServerUrl + data);
+                MobclickAgent.onEvent(this, "LoginClick" );
+                if (startUserLoging()) return;
                 break;
             case R.id.person_userhead:
                 if (!isLogin) {
@@ -290,6 +276,29 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         }
         this.overridePendingTransition(R.anim.anim_in, R.anim.anim_out);
     }
+
+    private boolean startUserLoging() {
+        String data;
+        String key2 = PrefUtils.getString(App.get(), "code_key", null);
+        String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
+        String passWord = mLoginPasswordEdt.getText().toString().trim();
+        String pwd = Md5Utils.encryptpwd(passWord);
+        String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
+        if (veriFicodem.isEmpty()) {
+            data = "tel/" + phoneNum +
+                    "/pwd/" + pwd;
+        } else {
+            data = "tel/" + phoneNum +
+                    "/pwd/" + pwd +
+                    "/code/" + veriFicodem +
+                    "/code_key/" + key2;
+        }
+        if (LocalThrough(phoneNum, passWord, veriFicodem)) return true;
+        saveHistory(this,"history",phoneNum);
+        loginRun(loginServerUrl + data);
+        return false;
+    }
+
     private void setBarBack(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -371,6 +380,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             MeManager.setIsLgon(isLogin);
             closeProgressDialog();
             ToastUtils.showToast(R.string.login_success);
+            onProfileSignIn("mLoginPhone");//帐号登录统计
             finish();
         }
         if (code.equals("err")) {

@@ -9,10 +9,10 @@ public class SharedPreferenceMark {
 
 
     public static Boolean hasShowCamera=false;//是否已经提示过摄像头权限
-    public static Boolean hasShowLocation=false;//是否已经提示过摄像头权限
-    public static Boolean hasShowRecordAudio=false;//是否已经提示过摄像头权限
-    public static Boolean hasShowExtralStoreage=false;//是否已经提示过摄像头权限
-    public static Boolean hasShowContact=false;//是否已经提示过摄像头权限
+    public static Boolean hasShowLocation=false;
+    public static Boolean hasShowRecordAudio=false;
+    public static Boolean hasShowExtralStoreage=false;
+    public static Boolean hasShowContact=false;
 
 
     public static Boolean getHasShowCamera() {

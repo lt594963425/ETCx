@@ -16,6 +16,7 @@ import com.etcxc.android.utils.UIUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +30,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.etcxc.android.net.NetConfig.WXOrderUrl;
+
 /**
  * Created by 刘涛 on 2017/7/5 0005.
+ * 微信和支付宝支付
  */
 
 public class SelectPayWaysActivity extends BaseActivity implements View.OnClickListener {
@@ -40,10 +44,8 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     private RadioButton mPayAlipay, mPayWechat;
     private OkHttpClient client;
     private IWXAPI mWxApi;
-    private String url = "http://192.168.6.126:9999/pay/pay/payment/pay_message/";
     private String urls;
-    public StringBuilder mStrBuilder ;
-
+    public StringBuilder mStrBuilder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,12 +67,15 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     // 支付
     @Override
     public void onClick(View v) {
+
         mStrBuilder = new StringBuilder();
         if (setData()) return;
         if (mPayAlipay.isChecked()) {   //支付宝
+            MobclickAgent.onEvent(this, "AliPay" );
             ToastUtils.showToast(R.string.alipay);
         }
         if (mPayWechat.isChecked()) {  //微信支付
+            MobclickAgent.onEvent(this, "WXPay" );
             showProgressDialog(getString(R.string.wx_pay_loading));
             wxPay(urls);
 
@@ -93,36 +98,32 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                     .append("/singular/1");
         }
         if (list.size() > 1) {
-
             for (int i = 0; i < list.size(); i++) {
                 if (i == list.size() - 1) {
                     mStrBuilder.append("\"face_card_num\"")
-                    .append("=>")
-                    .append("\"" + list.get(i).getEtccarnumber() + "\"").append(",")
-                    .append("\"fee\"").append("=>")
-                    .append("\"" + (int) (Double.parseDouble(list.get(i).getRechargemoney()) * 100) + "\"")
-                    .append("/total_fee/")
-                    .append((int) (Double.parseDouble(list.get(0).getAlloney())))
-                    .append("/singular/").append(list.size());
+                            .append("=>")
+                            .append("\"" + list.get(i).getEtccarnumber() + "\"").append(",")
+                            .append("\"fee\"").append("=>")
+                            .append("\"" + (int) (Double.parseDouble(list.get(i).getRechargemoney()) * 100) + "\"")
+                            .append("/total_fee/")
+                            .append((int) (Double.parseDouble(list.get(0).getAlloney())))
+                            .append("/singular/").append(list.size());
                     break;
                 }
                 mStrBuilder.append("\"face_card_num\"").append("=>")
-                .append("\"" + list.get(0).getEtccarnumber() + "\"")
-                .append(",").append("\"fee\"").append("=>")
-                .append("\"" + (int) (Double.parseDouble(list.get(0).getRechargemoney()) * 100) + "\"")
-                .append(";");
+                        .append("\"" + list.get(0).getEtccarnumber() + "\"")
+                        .append(",").append("\"fee\"").append("=>")
+                        .append("\"" + (int) (Double.parseDouble(list.get(0).getRechargemoney()) * 100) + "\"")
+                        .append(";");
             }
         }
-        urls = url + mStrBuilder.toString();
+        urls = WXOrderUrl + mStrBuilder.toString();
         Log.e(TAG, urls + ",list.length:" + list.size());
         return false;
     }
 
     private void wxPay(String url) {
-        Request requst = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
+        Request requst = new Request.Builder().url(url).get().build();
         client.newCall(requst).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -133,6 +134,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                     }
                 });
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String s = response.body().string();
@@ -151,22 +153,8 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
             String code = jsonObject.getString("code");
             if (code.equals("s_ok")) {
                 JSONObject varObject = jsonObject.getJSONObject("var");
-                mWxApi = WXAPIFactory.createWXAPI(SelectPayWaysActivity.this, Constants.WX_APP_ID, true);
-                mWxApi.registerApp(Constants.WX_APP_ID);
-                PayReq req = new PayReq();
-                req.appId = Constants.WX_APP_ID;
-                req.partnerId = Constants.WX_PARTNER_ID;
-                req.sign = varObject.getString("sign");
-                req.prepayId = varObject.getString("prepay_id");
-                req.nonceStr = varObject.getString("nonce_str");
-                req.timeStamp = String.valueOf(varObject.getInt("time_start"));
-                req.packageValue = "Sign=WXPay";
-                Boolean b = mWxApi.sendReq(req);
-                Log.e(TAG, getString(R.string.pay_result_log) + b+"，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
-                        ",time_start" + req.timeStamp + ",sign" + req.sign + ",nonce_str" + req.nonceStr);
-                if(b){
-                    closeProgressDialog();
-                }
+                TuneUpWxPay(varObject);
+                closeProgressDialog();
                 finish();
             }
             if (code.equals("err")) {
@@ -185,5 +173,22 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
 
             closeProgressDialog();
         }
+    }
+
+    private void TuneUpWxPay(JSONObject varObject) throws JSONException {
+        mWxApi = WXAPIFactory.createWXAPI(SelectPayWaysActivity.this, Constants.WX_APP_ID, true);
+        mWxApi.registerApp(Constants.WX_APP_ID);
+        PayReq req = new PayReq();
+        req.appId = Constants.WX_APP_ID;
+        req.partnerId = Constants.WX_PARTNER_ID;
+        req.sign = varObject.getString("sign");
+        req.prepayId = varObject.getString("prepay_id");
+        req.nonceStr = varObject.getString("nonce_str");
+        req.timeStamp = String.valueOf(varObject.getInt("time_start"));
+        req.packageValue = "Sign=WXPay";
+        Boolean b = mWxApi.sendReq(req);
+        Log.e(TAG, getString(R.string.pay_result_log) + b + "，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
+                ",time_start" + req.timeStamp + ",sign" + req.sign + ",nonce_str" + req.nonceStr);
+
     }
 }

@@ -160,3 +160,16 @@
 
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
+#友盟统计
+-keepclassmembers class * {
+   public <init> (org.json.JSONObject);
+}
+-keep public class com.etcxc.android.R$*{
+public static final int *;
+}
+
+# 极光
+-dontoptimize
+-dontpreverify
+-dontwarn cn.jpush.**
+-keep class cn.jpush.** { *; }

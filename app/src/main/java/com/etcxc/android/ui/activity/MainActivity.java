@@ -52,8 +52,8 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         setContentView(R.layout.activity_main);
         initView();
         initPage();
-    }
 
+    }
     private void initView() {
         setToolbarBack(false);
         mViewPager = find(R.id.pager);
@@ -64,6 +64,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
         initTabs();
+
     }
 
     private void initTabs() {
@@ -104,6 +105,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
     }
 
     @Override
@@ -111,7 +113,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         TabWidget widget = mTabHost.getTabWidget();
         int oldFocusability = widget.getDescendantFocusability();
         widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        mTabHost.setCurrentTab(position);//根据位置Postion设置当前的Tab
+        mTabHost.setCurrentTab(position);
         widget.setDescendantFocusability(oldFocusability);//设置取消分割线
     }
 
@@ -125,13 +127,16 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager.setCurrentItem(position, false);
         switch (position) {
             case 0:
+                showToobar();
                 setTitle(R.string.app_name);
                 break;
             case 1:
                 setTitle(R.string.expand);
+                showToobar();
                 startRoationAnim(position);
                 break;
             case 2:
+                hindToobar();
                 setTitle(R.string.mime);
                 break;
         }

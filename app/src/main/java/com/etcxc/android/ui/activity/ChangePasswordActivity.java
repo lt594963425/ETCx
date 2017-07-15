@@ -1,5 +1,4 @@
 package com.etcxc.android.ui.activity;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

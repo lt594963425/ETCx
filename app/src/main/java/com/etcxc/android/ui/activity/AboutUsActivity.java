@@ -67,6 +67,7 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
         mVersionCodeTextView = find(R.id.about_us_versioncode);
         mCheckUpdateTextView = find(R.id.about_us_check_update);
         mCheckUpdateTextView.setOnClickListener(this);
+
         String versionName = BuildConfig.VERSION_NAME;
         versionName = versionName.substring(0, versionName.lastIndexOf("."));
         versionName = versionName.substring(0, versionName.lastIndexOf("."));
@@ -127,7 +128,10 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
         if (!TextUtils.isEmpty(versionName)) title = title + ":" + versionName;
         builer.setTitle(title);
         if (!TextUtils.isEmpty(description)) builer.setMessage(description.replace("\\n", "\n"));
-        final AlertDialog d = builer.setPositiveButton(download, null).setNegativeButton(R.string.cancle, null).setCancelable(false).create();
+        final AlertDialog d = builer.setPositiveButton(download, null)
+                .setNegativeButton(R.string.cancle, null)
+                .setCancelable(false)
+                .create();
         d.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {

@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.trello.rxlifecycle2.components.support.RxFragment;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * fragment封装
@@ -114,5 +115,27 @@ public abstract class BaseFragment extends RxFragment {
         return (T) mView.findViewById(id);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart(getClass().getName());
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(getClass().getName());
+    }
+    //
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        MobclickAgent.onPageStart(getClass().getName());
+//    }
+//​
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        MobclickAgent.onPageEnd(getActivity().getLocalClassName());
+//    }
 }

@@ -38,12 +38,12 @@
 
             <ImageView
                 android:id="@+id/login_phonenumber_delete"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
-                android:visibility="invisible"
-                android:padding="5dp"
+
+                android:padding="12dp"
                 app:srcCompat="@drawable/vd_delete" />
 
             <View
