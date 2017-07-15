@@ -53,7 +53,7 @@ android {
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}.apk"
+                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}_${variant.productFlavors.name}.apk"
                     output.outputFile = new File(outputFile.parent, fileName)
                 }
             }
