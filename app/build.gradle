@@ -53,7 +53,7 @@ android {
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}_${variant.productFlavors.name}.apk"
+                    def fileName = "ETCXc_v${defaultConfig.versionName}_${releaseTime()}_${variant.buildType.name}.apk"
                     output.outputFile = new File(outputFile.parent, fileName)
                 }
             }
@@ -119,6 +119,8 @@ dependencies {
     //rx
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //微信登录
+    compile files('libs/libammsdk.jar')
     //结合组件生命周期管理Rx
     compile 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
     compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.1.0'

@@ -34,7 +34,7 @@ public class CreditForLoadActivity extends BaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.load_nfc://nfc圈存
-                startActivity(new Intent(this,NFCReaderActivity.class));
+                startActivity(new Intent(this,NFCStoreActivity.class));
                 break;
             case R.id.load_bluetooth_box://蓝牙盒子圈存
                 startActivity(new Intent(this,BluetoothReaderActivity.class));

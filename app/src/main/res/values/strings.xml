@@ -211,4 +211,16 @@
     <string name="read_card">读卡</string>
     <string name="name">姓名:</string>
     <string name="card_info">卡信息</string>
+    <string name="store_success">圈存成功</string>
+    <string name="owner_name">用户名称：%1$s</string>
+    <string name="card_id">湘通卡号：%1$s</string>
+    <string name="car_id">车牌号：%1$s</string>
+    <string name="store_money">本次圈存金额：%1$s</string>
+    <string name="balance">余额：%1$s</string>
+    <string name="storing">圈存中</string>
+    <string name="read_card_info_fault">读卡失败</string>
+    <string name="no_know_card">未识别的卡</string>
+    <string name="phone_not_support_nfc">手机不支持NFC</string>
+    <string name="please_open_NFC_function">请开启手机的NFC功能</string>
+
 </resources>

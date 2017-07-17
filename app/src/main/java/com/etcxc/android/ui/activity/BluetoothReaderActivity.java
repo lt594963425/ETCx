@@ -32,7 +32,7 @@ public class BluetoothReaderActivity extends BaseActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_read_card:
-                startActivity(new Intent(this,CardInfoActivity.class));
+                startActivity(new Intent(this,StoreSuccessActivity.class));
                 break;
             case R.id.btn_replace_device:
                 startActivity(new Intent(this,CreditForLoadFinishActivity.class));
