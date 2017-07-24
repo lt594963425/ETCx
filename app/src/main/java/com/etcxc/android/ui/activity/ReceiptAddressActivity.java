@@ -19,6 +19,7 @@ import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,6 +32,11 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+
+/**
+ * 给后端做json接口测试
+ * Created by xwpeng on 2017/7/24.
+ */
 
 public class ReceiptAddressActivity extends BaseActivity implements View.OnClickListener {
 
@@ -82,19 +88,22 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.request_faileds);
+                        ToastUtils.showToast(R.string.request_failed);
                     }
                 });
     }
 
     private void setForm(JSONObject jsonObject) throws JSONException {
-        mReceiver = jsonObject.getJSONArray("var").getJSONObject(0).getString("receiver");//收件人
-        String area_province = jsonObject.getJSONArray("var").getJSONObject(0).getString("area_province");//省
-        String area_city = jsonObject.getJSONArray("var").getJSONObject(0).getString("area_city");//市
-        String area_county = jsonObject.getJSONArray("var").getJSONObject(0).getString("area_county");//区，县
-        mStreet = jsonObject.getJSONArray("var").getJSONObject(0).getString("area_street");//街道
-        mDetailaddress = jsonObject.getJSONArray("var").getJSONObject(0).getString("address");//详细地址
-        mPhoneNumber = jsonObject.getJSONArray("var").getJSONObject(0).getString("mail_tel");//收件人联系电话
+        JSONArray ja = jsonObject.optJSONArray("var");
+        if (ja == null && ja.length() < 1) return;
+        jsonObject = ja.getJSONObject(0);
+        mReceiver = jsonObject.optString("receiver");//收件人
+        String area_province = jsonObject.getString("area_province");//省
+        String area_city = jsonObject.getString("area_city");//市
+        String area_county = jsonObject.getString("area_county");//区，县
+        mStreet = jsonObject.getString("area_street");//街道
+        mDetailaddress = jsonObject.getString("address");//详细地址
+        mPhoneNumber = jsonObject.getString("mail_tel");//收件人联系电话
         mReceiverEdit.setText(mReceiver);
         mPhoneNumberEdit.setText(mPhoneNumber);
         mDetailAddressEdit.setText(mDetailaddress);
@@ -134,7 +143,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                         && checkRegion(region)
                         && checkStreet(street)
                         && checkDetailAddress(detailaddress)
-                        && checkChange(receiver,phoneNumber,region,street,detailaddress)
+                        && checkChange(receiver, phoneNumber, region, street, detailaddress)
                         ) {
                     Map<String, String> params = new HashMap<>();
                     params.put("receiver", receiver);
@@ -147,7 +156,6 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     params.put("tel", MeManager.getSid());
                     commitNet(params);
                 }
-
                 break;
             case R.id.receipt_address_region_layout:
                 startActivityForResult(new Intent(this, SelectRegionActivity.class), REQUEST_REGION);
@@ -212,7 +220,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.request_faileds);
+                        ToastUtils.showToast(R.string.request_failed);
                     }
                 });
     }
@@ -271,12 +279,12 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         return true;
     }
 
-    private boolean checkChange(String receiver,String phoneNumber,String region,String street,String address) {
+    private boolean checkChange(String receiver, String phoneNumber, String region, String street, String address) {
         if (receiver.equals(mReceiver)
-                &&phoneNumber.equals(mPhoneNumber)
-                &&region.equals(mRegion)
-                &&street.equals(mStreet)
-                &&address.equals(mDetailaddress)){
+                && phoneNumber.equals(mPhoneNumber)
+                && region.equals(mRegion)
+                && street.equals(mStreet)
+                && address.equals(mDetailaddress)) {
             ToastUtils.showToast(R.string.postaddress_repeat);
             return false;
         }

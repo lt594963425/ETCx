@@ -44,6 +44,16 @@
             android:text="@string/check_update"
             android:textColor="@color/textcolor"
             android:textSize="15sp" />
+        <TextView
+            android:id="@+id/about_us_test_json_api"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="44dp"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:text="json接口测试"
+            android:textColor="@color/textcolor"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView

@@ -3,6 +3,7 @@ package com.etcxc.android.ui.activity;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -73,6 +74,8 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
         versionName = versionName.substring(0, versionName.lastIndexOf("."));
         versionName = versionName.substring(0, versionName.lastIndexOf("."));
         mVersionCodeTextView.setText(String.valueOf("V" + versionName));
+
+        find(R.id.about_us_test_json_api).setOnClickListener(this);
     }
 
     @Override
@@ -82,6 +85,9 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
                 Map<String, String> params = new HashMap<>();
                 params.put("version_code", String.valueOf(BuildConfig.VERSION_CODE));
                 checkVersion(NetConfig.consistUrl(FUNC, params));
+                break;
+            case R.id.about_us_test_json_api:
+                startActivity(new Intent(this, TestJsonApiActivity.class));
                 break;
         }
     }

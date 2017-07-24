@@ -187,6 +187,7 @@
             android:name=".ui.activity.StoreSuccessActivity"
             android:launchMode="singleTop" />
         <activity android:name=".ui.activity.CreditForLoadFinishActivity" />
+        <activity android:name=".ui.activity.TestJsonApiActivity"/>
         //友盟
         <meta-data
             android:name="UMENG_APPKEY"

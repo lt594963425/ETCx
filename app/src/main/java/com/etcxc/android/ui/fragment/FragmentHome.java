@@ -55,6 +55,7 @@ import io.reactivex.functions.Consumer;
  */
 
 public class FragmentHome extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+   private final static String TAG = "FragmentHome";
     String[] imagess = new String[]{
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
@@ -138,6 +139,8 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                 break;
         }
     }
+
+
 
     @Override
     public void onClick(View v) {

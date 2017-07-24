@@ -33,6 +33,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * 对okhttp封装
@@ -83,6 +84,12 @@ public class OkClient {
         if (TextUtils.isEmpty(requestBody) || EMPTY_BODY.equals(requestBody)) {
             builder.get();
         } else {
+            // 表单提交 这种能满足大部分的需求
+/*            RequestBody formBody = new FormBody.Builder()
+                    .add("json", requestBody)
+                    .add("username", "Arison+中文").add("password", "1111111")
+                    .build();
+            builder.post(formBody);*/
             builder.post(RequestBody.create(JSON, requestBody));
         }
         if (differentHeaders != null && !differentHeaders.isEmpty()) {
@@ -291,12 +298,12 @@ public class OkClient {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(180, TimeUnit.SECONDS)
                 .build();
-      /*  if (true) {
+        if (true) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             //如果想要详细的信息，把级别改成BODY，但是会造成全接收完传输内容才会回调Response,下载会有明显延时更新效果
-            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             client = client.newBuilder().addInterceptor(logging).build();
-        }*/
+        }
         if (httpOrHttps(url)) {
             client = client.newBuilder().sslSocketFactory(overlockCard().getSocketFactory(), x509TrustManager)
                     .hostnameVerifier(new HostnameVerifier() {
