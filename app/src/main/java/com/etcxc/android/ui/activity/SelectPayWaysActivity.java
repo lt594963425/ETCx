@@ -30,7 +30,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.etcxc.android.net.NetConfig.WXOrderUrl;
+import static com.etcxc.android.base.Constants.WXOrderUrl;
 
 /**
  * Created by 刘涛 on 2017/7/5 0005.
@@ -110,10 +110,11 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                             .append("/singular/").append(list.size());
                     break;
                 }
-                mStrBuilder.append("\"face_card_num\"").append("=>")
-                        .append("\"" + list.get(0).getEtccarnumber() + "\"")
+                mStrBuilder.append("\"face_card_num\"")
+                        .append("=>")
+                        .append("\"" + list.get(i).getEtccarnumber() + "\"")
                         .append(",").append("\"fee\"").append("=>")
-                        .append("\"" + (int) (Double.parseDouble(list.get(0).getRechargemoney()) * 100) + "\"")
+                        .append("\"" + (int) (Double.parseDouble(list.get(i).getRechargemoney()) * 100) + "\"")
                         .append(";");
             }
         }
@@ -130,7 +131,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {//mLoginVerificodeEdt
-                        ToastUtils.showToast(R.string.request_failed);
+                        ToastUtils.showToast(R.string.pay_failed);
                     }
                 });
             }

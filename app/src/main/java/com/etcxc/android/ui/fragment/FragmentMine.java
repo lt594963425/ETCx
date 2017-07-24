@@ -190,7 +190,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     private void getImageToView() {
         //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(getActivity(), mFile.getPath());
+        final File cover = FileUtils.getSmallBitmap(mFile.getPath());
         Uri uri = Uri.fromFile(cover);
         try {
             userBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);

@@ -1,16 +1,24 @@
 package com.etcxc.android.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
@@ -21,8 +29,10 @@ import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.adapter.MyRechaergeRecylerViewAdapter;
 import com.etcxc.android.ui.adapter.MyRecylerViewAdapter;
 import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.myTextWatcher;
 import com.umeng.analytics.MobclickAgent;
 
@@ -38,12 +48,14 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.base.Constants.infoWXUrl;
 import static com.etcxc.android.utils.UIUtils.delete;
 import static com.etcxc.android.utils.UIUtils.getInfoList;
 import static com.etcxc.android.utils.UIUtils.initAutoCompleteCard;
 import static com.etcxc.android.utils.UIUtils.saveCardHistory;
 import static com.etcxc.android.utils.UIUtils.setPricePoint;
 import static java.lang.Double.parseDouble;
+import static java.util.Objects.hash;
 
 /**
  * 充值
@@ -62,10 +74,12 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     private ArrayList<OrderRechargeInfo> mInfoList;
     private String mRechargeCardNumber;
     private String mMoneyNumber;
+    private View viewEtc;
     private double allMoney;
     private MyRechaergeRecylerViewAdapter myRechaergeRecylerViewAdapter;
     private DecimalFormat df;
-    String infoUrl = "http://192.168.6.126:9999/pay/pay/addcard/";
+    private Boolean isShowLeadPager = true;
+    private Handler mHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +89,10 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     }
 
     private void initView() {
+        mHandler = new Handler();
         df = new DecimalFormat("0.00");
         setBarBack(find(R.id.etc_back));
+        viewEtc = find(R.id.view_etc);
         mRecharge = find(R.id.etc_card_recharge);
         mRechaergeCardEdt = find(R.id.recharge_cardnum_edt);//卡号
         mAddCardImg = find(R.id.add_cardnum_img);//添加卡号
@@ -110,6 +126,9 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         myRechaergeRecylerViewAdapter.setmOnItemRechargeClickListener(this);
         mRechaergeCardEdt.addTextChangedListener(new myTextWatcher(mRechaergeCardEdt, mCardNumDelete));
         mCardNumDelete.setOnClickListener(this);
+        if (mHandler != null) {
+            mHandler.postDelayed(LOAD_DATA, 400);
+        }
     }
 
     private void initData() {
@@ -143,6 +162,63 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     }
 
     @Override
+    protected void onResume() {
+
+        super.onResume();
+    }
+
+    private Runnable LOAD_DATA = () -> {
+        isShowLeadPager = PrefUtils.getBoolean(ETCRechargeActivity.this, "isShowLeadPager", true);
+        if (isShowLeadPager) {
+            showLeadHintPager();
+        }
+    };
+
+    /**
+     * 设置添加屏幕的背景透明度
+     *
+     */
+    public void backgroundAlpha(Activity context, float bgAlpha) {
+        WindowManager.LayoutParams lp = context.getWindow().getAttributes();
+        lp.alpha = bgAlpha;
+        context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        context.getWindow().setAttributes(lp);
+    }
+
+    public void showLeadHintPager() {
+        int hash = hash("hello");
+        Log.e(TAG, "" + hash);
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        isShowLeadPager = false;
+        PrefUtils.setBoolean(this, "isShowLeadPager", isShowLeadPager);
+        View contentView = LayoutInflater.from(App.get()).inflate(R.layout.pup_lead_hint_one, null);
+        View contentView2 = LayoutInflater.from(App.get()).inflate(R.layout.pup_lead_hint_two, null);
+        PopupWindow pw = new PopupWindow(contentView, mRecharge.getWidth() * 3, UIUtils.dip2Px(100));
+        pw.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//**************设置背景图片***************
+        backgroundAlpha(this, 0.5f);
+        pw.setFocusable(true);
+        pw.setOutsideTouchable(true);
+        pw.showAsDropDown(mRecharge, UIUtils.dip2Px(-190), UIUtils.dip2Px(-30));
+        PopupWindow pw2 = new PopupWindow(contentView2, width, UIUtils.dip2Px(100));
+        pw2.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//**************设置背景图片***************
+        pw2.setFocusable(true);
+        pw2.setOutsideTouchable(true);
+        //pw2.showAsDropDown(mRechaergeAddDetailBtn,UIUtils.dip2Px(-200),UIUtils.dip2Px(-100));
+        pw2.showAsDropDown(viewEtc, 0, UIUtils.dip2Px(-23));
+        pw2.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                backgroundAlpha(ETCRechargeActivity.this, 1f);
+                if (pw.isShowing()) {
+                    pw.dismiss();
+                }
+
+            }
+        });
+    }
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_cardnum_img: //添加历史卡号
@@ -152,7 +228,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 addRechargeDetail();
                 break;
             case R.id.etc_card_recharge:  //充值
-                MobclickAgent.onEvent(this, "RechargeClick" );
+                MobclickAgent.onEvent(this, "RechargeClick");
                 if (getInfoList(this) == null || getInfoList(this).size() < 1) {
                     ToastUtils.showToast(R.string.input_recharge_info);
                     return;
@@ -192,7 +268,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         }
         showProgressDialog(getString(R.string.add_card_ing));
         Log.e(TAG, "+++++++++++++++++++++++++金钱：" + (int) (parseDouble(mMoneyNumber) * 100));//这里是分
-        net(infoUrl + "card_num/" + mRechargeCardNumber + "/fee/" + (int) (parseDouble(mMoneyNumber) * 100));
+        net(infoWXUrl + "card_num/" + mRechargeCardNumber + "/fee/" + (int) (parseDouble(mMoneyNumber) * 100));
     }
 
     private boolean LocalThrough() {
@@ -238,7 +314,6 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                     }
                 });
     }
-
     private void parseResultJson(String s) {
         try {
             JSONObject jsonObject = new JSONObject(s);
@@ -248,6 +323,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 closeProgressDialog();
                 OrderRechargeInfo info = new OrderRechargeInfo();
                 JSONObject jsonVar = jsonObject.getJSONObject("var");
+                if(jsonVar == null){ return;}
                 info.setEtccarnumber(mRechargeCardNumber);
                 info.setCarnumber(jsonVar.getJSONArray("veh_plate_code").getString(0));
                 info.setRechargename(jsonVar.getJSONArray("user_name").getString(0));
@@ -263,7 +339,6 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 //总数
                 mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
                 saveCardHistory(this, "cardhistory", mRechargeCardNumber);
-                ToastUtils.showToast(R.string.add_succ);
 
             }
             if (code.equals("err")) {
@@ -273,6 +348,8 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 return;
             }
         } catch (JSONException e) {
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.request_failed);
             e.printStackTrace();
         }
     }
@@ -294,4 +371,9 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onDestroy() {
+        mHandler.removeCallbacks(LOAD_DATA);
+        super.onDestroy();
+    }
 }

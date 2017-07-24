@@ -74,15 +74,17 @@
             android:textColor="@color/textcolor"
             android:textColorHint="@color/colorGray"
             android:textSize="15sp" />
+
         <ImageView
-            android:visibility="invisible"
             android:id="@+id/card_num_delete"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:clickable="true"
             android:padding="12dp"
+            android:visibility="invisible"
             app:srcCompat="@drawable/vd_delete_black" />
+
         <ImageView
             android:id="@+id/add_cardnum_img"
             android:layout_width="48dp"
@@ -127,8 +129,8 @@
             android:layout_height="match_parent"
             android:layout_marginRight="8dp"
             android:gravity="center"
-            android:textColor="@color/textcolor"
-            android:text="元" />
+            android:text="元"
+            android:textColor="@color/textcolor" />
     </LinearLayout>
 
     <View
@@ -145,7 +147,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:gravity="center_vertical"
+
         android:orientation="horizontal">
 
         <LinearLayout
@@ -201,8 +203,8 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
             android:background="@drawable/bg_button"
             android:drawableLeft="@drawable/vd_add"
             android:gravity="center_vertical"
@@ -212,6 +214,12 @@
             android:text="@string/add"
             android:textColor="@color/white"
             android:textSize="17sp" />
+
+        <View
+            android:id="@+id/view_etc"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="1dp" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

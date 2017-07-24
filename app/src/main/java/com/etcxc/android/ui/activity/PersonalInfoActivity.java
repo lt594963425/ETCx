@@ -91,6 +91,8 @@ import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.R.id.login_phonenumber_delete;
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.base.App.onProfileSignIn;
+import static com.etcxc.android.base.Constants.loginServerUrl;
+import static com.etcxc.android.base.Constants.pictureCodeUrl;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -106,7 +108,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     //登录信息操作界面
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private AutoCompleteTextView mLoginPhonenumberEdt;
-    private EditText mLoginVerificodeEdt,mLoginPasswordEdt; // 手机号码,密码 ,输入图形验证码
+    private EditText mLoginVerificodeEdt, mLoginPasswordEdt; // 手机号码,密码 ,输入图形验证码
     private ImageView mLoginPhonenumberDelete, mLoginPasswordDelete;//   删除
     private ImageView mLoginEye; //可见与不可见
     private ImageView mLoginImageVerificode;//图形取验证码
@@ -117,8 +119,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
     private String timeStr;
-    String pictureCodeUrl = "http://192.168.6.58/login/login/captcha/code_key/";  //更换图形验证码url
-    String loginServerUrl = "http://192.168.6.58/login/login/login/";//登录的url
+
     private boolean isShowPictureCode = false;
     // 用户信息操作界面
     private ImageView mPersonHead;
@@ -133,7 +134,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     private Toolbar mToolbar1, mToolbar2;
     private Button mExitLogin;
     //登录和用户界面切换layout
-    private LinearLayout mLoginPaget, mInfoPager;
+    private LinearLayout mLoginPager, mInfoPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -149,14 +150,14 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void initView() {
-        mLoginPaget = (LinearLayout) findViewById(R.id.login_page);
+        mLoginPager = (LinearLayout) findViewById(R.id.login_page);
         mInfoPager = (LinearLayout) findViewById(R.id.info_page);
-        if(MeManager.getIsLogin()){//登录成功
-            mLoginPaget.setVisibility(View.INVISIBLE);
+        if (MeManager.getIsLogin()) {//登录成功
+            mLoginPager.setVisibility(View.INVISIBLE);
             mInfoPager.setVisibility(View.VISIBLE);
-        }else {//未登录
+        } else {//未登录
             mInfoPager.setVisibility(View.INVISIBLE);
-            mLoginPaget.setVisibility(View.VISIBLE);
+            mLoginPager.setVisibility(View.VISIBLE);
         }
         initLoginView();
         initUserInfoView();
@@ -180,12 +181,13 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         mLoginButton = find(R.id.login_button);
         // todo 密码输入超过三次增加图形验证码 校验 mPictureCodeLayout
         mPictureCodeLayout = find(R.id.login_verificode_layout);
-        addIcon(mLoginPhonenumberEdt, R.drawable.vd_my,LEFT);
-        addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password,LEFT);
-        addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha,LEFT);
-        initAutoComplete(this,"history",mLoginPhonenumberEdt);
+        addIcon(mLoginPhonenumberEdt, R.drawable.vd_my, LEFT);
+        addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password, LEFT);
+        addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha, LEFT);
+        initAutoComplete(this, "history", mLoginPhonenumberEdt);
         init();
     }
+
     private void init() {
         mLoginPhonenumberDelete.setOnClickListener(this);
         mLoginPasswordDelete.setOnClickListener(this);
@@ -195,8 +197,8 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         mLoginMessage.setOnClickListener(this);
         mLoginFast.setOnClickListener(this);
         mForgetPassword.setOnClickListener(this);
-        mLoginPhonenumberEdt.addTextChangedListener( new myTextWatcher(mLoginPhonenumberEdt,mLoginPhonenumberDelete));
-        mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt,mLoginPasswordDelete));
+        mLoginPhonenumberEdt.addTextChangedListener(new myTextWatcher(mLoginPhonenumberEdt, mLoginPhonenumberDelete));
+        mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt, mLoginPasswordDelete));
 
     }
 
@@ -227,7 +229,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 mLoginPasswordEdt.setText("");
                 break;
             case R.id.login_eye:
-                UIUtils.isLook(mLoginPasswordEdt,mLoginEye,R.drawable.vd_close_eyes,R.drawable.vd_open_eyes);
+                UIUtils.isLook(mLoginPasswordEdt, mLoginEye, R.drawable.vd_close_eyes, R.drawable.vd_open_eyes);
                 break;
             case R.id.login_fresh_verification://图形验证码
                 long longTime = System.currentTimeMillis();
@@ -252,7 +254,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 startActivity(intent);
                 break;
             case R.id.login_button:  // 登录
-                MobclickAgent.onEvent(this, "LoginClick" );
+                MobclickAgent.onEvent(this, "LoginClick");
                 if (startUserLoging()) return;
                 break;
             case R.id.person_userhead:
@@ -294,7 +296,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                     "/code_key/" + key2;
         }
         if (LocalThrough(phoneNum, passWord, veriFicodem)) return true;
-        saveHistory(this,"history",phoneNum);
+        saveHistory(this, "history", phoneNum);
         loginRun(loginServerUrl + data);
         return false;
     }
@@ -309,8 +311,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             }
         });
     }
-
-
 
 
     private boolean LocalThrough(String phoneNum, String passWord, String veriFicodem) {
@@ -403,7 +403,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             } else if (returnMsg.equals("err_captcha")) {
                 closeProgressDialog();
                 ToastUtils.showToast(R.string.err_captcha);
-            }else {
+            } else {
                 closeProgressDialog();
                 ToastUtils.showToast(returnMsg);
             }
@@ -412,6 +412,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
     Bitmap bitmap;
+
     private Bitmap setPicCode(final String url) {
         Request requst = new Request.Builder()
                 .url(url)
@@ -420,7 +421,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         client.newCall(requst).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-               PersonalInfoActivity.this.runOnUiThread(new Runnable() {
+                PersonalInfoActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         ToastUtils.showToast(R.string.request_failed);
@@ -429,6 +430,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 });
 
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 InputStream is = response.body().byteStream();//字节流
@@ -444,7 +446,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         });
         return bitmap;
     }
-
 
 
     /**
@@ -483,7 +484,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
 
-
     //用户信息操作界面
     private void setstatus() {
         isLogin = MeManager.getIsLogin();
@@ -492,7 +492,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             mPersonName.setText(name);
             //适配7.0以上和以下的手机
             mFile = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
-
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 uri = Uri.fromFile(mFile);
             } else {
@@ -508,6 +507,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         }
 
     }
+
     private void show2Dialog() {
         //动态加载布局生成View对象
         View longinDialogView = LayoutInflater.from(this).inflate(R.layout.cameral_album, null);
@@ -521,7 +521,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
          */
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {  //申请相机权限
                 if (PermissionUtil.hasCameraPermission(PersonalInfoActivity.this)) {
                     uploadAvatarFromPhotoRequest();
                 }
@@ -553,7 +553,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         if (resultCode != -1) {
             return;
         }
-        if (requestCode == REQUEST_CODE_ALBUM && data != null) {
+        if (requestCode == REQUEST_CODE_ALBUM && data != null) {//相册
             Uri newUri;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 newUri = Uri.parse("file:///" + CropUtils.getPath(this, data.getData()));
@@ -565,8 +565,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             } else {
                 Toast.makeText(this, "没有得到相册图片", Toast.LENGTH_LONG).show();
             }
-        } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {
-
+        } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {//相机
             startPhotoZoom(uri);
         } else if (requestCode == REQUEST_CODE_CROUP_PHOTO) {
             Glide.with(this.getApplicationContext())
@@ -577,6 +576,9 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                     .dontAnimate()
                     .transform(new GlideCircleTransform(this))
                     .into(mPersonHead);
+            Intent intent2 = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            intent2.setData(uri);
+            this.sendBroadcast(intent2);
         }
     }
 
@@ -586,15 +588,18 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
      * @param uri
      */
     public void startPhotoZoom(Uri uri) {
+        Uri newuri = Uri.fromFile(mFile);
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra("crop", "true");// crop=true 有这句才能出来最后的裁剪页面.
         intent.putExtra("aspectX", 1);// 这两项为裁剪框的比例.
         intent.putExtra("aspectY", 1);// x:y=1:1
-        intent.putExtra("output", Uri.fromFile(mFile));
+        intent.putExtra("output", newuri);
         intent.putExtra("outputFormat", "JPEG");// 返回格式
         startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
+
+
     }
 
     /**
@@ -689,10 +694,13 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
 
     private void getImageToView() {
         //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(this, mFile.getPath());
+        final File cover = FileUtils.getSmallBitmap(mFile.getPath());
         Uri uri = Uri.fromFile(cover);
+        Log.e(TAG, "#############################路径uri：" + uri);
         //通知相册更新
+        // File file = new File(path);
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        //   Uri uri = Uri.fromFile(file);
         intent.setData(uri);
         this.sendBroadcast(intent);
         try {
@@ -714,6 +722,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             mPersonHead.setImageDrawable(drawable);
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -722,11 +731,13 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         stopRotateAnimation(mLoginFreshVerification);
         finish();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
@@ -734,16 +745,17 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-         switch (item.getItemId()){
-             case R.id.jy:
-                 WXLogin();
-                 break;
-         }
+        switch (item.getItemId()) {
+            case R.id.jy:
+                WXLogin();
+                break;
+        }
         return false;
     }
 
-    private static final String WEIXIN_SCOPE = "snsapi_userinfo";// 用于请求用户信息的作用域
-    private static final String WEIXIN_STATE = "login_state"; // 自定义
+    private String WEIXIN_SCOPE = "snsapi_userinfo";// 用于请求用户信息的作用域
+    private String WEIXIN_STATE = "login_state"; // 自定义
+
     private void WXLogin() {
         IWXAPI WXapi = WXAPIFactory.createWXAPI(this, Constants.WX_APP_ID, true);
         WXapi.registerApp(Constants.WX_APP_ID);

@@ -8,10 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +16,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
@@ -38,6 +36,7 @@ import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
 import com.youth.banner.Banner;
+import com.youth.banner.Transformer;
 
 import org.json.JSONObject;
 
@@ -64,8 +63,8 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg"};
     private GridView mHomeGV;
     private ViewPager mVPger;
-    private TextView mETCRecharge, mETCSave, mETCDetile;
-    private View mETCOnline;
+    private LinearLayout mETCOnline;
+    private RelativeLayout mETCRecharge,mETCSave;
     private static int[] image = {
             R.drawable.vd_brief_description_of_business,
             R.drawable.vd_recharge_record,
@@ -73,41 +72,34 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             R.drawable.vd_activate,
             R.drawable.vd_complaint_and_advice,
             R.drawable.vd_gridchek,};
-    private  String[] title = {
-            App.get().getString(R.string.bussiness),App.get().getString(R.string.rechargerecord)
-            ,App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate),App.get().getString(R.string.advice),
+    private String[] title = {
+            App.get().getString(R.string.bussiness), App.get().getString(R.string.rechargerecord)
+            , App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate), App.get().getString(R.string.advice),
             App.get().getString(R.string.gridchek)};
-    private String strDitle ="高速公路畅通无阻\n“0”元照进不误";
     private MainActivity mActivity;
     private Banner banner;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
         View view = inflater.inflate(R.layout.fragment_home, null);
-        mETCOnline = view.findViewById(R.id.home_etconline_tv);//ETC在线办理
-        mETCRecharge = (TextView) view.findViewById(R.id.home_etcrecharge_tv);//ETC充值
-        mETCSave = (TextView) view.findViewById(R.id.home_etccirclesave_tv);//ETC圈存
-        mETCDetile= (TextView) view.findViewById(R.id.home_detile_tv);//0元照进不误
+        mETCOnline = (LinearLayout) view.findViewById(R.id.home_etc_online_lly);//ETC在线办理
+        mETCRecharge = (RelativeLayout) view.findViewById(R.id.home_etc_recharge_rly);//ETC充值
+        mETCSave = (RelativeLayout) view.findViewById(R.id.home_etc_circle_save_rly);//ETC圈存
         mHomeGV = (GridView) view.findViewById(R.id.home_gridview);
         //轮播图
         banner = (Banner) view.findViewById(R.id.home_banner);
         banner.setImages(new ArrayList<>(Arrays.asList(imagess))).setImageLoader(new GlideImageLoader()).start();
+        banner.setBannerAnimation(Transformer.Accordion);
         initView();
         return view;
     }
+
     private void initView() {
         mETCOnline.setOnClickListener(this);
         mETCRecharge.setOnClickListener(this);
         mETCSave.setOnClickListener(this);
-        SpannableStringBuilder style=new SpannableStringBuilder(strDitle);
-        style
-                .setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style
-                .setSpan(new TextAppearanceSpan(mActivity, R.style.style1), 10, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style
-                .setSpan(new TextAppearanceSpan(mActivity, R.style.style0), 11, 17, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mETCDetile.setText(style);//将其添加到tv中
-        mHomeGV.setAdapter(new MyGridViewAdapter(image,title,getActivity()));
+        mHomeGV.setAdapter(new MyGridViewAdapter(image, title, getActivity()));
         mHomeGV.setOnItemClickListener(this);
 
     }
@@ -115,6 +107,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
 
     /**
      * GridView
+     *
      * @param parent
      * @param view
      * @param position
@@ -122,10 +115,10 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position){
+        switch (position) {
             case 0:   //业务办理
-                Log.e(TAG,""+ UIUtils.getDeviceInfo(mActivity));
-                ToastUtils.showToast(""+position);
+                Log.e(TAG, "" + UIUtils.getDeviceInfo(mActivity));
+                ToastUtils.showToast("" + position);
                 break;
             case 1:   //充值记录
                 break;
@@ -145,19 +138,16 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.home_etconline_tv:
+            case R.id.home_etc_online_lly:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));
-                MobclickAgent.onEvent(mActivity, "mETCIssueClick" );
+                MobclickAgent.onEvent(mActivity, "mETCIssueClick");
                 break;
-            case R.id.home_etcrecharge_tv:
+            case R.id.home_etc_recharge_rly:
                 startActivity(new Intent(mActivity, ETCRechargeActivity.class));
-                MobclickAgent.onEvent(mActivity, "mETCRechargeClick" );
+                MobclickAgent.onEvent(mActivity, "mETCRechargeClick");
                 break;
-            case R.id.home_etccirclesave_tv:
+            case R.id.home_etc_circle_save_rly:
                 startActivity(new Intent(mActivity, CreditForLoadActivity.class));
-                break;
-            case R.id.home_detile_tv:
-                startActivity(new Intent(mActivity, ETCIssueActivity.class));
                 break;
         }
 
@@ -216,6 +206,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                     }
                 });
     }
+
     private void showVersionUpdate(final boolean forceUpdate, String versionName, String download_url, String description) {
         final AlertDialog.Builder builer = new AlertDialog.Builder(getActivity());
         String title = getString(R.string.hava_new_version);
@@ -231,6 +222,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         });
         d.show();
     }
+
     private void setDialogListener(final AlertDialog d, final boolean forceUpdate) {
         Button positionButton = d.getButton(AlertDialog.BUTTON_POSITIVE);
         positionButton.setOnClickListener(new View.OnClickListener() {
@@ -252,9 +244,10 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             });
         }
     }
+
     @Override
     public void onStart() {
-     banner.startAutoPlay();
+        banner.startAutoPlay();
         super.onStart();
     }
 
@@ -263,15 +256,18 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         banner.stopAutoPlay();
         super.onStop();
     }
+
     @Override
     public void onResume() {
         MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("FragmentExpand");
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
