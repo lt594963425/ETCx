@@ -32,6 +32,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.base.Constants.loginSmsUrl;
+import static com.etcxc.android.base.Constants.smsCodeUrl;
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -44,15 +46,11 @@ import static com.etcxc.android.utils.UIUtils.saveHistory;
  */
 
 public class PhoneRegistActivity extends BaseActivity implements View.OnClickListener {
-    private String loginSmsUrl = "http://192.168.6.58/register/register/register/";
-    private String smsCodeUrl = "http://192.168.6.58/register/reg_sms/smsreport/tel/";
     private AutoCompleteTextView mPhoneNumberEdit;
     private EditText mSmsCodeEdit, mPswEdit;
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye, mPwdDeleteBtn;
-    private Boolean flag = false;
     SharedPreferences sPUser;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

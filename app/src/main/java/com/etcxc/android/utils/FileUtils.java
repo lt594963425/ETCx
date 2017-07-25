@@ -12,8 +12,10 @@ import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -83,11 +85,10 @@ public class FileUtils {
 	/**
 	 * 压缩图片方法，为了上传到服务器，保证图片大小在100k一下
 	 *
-	 * @param context
 	 * @param fileSrc
 	 * @return
 	 */
-	public static File getSmallBitmap(Context context, String fileSrc) {
+	public static File getSmallBitmap(String fileSrc) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(fileSrc, options);
@@ -96,9 +97,10 @@ public class FileUtils {
 		options.inJustDecodeBounds = false;
 		Bitmap img = BitmapFactory.decodeFile(fileSrc, options);
 		// Log.i(TAG, "file size after compress-->" + img.getByteCount() / 256);
-		String filename = context.getFilesDir() + File.separator + "video-" + img.hashCode() + ".jpg";
-		saveBitmap2File(img, filename);
-		return new File(filename);
+		String filename = "user-avatar"+ ".jpg";
+		saveBitmap2File(img, fileSrc);
+		Log.e("TAG","filename"+filename+",fileSrc"+fileSrc);
+		return new File(fileSrc);
 	}
 	/**
 	 * 设置压缩的图片的大小设置的参数
@@ -135,8 +137,30 @@ public class FileUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return bmp.compress(format, quality, stream);
+	}
+	//把bitmap转换成String
+	public static String bitmapToString(String filePath) {
+		Bitmap bm = getSmallBitmaps(filePath);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+		byte[] b = baos.toByteArray();
+		return Base64.encodeToString(b, Base64.DEFAULT);
+	}
+
+	// 根据路径获得图片并压缩，返回bitmap用于显示
+	public static Bitmap getSmallBitmaps(String filePath) {
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(filePath, options);
+
+		// Calculate inSampleSize
+		options.inSampleSize = calculateInSampleSize(options, 480, 800);
+
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+
+		return BitmapFactory.decodeFile(filePath, options);
 	}
 	/** 获取应用目录，当SD卡存在时，获取SD卡上的目录，当SD卡不存在时，获取应用的cache目录 */
 	public static String getDir(String name) {

@@ -32,6 +32,8 @@ import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.R.drawable.vd_close_eyes;
 import static com.etcxc.android.R.drawable.vd_open_eyes;
+import static com.etcxc.android.base.Constants.ReSetSMSUrl;
+import static com.etcxc.android.base.Constants.resetPwdUrl;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -44,8 +46,7 @@ import static com.etcxc.android.utils.UIUtils.saveHistory;
  * 找回密码
  */
 public class ResetPasswordActivity extends BaseActivity implements View.OnClickListener {
-    private String smsUrl ="http://192.168.6.58/user_information_modify/inf_modify_sms/smsreport/tel/";
-    private String resetPwdUrl ="http://192.168.6.58/user_information_modify/user_information_modify/informationmodify/";
+
     private EditText  mResetPwd, mVerifiCodeEdit;
     private AutoCompleteTextView mPhoneNumberEdit;
     private Button mRegistButton, mVerificodeButton;
@@ -140,7 +141,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 time.start();
                 //todo：向后端请求获取短信验证码
                 try {
-                    getSmsCode(smsUrl+phoneNum2);
+                    getSmsCode(ReSetSMSUrl+phoneNum2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

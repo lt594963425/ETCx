@@ -97,7 +97,6 @@
     <string name="passworderr">密码错误</string>
     <string name="telphoneunregistered">手机尚未注册</string>
     <string name="jsonexception">jsonErr</string>
-    <string name="pay_net_failed">支付失败，请检查网络连接</string>
     <string name="request_failed">请求失败，请检查网络连接</string>
     <string name="send_faid">请求失败,请检查手机号码是否正确</string>
     <string name="send_success">发送成功</string>
@@ -222,5 +221,7 @@
     <string name="no_know_card">未识别的卡</string>
     <string name="phone_not_support_nfc">手机不支持NFC</string>
     <string name="please_open_NFC_function">请开启手机的NFC功能</string>
+    <string name="every_where_save">随时随地的可圈存</string>
+    <string name="save_time_and_effort">省时，省力\n避免排队</string>
 
 </resources>

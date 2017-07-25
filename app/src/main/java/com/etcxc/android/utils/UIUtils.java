@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -127,7 +128,6 @@ public class UIUtils {
         }
         view.setCompoundDrawablePadding(UIUtils.dip2Px(padding));
     }
-
     /**
      * @param v1 你要控制显示和隐藏内容的View
      * @param v2  你所点击的可见与不可见的View
@@ -379,6 +379,8 @@ public class UIUtils {
             if (TextUtils.isEmpty(device_id)) {
                 device_id = android.provider.Settings.Secure.getString(context.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
+            }else {
+                device_id =getRandomString(15);
             }
             json.put("device_id", device_id);
             return json.toString();
@@ -386,5 +388,15 @@ public class UIUtils {
             e.printStackTrace();
         }
         return null;
+    }
+    public static String getRandomString(int length) { //length表示生成字符串的长度
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
     }
 }

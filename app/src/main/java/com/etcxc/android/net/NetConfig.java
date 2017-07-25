@@ -20,8 +20,8 @@ public class NetConfig {
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
     public final static String HOST = "http://192.168.6.58";
 //    public final static String HOST = "http://192.168.6.126:9999";
-    //微信下单支付
-    public final  static String WXOrderUrl = "http://192.168.6.126:9999/pay/pay/payment/pay_message/";
+    public final static String HOST = "http://192.168.6.58";
+
     /**
      * @return 当前网络状态，详见{@link NetworkInfo}
      */
