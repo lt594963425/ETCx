@@ -16,16 +16,18 @@ import com.etcxc.android.utils.ToastUtils;
 import static com.etcxc.android.R.id.btn_replace_device;
 
 /**
+ * start此Activity，如果是本应用请传fromSelf=true
  * NFC 圈存
  */
 public class NFCStoreActivity extends BaseActivity implements View.OnClickListener, ReaderListener {
     private NfcManager mNFCManger;
+    private boolean mIsFromSelf;//是否是本应用启动的
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nfcreader);
-        if (!getPackageManager().hasSystemFeature(PackageManager. FEATURE_NFC)) {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
             ToastUtils.showToast(getString(R.string.phone_not_support_nfc));
             finish();
             return;
@@ -42,13 +44,15 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     protected void onNewIntent(Intent intent) {
-       mNFCManger.readCard(intent, this);
+        mIsFromSelf = intent.getBooleanExtra("fromSelf", false);
+        mNFCManger.readCard(intent, this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case btn_replace_device:
+                if (!mIsFromSelf) startActivity(new Intent(this, StoreActivity.class));
                 finish();
                 break;
         }
@@ -73,7 +77,7 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
                     ToastUtils.showToast(getString(R.string.no_know_card));
                 }
                 break;
-           default:
+            default:
                 ToastUtils.showToast(getString(R.string.read_card_info_fault));
                 closeProgressDialog();
                 break;

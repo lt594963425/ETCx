@@ -11,7 +11,7 @@ import com.etcxc.android.base.BaseActivity;
 /**
  * ETC圈存
  */
-public class CreditForLoadActivity extends BaseActivity implements View.OnClickListener{
+public class StoreActivity extends BaseActivity implements View.OnClickListener{
 
     private RelativeLayout load_nfc,load_bluetooth_box;
 
@@ -34,7 +34,9 @@ public class CreditForLoadActivity extends BaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.load_nfc://nfc圈存
-                startActivity(new Intent(this,NFCStoreActivity.class));
+                Intent i = new Intent(this,NFCStoreActivity.class);
+                i.putExtra("fromSelf", true);
+                startActivity(i);
                 break;
             case R.id.load_bluetooth_box://蓝牙盒子圈存
                 startActivity(new Intent(this,BluetoothReaderActivity.class));

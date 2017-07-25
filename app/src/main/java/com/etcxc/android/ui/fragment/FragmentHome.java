@@ -25,7 +25,7 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
-import com.etcxc.android.ui.activity.CreditForLoadActivity;
+import com.etcxc.android.ui.activity.StoreActivity;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
 import com.etcxc.android.ui.activity.MainActivity;
@@ -154,7 +154,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                 MobclickAgent.onEvent(mActivity, "mETCRechargeClick" );
                 break;
             case R.id.home_etccirclesave_tv:
-                startActivity(new Intent(mActivity, CreditForLoadActivity.class));
+                startActivity(new Intent(mActivity, StoreActivity.class));
                 break;
             case R.id.home_detile_tv:
                 startActivity(new Intent(mActivity, ETCIssueActivity.class));

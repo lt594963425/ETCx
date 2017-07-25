@@ -170,10 +170,10 @@
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop" />
-        <activity android:name=".ui.activity.CreditForLoadActivity" />
+        <activity android:name=".ui.activity.StoreActivity" />
         <activity
             android:name=".ui.activity.NFCStoreActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
