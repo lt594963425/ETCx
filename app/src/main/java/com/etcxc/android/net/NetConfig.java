@@ -20,7 +20,6 @@ public class NetConfig {
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
     public final static String HOST = "http://192.168.6.58";
 //    public final static String HOST = "http://192.168.6.126:9999";
-    public final static String HOST = "http://192.168.6.58";
 
     /**
      * @return 当前网络状态，详见{@link NetworkInfo}
