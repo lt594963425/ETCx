@@ -26,4 +26,5 @@
     <color name="black">#000000</color>
     <color name="navpage">#FFE1E8EB</color>
     <color name="bg_gray">#f0f0f0</color>
+    <color name="update_dot">#ff0000</color>
 </resources>

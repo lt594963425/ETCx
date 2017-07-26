@@ -55,6 +55,10 @@ public class NetConfig {
         return info != null && info.isAvailable();
     }
 
+    /**
+     * 20170726 by xwpeng
+     *后端接口改成params用json传输，所以params一般传空
+     */
     public static String consistUrl(@NonNull String func, Map<String, String> params) {
         StringBuilder builder = new StringBuilder(HOST).append(func);
         if (params != null) {

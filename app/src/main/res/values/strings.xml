@@ -118,7 +118,7 @@
     <string name="logining">登录中..</string>
     <string name="nologin">你尚未登录</string>
     <string name="nosethead">你暂未设置头像</string>
-    <string name="net_erro">网络连接失败</string>
+    <string name="net_erro">网络错误</string>
     <string name="please_input_correct">请填写正确的车牌号码</string>
     <string name="reget_verify_code">重新获取验证码</string>
     <string name="login_failed">登录失败</string>

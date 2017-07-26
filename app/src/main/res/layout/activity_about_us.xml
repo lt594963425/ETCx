@@ -34,16 +34,37 @@
             android:textColor="@color/textcolor"
             android:textSize="16sp" />
 
-        <TextView
+        <RelativeLayout
             android:id="@+id/about_us_check_update"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="44dp"
+            android:layout_height="48dp"
             android:background="@color/white"
-            android:padding="16dp"
+            android:layout_marginTop="44dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            >
+
+        <TextView
+            android:id="@+id/check_update_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/check_update"
             android:textColor="@color/textcolor"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:layout_centerVertical="true"
+            />
+
+            <com.etcxc.android.ui.view.ColorCircle
+                android:id="@+id/update_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/check_update_tv"
+                android:layout_marginLeft="10dp"
+                />
+
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/about_us_test_json_api"
             android:layout_width="match_parent"

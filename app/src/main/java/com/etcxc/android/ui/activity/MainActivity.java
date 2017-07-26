@@ -19,10 +19,16 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.helper.VersionUpdateHelper;
+import com.etcxc.android.net.download.DownloadOptions;
 import com.etcxc.android.ui.adapter.MyFragmentAdapter;
 import com.etcxc.android.ui.fragment.FragmentExpand;
 import com.etcxc.android.ui.fragment.FragmentHome;
 import com.etcxc.android.ui.fragment.FragmentMine;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -46,14 +52,18 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
             App.get().getString(R.string.index_home),
             App.get().getString(R.string.index_expand),
             App.get().getString(R.string.mime)};
+    private VersionUpdateHelper mHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
         initPage();
-
+        mHelper = new VersionUpdateHelper(this);
+        mHelper.checkVersion();
     }
+
     private void initView() {
         setToolbarBack(false);
         mViewPager = find(R.id.pager);
@@ -64,7 +74,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
         initTabs();
-
     }
 
     private void initTabs() {
@@ -78,6 +87,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
     ImageView mImageView;
+
     public View getTabItemView(int i) {
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
         mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
@@ -90,6 +100,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     FragmentHome f1;
     FragmentExpand f2;
     FragmentMine f3;
+
     private void initPage() {
         ArrayList<Fragment> list = new ArrayList();
         f1 = new FragmentHome();
@@ -144,7 +155,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     private void startRoationAnim(int position) {
         ImageView iv = (ImageView) mTabHost.getTabWidget().getChildTabViewAt(position).findViewById(R.id.tab_imageview);
-        Animation anim =new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        Animation anim = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         anim.setFillAfter(true);
         anim.setDuration(300);
         anim.setInterpolator(new AccelerateInterpolator());
@@ -153,8 +164,25 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        f3.onActivityResult(requestCode,resultCode,data);
+        f3.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onStart() {
+        if (!EventBus.getDefault().isRegistered(this)) EventBus.getDefault().register(this);
+        super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(DownloadOptions options) {
+        mHelper.downloadPd(options);
     }
 
 }

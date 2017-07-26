@@ -186,7 +186,8 @@
         </activity>
         <activity android:name=".ui.activity.BluetoothReaderActivity" />
         <activity android:name=".ui.activity.CreditForLoadFinishActivity"/>
-            android:launchMode="singleTop"/>
+        <activity android:name=".ui.activity.TestJsonApiActivity"/>
+
         //友盟
         <meta-data
             android:value="59683d1d07fe656c9a000787"
