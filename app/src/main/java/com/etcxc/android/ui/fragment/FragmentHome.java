@@ -147,7 +147,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                 MobclickAgent.onEvent(mActivity, "mETCRechargeClick");
                 break;
             case R.id.home_etc_circle_save_rly:
-                startActivity(new Intent(mActivity, CreditForLoadActivity.class));
+                startActivity(new Intent(mActivity, StoreActivity.class));
                 break;
         }
 
@@ -271,6 +271,5 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public void onDestroy() {
         super.onDestroy();
-
     }
 }
