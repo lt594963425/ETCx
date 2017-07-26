@@ -22,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -83,7 +83,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     }
 
     private boolean setData() {
-        ArrayList<OrderRechargeInfo> list = UIUtils.getInfoList(this);
+        List<OrderRechargeInfo> list = UIUtils.getInfoList(this);
         if (list == null && list.size() < 1) {
             ToastUtils.showToast(R.string.add_recharge_info);
             return true;

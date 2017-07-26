@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -71,7 +72,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     private TextView mRechaergeDetailNum, mRechaergeTotalMoney, mRechaergeAddDetailBtn;
     private String[] money = {"50", "100", "500", "1000", "1500", "2000"};
     private TextView mRecharge;
-    private ArrayList<OrderRechargeInfo> mInfoList;
+    private List<OrderRechargeInfo> mInfoList;
     private String mRechargeCardNumber;
     private String mMoneyNumber;
     private View viewEtc;

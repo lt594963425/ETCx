@@ -14,6 +14,7 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.bean.OrderRechargeInfo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.etcxc.android.utils.UIUtils.saveInfoList;
 
@@ -22,7 +23,7 @@ import static com.etcxc.android.utils.UIUtils.saveInfoList;
  */
 
 public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechaergeRecylerViewAdapter.ViewHolder> implements View.OnClickListener {
-    private ArrayList<OrderRechargeInfo> list  = null ;
+    private List<OrderRechargeInfo> list  = null ;
     private Context con;
     private OnItemRechargeClickListener mOnItemRechargeClickListener = null;
 
@@ -41,7 +42,7 @@ public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechae
         void onItemRechargeClick(ImageView view, int position);
     }
 
-    public MyRechaergeRecylerViewAdapter(Context con, ArrayList<OrderRechargeInfo> list) {
+    public MyRechaergeRecylerViewAdapter(Context con, List<OrderRechargeInfo> list) {
             this.con = con;
             this.list = list;
     }

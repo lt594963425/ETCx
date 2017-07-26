@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -128,6 +129,7 @@ public class UIUtils {
         }
         view.setCompoundDrawablePadding(UIUtils.dip2Px(padding));
     }
+
     /**
      * @param v1 你要控制显示和隐藏内容的View
      * @param v2  你所点击的可见与不可见的View
@@ -151,11 +153,12 @@ public class UIUtils {
 
     /**
      * 保存历史号码
+     *
      * @param context
      * @param field
      * @param text
      */
-    public static void saveHistory(Context context,String field, String text) {
+    public static void saveHistory(Context context, String field, String text) {
         SharedPreferences sp = context.getSharedPreferences("phone_history", 0);
         String phonehistory = sp.getString(field, "nothing");
         if (!phonehistory.contains(text + ",")) {
@@ -166,7 +169,7 @@ public class UIUtils {
     }
 
     //保存卡号
-    public static void saveCardHistory(Context context,String field, String text) {
+    public static void saveCardHistory(Context context, String field, String text) {
         SharedPreferences sp = context.getSharedPreferences("card_history", 0);
         String phonehistory = sp.getString(field, "");
         if (!phonehistory.contains(text + ",")) {
@@ -175,24 +178,27 @@ public class UIUtils {
             sp.edit().putString("cardhistory", sb.toString()).commit();
         }
     }
+
     //初始化用户号码
-    public static void initAutoComplete(Context context,String field,AutoCompleteTextView auto) {
+    public static void initAutoComplete(Context context, String field, AutoCompleteTextView auto) {
         SharedPreferences sp = context.getSharedPreferences("phone_history", 0);
         initAutoTextView(context, field, auto, sp);
     }
+
     //初始化用户号码
-    public static void initAutoCompleteCard(Context context,String field,AutoCompleteTextView auto) {
+    public static void initAutoCompleteCard(Context context, String field, AutoCompleteTextView auto) {
         SharedPreferences sp = context.getSharedPreferences("card_history", 0);
         initAutoTextView(context, field, auto, sp);
     }
+
     private static void initAutoTextView(Context context, String field, AutoCompleteTextView auto, SharedPreferences sp) {
         String longhistory = sp.getString(field, " ");
-        String[]  hisArrays = longhistory.split(",");
-        if(hisArrays.length< 2){
+        String[] hisArrays = longhistory.split(",");
+        if (hisArrays.length < 2) {
             return;
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, hisArrays);
-        if(hisArrays.length > 50){
+        if (hisArrays.length > 50) {
             String[] newArrays = new String[50];
             System.arraycopy(hisArrays, 0, newArrays, 0, 50);
             adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, newArrays);
@@ -203,7 +209,7 @@ public class UIUtils {
         auto.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                AutoCompleteTextView  view = (AutoCompleteTextView ) v;
+                AutoCompleteTextView view = (AutoCompleteTextView) v;
                 if (hasFocus) {
                     view.showDropDown();
                 }
@@ -223,49 +229,57 @@ public class UIUtils {
     }
 
     //存
-    public static void saveInfoList(Context con,ArrayList<OrderRechargeInfo> list) {
+    public static void saveInfoList(Context con, List<OrderRechargeInfo> list) {
         SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
         Gson gson = new Gson();
-        String jsonStr=gson.toJson(list); //将List转换成Json
-        SharedPreferences.Editor editor = sp.edit() ;
-        editor.putString("KEY_INFO_list", jsonStr) ; //存入json串
-        editor.commit() ;  //提交
+        String jsonStr = gson.toJson(list); //将List转换成Json
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("KEY_INFO_list", jsonStr); //存入json串
+        editor.commit();  //提交
     }
+
     //取或查
-    public static ArrayList<OrderRechargeInfo>  getInfoList(Context con){
-        ArrayList<OrderRechargeInfo> infoList = new ArrayList<>();
+    @NonNull
+    public static List<OrderRechargeInfo> getInfoList(Context con) {
+        List<OrderRechargeInfo> infoList = new ArrayList<>();
         SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
         Gson gson = new Gson();
-        String InfoListString =  sp.getString("KEY_INFO_list","");
-        if(InfoListString != null){
-            infoList = gson.fromJson(InfoListString, new TypeToken<List<OrderRechargeInfo>>() {}.getType()); //将json字符串转换成List集合
-            return infoList;
+        String infoListString = sp.getString("KEY_INFO_list", "");
+        if (!TextUtils.isEmpty(infoListString)) {
+            List<OrderRechargeInfo> temp = gson.fromJson(infoListString, new TypeToken<List<OrderRechargeInfo>>() {
+            }.getType());
+            if (temp != null) infoList.addAll(temp);
         }
-        return null;
+        return infoList;
     }
-    public static void clearDetialData(Context con){
+
+    public static void clearDetialData(Context con) {
         SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
         editor.commit();
     }
+
     //删除
-    public static void delete(Context con,int position){
-        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List",Activity.MODE_PRIVATE);
-        String InfoListStringJson = sp.getString("KEY_INFO_list","");
-        if(InfoListStringJson!="")  //防空判断
+    public static void delete(Context con, int position) {
+        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
+        String InfoListStringJson = sp.getString("KEY_INFO_list", "");
+        if (InfoListStringJson != "")  //防空判断
         {
             Gson gson = new Gson();
             List<OrderRechargeInfo> peopleList = gson.fromJson(InfoListStringJson, new TypeToken<List<OrderRechargeInfo>>() {
             }.getType()); //1.2. 取出并转换成List
-            peopleList.remove(position) ; //3.移除第position个的javabean
-            String jsonStr=gson.toJson(peopleList); //4.将删除完的List转换成Json
-            SharedPreferences.Editor editor = sp.edit() ;
-            editor.putString("KEY_INFO_list", jsonStr) ; //存入json串
-            editor.commit() ;  //提交
+            peopleList.remove(position); //3.移除第position个的javabean
+            String jsonStr = gson.toJson(peopleList); //4.将删除完的List转换成Json
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("KEY_INFO_list", jsonStr); //存入json串
+            editor.commit();  //提交
         }
     }
-    /**限定Xiao数点*/
+
+    /**
+     * 限定Xiao数点
+     */
     public static void setPricePoint(final EditText editText) {
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -293,11 +307,13 @@ public class UIUtils {
                     }
                 }
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
 
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 // TODO Auto-generated method stub
@@ -307,7 +323,6 @@ public class UIUtils {
         });
 
     }
-
 
 
     public static boolean checkPermission(Context context, String permission) {
@@ -333,6 +348,7 @@ public class UIUtils {
         }
         return result;
     }
+
     public static String getDeviceInfo(Context context) {
         try {
             org.json.JSONObject json = new org.json.JSONObject();
@@ -379,8 +395,8 @@ public class UIUtils {
             if (TextUtils.isEmpty(device_id)) {
                 device_id = android.provider.Settings.Secure.getString(context.getContentResolver(),
                         android.provider.Settings.Secure.ANDROID_ID);
-            }else {
-                device_id =getRandomString(15);
+            } else {
+                device_id = getRandomString(15);
             }
             json.put("device_id", device_id);
             return json.toString();
@@ -389,6 +405,7 @@ public class UIUtils {
         }
         return null;
     }
+
     public static String getRandomString(int length) { //length表示生成字符串的长度
         String base = "abcdefghijklmnopqrstuvwxyz0123456789";
         Random random = new Random();
