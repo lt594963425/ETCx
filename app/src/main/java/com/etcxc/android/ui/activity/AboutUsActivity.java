@@ -9,6 +9,7 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.helper.VersionUpdateHelper;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.download.DownloadOptions;
 import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.UIUtils;
@@ -50,7 +51,7 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
         mUpdateDot = find(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
-//        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
+        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
         mUpdateDot.setVisibility(View.VISIBLE);
     }
 

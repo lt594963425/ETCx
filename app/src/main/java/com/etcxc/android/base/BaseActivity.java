@@ -78,6 +78,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         MobclickAgent.onResume(this);
         super.onResume();
     }
+
     @Override
     protected void onPause() {
         MobclickAgent.onPause(this);
@@ -179,11 +180,11 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     }
 
     public void showToobar() {
-        mXToolbar.setVisibility(View.VISIBLE);
+        if (mXToolbar != null) mXToolbar.setVisibility(View.VISIBLE);
     }
 
     public void hindToobar() {
-        mXToolbar.setVisibility(View.GONE);
+        if (mXToolbar != null) mXToolbar.setVisibility(View.GONE);
     }
 
 

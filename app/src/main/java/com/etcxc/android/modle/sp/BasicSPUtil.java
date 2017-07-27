@@ -26,11 +26,13 @@ public abstract class BasicSPUtil {
     }
 
     protected abstract String spFileName();
-    public void  delete (String str){
-        mSP.edit().remove(str).commit();
+
+    public void  delete (String key){
+        mSP.edit().remove(Base64Util.encode(key)).commit();
     }
+
     public void putBoolean(String key, boolean value) {
-        mSP.edit().putBoolean(Base64Util.encode(key), value).apply();
+        mSP.edit().putBoolean(Base64Util.encode(key), value).commit();
     }
 
     public boolean getBoolean(String key, boolean defValue) {
@@ -38,34 +40,34 @@ public abstract class BasicSPUtil {
     }
 
     public void putFloat(String key, float value) {
-        mSP.edit().putFloat(key, value).apply();
+        mSP.edit().putFloat(Base64Util.encode(key), value).commit();
     }
 
     public float getFloat(String key, float defValue) {
-        return mSP.getFloat(key, defValue);
+        return mSP.getFloat(Base64Util.encode(key), defValue);
     }
 
     public void putInt(String key, int value) {
-        mSP.edit().putInt(key, value);
+        mSP.edit().putInt(Base64Util.encode(key), value).commit();
     }
 
     public int getInt(String key, int defValue) {
-        return mSP.getInt(key, defValue);
+        return mSP.getInt(Base64Util.encode(key), defValue);
     }
 
     public void putLong(String key, long value) {
-        mSP.edit().putLong(key, value).apply();
+        mSP.edit().putLong(Base64Util.encode(key), value).commit();
     }
 
     public long getLong(String key, long defValue) {
-        return mSP.getLong(key, defValue);
+        return mSP.getLong(Base64Util.encode(key), defValue);
     }
 
     public void putString(String key, String value) {
-        mSP.edit().putString(key, value).apply();
+        mSP.edit().putString(Base64Util.encode(key), value).commit();
     }
 
     public String getString(String key, String defValue) {
-        return mSP.getString(key, defValue);
+        return mSP.getString(Base64Util.encode(key), defValue);
     }
 }

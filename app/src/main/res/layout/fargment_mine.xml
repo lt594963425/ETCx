@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp" />
 
-        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        <RelativeLayout
             android:id="@+id/mine_recommendfriend_toright"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -243,7 +243,6 @@
                 android:layout_toRightOf="@id/mine_iv_aboutus"
                 android:gravity="center"
                 android:paddingLeft="2dp"
-                android:paddingRight="15dp"
                 android:text="@string/about_us"
                 android:textSize="15sp" />
 
@@ -256,6 +255,16 @@
                 android:focusable="false"
                 android:padding="15dp"
                 app:srcCompat="@drawable/vd_mine_toright" />
+
+            <com.etcxc.android.ui.view.ColorCircle
+                android:id="@+id/update_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/mine_tv_aboutus"
+                android:visibility="gone" />
+
         </RelativeLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

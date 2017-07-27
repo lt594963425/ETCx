@@ -17,8 +17,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.etcxc.MeManager;
+import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
@@ -27,9 +29,11 @@ import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
+import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
@@ -47,10 +51,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private TextView mUsername;
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
+    private ColorCircle mUpdateDot;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.fargment_mine, null);
     }
 
@@ -76,6 +80,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mAboutUs.setOnClickListener(this);
         mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
+        mUpdateDot = find(R.id.update_dot);
+        mUpdateDot.setRadius(UIUtils.dip2Px(5));
+        mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
+        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE) mUpdateDot.setVisibility(View.VISIBLE);
         mHandler.postDelayed(LOAD_DATA, 500);
     }
 

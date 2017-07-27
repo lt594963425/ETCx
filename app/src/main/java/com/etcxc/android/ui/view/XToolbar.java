@@ -69,8 +69,7 @@ public class XToolbar extends Toolbar {
             }
             if (mTitleTextView.getParent() != this) addCenterView(mTitleTextView);
             mTitleTextView.setText(title);
-        } else if (mTitleTextView != null && mTitleTextView.getParent() == this)
-            removeView(mTitleTextView);
+        } else if (mTitleTextView != null && mTitleTextView.getParent() == this) removeView(mTitleTextView);
         mTitle = title;
     }
 
