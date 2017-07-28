@@ -52,5 +52,4 @@ public class Constants {
     public final static String loginSmsUrl = "http://192.168.6.58/register/register/register/";
     public final static String smsCodeUrl = "http://192.168.6.58/register/reg_sms/smsreport/tel/";
     //短信验证码统一接口
-
 }

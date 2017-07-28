@@ -11,9 +11,7 @@ import com.etcxc.android.utils.Base64Util;
  * Created by xwpeng on 2107/5/26.<br/>
  */
 public abstract class BasicSPUtil {
-
-    protected final String TAG = ((Object) this).getClass().getSimpleName();
-
+    protected final String TAG = BasicSPUtil.class.getSimpleName();
     private SharedPreferences mSP;
     private Context mContext;
 

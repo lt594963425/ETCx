@@ -8,7 +8,6 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.utils.Base64Util;
 
 /**
- * fixme:单例写法
  * 账号登录后创建的{@link android.content.SharedPreferences}工具类
  * Created by xwpeng on 2107/5/26.<br/>
  */
@@ -16,15 +15,13 @@ public class PrivateSPUtil extends BasicSPUtil {
     private String mUid;
 
     private PrivateSPUtil(@Nullable String uid) {
-            super(App.get());
-            this.mUid = Base64Util.encode(uid);
-            initSP();
+        super(App.get());
+        this.mUid = Base64Util.encode(uid);
     }
 
     @NonNull
     public static PrivateSPUtil newInstance() {
-        String uid = MeManager.getUid();
-        return PrivateSPUtil.newInstance(uid);
+        return InstanceInner.instance;
     }
 
     @NonNull
@@ -35,5 +32,9 @@ public class PrivateSPUtil extends BasicSPUtil {
     @Override
     protected String spFileName() {
         return "sp_" + mUid;
+    }
+
+    private static class InstanceInner {
+        private static PrivateSPUtil instance = new PrivateSPUtil(MeManager.getUid());
     }
 }

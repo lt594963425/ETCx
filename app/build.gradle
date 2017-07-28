@@ -18,12 +18,6 @@ android {
         manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
     }
     signingConfigs {
-        debug {
-            storeFile file('C:/ETCXc.keystore')
-            storePassword "xcdeetc"
-            keyAlias "ETCXcKey"
-            keyPassword "xcdeetc"
-        }
         release {
             storeFile file('C:/ETCXc.keystore')
             storePassword "xcdeetc"
@@ -34,6 +28,8 @@ android {
 
     buildTypes {
         debug {
+//          applicationIdSuffix ".debug"// 设置debug版本的报名为<应用id>.debug，这样就可以在设备上同时安装debug和release版本了。
+            versionNameSuffix ".${releaseTime()}.debug"
             multiDexEnabled true
             signingConfig signingConfigs.debug
             minifyEnabled false
@@ -41,14 +37,17 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
         }
+
         release {
+            versionNameSuffix ".${releaseTime()}.release"
             multiDexEnabled true
             signingConfig signingConfigs.release
-            minifyEnabled false
-            zipAlignEnabled false
+            minifyEnabled true
+            zipAlignEnabled true
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
@@ -59,6 +58,7 @@ android {
             }
         }
     }
+
     productFlavors {
         default_channel {}
         wandoujia {}
@@ -66,8 +66,8 @@ android {
         xiaomi {}
         tencent {}
         taobao {}
-
     }
+
     productFlavors.all {
         flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
@@ -128,6 +128,7 @@ dependencies {
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:1.3.4'
     //友盟
     compile 'com.umeng.analytics:analytics:latest.integration'
+
 
 }
 

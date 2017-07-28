@@ -5,16 +5,12 @@ import android.content.Context;
 import com.etcxc.android.base.App;
 
 /**
- * fixme:单例写法
  * 未登录账号使用的SharedPreferences工具类
  * Created by xwpeng on 2107/5/26.<br/>
  */
 public class PublicSPUtil extends BasicSPUtil {
-    private Context mContext = null;
-
     private PublicSPUtil(Context context) {
         super(context);
-        mContext = context;
         initSP();
     }
 
