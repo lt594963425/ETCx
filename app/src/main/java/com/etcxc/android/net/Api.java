@@ -1,7 +1,5 @@
 package com.etcxc.android.net;
 
-import static com.etcxc.android.net.NetConfig.HOST;
-
 /**
  * Created by caoyu on 2017/7/26.
  */
@@ -81,4 +79,12 @@ public class Api {
      */
     //版本更新
     public final static String VERSION_FUNC = "/xczx/version_manage/versionmanage";
+
+    /**
+     * ETC 充值
+     */
+    // 微信获取下单信息
+    public final static String infoWXUrl = "http://192.168.6.126:9999/pay/pay/addcard/";
+    //微信下单支付
+    public final static String WXOrderUrl = "http://192.168.6.126:9999/pay/pay/payment/pay_message/";
 }
