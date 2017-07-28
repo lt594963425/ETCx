@@ -5,7 +5,6 @@ import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -32,31 +31,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 3.4  insert query delete update  都对应增加 case
  * 如果用mDb.query 能满足需求，则不需要处理 该条，因为default 中默认用 mDb.query 处理）
  */
-public class PublicContentProvider extends ContentProvider implements
-        SQLiteTransactionListener {
-
-    private final String TAG = "PublicContentProvider";
-
+public class PublicContentProvider extends ContentProvider implements SQLiteTransactionListener {
+    private final String TAG = PublicDbHelper.class.getSimpleName();
+    PublicDbHelper mDbHelper;
+    SQLiteDatabase mDb;
 
     /**
-     * 接口调用
+     * 接口调用记录
      */
-    private static final int INTERFACE1 = 0x1004;
-
+    private static final int API_RECORD = 0x1004;
 
     /**
      * URI键值匹配器
      */
-    private static final UriMatcher sMatcher = new UriMatcher(
-            UriMatcher.NO_MATCH);
+    private static final UriMatcher sMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        sMatcher.addURI(PublicUriField.AUTHORITY, PublicUriField.UriQueryPath.INTERFACE1, INTERFACE1);
+        sMatcher.addURI(PublicUriField.AUTHORITY, PublicUriField.UriQueryPath.API_RECORD, API_RECORD);
     }
-
-    PublicDbHelper dbHelper;
-
-    SQLiteDatabase mDb;
 
     /**
      * 各线程是否在批处理的标记  , true 不通知， false 通知
@@ -66,76 +58,50 @@ public class PublicContentProvider extends ContentProvider implements
 
     @Override
     public boolean onCreate() {
-        LogUtil.d(TAG, "PublicContentProvider.onCreate");
-        Context context = getContext();
-        dbHelper = getDatabaseHelper(context);
+        mDbHelper = PublicDbHelper.getInstance();
         return initialize();
     }
 
-    private PublicDbHelper getDatabaseHelper(Context context) {
-        return PublicDbHelper.getInstance(context);
-    }
-
     private boolean initialize() {
-        if (null != dbHelper) {
-            mDb = dbHelper.getWritableDatabase();
-        }
+        if (null != mDbHelper) mDb = mDbHelper.getWritableDatabase();
         return null != mDb;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        mDb = dbHelper.getReadableDatabase();
-        Cursor c;
-        int match = sMatcher.match(uri);
-        switch (match) {
-            default:
-                c = mDb.query(getTableNameByMatch(match),
+        mDb = mDbHelper.getReadableDatabase();
+        Cursor c = mDb.query(getTableNameByMatch(sMatcher.match(uri)),
                         projection,
                         selection,
                         selectionArgs,
                         null,
                         null,
                         sortOrder);
-                break;
-        }
         return c;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        mDb = dbHelper.getWritableDatabase();
+        mDb = mDbHelper.getWritableDatabase();
         long rowId;
         int match = sMatcher.match(uri);
-        switch (match) {
-            default:
                 rowId = mDb.insert(getTableNameByMatch(match), null, values);
                 LogUtil.d(TAG, "rowId:" + rowId);
-                if (!mApplyingBatch.get()) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                }
+                if (!mApplyingBatch.get()) getContext().getContentResolver().notifyChange(uri, null);
                 if (rowId > 0) {
-                    Uri noteUri = ContentUris.withAppendedId(getUriByMatch(match),
-                            rowId);
+                    Uri noteUri = ContentUris.withAppendedId(getUriByMatch(match), rowId);
                     return noteUri;
                 }
-                break;
-        }
         return null;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        mDb = dbHelper.getWritableDatabase();
-        int count = 0;
+        mDb = mDbHelper.getWritableDatabase();
         int match = sMatcher.match(uri);
-        switch (match) {
-            default:
-                count = mDb.delete(getTableNameByMatch(match),
+        int count = mDb.delete(getTableNameByMatch(match),
                         selection,
                         selectionArgs);
-                break;
-        }
         if (!mApplyingBatch.get()) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -144,12 +110,9 @@ public class PublicContentProvider extends ContentProvider implements
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        mDb = dbHelper.getWritableDatabase();
-        int count = 0;
+        mDb = mDbHelper.getWritableDatabase();
         int match = sMatcher.match(uri);
-        switch (match) {
-            default:
-                count = mDb.update(getTableNameByMatch(match),
+        int count = mDb.update(getTableNameByMatch(match),
                         values,
                         selection,
                         selectionArgs);
@@ -157,20 +120,15 @@ public class PublicContentProvider extends ContentProvider implements
                     getContext().getContentResolver().notifyChange(uri, null);
                     LogUtil.d(TAG, "uri:" + uri.toString());
                 }
-                break;
-        }
         return count;
     }
 
-
     private String getTableNameByMatch(int match) {
-        String tableName = null;
+        String tableName;
         switch (match) {
-
-            case INTERFACE1:
-                tableName = PublicDbHelper.Tables.INTERFACE1;
+            case API_RECORD:
+                tableName = PublicDbHelper.Tables.ApiRecord;
                 break;
-
             default:
                 throw new IllegalArgumentException("table No match type ! match:" + match);
         }
@@ -178,10 +136,10 @@ public class PublicContentProvider extends ContentProvider implements
     }
 
     private Uri getUriByMatch(int match) {
-        Uri uri = null;
+        Uri uri;
         switch (match) {
-            case INTERFACE1:
-                uri = PublicUriField.INTERFACE1_URI;
+            case API_RECORD:
+                uri = PublicUriField.API_RECORD_URI;
                 break;
             default:
                 throw new IllegalArgumentException("Uri No match type ! match:" + match);
@@ -190,11 +148,8 @@ public class PublicContentProvider extends ContentProvider implements
     }
 
     @Override
-    public ContentProviderResult[] applyBatch(
-            ArrayList<ContentProviderOperation> operations)
-            throws OperationApplicationException {
-
-        mDb = dbHelper.getWritableDatabase();
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
+        mDb = mDbHelper.getWritableDatabase();
         mDb.beginTransactionWithListener(this);
         Uri uri = null;
         try {
@@ -224,24 +179,18 @@ public class PublicContentProvider extends ContentProvider implements
         }
     }
 
+    @Override
+    public void onBegin() {}
 
     @Override
-    public void onBegin() {
-
-    }
+    public void onCommit() {}
 
     @Override
-    public void onCommit() {
-
-    }
-
-    @Override
-    public void onRollback() {
-
-    }
+    public void onRollback() {}
 
     @Override
     public String getType(Uri uri) {
         return null;
     }
+
 }

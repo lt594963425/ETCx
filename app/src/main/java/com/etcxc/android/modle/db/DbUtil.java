@@ -44,19 +44,9 @@ public class DbUtil {
         }
     }
 
-    /**
-     * Public数据库存储的AUTHORITY<br/>
-     *
-     * @return
-     */
-    public static String publicUriAuthority() {
-        return BuildConfig.APPLICATION_ID + ".public";
-    }
 
     /**
      * Private数据库存储的AUTHORITY<br/>
-     *
-     * @return
      */
     public static String privateUriAuthority() {
         return BuildConfig.APPLICATION_ID + ".private";

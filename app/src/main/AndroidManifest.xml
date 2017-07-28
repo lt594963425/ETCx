@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.etcxc.android">
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.REAL_GET_TASKS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.REAL_GET_TASKS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -75,7 +75,6 @@
         <activity
             android:name=".ui.activity.ChangePhoneActivity"
             android:screenOrientation="portrait" />
-        />
         <activity
             android:name=".ui.activity.ETCRechargeActivity"
             android:screenOrientation="portrait" />
@@ -139,25 +138,6 @@
             </intent-filter>
         </service>
 
-        <provider
-            android:name=".modle.db.PublicContentProvider"
-            android:authorities="${applicationId}.public"
-            android:exported="true"
-            android:permission="false" />
-        <provider
-            android:name=".modle.db.PrivateContentProvider"
-            android:authorities="${applicationId}.private"
-            android:exported="false" />
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
-        </provider>
-
         <activity
             android:name=".ui.activity.ReceiptAddressActivity"
             android:screenOrientation="portrait" />
@@ -185,19 +165,37 @@
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
         <activity android:name=".ui.activity.BluetoothReaderActivity" />
-        <activity android:name=".ui.activity.CreditForLoadFinishActivity"/>
-        <activity android:name=".ui.activity.TestJsonApiActivity"/>
+        <activity android:name=".ui.activity.CreditForLoadFinishActivity" />
+        <activity android:name=".ui.activity.TestJsonApiActivity" />
 
         //友盟
         <meta-data
-            android:value="59683d1d07fe656c9a000787"
-            android:name="UMENG_APPKEY"/>
+            android:name="UMENG_APPKEY"
+            android:value="59683d1d07fe656c9a000787" />
         <meta-data
-            android:value="${UMENG_CHANNEL_VALUE}"
-            android:name="UMENG_CHANNEL"/>
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
         <meta-data
             android:name="UMENG_MESSAGE_SECRET"
-            android:value="535f7eeb5d24886caf7d22d295a44216"/>
+            android:value="535f7eeb5d24886caf7d22d295a44216" />
+
+        <provider
+            android:name=".modle.db.PublicContentProvider"
+            android:authorities="${applicationId}.public"
+            android:exported="false" />
+        <provider
+            android:name=".modle.db.PrivateContentProvider"
+            android:authorities="${applicationId}.private"
+            android:exported="false" />
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

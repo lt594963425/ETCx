@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+
+import com.etcxc.android.base.App;
 import com.etcxc.android.utils.LogUtil;
 
 import java.util.LinkedHashMap;
@@ -11,12 +13,11 @@ import java.util.LinkedHashMap;
 import static com.etcxc.android.modle.db.DbUtil.assemblySql;
 
 /**
- * fixme：单例写法
+ * 公有数据库帮助类
  * Created by xwpeng on 2017/5/25.
  */
 public class PublicDbHelper extends SQLiteOpenHelper {
-    private static final String TAG = "PublicDbHelper";
-
+    private static final String TAG = PublicDbHelper.class.getSimpleName();
     /**
      * 数据库名字
      */
@@ -26,34 +27,26 @@ public class PublicDbHelper extends SQLiteOpenHelper {
      */
     private static final int DATABASE_VERSION = 1;
 
-    /**
-     * 数据库表操作对象
-     */
-    private static PublicDbHelper sSingleton = null;
-
-    /**
-     * 获取单例
-     */
-    public static synchronized PublicDbHelper getInstance(Context context) {
-        if (sSingleton == null) {
-            sSingleton = new PublicDbHelper(context);
-        }
-        return sSingleton;
-    }
-
     private PublicDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    private static class InnerClass {
+        private static PublicDbHelper instance = new PublicDbHelper(App.get());
+    }
+
+    public static PublicDbHelper getInstance() {
+        return InnerClass.instance;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
             db.beginTransaction();
-            createTableInterface1(db);//接口调用表
+            createTableApiRecord(db);//接口调用表
             db.setTransactionSuccessful();
         } catch (Exception e) {
-            LogUtil.e(TAG, "create table exception: " + e.toString());
-            e.printStackTrace();
+            LogUtil.e(TAG, "onCreate", e);
         } finally {
             db.endTransaction();
         }
@@ -65,32 +58,30 @@ public class PublicDbHelper extends SQLiteOpenHelper {
     }
 
     public interface Tables {
-        /**
-         * 接口使用表
-         */
-        String INTERFACE1 = "_interface1";
+        //接口使用记录表
+        String ApiRecord = "_api_record";
     }
 
-    public interface Interface1Columns extends BaseColumns {
-        String NAME = "_interface1_name";
-        String URL = "_interface1_url";
-        String FORMDATA = "_interface1_formdata";
-        String REQUESTTTIME = "_interface1_requesttime";
-        String RESPONETIME = "_interface1_reponsetime";
-        String RESULT = "_interface1_result";
-        String UID = "_interface1_uid";
+    public interface ApiRecordColumns extends BaseColumns {
+        String NAME = "_name";
+        String URL = "_url";
+        String REQUEST_DATA = "_requestData";
+        String REQUEST_TTIME = "_requestTime";
+        String RESPONSE_DATA = "_reponseData";
+        String RESPONSE_TIME = "_responseTime";
+        String UID = "_uid";
     }
 
-    private void createTableInterface1(SQLiteDatabase db) {
+    private void createTableApiRecord(SQLiteDatabase db) {
         LinkedHashMap<String, String> types = new LinkedHashMap<>();
-        types.put(Interface1Columns.NAME, "TEXT");
-        types.put(Interface1Columns.URL, "TEXT");
-        types.put(Interface1Columns.FORMDATA, "TEXT");
-        types.put(Interface1Columns.REQUESTTTIME, "TEXT");
-        types.put(Interface1Columns.RESPONETIME, "INTEGER");
-        types.put(Interface1Columns.RESULT, "TEXT");
-        types.put(Interface1Columns.UID, "TEXT");
-        db.execSQL(assemblySql(types, Tables.INTERFACE1));
+        types.put(ApiRecordColumns.NAME, "TEXT");
+        types.put(ApiRecordColumns.URL, "TEXT");
+        types.put(ApiRecordColumns.REQUEST_DATA, "TEXT");
+        types.put(ApiRecordColumns.REQUEST_TTIME, "INTEGER");
+        types.put(ApiRecordColumns.RESPONSE_DATA, "TEXT");
+        types.put(ApiRecordColumns.RESPONSE_TIME, "INTEGER");
+        types.put(ApiRecordColumns.UID, "TEXT");
+        db.execSQL(assemblySql(types, Tables.ApiRecord));
         types.clear();
     }
 }

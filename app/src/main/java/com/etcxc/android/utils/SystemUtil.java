@@ -112,28 +112,4 @@ public class SystemUtil {
         return f1;
     }
 
-    /**
-     * 网络请求模板，复制粘贴提高效率
-     */
-    private void netModel() {
-/*        Observable.create(new ObservableOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-
-            }
-        }).compose(RxUtil.io())
-                .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(@NonNull String s) throws Exception {
-
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-                LogUtil.e(TAG, "net", throwable);
-                ToastUtils.showToast(R.string.request_failed);
-            }
-        });*/
-    }
-
 }
