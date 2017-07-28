@@ -15,7 +15,7 @@ public abstract class BasicSPUtil {
     private SharedPreferences mSP;
     private Context mContext;
 
-    public BasicSPUtil(Context context) {
+    protected BasicSPUtil(Context context) {
         this.mContext = context;
     }
 
