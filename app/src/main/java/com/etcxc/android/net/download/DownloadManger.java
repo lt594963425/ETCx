@@ -11,7 +11,6 @@ import com.etcxc.android.net.Actions;
  */
 
 public class DownloadManger {
-    private final String TAG = "DownloadManager1";
 
     public static void download(DownloadOptions options) {
         Intent intent = new Intent();

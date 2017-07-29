@@ -32,6 +32,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.Api.FUNC;
+
 /**
  * etc发行Activity
  * Created by xwpeng on 2017/6/17.
@@ -42,7 +44,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private RadioButton mPersonalRadiobutton;
     private EditText mCarCardEdit;
     private Spinner mCardColorSpinner;
-    private final static String FUNC = "/transaction/transaction/transactionveh";
+
     private String mCarColor;
 
     @Override

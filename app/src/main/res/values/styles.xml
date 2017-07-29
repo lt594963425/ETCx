@@ -118,4 +118,9 @@
         <item name="android:windowExitAnimation">@anim/slide_out_to_bottom</item>
     </style>
 
+    <style name="textView_network">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/colorGray</item>
+    </style>
+
 </resources>

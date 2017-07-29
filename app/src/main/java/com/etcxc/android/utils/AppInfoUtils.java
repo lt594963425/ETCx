@@ -1,12 +1,16 @@
 package com.etcxc.android.utils;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
 
+import com.etcxc.android.base.App;
+
 import static android.content.Context.TELEPHONY_SERVICE;
 import static android.content.pm.PackageManager.GET_SIGNATURES;
+import static com.etcxc.android.utils.UIUtils.getPackageName;
 
 /**
  * Created by 刘涛 on 2017/5/27 0027.
@@ -61,5 +65,24 @@ public class AppInfoUtils {
             e.printStackTrace();
             return "1.0.0";
         }
+    }
+
+    /**
+     * 获取当前应用名称
+     * @return
+     * @throws Exception
+     */
+    public static String getApplicationName() {
+        PackageManager packageManager = null;
+        ApplicationInfo applicationInfo = null;
+        try {
+            packageManager = App.get().getPackageManager();
+            applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            applicationInfo = null;
+        }
+        String applicationName =
+                (String) packageManager.getApplicationLabel(applicationInfo);
+        return applicationName;
     }
 }

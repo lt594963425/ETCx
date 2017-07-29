@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -74,7 +75,8 @@ public class UIUtils {
      * 得到Color.xml中的颜色信息
      */
     public static int getColor(int resId) {
-        return getResources().getColor(resId);
+        // 同时兼容高、低版本
+        return ContextCompat.getColor(getContext(),resId);
     }
 
     /**

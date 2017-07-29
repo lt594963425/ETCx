@@ -33,6 +33,10 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.Api.FUNC_FIND_POSTADDRESS;
+import static com.etcxc.android.net.Api.FUNC_POSTADDRESS;
+import static com.etcxc.android.net.Api.FUNC_RECEIPT_POSTADDRESS;
+
 /**
  * 给后端做json接口测试
  * Created by xwpeng on 2017/7/24.
@@ -43,8 +47,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
     private TextView mRegionResultTextView, mStreetResultTextView;
     public final static int REQUEST_REGION = 1;
     public final static int REQUEST_STREET = 2;
-    private final static String FUNC_POSTADDRESS = "/login/login/deliaddressadd";
-    private final static String FUNC_FIND_POSTADDRESS = "/login/login/deliaddress";
+
     private EditText mReceiverEdit, mPhoneNumberEdit, mDetailAddressEdit;
 
     private String mReceiver, mPhoneNumber, mRegion, mStreet, mDetailaddress;
@@ -88,7 +91,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.request_failed);
+                        ToastUtils.showToast(R.string.request_faileds);
                     }
                 });
     }
@@ -143,7 +146,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                         && checkRegion(region)
                         && checkStreet(street)
                         && checkDetailAddress(detailaddress)
-                        && checkChange(receiver, phoneNumber, region, street, detailaddress)
+                        && checkChange(receiver,phoneNumber,region,street,detailaddress)
                         ) {
                     Map<String, String> params = new HashMap<>();
                     params.put("receiver", receiver);
@@ -156,6 +159,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     params.put("tel", MeManager.getSid());
                     commitNet(params);
                 }
+
                 break;
             case R.id.receipt_address_region_layout:
                 startActivityForResult(new Intent(this, SelectRegionActivity.class), REQUEST_REGION);
@@ -199,8 +203,8 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                Log.d(TAG, "subscribe: " + NetConfig.consistUrl(FUNC_POSTADDRESS, params));
-                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC_POSTADDRESS, params), new JSONObject()));
+                Log.d(TAG, "subscribe: " + NetConfig.consistUrl(FUNC_RECEIPT_POSTADDRESS, params));
+                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC_RECEIPT_POSTADDRESS, params), new JSONObject()));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -220,7 +224,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         LogUtil.e(TAG, "net", throwable);
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.request_failed);
+                        ToastUtils.showToast(R.string.request_faileds);
                     }
                 });
     }
@@ -279,12 +283,12 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         return true;
     }
 
-    private boolean checkChange(String receiver, String phoneNumber, String region, String street, String address) {
+    private boolean checkChange(String receiver,String phoneNumber,String region,String street,String address) {
         if (receiver.equals(mReceiver)
-                && phoneNumber.equals(mPhoneNumber)
-                && region.equals(mRegion)
-                && street.equals(mStreet)
-                && address.equals(mDetailaddress)) {
+                &&phoneNumber.equals(mPhoneNumber)
+                &&region.equals(mRegion)
+                &&street.equals(mStreet)
+                &&address.equals(mDetailaddress)){
             ToastUtils.showToast(R.string.postaddress_repeat);
             return false;
         }

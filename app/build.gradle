@@ -35,7 +35,10 @@ android {
             minifyEnabled false
             zipAlignEnabled false
             shrinkResources false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
+            signingConfig signingConfigs.debug
+            multiDexEnabled true
         }
 
         release {

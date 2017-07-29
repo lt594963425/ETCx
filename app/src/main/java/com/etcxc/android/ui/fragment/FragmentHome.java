@@ -16,14 +16,13 @@ import android.widget.RelativeLayout;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
-import com.etcxc.android.bean.ApiRecord;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
 import com.etcxc.android.ui.activity.MainActivity;
+import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.MyGridViewAdapter;
-import com.etcxc.android.utils.Sample;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
@@ -112,6 +111,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             case 4:   //投诉建议
                 break;
             case 5:   //网点查询
+                startActivity(new Intent(getActivity(),NetworkQueryActivity.class));
                 break;
         }
     }

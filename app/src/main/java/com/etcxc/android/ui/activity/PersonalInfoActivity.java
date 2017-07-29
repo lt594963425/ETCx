@@ -91,8 +91,8 @@ import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.R.id.login_phonenumber_delete;
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.base.App.onProfileSignIn;
-import static com.etcxc.android.base.Constants.loginServerUrl;
-import static com.etcxc.android.base.Constants.pictureCodeUrl;
+import static com.etcxc.android.net.Api.loginServerUrl;
+import static com.etcxc.android.net.Api.pictureCodeUrl;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -280,24 +280,33 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
     private boolean startUserLoging() {
-        String data;
         String key2 = PrefUtils.getString(App.get(), "code_key", null);
         String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
         String passWord = mLoginPasswordEdt.getText().toString().trim();
         String pwd = Md5Utils.encryptpwd(passWord);
         String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
+        //定义一个JSON，用于向服务器提交数据
+        JSONObject data = new JSONObject();
         if (veriFicodem.isEmpty()) {
-            data = "tel/" + phoneNum +
-                    "/pwd/" + pwd;
+            try {
+                data.put("tel",phoneNum)
+                        .put("pwd", pwd);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } else {
-            data = "tel/" + phoneNum +
-                    "/pwd/" + pwd +
-                    "/code/" + veriFicodem +
-                    "/code_key/" + key2;
+            try {
+                data.put("tel",phoneNum)
+                        .put("pwd",pwd)
+                        .put("code",veriFicodem)
+                        .put("code_key",key2);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         if (LocalThrough(phoneNum, passWord, veriFicodem)) return true;
         saveHistory(this, "history", phoneNum);
-        loginRun(loginServerUrl + data);
+        loginRun(loginServerUrl,data);
         return false;
     }
 
@@ -335,14 +344,13 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         return false;
     }
 
-    private void loginRun(String url) {
+    private void loginRun(String url,JSONObject jsonObject) {
         showProgressDialog(getString(R.string.logining));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(url, new JSONObject());
-                e.onNext(result);
-
+                Log.d(TAG, "subscribe: "+url);
+                e.onNext(OkClient.get(url,jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

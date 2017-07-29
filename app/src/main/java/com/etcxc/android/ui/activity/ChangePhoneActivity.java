@@ -1,7 +1,6 @@
 package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,6 +37,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.Api.newSmsCodeUrl;
+import static com.etcxc.android.net.Api.telChangeUrl;
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
@@ -47,14 +48,12 @@ import static com.etcxc.android.utils.UIUtils.isMobileNO;
  */
 
 public class ChangePhoneActivity extends BaseActivity implements View.OnClickListener {
-    private AutoCompleteTextView mOldPhoneEdt, mNewPhoneEdt;
+    private AutoCompleteTextView  mNewPhoneEdt;
     private EditText mNewCaptchaEdt;
     private TextView mGetCaptcha;
     private Button mSavePhoneBtn;
-    private ImageView mOldPhoneDle, mNewPhoneDle;
+    private ImageView  mNewPhoneDle;
 
-    private String smsCodeUrl = NetConfig.HOST + "/login/tel_change_sms/smsReport/new_tel/";
-    private String telChangeUrl = "/login/login/telchange";
     private String smsCode;//验证码
     private String smsID;//验证码id
     private String phone;//返回的手机号码
@@ -108,7 +107,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                     UIUtils.saveHistory(UIUtils.getContext(), "history", phoneNum);
                     TimeCount time = new TimeCount(mGetCaptcha, 60000, 1000);
                     time.start();
-                    getSmsCode(smsCodeUrl + phoneNum);
+                    getSmsCode(newSmsCodeUrl + phoneNum);
                 }
                 break;
             case R.id.save_phone_button://保存

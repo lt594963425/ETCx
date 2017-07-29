@@ -110,7 +110,7 @@ public abstract class BaseFragment extends RxFragment {
         mView = view;
         super.onViewCreated(view, savedInstanceState);
     }
-
+    @SuppressWarnings("unchecked")
     protected <T extends View> T find(int id) {
         return (T) mView.findViewById(id);
     }

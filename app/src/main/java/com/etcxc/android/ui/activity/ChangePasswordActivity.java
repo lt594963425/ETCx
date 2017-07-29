@@ -3,6 +3,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.net.Api;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.Md5Utils;
@@ -38,9 +40,6 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     private EditText mOldPwdEdt, mNewPwdEdt;
     private ImageView mOldPwdDte, mNewPwdSee, mOldPwdSee, mNewPwdDte;
     private Button mSavePwdBtn;
-
-    ////修改密码的url
-    private final static String modifyPwdServerUrl = HOST+"/login/login/pwdchange/";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,7 +91,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                     data = "tel/" + MeManager.getSid() +
                             "/pwd/" + Md5Utils.encryptpwd(oldPassWord) +
                             "/new_pwd/" + Md5Utils.encryptpwd(newPassWord);
-                    modifyPwd(modifyPwdServerUrl + data);
+                    modifyPwd(Api.modifyPwdServerUrl + data);
                 }
                 break;
         }
@@ -108,6 +107,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                Log.d(TAG, "subscribe: "+url);
                 String result = OkClient.get(url, new JSONObject());
                 e.onNext(result);
             }
@@ -130,20 +130,21 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
 
     private void parseResultJson(@NonNull String s) throws JSONException {
         JSONObject jsonObject = new JSONObject(s);
-        if (jsonObject == null) return;
-        String code = jsonObject.getString("code");
-        if (code.equals("s_ok")) {
-            //请求成功
-            closeProgressDialog();
-            ToastUtils.showToast(getString(R.string.modify_pwd_succ));
-            finish();
-        }
-        if (code.equals("err")) {
-            String returnMsg = jsonObject.getString("message");//返回的信息
-            closeProgressDialog();
-            ToastUtils.showToast(returnMsg);
+        if (jsonObject != null) {
+            String code = jsonObject.getString("code");
+            if (code.equals("s_ok")) {
+                //请求成功
+                closeProgressDialog();
+                ToastUtils.showToast(getString(R.string.modify_pwd_succ));
+                finish();
+            }
+            if (code.equals("err")) {
+                String returnMsg = jsonObject.getString("message");//返回的信息
+                closeProgressDialog();
+                ToastUtils.showToast(returnMsg);
 
-            return;
+                return;
+            }
         }
     }
 

@@ -32,8 +32,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.base.Constants.loginSmsUrl;
-import static com.etcxc.android.base.Constants.smsCodeUrl;
+import static com.etcxc.android.net.Api.loginSmsUrl;
+import static com.etcxc.android.net.Api.smsCodeUrl;
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;

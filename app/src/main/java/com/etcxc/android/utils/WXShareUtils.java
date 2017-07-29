@@ -11,12 +11,11 @@ import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXTextObject;
 import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
 
 
 /**
  * 微信分享
- * Created by ${caoyu} on 2017/7/8.
+ * Created by caoyu on 2017/7/8.
  */
 
 public class WXShareUtils extends Activity {
@@ -31,18 +30,15 @@ public class WXShareUtils extends Activity {
         return instance;
     }
 
-    public IWXAPI getWxApi(Context context){
-        return App.WXapi;
-    }
-
     /**
      * 微信文本分享
+     *
      * @param mContext
-     * @param text  内容
+     * @param text        内容
      * @param description 消息描述
-     * @param tag 0:好友 1:朋友圈
+     * @param tag         0:好友 1:朋友圈
      */
-    public void doTextSend(Context mContext,String text,String description,int tag) {
+    public void doTextSend(Context mContext, String text, String description, int tag) {
         //初始化一个微信WXWebpageObject对象，填写url
         WXTextObject textObject = new WXTextObject();
         textObject.text = text;
@@ -60,9 +56,9 @@ public class WXShareUtils extends Activity {
         req = new SendMessageToWX.Req();
         req.transaction = buildTransaction("text");
         req.message = msg;
-        if(tag == 0){
+        if (tag == 0) {
             req.scene = SendMessageToWX.Req.WXSceneSession;
-        }else if(tag == 1){
+        } else if (tag == 1) {
             req.scene = SendMessageToWX.Req.WXSceneTimeline;
         }
         App.WXapi.sendReq(req);
@@ -73,7 +69,7 @@ public class WXShareUtils extends Activity {
      *
      * @param mContext
      */
-    public void doUrlSend(Context mContext,String url,String title,String description,int tag) {
+    public void doUrlSend(Context mContext, String url, String title, String description, int tag) {
         //初始化一个微信WXWebpageObject对象，填写url
         WXWebpageObject webpageObject = new WXWebpageObject();
         webpageObject.webpageUrl = url;
@@ -84,15 +80,15 @@ public class WXShareUtils extends Activity {
         msg.title = title;
         //此处填写消息描述
         msg.description = description;
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(),R.mipmap.ic_launcher);
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
         msg.setThumbImage(bitmap);
         //构造一个Req
         req = new SendMessageToWX.Req();
         req.transaction = buildTransaction("webpage");
         req.message = msg;
-        if(tag == 0){
+        if (tag == 0) {
             req.scene = SendMessageToWX.Req.WXSceneSession;
-        }else if(tag == 1){
+        } else if (tag == 1) {
             req.scene = SendMessageToWX.Req.WXSceneTimeline;
         }
         App.WXapi.sendReq(req);
@@ -100,11 +96,11 @@ public class WXShareUtils extends Activity {
     }
 
     /**
-     * 论坛微信url分享
+     * 微信url分享带图片
      *
      * @param mContext
      */
-    public void shareUrlSend(Context mContext,String url,String title,String description,Bitmap bitmap,int tag) {
+    public void shareUrlSend(Context mContext, String url, String title, String description, Bitmap bitmap, int tag) {
         //初始化一个微信WXWebpageObject对象，填写url
         WXWebpageObject webpageObject = new WXWebpageObject();
         webpageObject.webpageUrl = url;
@@ -121,9 +117,9 @@ public class WXShareUtils extends Activity {
         req = new SendMessageToWX.Req();
         req.transaction = buildTransaction("webpage");
         req.message = msg;
-        if(tag == 0){
+        if (tag == 0) {
             req.scene = SendMessageToWX.Req.WXSceneSession;
-        }else if(tag == 1){
+        } else if (tag == 1) {
             req.scene = SendMessageToWX.Req.WXSceneTimeline;
         }
         App.WXapi.sendReq(req);
@@ -132,7 +128,4 @@ public class WXShareUtils extends Activity {
     private String buildTransaction(final String type) {
         return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
     }
-
-
-
 }

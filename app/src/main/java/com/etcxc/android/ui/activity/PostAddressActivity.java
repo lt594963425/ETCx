@@ -30,6 +30,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.Api.FUNC_POSTADDRESS;
+
 /**
  * 收货地址
  * Created by xwpeng on 2017/6/20.
@@ -39,7 +41,7 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
     private TextView mRegionResultTextView, mStreetResultTextView;
     public final static int REQUEST_REGION = 1;
     public final static int REQUEST_STREET = 2;
-    private final static String FUNC_POSTADDRESS = "/transaction/transaction/transactionmail";
+
     private EditText mReceiverEdit, mPhoneNumberEdit, mDetailAddressEdit;
 
     @Override

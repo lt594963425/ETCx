@@ -2,6 +2,7 @@ package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -33,7 +34,7 @@ public class IssueFinishActivity extends BaseActivity implements View.OnClickLis
         String timeStr = "2017年9月1号14:15";
         mTimeHintTextView.setText(getString(R.string.checking_finish_time_hint, "2017年9月1号14:15"));
         SpannableStringBuilder builder = new SpannableStringBuilder(mTimeHintTextView.getText());
-        builder.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.issue_finish_time)), 7, 7 + timeStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this,R.color.issue_finish_time)), 7, 7 + timeStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         mTimeHintTextView.setText(builder);
         find(R.id.commit_button).setOnClickListener(this);
     }

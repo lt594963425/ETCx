@@ -223,5 +223,8 @@
     <string name="please_open_NFC_function">请开启手机的NFC功能</string>
     <string name="every_where_save">随时随地的可圈存</string>
     <string name="save_time_and_effort">省时，省力\n避免排队</string>
+    <string name="request_faileds">网络请求失败</string>
+    <string name="netstores_address">详细地址:</string>
+    <string name="person_charge">负责人: %1$s</string>
 
 </resources>

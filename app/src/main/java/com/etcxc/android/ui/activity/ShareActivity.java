@@ -28,6 +28,10 @@ import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 推荐好友  （微信、QQ、短信）分享
+ * Created by caoyu on 2017/7/14.
+ * */
 public class ShareActivity extends BaseActivity implements View.OnClickListener {
     private Button btn_share;
     private TextView tv_wechat, tv_wechat_timeline, tv_qq, tv_sms;
@@ -99,7 +103,7 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
     private void showShareDialog() {
         dialog = new Dialog(this, R.style.BottomDialog);
         //填充对话框的布局
-        View inflate = LayoutInflater.from(this).inflate(R.layout.share_dialog_layout, null);
+        View inflate = LayoutInflater.from(this).inflate(R.layout.dialog_share, null);
         //初始化控件
         initDialogView(inflate);
         //将布局设置给Dialog

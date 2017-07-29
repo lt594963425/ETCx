@@ -33,6 +33,9 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.Api.FUNC_COMMIT_CONTACT_PHONE;
+import static com.etcxc.android.net.Api.FUNC_SEND_CODE;
+
 /**
  * 联系手机验证录入
  * Created by xwpeng on 2017/6/20.
@@ -41,8 +44,7 @@ import io.reactivex.functions.Consumer;
 public class ContactPhoneActivity extends BaseActivity implements View.OnClickListener {
     private final static String TAG = ContactPhoneActivity.class.getSimpleName();
     private EditText mPhoneEditText;
-    private final static String FUNC_SEND_CODE = "/transaction/tran_sms/smsreport";
-    private final static String FUNC_COMMIT_CONTACT_PHONE = "/transaction/transaction/transactiontel";
+
     private String mSmsId;
     private Button mGetVerifyCodeButton;
     private ImageView mDeleteImageView;

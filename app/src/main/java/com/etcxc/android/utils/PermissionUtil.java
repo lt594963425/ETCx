@@ -30,6 +30,7 @@ public class PermissionUtil {
     public static final int REQUEST_RECORD_AUDIO = 2;
     public static final int REQUEST_CONTACTS = 3;
     public static final int REQUEST_LOCATION = 4;
+    public static final int REQUEST_WRITE_EXTERNAL_STORAGE = 5;
     private static final SimpleArrayMap<String, Integer> MIN_SDK_PERMISSIONS;
     static {
         MIN_SDK_PERMISSIONS = new SimpleArrayMap<>(8);
@@ -37,12 +38,12 @@ public class PermissionUtil {
         MIN_SDK_PERMISSIONS.put("android.permission.BODY_SENSORS", 20);
         MIN_SDK_PERMISSIONS.put("android.permission.READ_CALL_LOG", 16);
         MIN_SDK_PERMISSIONS.put("android.permission.READ_EXTERNAL_STORAGE", 16);
+        MIN_SDK_PERMISSIONS.put("android.permission.WRITE_EXTERNAL_STORAGE", 16);
         MIN_SDK_PERMISSIONS.put("android.permission.USE_SIP", 9);
         MIN_SDK_PERMISSIONS.put("android.permission.WRITE_CALL_LOG", 16);
         MIN_SDK_PERMISSIONS.put("android.permission.SYSTEM_ALERT_WINDOW", 23);
         MIN_SDK_PERMISSIONS.put("android.permission.WRITE_SETTINGS", 23);
     }
-    private static final String TAG = "PermissionUtil";
 
     public static void requestPermissions(Activity activity, String[] permissions, OnRequestPermissionsResultCallback callback) {
         if (permissions == null || permissions.length == 0) throw new IllegalArgumentException("Permissions is null");
@@ -130,6 +131,22 @@ public class PermissionUtil {
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.CAMERA},
                     PermissionUtil.REQUEST_SHOWCAMERA);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean hasWritePermission(Activity activity){
+        int hasPermission = ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if(!permissionExists(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            Log.e("permission","your system does not suppport"+ Manifest.permission.CAMERA+" permission");
+            return false;
+        }
+        if (hasPermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PermissionUtil.REQUEST_WRITE_EXTERNAL_STORAGE);
             return false;
         }
         return true;

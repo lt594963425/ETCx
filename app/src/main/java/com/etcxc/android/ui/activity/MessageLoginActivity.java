@@ -38,8 +38,8 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.base.App.isLogin;
-import static com.etcxc.android.base.Constants.SMSUrl;
-import static com.etcxc.android.base.Constants.smsLoginServerUrl;
+import static com.etcxc.android.net.Api.SMSUrl;
+import static com.etcxc.android.net.Api.smsLoginServerUrl;
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;

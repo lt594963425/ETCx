@@ -1,6 +1,8 @@
 package com.etcxc.android.utils;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,7 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
 import com.etcxc.android.BuildConfig;
@@ -111,5 +115,78 @@ public class SystemUtil {
         }
         return f1;
     }
+    /**
+     * 网络请求模板，复制粘贴提高效率
+     */
+    private void netModel() {
+/*        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
 
+            }
+        }).compose(RxUtil.io())
+                .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String s) throws Exception {
+
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                LogUtil.e(TAG, "net", throwable);
+                ToastUtils.showToast(R.string.request_failed);
+            }
+        });*/
+    }
+
+    /**
+     * 拨打电话（直接拨打电话）
+     * @param phoneNum 电话号码
+     */
+    public static void callPhone(Context mContext,String phoneNum) {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        Uri data = Uri.parse("tel:" + phoneNum);
+        intent.setData(data);
+        if (ActivityCompat.checkSelfPermission(App.get(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            return;
+        }
+        mContext.startActivity(intent);
+    }
+
+    /**
+     * 拨打电话（跳转到拨号界面，用户手动点击拨打）
+     * @param phoneNum 电话号码
+     */
+    public static void dialPhone(Context mContext,String phoneNum) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        Uri data = Uri.parse("tel:" + phoneNum);
+        intent.setData(data);
+        mContext.startActivity(intent);
+    }
+
+
+    public static void showCallDialog(Context context,String[] phones){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//        builder.setTitle("请选择手机号"); //设置标题
+        //builder.setMessage("是否确认退出?"); //设置内容
+//        builder.setIcon(R.mipmap.ic_launcher);//设置图标，图片id即可
+        //设置列表显示，注意设置了列表显示就不要设置builder.setMessage()了，否则列表不起作用。
+        builder.setItems(phones,new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                callPhone(context,phones[which]);
+            }
+        });
+
+        builder.setPositiveButton("取消",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
 }

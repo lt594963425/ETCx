@@ -12,7 +12,11 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -37,9 +41,9 @@ public class TestJsonApiActivity extends BaseActivity implements View.OnClickLis
 
     private void  initView() {
         mUrlEdit = find(R.id.json_api_test_url_edt);
-        mUrlEdit.setText("http://192.168.6.58/pay/test/test");
+        mUrlEdit.setText("http://192.168.6.58/xczx/pay/text");
         mJsonEdit = find(R.id.json_api_test_json_edt);
-        mJsonEdit.setText("{\"me\":\"xwpeng\"}");
+        mJsonEdit.setText("{\"tel\":\"13739085585\"}");
         mResultTextView = find(R.id.json_api_test_result_tv);
         find(R.id.commit_button).setOnClickListener(this);
     }
@@ -80,4 +84,6 @@ public class TestJsonApiActivity extends BaseActivity implements View.OnClickLis
             }
         });
     }
+
+
 }

@@ -49,6 +49,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.Api.UPLOAD_FUNC;
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 import static com.etcxc.android.utils.FileUtils.rotateBitmapByDegree;
 
@@ -79,7 +80,6 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private final static int CLICK_IDCARD = 1;
     private final static int CLICK_ORG = 2;
     private final static int CLICK_DRIVEN = 4;
-    private final static String FUNC = "/transaction/transaction/upload";
 
 
     @Override
@@ -163,7 +163,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 files.add(new File(mCachePath, CROPENAME_IDCARD));
                 files.add(new File(mCachePath, CROPENAME_DRIVEN));
                 if (mIsOrg) files.add(new File(mCachePath, CROPENAME_ORG));
-                StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST).append(FUNC)
+                StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST).append(UPLOAD_FUNC)
                         .append(File.separator).append("veh_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
                         .append(File.separator).append("veh_code_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""));
                 e.onNext(UploadTask.getUploadCall(urlBuilder.toString(), "", files).execute().body().string());

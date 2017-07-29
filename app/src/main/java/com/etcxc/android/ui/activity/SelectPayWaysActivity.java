@@ -1,16 +1,21 @@
 package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.R;
+import com.etcxc.android.alipay.AliPay;
+import com.etcxc.android.alipay.PayResult;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
@@ -22,8 +27,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -40,12 +52,12 @@ import static com.etcxc.android.base.Constants.WXOrderUrl;
 public class SelectPayWaysActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "SelectPayWaysActivity";
     private Button mEtcPay;
-    private RadioGroup mPayWayRedioGroup;
     private RadioButton mPayAlipay, mPayWechat;
     private OkHttpClient client;
     private IWXAPI mWxApi;
     private String urls;
     public StringBuilder mStrBuilder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +69,6 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     private void init() {
         client = new OkHttpClient();
         setTitle(R.string.please_select);
-        mPayWayRedioGroup = (RadioGroup) findViewById(R.id.payways_rediogroup);
         mPayAlipay = (RadioButton) findViewById(R.id.pay_alipay);
         mPayWechat = (RadioButton) findViewById(R.id.pay_wechat);
         mEtcPay = (Button) findViewById(R.id.etc_pay);
@@ -71,7 +82,9 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
         mStrBuilder = new StringBuilder();
         if (setData()) return;
         if (mPayAlipay.isChecked()) {   //支付宝
-            MobclickAgent.onEvent(this, "AliPay" );
+            MobclickAgent.onEvent(this, "AliPay");
+            showProgressDialog(getString(R.string.wx_pay_loading));
+            payToOrderService("test");
             ToastUtils.showToast(R.string.alipay);
         }
         if (mPayWechat.isChecked()) {  //微信支付
@@ -80,6 +93,15 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
             wxPay(urls);
 
         }
+    }
+
+    /**
+     * 获取支付宝支付订单信息
+     *
+     * @param urls
+     */
+    private void aliPay(String urls) {
+
     }
 
     private boolean setData() {
@@ -191,5 +213,51 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
         Log.e(TAG, getString(R.string.pay_result_log) + b + "，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
                 ",time_start" + req.timeStamp + ",sign" + req.sign + ",nonce_str" + req.nonceStr);
 
+    }
+
+
+    /**
+     * 支付宝进行请求
+     * @param signInfo
+     */
+    private void payToOrderService(String signInfo) {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
+                PayTask payTask = new PayTask(SelectPayWaysActivity.this);
+                Map<String, String> result = payTask.payV2(signInfo, true);
+                e.onNext(result);
+            }
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        closeProgressDialog();
+                        PayResult payResult = null;
+                        try {
+                            payResult = new PayResult((Map<String, String>) o);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        /**
+                         对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
+                         */
+                        String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+                        String resultStatus = payResult.getResultStatus();
+                        // 判断resultStatus 为9000则代表支付成功
+                        if (TextUtils.equals(resultStatus, AliPay.PAY_OK)) {//--------->支付成功
+                            finish();
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_FAIL)) {//--------->支付失败
+                            // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
+                            ToastUtils.showToast(payResult.getMemo());
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_CANCEL)) {//--------->交易取消
+                            ToastUtils.showToast(payResult.getMemo());
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_NET_ERROR)) {//---------->网络出现错误
+                            ToastUtils.showToast(payResult.getMemo());
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_REPEAT)) {//------>交易重复
+                        }
+                    }
+                });
     }
 }
