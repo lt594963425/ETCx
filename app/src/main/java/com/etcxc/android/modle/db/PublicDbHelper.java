@@ -19,16 +19,12 @@ import static com.etcxc.android.modle.db.DbUtil.assemblySql;
 public class PublicDbHelper extends SQLiteOpenHelper {
     private static final String TAG = PublicDbHelper.class.getSimpleName();
     /**
-     * 数据库名字
-     */
-    private static final String DATABASE_NAME = "public.db";
-    /**
      * 数据库的版本号
      */
     private static final int DATABASE_VERSION = 1;
 
     private PublicDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, "public.db", null, DATABASE_VERSION);
     }
 
     private static class InnerClass {

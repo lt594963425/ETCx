@@ -3,7 +3,6 @@ package com.etcxc.android.modle.db;
 import android.database.Cursor;
 import android.provider.BaseColumns;
 
-import com.etcxc.android.BuildConfig;
 import com.etcxc.android.utils.LogUtil;
 
 import java.util.LinkedHashMap;
@@ -44,11 +43,4 @@ public class DbUtil {
         }
     }
 
-
-    /**
-     * Private数据库存储的AUTHORITY<br/>
-     */
-    public static String privateUriAuthority() {
-        return BuildConfig.APPLICATION_ID + ".private";
-    }
 }
