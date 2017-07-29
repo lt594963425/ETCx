@@ -78,7 +78,6 @@
         <activity
             android:name=".ui.activity.ChangePhoneActivity"
             android:screenOrientation="portrait" />
-        />
         <activity
             android:name=".ui.activity.ETCRechargeActivity"
             android:screenOrientation="portrait" />
@@ -187,10 +186,9 @@
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
-        <activity android:name=".ui.activity.BluetoothReaderActivity" />
-        <activity android:name=".ui.activity.CreditForLoadFinishActivity"/>
-        <activity android:name=".ui.activity.TestJsonApiActivity"/>
-
+        <activity android:name=".ui.activity.BluetoothStoreActivity" />
+        <activity android:name=".ui.activity.StoreSuccessActivity" />
+        <activity android:name=".ui.activity.TestJsonApiActivity" />
         //友盟
         <meta-data
             android:name="UMENG_APPKEY"

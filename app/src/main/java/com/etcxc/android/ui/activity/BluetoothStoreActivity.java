@@ -9,14 +9,14 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 
 /**
- * 蓝牙盒子
+ * 蓝牙圈存
  */
-public class BluetoothReaderActivity extends BaseActivity implements View.OnClickListener {
+public class BluetoothStoreActivity extends BaseActivity implements View.OnClickListener {
     private Button btn_read_card,btn_replace_device;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth_reader);
+        setContentView(R.layout.activity_bluetooth_store);
         initView();
     }
 
@@ -35,7 +35,6 @@ public class BluetoothReaderActivity extends BaseActivity implements View.OnClic
                 startActivity(new Intent(this,StoreSuccessActivity.class));
                 break;
             case R.id.btn_replace_device:
-                startActivity(new Intent(this,CreditForLoadFinishActivity.class));
                 break;
         }
     }

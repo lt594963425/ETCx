@@ -97,13 +97,13 @@ public class Sample {
 
     private static ApiRecord cursorToNextApiRecord(Cursor cursor) {
         ApiRecord apiRecord = new ApiRecord();
-       apiRecord.name = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.NAME));
-       apiRecord.uid = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.UID));
-       apiRecord.url = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.URL));
-       apiRecord.requestData = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.REQUEST_DATA));
-       apiRecord.requestTime = cursor.getLong(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.REQUEST_TTIME));
-       apiRecord.responseData = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.RESPONSE_DATA));
-       apiRecord.responseTime = cursor.getLong(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.RESPONSE_TIME));
+        apiRecord.name = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.NAME));
+        apiRecord.uid = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.UID));
+        apiRecord.url = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.URL));
+        apiRecord.requestData = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.REQUEST_DATA));
+        apiRecord.requestTime = cursor.getLong(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.REQUEST_TTIME));
+        apiRecord.responseData = cursor.getString(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.RESPONSE_DATA));
+        apiRecord.responseTime = cursor.getLong(cursor.getColumnIndex(PublicDbHelper.ApiRecordColumns.RESPONSE_TIME));
         return apiRecord;
     }
 

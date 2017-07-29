@@ -1,5 +1,7 @@
 package com.etcxc;
 
+import com.etcxc.android.base.App;
+import com.etcxc.android.modle.db.PrivateUriField;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 
 /**
@@ -33,6 +35,8 @@ public class MeManager {
 
     public static void setUid(String uid) {
         PublicSPUtil.getInstance().putString(KEY_Uid, uid);
+        //fixme:创建私有数据库，可以考虑放到登录成功
+        App.get().getContentResolver().query(PrivateUriField.CONVERT_DB_URI, null, null, null, null);
     }
     public static void setName(String name) {
         PublicSPUtil.getInstance().putString(KEY_Name, name);
