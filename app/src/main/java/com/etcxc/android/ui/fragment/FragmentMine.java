@@ -1,5 +1,6 @@
 package com.etcxc.android.ui.fragment;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,6 @@ import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
 import com.etcxc.android.ui.activity.LoginActivity;
-import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
@@ -40,6 +41,7 @@ import com.umeng.analytics.MobclickAgent;
 import java.io.File;
 import java.io.IOException;
 
+import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 /**
@@ -49,7 +51,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private RelativeLayout  mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mAboutUs;
     private File mFile;
     private ImageView mUserHead;
-    private TextView mUsername;
+    private TextView mUsername,mExit;
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private ColorCircle mUpdateDot;
@@ -74,6 +76,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mMinewLauout = find(R.id.mine_layout);
         mUserHead = find(R.id.userhead);
         mUsername = find(R.id.username);
+        mExit =find(R.id.mine_exit_login);
         mHarvestAddress.setOnClickListener(this);
         mRecommendFriend.setOnClickListener(this);
         mChangePassWord.setOnClickListener(this);
@@ -81,6 +84,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mAboutUs.setOnClickListener(this);
         mUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
+        mExit.setOnClickListener(this);
         mUpdateDot = find(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
@@ -106,7 +110,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     };
 
     public void initData() {
-        mFile = new File(getCachePath((MainActivity) getActivity()), "user-avatar.jpg");
+        mFile = new File(getCachePath( getActivity()), "user-avatar.jpg");
         if (mFile.exists()) {
             getImageToView();//初始化
         } else {
@@ -129,77 +133,106 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_layout:  //用户信息页面
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivityForResult(intent, 0);
+                    openActivity(LoginActivity.class);
                 } else {
                     //已登录
-                    Intent intent1 = new Intent(getActivity(), PersonalInfoActivity.class);
-                    startActivity(intent1);
+                    openActivity(PersonalInfoActivity.class);
                 }
-
                 break;
             case R.id.userhead: //头像
                 startLoadHead();
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 if (!MeManager.getIsLogin()) {
-                    //未登录：点击修改密码跳入登录页面
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivityForResult(intent,0);
+                    ToastUtils.showToast(R.string.nologin);
                     return;
                 } else {
-                    startActivity(new Intent(getActivity(), ReceiptAddressActivity.class));
+                    openActivity(ReceiptAddressActivity.class);
                 }
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
                 //showShareDialog();
-                startActivity(new Intent(getActivity(), ShareActivity.class));
+                openActivity(ShareActivity.class);
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivityForResult(intent,0);
+                    openActivityForResult(PersonalInfoActivity.class,0);
                 } else {
                     //已登录：点击修改密码进入修改密码页面
-                    startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
+                    openActivity(ChangePasswordActivity.class);
                 }
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivityForResult(intent,0);
+                    openActivityForResult(LoginActivity.class,0);
                     return;
                 } else {
-                    startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
+                    openActivity(ChangePhoneActivity.class);
                 }
                 break;
             case R.id.mine_aboutus_toright:         //关于我们
-                startActivity(new Intent(getActivity(), AboutUsActivity.class));
+                openActivity(AboutUsActivity.class);
+                break;
+            case R.id.mine_exit_login:
+                showExitDialog();
                 break;
         }
 
     }
+
+    private void exitLogin() {
+        MeManager.logoutClear();
+        MeManager.loginClear();
+        setIsLgon(false);
+        mHandler.postDelayed(LOAD_DATA, 200);
+        ToastUtils.showToast(R.string.exitlogin);
+    }
+    private void showExitDialog() {
+        if (!MeManager.getIsLogin()) {
+          mExit.setVisibility(View.INVISIBLE);
+        }else{
+            mExit.setVisibility(View.VISIBLE);
+        }
+        View longinDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.exit_login, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        TextView dialogDismiss = (TextView) longinDialogView.findViewById(R.id.dialog_dismiss);
+        TextView dialogExit = (TextView) longinDialogView.findViewById(R.id.dialog_exit);
+        builder.setView(longinDialogView);
+        final Dialog dialog = builder.show();
+        dialogDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialogExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exitLogin();
+                dialog.dismiss();
+            }
+        });
+    }
     private void startLoadHead() {
         if (!MeManager.getIsLogin()) {
             ToastUtils.showToast(R.string.nologin);
-            Intent intent2 = new Intent(mActivity, LoginActivity.class);
-            startActivityForResult(intent2, 0);
+            openActivityForResult(LoginActivity.class,2);
             return;
         }
-        String path = FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg";
+        String path = FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg";
         File file = new File(path);
         if (!file.exists()) {
             ToastUtils.showToast(R.string.nosethead);
             return;
         }
-        PrefUtils.setBoolean(mActivity, "isScal", true);
+        //PublicSPUtil.getInstance().putBoolean("isScal",true);
+        PrefUtils.setBoolean(getActivity(), "isScal", true);
         //加载本地图片
-        Intent intent4 = new Intent(mActivity, LargeImageActivity.class);
-        intent4.putExtra("path", FileUtils.getCachePath(mActivity) + File.separator + "user-avatar.jpg");
+        Intent intent4 = new Intent(getActivity(), LargeImageActivity.class);
+        intent4.putExtra("path", FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg");
         startActivity(intent4);
-        mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
     }
 
     /**

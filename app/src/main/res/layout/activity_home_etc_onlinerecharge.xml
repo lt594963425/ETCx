@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorbg"
     android:orientation="vertical">
 
@@ -142,7 +143,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="5dp" />
+        android:padding="5dp"
+        tools:listitem ="@layout/item_etc_rechargemoney_recylerview"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -227,5 +229,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="5dp" />
+        android:padding="5dp"
+        tools:listitem ="@layout/item_recharge_form_recylerview"/>
 </LinearLayout>

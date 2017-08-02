@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.bean.OrderRechargeInfo;
 import com.google.gson.Gson;
@@ -86,6 +88,9 @@ public class UIUtils {
         return getContext().getPackageName();
     }
 
+    public static void openAnimator(AppCompatActivity activity) {
+        activity.overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+    }
     /**
      * dip-->px
      */

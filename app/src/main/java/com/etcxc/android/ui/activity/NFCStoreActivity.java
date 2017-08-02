@@ -73,6 +73,7 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
                     Intent intent = new Intent(this, StoreSuccessActivity.class);
                     intent.putExtra("card", card);
                     startActivity(intent);
+                    overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
                 } else {
                     ToastUtils.showToast(getString(R.string.no_know_card));
                 }

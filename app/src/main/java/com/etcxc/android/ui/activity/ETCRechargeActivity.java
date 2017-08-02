@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,8 +27,8 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.OrderRechargeInfo;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.ui.adapter.MyRechaergeRecylerViewAdapter;
-import com.etcxc.android.ui.adapter.MyRecylerViewAdapter;
+import com.etcxc.android.ui.adapter.RechargeOrderFormAdapter;
+import com.etcxc.android.ui.adapter.SelectMoneyAdapter;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
@@ -56,13 +57,12 @@ import static com.etcxc.android.utils.UIUtils.initAutoCompleteCard;
 import static com.etcxc.android.utils.UIUtils.saveCardHistory;
 import static com.etcxc.android.utils.UIUtils.setPricePoint;
 import static java.lang.Double.parseDouble;
-import static java.util.Objects.hash;
 
 /**
  * 充值
  * Created by 刘涛 on 2017/7/5 0005.
  */
-public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAdapter.OnItemClickListener, View.OnClickListener, MyRechaergeRecylerViewAdapter.OnItemRechargeClickListener {
+public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdapter.OnItemClickListener, View.OnClickListener, RechargeOrderFormAdapter.OnItemRechargeClickListener {
     private static final int SELECT_SUCCESS = 1;
     private static final int RECHARGE_SUCCESS = 2;
     private AutoCompleteTextView mRechaergeCardEdt;
@@ -77,10 +77,11 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     private String mMoneyNumber;
     private View viewEtc;
     private double allMoney;
-    private MyRechaergeRecylerViewAdapter myRechaergeRecylerViewAdapter;
+    private RechargeOrderFormAdapter myRechaergeRecylerViewAdapter;
     private DecimalFormat df;
     private Boolean isShowLeadPager = true;
     private Handler mHandler = null;
+    public static final String RESP_CODE_INFO = "com.etcxc.android.ui.activity.ETCRechargeActivity.code";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +91,6 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
     }
 
     private void initView() {
-        mHandler = new Handler();
-        df = new DecimalFormat("0.00");
         setBarBack(find(R.id.etc_back));
         viewEtc = find(R.id.view_etc);
         mRecharge = find(R.id.etc_card_recharge);
@@ -105,31 +104,42 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         mRechaergeAddDetailBtn = find(R.id.recharge_add_detail_btn); //添加
         mRechaergePrepaidRecyler = find(R.id.prepaid_recharge_recylerview); //待支付的订单列表
         setPricePoint(mRechaergeMoneyEdt);
+        initAutoCompleteCard(this, "cardhistory", mRechaergeCardEdt);
         init();
     }
 
     private void init() {
-        initData();
+        mHandler = new Handler();
+        df = new DecimalFormat("0.00");
         mRecharge.setOnClickListener(this);
-        initAutoCompleteCard(this, "cardhistory", mRechaergeCardEdt);
         mAddCardImg.setOnClickListener(this);
         mRechaergeAddDetailBtn.setOnClickListener(this);
-        GridLayoutManager gridLayManager = new GridLayoutManager(this, 3);
-        gridLayManager.setOrientation(GridLayoutManager.VERTICAL);
-        mRechaergeMoneyRecyler.setLayoutManager(gridLayManager);
-        MyRecylerViewAdapter Moneyadapter = new MyRecylerViewAdapter(money);
-        mRechaergeMoneyRecyler.setAdapter(Moneyadapter);
-        mRechaergeMoneyRecyler.setHasFixedSize(true);
-        Moneyadapter.setOnItemClickListener(this);
-        mRechaergePrepaidRecyler.setLayoutManager(new LinearLayoutManager(this));
-        myRechaergeRecylerViewAdapter = new MyRechaergeRecylerViewAdapter(this, mInfoList);
-        mRechaergePrepaidRecyler.setAdapter(myRechaergeRecylerViewAdapter);
-        myRechaergeRecylerViewAdapter.setmOnItemRechargeClickListener(this);
-        mRechaergeCardEdt.addTextChangedListener(new myTextWatcher(mRechaergeCardEdt, mCardNumDelete));
-        mCardNumDelete.setOnClickListener(this);
+        initData();
+        setSeletMoneyData();
+        setOrderFormData();
         if (mHandler != null) {
             mHandler.postDelayed(LOAD_DATA, 400);
         }
+    }
+
+    private void setSeletMoneyData() {
+        GridLayoutManager gridLayManager = new GridLayoutManager(this, 3);
+        gridLayManager.setOrientation(GridLayoutManager.VERTICAL);
+        mRechaergeMoneyRecyler.setLayoutManager(gridLayManager);
+        SelectMoneyAdapter Moneyadapter = new SelectMoneyAdapter(money);
+        mRechaergeMoneyRecyler.setAdapter(Moneyadapter);
+        mRechaergeMoneyRecyler.setHasFixedSize(true);
+        Moneyadapter.setOnItemClickListener(this);
+    }
+
+    private void setOrderFormData() {
+        mRechaergePrepaidRecyler.setLayoutManager(new LinearLayoutManager(this));
+        myRechaergeRecylerViewAdapter = new RechargeOrderFormAdapter(this, mInfoList);
+        mRechaergePrepaidRecyler.setAdapter(myRechaergeRecylerViewAdapter);
+        mRechaergePrepaidRecyler.setItemAnimator(new DefaultItemAnimator());
+        myRechaergeRecylerViewAdapter.setmOnItemRechargeClickListener(this);
+        mRechaergeCardEdt.addTextChangedListener(new myTextWatcher(mRechaergeCardEdt, mCardNumDelete));
+        mCardNumDelete.setOnClickListener(this);
     }
 
     private void initData() {
@@ -175,20 +185,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         }
     };
 
-    /**
-     * 设置添加屏幕的背景透明度
-     *
-     */
-    public void backgroundAlpha(Activity context, float bgAlpha) {
-        WindowManager.LayoutParams lp = context.getWindow().getAttributes();
-        lp.alpha = bgAlpha;
-        context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        context.getWindow().setAttributes(lp);
-    }
-
     public void showLeadHintPager() {
-        int hash = hash("hello");
-        Log.e(TAG, "" + hash);
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
@@ -206,7 +203,6 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
         pw2.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//**************设置背景图片***************
         pw2.setFocusable(true);
         pw2.setOutsideTouchable(true);
-        //pw2.showAsDropDown(mRechaergeAddDetailBtn,UIUtils.dip2Px(-200),UIUtils.dip2Px(-100));
         pw2.showAsDropDown(viewEtc, 0, UIUtils.dip2Px(-23));
         pw2.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
@@ -215,10 +211,20 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 if (pw.isShowing()) {
                     pw.dismiss();
                 }
-
             }
         });
     }
+
+    /**
+     * 设置添加屏幕的背景透明度
+     */
+    public void backgroundAlpha(Activity context, float bgAlpha) {
+        WindowManager.LayoutParams lp = context.getWindow().getAttributes();
+        lp.alpha = bgAlpha;
+        context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        context.getWindow().setAttributes(lp);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -231,11 +237,11 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
             case R.id.etc_card_recharge:  //充值
                 MobclickAgent.onEvent(this, "RechargeClick");
                 if (getInfoList(this) == null || getInfoList(this).size() < 1) {
-                    ToastUtils.showToast(R.string.input_recharge_info);
+                    ToastUtils.showToast(R.string.add_recharge_info);
                     return;
                 }
                 Log.e(TAG, "添加订单信息：" + getInfoList(this).size());
-                startActivityForResult(new Intent(this, SelectPayWaysActivity.class), RECHARGE_SUCCESS);
+                openActivity(SelectPayWaysActivity.class);
                 break;
             case R.id.card_num_delete:
                 mRechaergeCardEdt.setText("");
@@ -315,6 +321,7 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                     }
                 });
     }
+
     private void parseResultJson(String s) {
         try {
             JSONObject jsonObject = new JSONObject(s);
@@ -324,7 +331,9 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
                 closeProgressDialog();
                 OrderRechargeInfo info = new OrderRechargeInfo();
                 JSONObject jsonVar = jsonObject.getJSONObject("var");
-                if(jsonVar == null){ return;}
+                if (jsonVar == null) {
+                    return;
+                }
                 info.setEtccarnumber(mRechargeCardNumber);
                 info.setCarnumber(jsonVar.getJSONArray("veh_plate_code").getString(0));
                 info.setRechargename(jsonVar.getJSONArray("user_name").getString(0));
@@ -374,7 +383,12 @@ public class ETCRechargeActivity extends BaseActivity implements MyRecylerViewAd
 
     @Override
     protected void onDestroy() {
-        mHandler.removeCallbacks(LOAD_DATA);
+        if (mHandler != null) {
+            mHandler.removeCallbacks(LOAD_DATA);
+        }
         super.onDestroy();
     }
+
+
+
 }

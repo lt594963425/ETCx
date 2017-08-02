@@ -1,9 +1,7 @@
 package com.etcxc.android.ui.fragment;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,7 @@ import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
-import com.etcxc.android.ui.adapter.MyGridViewAdapter;
+import com.etcxc.android.ui.adapter.SmallFeatureAdapter;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
@@ -45,21 +43,21 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg"};
     private GridView mHomeGV;
-    private ViewPager mVPger;
     private LinearLayout mETCOnline;
     private RelativeLayout mETCRecharge,mETCSave;
     private static int[] image = {
             R.drawable.vd_brief_description_of_business,
             R.drawable.vd_recharge_record,
+            R.drawable.vd_gridchek,
             R.drawable.vd_through_the_detail,
-            R.drawable.vd_activate,
             R.drawable.vd_complaint_and_advice,
-            R.drawable.vd_gridchek,};
+            R.drawable.vd_activate
+         };
     private String[] title = {
-            App.get().getString(R.string.bussiness), App.get().getString(R.string.rechargerecord)
-            , App.get().getString(R.string.pass_detail), App.get().getString(R.string.activate), App.get().getString(R.string.advice),
-            App.get().getString(R.string.gridchek)};
-    private MainActivity mActivity;
+            App.get().getString(R.string.bill_check), App.get().getString(R.string.electronic_invoice)
+            , App.get().getString(R.string.website_check),App.get().getString(R.string.traffic_status)
+            , App.get().getString(R.string.fare_calculate), App.get().getString(R.string.coming_soon)
+           };
     private Banner banner;
 
     @Override
@@ -82,14 +80,12 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         mETCOnline.setOnClickListener(this);
         mETCRecharge.setOnClickListener(this);
         mETCSave.setOnClickListener(this);
-        mHomeGV.setAdapter(new MyGridViewAdapter(image, title, getActivity()));
+        mHomeGV.setAdapter(new SmallFeatureAdapter(image, title, getActivity()));
         mHomeGV.setOnItemClickListener(this);
 
     }
 
     /**
-     * GridView
-     *
      * @param parent
      * @param view
      * @param position
@@ -98,20 +94,20 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
-            case 0:   //业务办理
-                Log.e(TAG, "" + UIUtils.getDeviceInfo(mActivity));
+            case 0:
+                Log.e(TAG, "" + UIUtils.getDeviceInfo(getActivity()));
                 ToastUtils.showToast("" + position);
                 break;
-            case 1:   //充值记录
+            case 1:
                 break;
-            case 2:   //进行通信
+            case 2://网点查询
+                openActivity(NetworkQueryActivity.class);
                 break;
-            case 3:   //预约激活
+            case 3:
                 break;
-            case 4:   //投诉建议
+            case 4:
                 break;
-            case 5:   //网点查询
-                startActivity(new Intent(getActivity(),NetworkQueryActivity.class));
+            case 5:
                 break;
         }
     }
@@ -122,15 +118,17 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home_etc_online_lly:
-                startActivity(new Intent(mActivity, ETCIssueActivity.class));
-                MobclickAgent.onEvent(mActivity, "mETCIssueClick");
+                MobclickAgent.onEvent(getActivity(), "mETCIssueClick");
+                openActivity(ETCIssueActivity.class);
                 break;
             case R.id.home_etc_recharge_rly:
-                startActivity(new Intent(mActivity, ETCRechargeActivity.class));
-                MobclickAgent.onEvent(mActivity, "mETCRechargeClick");
+                MobclickAgent.onEvent(getActivity(), "mETCRechargeClick");
+                openActivity(ETCRechargeActivity.class);
+
                 break;
             case R.id.home_etc_circle_save_rly:
-                startActivity(new Intent(mActivity, StoreActivity.class));
+                MobclickAgent.onEvent(getActivity(), "StoreClick");
+                openActivity(StoreActivity.class);
                 break;
         }
 

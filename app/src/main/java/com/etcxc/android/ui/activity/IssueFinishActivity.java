@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
@@ -43,7 +42,7 @@ public class IssueFinishActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
-                startActivity(new Intent(this, MainActivity.class));
+                openActivity(MainActivity.class);
                 break;
         }
     }

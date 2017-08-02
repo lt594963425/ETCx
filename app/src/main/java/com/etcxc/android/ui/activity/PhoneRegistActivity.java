@@ -14,7 +14,6 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.FUNC;
-import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
@@ -32,6 +31,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -49,6 +49,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     private Button mRegistButton, mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye, mPwdDeleteBtn;
     SharedPreferences sPUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,18 +96,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 phoneRegistButton();
                 break;
             case R.id.telregist_get_verificode_button://获取验证码
-                String phoneNum2 = mPhoneNumberEdit.getText().toString();
-                if (!isMobileNO(phoneNum2)) {
-                    ToastUtils.showToast(R.string.please_input_correct_phone_number);
-                    return;
-                } else if (TextUtils.isEmpty(phoneNum2)) {
-                    ToastUtils.showToast(R.string.please_input_phonenumber);
-                    return;
-                }
-                UIUtils.saveHistory(UIUtils.getContext(), "history", phoneNum2);
-                TimeCount time = new TimeCount(mVerificodeButton,60000, 1000);
-                time.start();
-                getSmsCode(FUNC.SMSREPORT + phoneNum2);
+                getSMSVerifiCode();
                 break;
             case R.id.phonenumber_delete://置空手机号
                 mPhoneNumberEdit.setText("");
@@ -116,17 +106,31 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    private void getSMSVerifiCode() {
+        String phoneNum2 = mPhoneNumberEdit.getText().toString();
+        if (!isMobileNO(phoneNum2)) {
+            ToastUtils.showToast(R.string.please_input_correct_phone_number);
+            return;
+        } else if (TextUtils.isEmpty(phoneNum2)) {
+            ToastUtils.showToast(R.string.please_input_phonenumber);
+            return;
+        }
+        UIUtils.saveHistory(UIUtils.getContext(), "history", phoneNum2);
+        TimeCount time = new TimeCount(mVerificodeButton, 60000, 1000);
+        time.start();
+        getSmsCode(FUNC.SMSREPORT + phoneNum2);
+    }
+
     private void phoneRegistButton() {
         ArrayList<String> list = new ArrayList<>();
         String smsID = PrefUtils.getString(App.get(), "pr_sms_id", null);
         String phoneNum = mPhoneNumberEdit.getText().toString();
         String passWord = mPswEdit.getText().toString().trim();
         String smsCode = mSmsCodeEdit.getText().toString().trim();
-        String pwd = Md5Utils.encryptpwd(passWord);
         //tel/'tel'/reg_sms_code/'reg_sms_code'/pwd/'pwd'/sms_id/'sms_id'
         String data = "tel/" + phoneNum +
                 "/reg_sms_code/" + smsCode +
-                "/pwd/" + pwd +
+                "/pwd/" + passWord +
                 "/sms_id/" + smsID;
         if (phoneNum.isEmpty()) {
             ToastUtils.showToast(R.string.phone_isempty);
@@ -179,44 +183,50 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         try {
             JSONObject jsonObject = new JSONObject(s);
             String code = jsonObject.getString("code");
-            if (code.equals("s_ok")) {
-                //请求成功
-                JSONObject varJson = jsonObject.getJSONObject("var");
-                String tel = varJson.getString("tel");
-                String pwd = varJson.getString("pwd");
-                String regTime = varJson.getString("reg_time");
-                String nickName = varJson.getString("nick_name");
-                //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
-                SharedPreferences.Editor editor = sPUser.edit();
-                editor.putString("telphone", tel);
-                editor.putString("password", pwd);
-                editor.putString("regtime", regTime);
-                editor.putString("nickname", nickName);
-                editor.commit();
-                closeProgressDialog();
-                ToastUtils.showToast(R.string.registcomlete);
-                finish();
-            }
-            if (code.equals("err")) {
-                String returnMsg = jsonObject.getString("message");//返回的信息
-                switch (returnMsg) {
-                    case "sms_code_error":
-                        ToastUtils.showToast(R.string.smscodeerr);
-                        break;
-                    case "telphone_unregistered":
-                        ToastUtils.showToast(R.string.telphoneunregistered);
-                        break;
-                    case "err_password":
-                        ToastUtils.showToast(R.string.passworderr);
-                        break;
-                    case "telphoner_has_been_registered":
-                        ToastUtils.showToast(R.string.isregist);
-                        break;
-                }
-            }
+            requestSuccess(jsonObject, code);
+            requestError(jsonObject, code);
         } catch (JSONException e) {
             e.printStackTrace();
             ToastUtils.showToast(R.string.para_err);
+        }
+    }
+    private void requestError(JSONObject jsonObject, String code) throws JSONException {
+        if (code.equals("err")) {
+            String returnMsg = jsonObject.getString("message");//返回的信息
+            switch (returnMsg) {
+                case "sms_code_error":
+                    ToastUtils.showToast(R.string.smscodeerr);
+                    break;
+                case "telphone_unregistered":
+                    ToastUtils.showToast(R.string.telphoneunregistered);
+                    break;
+                case "err_password":
+                    ToastUtils.showToast(R.string.passworderr);
+                    break;
+                case "telphoner_has_been_registered":
+                    ToastUtils.showToast(R.string.isregist);
+                    break;
+            }
+        }
+    }
+    private void requestSuccess(JSONObject jsonObject, String code) throws JSONException {
+        if (code.equals("s_ok")) {
+            //请求成功
+            JSONObject varJson = jsonObject.getJSONObject("var");
+            String tel = varJson.getString("tel");
+            String pwd = varJson.getString("pwd");
+            String regTime = varJson.getString("reg_time");
+            String nickName = varJson.getString("nick_name");
+            //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
+            SharedPreferences.Editor editor = sPUser.edit();
+            editor.putString("telphone", tel);
+            editor.putString("password", pwd);
+            editor.putString("regtime", regTime);
+            editor.putString("nickname", nickName);
+            editor.commit();
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.registcomlete);
+            finish();
         }
     }
 

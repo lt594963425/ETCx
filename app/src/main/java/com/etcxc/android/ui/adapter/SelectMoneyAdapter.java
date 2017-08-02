@@ -9,12 +9,13 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 
 /**
+ * 充值金额选择
  * Created by 刘涛 on 2017/7/6 0006.
  */
-public class MyRecylerViewAdapter extends RecyclerView.Adapter<MyRecylerViewAdapter.ViewHolder> implements View.OnClickListener{
+public class SelectMoneyAdapter extends RecyclerView.Adapter<SelectMoneyAdapter.ViewHolder> implements View.OnClickListener{
     private  String[]  datas;
     private OnItemClickListener mOnItemClickListener = null;
-    public MyRecylerViewAdapter(String[] datas) {
+    public SelectMoneyAdapter(String[] datas) {
         this.datas = datas;
     }
     @Override

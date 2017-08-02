@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -183,7 +182,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 JSONObject jsonObject = new JSONObject(s);
                 String code = jsonObject.getString("code");
                 if ("s_ok".equals(code))
-                    startActivity(new Intent(ContactPhoneActivity.this, PostAddressActivity.class));
+                    openActivity(PostAddressActivity.class);
                 else ToastUtils.showToast(R.string.request_failed);
                 closeProgressDialog();
             }

@@ -81,7 +81,7 @@ public class NetworkQueryActivity extends BaseActivity {
 
 
     private void initView() {
-        setTitle(getString(R.string.gridchek));
+        setTitle(getString(R.string.website_check));
         mXrecycler = (XRecyclerView) findViewById(R.id.xrecycler);
     }
 

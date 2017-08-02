@@ -126,9 +126,22 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         LogUtil.i(TAG, "----------onNewIntent----------");
     }
 
-    /**
-     * 沉浸式状态栏
-     */
+    public void openActivity(Class<?> pClass) {
+        Intent mIntent = new Intent(this, pClass);
+        startActivity(mIntent);
+        overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+    }
+
+    public void openActivityForResult(Class<?> pClass, int i) {
+        Intent mIntent = new Intent(this, pClass);
+        startActivityForResult(mIntent, i);
+        overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+    }
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(0,R.anim.zoom_exit);
+    }
+
     protected void initState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

@@ -104,18 +104,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 mMPhoneNumberEdt.setText("");
                 break;
             case R.id.get_msg_sms_code_button://获取短信验证码 //http://192.169.6.119/login/sms/smsreport/tel/'tel'
-                String phoneNum2 = mMPhoneNumberEdt.getText().toString().trim();
-                if (!isMobileNO(phoneNum2)) {
-                    ToastUtils.showToast(R.string.please_input_correct_phone_number);
-                    return;
-                } else if (TextUtils.isEmpty(phoneNum2)) {
-                    ToastUtils.showToast(R.string.please_input_phonenumber);
-                    return;
-                }
-                saveHistory(UIUtils.getContext(),"history",phoneNum2);
-                TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
-                time.start();
-                getSmsCodeBtn(SMSREPORT + phoneNum2);
+                getSMSCode();
                 break;
             case R.id.message_login_button://登录
                 String smsid = PrefUtils.getString(App.get(), "ml_sms_id", null);
@@ -138,6 +127,21 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
 //                loginUUrl(smsLoginServerUrl + data);
                 break;
         }
+    }
+
+    private void getSMSCode() {
+        String phoneNum2 = mMPhoneNumberEdt.getText().toString().trim();
+        if (!isMobileNO(phoneNum2)) {
+            ToastUtils.showToast(R.string.please_input_correct_phone_number);
+            return;
+        } else if (TextUtils.isEmpty(phoneNum2)) {
+            ToastUtils.showToast(R.string.please_input_phonenumber);
+            return;
+        }
+        saveHistory(UIUtils.getContext(),"history",phoneNum2);
+        TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
+        time.start();
+        getSmsCodeBtn(SMSREPORT + phoneNum2);
     }
 
     public void getSmsCodeBtn(String url) {

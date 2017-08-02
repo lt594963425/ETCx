@@ -39,13 +39,13 @@
     <string name="download_finish">下载完成</string>
     <string name="reject_permission">您禁止了权限</string>
     <string name="personinfo">个人信息</string>
-    <string name="bussiness">业务办理</string>
-    <string name="rechargerecord">充值记录</string>
-    <string name="pass_detail">通行明细</string>
+    <string name="bill_check">账单查询</string>
+    <string name="electronic_invoice">电子发票</string>
+    <string name="traffic_status">实时路况</string>
     <string name="detail">明细</string>
-    <string name="activate">预约激活</string>
-    <string name="advice">投诉建议</string>
-    <string name="gridchek">网点查询</string>
+    <string name="fare_calculate">路费计算</string>
+    <string name="coming_soon">敬请期待</string>
+    <string name="website_check">网点查询</string>
     <string name="home_etconline">ETC在线办理</string>
     <string name="home_etcrecharge">ETC充值</string>
     <string name="home_etccircle">ETC圈存</string>
@@ -116,7 +116,7 @@
     <string name="cancel">取消</string>
     <string name="exitlogin">退出登录</string>
     <string name="logining">登录中..</string>
-    <string name="nologin">你尚未登录</string>
+    <string name="nologin">你还没有登录</string>
     <string name="nosethead">你暂未设置头像</string>
     <string name="net_erro">网络错误</string>
     <string name="please_input_correct">请填写正确的车牌号码</string>
@@ -137,11 +137,10 @@
     <string name="about_us">关于我们</string>
     <string name="check_update">检查更新</string>
     <string name="isregist">手机号码已经注册</string>
-    <string name="unregist">手机号码未注册</string>
     <string name="harvestaddress">我的收货地址</string>
-    <string name="recommendfriend">推荐好友</string>
+    <string name="share_app">分享迅畅在线</string>
     <string name="changepassword">修改密码</string>
-    <string name="changephone">修改手机号码</string>
+    <string name="changephone">更换帐号手机</string>
     <string name="networktelephone">网点电话</string>
     <string name="right">修改</string>
     <string name="smsshare">短信</string>
@@ -227,5 +226,12 @@
     <string name="request_faileds">网络请求失败</string>
     <string name="netstores_address">详细地址:</string>
     <string name="person_charge">负责人: %1$s</string>
+    <string name="change_user">您确定退出登录吗？</string>
+    <string name="dialog_exit">退出登录</string>
+    <string name="to_CreditForLoad">去圈存</string>
+    <string name="confirm">确定</string>
+    <string name="recharge_success">充值成功</string>
+    <string name="my_card">我的卡</string>
+    <string name="unregist">该手机号码已经被注册</string>
 
 </resources>

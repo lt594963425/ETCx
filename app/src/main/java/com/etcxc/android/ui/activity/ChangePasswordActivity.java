@@ -15,7 +15,6 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.myTextWatcher;
@@ -27,13 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
 
-
-import static com.etcxc.android.net.FUNC.FIND_POSTADDRESS;
 import static com.etcxc.android.net.FUNC.MODIFYPWD;
 import static com.etcxc.android.utils.UIUtils.isLook;
 
@@ -108,8 +101,8 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("tel",MeManager.getUid());
-                jsonObject.put("pwd", Md5Utils.encryptpwd(mOldPassWord));
-                jsonObject.put("new_pwd", Md5Utils.encryptpwd(mNewPassWord));
+                jsonObject.put("pwd", mOldPassWord);
+                jsonObject.put("new_pwd", mNewPassWord);
                 e.onNext(OkClient.get(NetConfig.consistUrl(MODIFYPWD), jsonObject));
             }
         }).compose(RxUtil.io())

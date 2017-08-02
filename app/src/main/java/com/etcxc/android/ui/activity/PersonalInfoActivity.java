@@ -61,7 +61,7 @@ import static com.etcxc.android.base.App.isLogin;
  * 个人信息界面（通过登录界面拆分）
  * Created by caoyu on 2017/8/2
  */
-public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener,View.OnClickListener{
+public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
     // 用户信息操作界面
     private ImageView mPersonHead;
@@ -211,18 +211,19 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
     /**
      * 裁剪拍照
+     *
      * @param uri
      */
     public void startPhotoZoom(Uri uri) {
         Uri newuri = Uri.fromFile(mFile);
         Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.putExtra("crop", "true");// crop=true 有这句才能出来最后的裁剪页面.
-        intent.putExtra("aspectX", 1);// 这两项为裁剪框的比例.
-        intent.putExtra("aspectY", 1);// x:y=1:1
-        intent.putExtra("output", newuri);
-        intent.putExtra("outputFormat", "JPEG");// 返回格式
+        intent.setDataAndType(uri, "image/*")
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra("crop", "true")// crop=true 有这句才能出来最后的裁剪页面.
+                .putExtra("aspectX", 1)// 这两项为裁剪框的比例.
+                .putExtra("aspectY", 1)// x:y=1:1
+                .putExtra("output", newuri)
+                .putExtra("outputFormat", "JPEG");// 返回格式
         startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
 
 
@@ -232,10 +233,10 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
      * camera,相机
      */
     private void uploadAvatarFromPhotoRequest() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra(MediaStore.Images.Media.ORIENTATION, 0)
+                .putExtra(MediaStore.EXTRA_OUTPUT, uri);
         startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
     }
 
@@ -380,7 +381,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.person_userhead://头像
                 if (!isLogin) {
                     ToastUtils.showToast(R.string.nologin);

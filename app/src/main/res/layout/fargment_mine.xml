@@ -44,7 +44,43 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="18dp" />
+        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/mine_my_card_toright"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_listview"
+            android:descendantFocusability="blocksDescendants">
 
+            <ImageView
+                android:id="@+id/mine_iv_my_card"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/harvestaddress"
+                android:padding="13dp"
+                app:srcCompat="@drawable/vd_mine_my_card" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/mine_iv_my_card"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="15dp"
+                android:text="@string/my_card"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:contentDescription="@string/harvestaddress"
+                android:focusable="false"
+                android:padding="15dp"
+                app:srcCompat="@drawable/vd_mine_toright" />
+        </RelativeLayout>
         <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/mine_harvestaddress_toright"
             android:layout_width="match_parent"
@@ -99,7 +135,7 @@
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
-                android:contentDescription="@string/recommendfriend"
+                android:contentDescription="@string/share_app"
                 android:padding="13dp"
                 app:srcCompat="@drawable/vd_mine_recommendfriend" />
 
@@ -112,7 +148,7 @@
                 android:gravity="center"
                 android:paddingLeft="2dp"
                 android:paddingRight="15dp"
-                android:text="@string/recommendfriend"
+                android:text="@string/share_app"
                 android:textSize="15sp" />
 
             <ImageView
@@ -121,7 +157,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="5dp"
-                android:contentDescription="@string/recommendfriend"
+                android:contentDescription="@string/share_app"
                 android:focusable="false"
                 android:padding="15dp"
                 app:srcCompat="@drawable/vd_mine_toright" />
@@ -266,5 +302,22 @@
                 android:visibility="gone" />
 
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+
+
+        <TextView
+            android:id="@+id/mine_exit_login"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/white"
+            android:clickable="true"
+            android:visibility="invisible"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="@string/exitlogin"
+            android:textSize="15sp" />
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -16,17 +16,19 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.MainActivity;
+import com.etcxc.android.ui.view.XRecyclerView;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 
 /**
+ * 拓展
  * Created by 刘涛 on 2017/6/17 0017.
  */
 
 public class FragmentExpand extends BaseFragment {
     private MainActivity mActivity;
-    private RecyclerView mRecyclerview;
+    private XRecyclerView mRecyclerview;
     private MyRecylerAdapter mAdapter;
     private ArrayList<String> mDatas;
     private Handler mHandler = new Handler();
@@ -35,7 +37,7 @@ public class FragmentExpand extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
         View view = inflater.inflate(R.layout.fragment_expand, null);
-        mRecyclerview = (RecyclerView) view.findViewById(R.id.expand_recyclerView);
+        mRecyclerview = (XRecyclerView) view.findViewById(R.id.expand_recyclerView);
         mRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity));
         mRecyclerview.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();

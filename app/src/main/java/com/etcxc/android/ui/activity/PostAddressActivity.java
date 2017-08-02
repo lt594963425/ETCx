@@ -197,7 +197,7 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
                         if ("s_ok".equals(code))
-                            startActivity(new Intent(PostAddressActivity.this, IssuePayActivity.class));
+                            openActivity(IssuePayActivity.class);
                         else ToastUtils.showToast(R.string.request_failed);
                     }
                 }, new Consumer<Throwable>() {

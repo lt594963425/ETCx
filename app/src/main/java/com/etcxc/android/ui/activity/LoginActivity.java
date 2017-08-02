@@ -1,13 +1,10 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,7 +15,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,7 +27,6 @@ import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -40,12 +35,9 @@ import com.etcxc.android.utils.myTextWatcher;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -61,7 +53,6 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.R.id.login_phonenumber_delete;
 import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.base.App.onProfileSignIn;
@@ -150,7 +141,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
-        Intent intent;
         switch (v.getId()) {
             case R.id.login_phonenumber_delete:
                 mLoginPhonenumberEdt.setText("");
@@ -162,40 +152,37 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 UIUtils.isLook(mLoginPasswordEdt, mLoginEye, R.drawable.vd_close_eyes, R.drawable.vd_open_eyes);
                 break;
             case R.id.login_fresh_verification://图形验证码
-                long longTime = System.currentTimeMillis();
-                timeStr = String.valueOf(longTime);
-                PrefUtils.setString(App.get(), "code_key", timeStr);
-                startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
-                setPicCode(NetConfig.consistUrl(FUNC.VIRIFY_CODE));
+                refrePictureCode();
                 break;
             case R.id.login_message:  //短信验证码登录
-                intent = new Intent(this, MessageLoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                openActivity(MessageLoginActivity.class);
                 break;
             case R.id.login_fast:
-                intent = new Intent(this, PhoneRegistActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                openActivity(PhoneRegistActivity.class);
                 break;
             case R.id.forget_password:
-                intent = new Intent(this, ResetPasswordActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                openActivity(ResetPasswordActivity.class);
                 break;
             case R.id.login_button:  // 登录
                 MobclickAgent.onEvent(this, "LoginClick");
                 if (startUserLoging()) return;
                 break;
         }
-        this.overridePendingTransition(R.anim.anim_in, R.anim.anim_out);
+    }
+
+    private void refrePictureCode() {
+        long longTime = System.currentTimeMillis();
+        timeStr = String.valueOf(longTime);
+        PrefUtils.setString(App.get(), "code_key", timeStr);
+        startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
+        setPicCode(NetConfig.consistUrl(FUNC.VIRIFY_CODE));
     }
 
     private boolean startUserLoging() {
         String key2 = PrefUtils.getString(App.get(), "code_key", null);
         String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
         String passWord = mLoginPasswordEdt.getText().toString().trim();
-        String pwd = Md5Utils.encryptpwd(passWord);
+        String pwd = passWord;
         String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
         //定义一个JSON，用于向服务器提交数据
         JSONObject data = new JSONObject();

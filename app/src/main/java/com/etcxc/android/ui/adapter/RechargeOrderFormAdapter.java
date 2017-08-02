@@ -19,11 +19,12 @@ import java.util.List;
 import static com.etcxc.android.utils.UIUtils.saveInfoList;
 
 /**
+ * 订单列表
  * Created by 刘涛 on 2017/7/6 0006.
  */
 
-public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechaergeRecylerViewAdapter.ViewHolder> implements View.OnClickListener {
-    private List<OrderRechargeInfo> list  = null ;
+public class RechargeOrderFormAdapter extends RecyclerView.Adapter<RechargeOrderFormAdapter.ViewHolder> implements View.OnClickListener {
+    private List<OrderRechargeInfo> mData;
     private Context con;
     private OnItemRechargeClickListener mOnItemRechargeClickListener = null;
 
@@ -42,9 +43,9 @@ public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechae
         void onItemRechargeClick(ImageView view, int position);
     }
 
-    public MyRechaergeRecylerViewAdapter(Context con, List<OrderRechargeInfo> list) {
+    public RechargeOrderFormAdapter(Context con, List<OrderRechargeInfo> list) {
             this.con = con;
-            this.list = list;
+            this.mData = list;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechae
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        OrderRechargeInfo info = list.get(position);
+        OrderRechargeInfo info = mData.get(position);
         if(info != null){
             holder.username.setText(info.getRechargename());
             holder.carnumber.setText(info.getCarnumber());
@@ -68,10 +69,7 @@ public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechae
     }
     @Override
     public int getItemCount() {
-        if (list != null && list.size() > 0){
-            return list.size();
-        }
-            return 0;
+            return mData == null ?0:mData.size();
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView username;
@@ -92,30 +90,30 @@ public class MyRechaergeRecylerViewAdapter extends RecyclerView.Adapter<MyRechae
 
     public void addData(OrderRechargeInfo ord, int poasation, TextView edt) {
         if (poasation == 0) {
-            list = new ArrayList<>();
-            list.add(0, ord);
-            saveInfoList(App.get(), list);
-            edt.setText(list.size()+"");
+            mData = new ArrayList<>();
+            mData.add(0, ord);
+            saveInfoList(App.get(), mData);
+            edt.setText(mData.size()+"");
         } else {
-            list.add(0, ord);
-            saveInfoList(App.get(), list);
-            edt.setText(list.size()+"");
+            mData.add(0, ord);
+            saveInfoList(App.get(), mData);
+            edt.setText(mData.size()+"");
         }
         notifyItemInserted(0);
-        notifyItemRangeChanged(0, list.size());
+        notifyItemRangeChanged(0, mData.size());
     }
 
     public void removeData(int position) {
-        if (list.size() < 1 && list.size() != 0) {
-            list.remove(0);
+        if (mData.size() < 1) {
+            mData.remove(0);
             notifyDataSetChanged();
-        } else if (list.size() == 0) {
+        } else if (mData.size() == 0) {
             Toast.makeText(con, R.string.nothing_isempty, Toast.LENGTH_SHORT).show();
         } else {//更新列表
-            list.remove(position);
-            notifyDataSetChanged();
+            mData.remove(position);
+   //         notifyDataSetChanged();
             notifyItemRemoved(position);
-            notifyItemRangeChanged(position, list.size());
+            notifyItemRangeChanged(position, mData.size());
 
         }
     }

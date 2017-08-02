@@ -168,8 +168,3 @@
 public static final int *;
 }
 
-# 极光
--dontoptimize
--dontpreverify
--dontwarn cn.jpush.**
--keep class cn.jpush.** { *; }

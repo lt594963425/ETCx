@@ -129,6 +129,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             PublicSPUtil.getInstance().putString("carCardColor", mCarColor);
                             intent.putExtra("isOrg", !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
+                            overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
                         } else ToastUtils.showToast(R.string.request_failed);
                         closeProgressDialog();
                     }

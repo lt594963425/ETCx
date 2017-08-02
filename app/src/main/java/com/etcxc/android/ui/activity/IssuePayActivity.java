@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -72,7 +71,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
-                startActivity(new Intent(this, IssueFinishActivity.class));
+                openActivity(IssueFinishActivity.class);
                 break;
         }
     }

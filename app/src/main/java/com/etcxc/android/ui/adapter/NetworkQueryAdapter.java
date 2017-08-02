@@ -2,35 +2,25 @@ package com.etcxc.android.ui.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.Constants;
-import com.etcxc.android.ui.activity.MainActivity;
-import com.etcxc.android.ui.activity.NetworkQueryActivity;
-import com.etcxc.android.ui.server.GeocodeAddressIntentService;
 import com.etcxc.android.utils.OpenExternalMapAppUtils;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -39,11 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.net.URISyntaxException;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.etcxc.android.utils.UIUtils.getString;
 
 /**
@@ -205,14 +193,24 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
                     break;
                 case 1://高德
                     if (OpenExternalMapAppUtils.isInstallByread("com.autonavi.minimap")) {
-                        AddressResultReceiver mResultReceiver = new AddressResultReceiver(null);
-                        fetchType = Constants.USE_ADDRESS_NAME;
-                        Intent intent = new Intent(mContext, GeocodeAddressIntentService.class);
-                        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-                        intent.putExtra(Constants.FETCH_TYPE_EXTRA, fetchType);
-                        intent.putExtra(Constants.LOCATION_NAME_DATA_EXTRA, mDestination);
-                        Log.e(TAG, "Starting Service");
-                        mContext.startService(intent);
+//                        AddressResultReceiver mResultReceiver = new AddressResultReceiver(null);
+//                        fetchType = Constants.USE_ADDRESS_NAME;
+//                        Intent intent = new Intent(mContext, GeocodeAddressIntentService.class);
+//                        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+//                        intent.putExtra(Constants.FETCH_TYPE_EXTRA, fetchType);
+//                        intent.putExtra(Constants.LOCATION_NAME_DATA_EXTRA, mDestination);
+//                        Log.e(TAG, "Starting Service");
+//                        mContext.startService(intent);
+                        //地理编码
+                        try {
+                            Intent intent = Intent.getIntent("androidamap://route?sourceApplication=softname" + "&sname=我的位置&dname=" + mDestination + "&dev=0&m=0&t=1");
+                            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                            intent.setPackage("com.autonavi.minimap");// pkg=com.autonavi.minimap
+                            intent.addCategory("android.intent.category.DEFAULT");
+                            mContext.startActivity(intent);
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         ToastUtils.showToast("您未安装高德地图");
                     }

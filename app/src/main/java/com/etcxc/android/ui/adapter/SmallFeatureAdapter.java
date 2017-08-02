@@ -14,17 +14,16 @@ import com.etcxc.android.R;
  * Created by 刘涛 on 2017/6/27 0027.
  */
 
-public class MyGridViewAdapter extends BaseAdapter {
+public class SmallFeatureAdapter extends BaseAdapter {
     private int[] image;
     private String[] title;
     private Context context;
 
-    public MyGridViewAdapter(int[] image, String[] title, Context context) {
+    public SmallFeatureAdapter(int[] image, String[] title, Context context) {
         this.image = image;
         this.title = title;
         this.context = context;
     }
-
     @Override
     public int getCount() {
         return image.length;

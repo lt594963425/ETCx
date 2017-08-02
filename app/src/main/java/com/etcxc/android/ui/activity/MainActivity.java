@@ -75,7 +75,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mTabHost.setOnTabChangedListener(this);
         initTabs();
     }
-
     private void initTabs() {
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
@@ -86,29 +85,23 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         }
     }
 
-    ImageView mImageView;
+
 
     public View getTabItemView(int i) {
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
-        mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
+        ImageView  mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
         TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
         mImageView.setBackgroundResource(mImageViewArray[i]);
         mTextView.setText(mTextViewArray[i]);
         return view;
     }
 
-    FragmentHome f1;
-    FragmentExpand f2;
-    FragmentMine f3;
 
     private void initPage() {
-        ArrayList<Fragment> list = new ArrayList();
-        f1 = new FragmentHome();
-        f2 = new FragmentExpand();
-        f3 = new FragmentMine();
-        list.add(f1);
-        list.add(f2);
-        list.add(f3);
+        ArrayList<Fragment> list = new ArrayList<>();
+        list.add(new FragmentHome());
+        list.add(new FragmentExpand());
+        list.add(new FragmentMine());
         //绑定Fragment适配器
         mViewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), list));
         mTabHost.getTabWidget().setDividerDrawable(null);
@@ -164,7 +157,8 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        f3.onActivityResult(requestCode, resultCode, data);
+        FragmentMine fragmentMine = new FragmentMine();
+        fragmentMine.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -185,5 +179,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mHelper.downloadPd(options);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }
 

@@ -14,7 +14,6 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
@@ -105,9 +104,8 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 //data = /tel/'tel'/inf_modify_sms_code/'inf_modify_sms_code'/pwd/'pwd'/sms_id/'sms_id'
                 String phoneNum = mPhoneNumberEdit.getText().toString();
                 String passWord = mResetPwd.getText().toString().trim();
-                String pwd = Md5Utils.encryptpwd(passWord);
                 String veriFicode = mVerifiCodeEdit.getText().toString().trim();
-                String data = "tel/" + phoneNum + "/inf_modify_sms_code/"+veriFicode+"/pwd/" + pwd+"/sms_id/"+smsID;
+                String data = "tel/" + phoneNum + "/inf_modify_sms_code/"+veriFicode+"/pwd/" + passWord+"/sms_id/"+smsID;
                 if(phoneNum.isEmpty()){
                     ToastUtils.showToast(R.string.phone_isempty);
                     return;
