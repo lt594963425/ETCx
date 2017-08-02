@@ -30,7 +30,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.Api.FUNC_POSTADDRESS;
+import static com.etcxc.android.net.FUNC.FUNC_POSTADDRESS;
 
 /**
  * 收货地址

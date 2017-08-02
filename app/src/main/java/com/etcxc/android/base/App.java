@@ -5,10 +5,8 @@ import android.app.Application;
 import com.etcxc.android.utils.LogUtil;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.tencent.tauth.Tencent;
 import com.umeng.analytics.MobclickAgent;
 
-import static com.etcxc.android.base.Constants.QQ_APP_ID;
 import static com.etcxc.android.base.Constants.WX_APP_ID;
 
 /**
@@ -20,7 +18,6 @@ public class App extends Application {
     public static Boolean isLogin = false;//未登录状态false ，登录状态true
     private static App sInstance = null;
     public static IWXAPI WXapi;
-    public static Tencent mTencent;// 新建Tencent实例用于调用分享方法
 
     public App() {
         sInstance = this;
@@ -31,7 +28,6 @@ public class App extends Application {
         MobclickAgent.setDebugMode(true);//日志加密传输
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);
-        mTencent = Tencent.createInstance(QQ_APP_ID, this);
         super.onCreate();
         LogUtil.d(TAG, "App Application onCreate");
     }

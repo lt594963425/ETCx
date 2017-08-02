@@ -3,7 +3,6 @@ package com.etcxc.android.ui.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -28,18 +27,14 @@ import com.etcxc.android.utils.myTextWatcher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.Api.newSmsCodeUrl;
-import static com.etcxc.android.net.Api.telChangeUrl;
-import static com.etcxc.android.net.OkClient.get;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
+import static com.etcxc.android.net.FUNC.TELCHANGE;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
@@ -57,6 +52,8 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
     private String smsCode;//验证码
     private String smsID;//验证码id
     private String phone;//返回的手机号码
+    private String mPhoneNum;//输入的验证码
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,26 +85,20 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.old_phone_delete:
-//                mOldPhoneEdt.setText("");
-//                break;
             case R.id.new_phone_delete:
                 mNewPhoneEdt.setText("");
                 break;
 
             case R.id.get_captcha://获取短信验证码
-                String phoneNum = mNewPhoneEdt.getText().toString();
-                if (!isMobileNO(phoneNum)) {
+                mPhoneNum = mNewPhoneEdt.getText().toString();
+                if (!isMobileNO(mPhoneNum)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
-                } else if (TextUtils.isEmpty(phoneNum)) {
+                } else if (TextUtils.isEmpty(mPhoneNum)) {
                     ToastUtils.showToast(R.string.please_input_phonenumber);
-                } else if (phoneNum.equals(MeManager.getSid())) {
+                } else if (mPhoneNum.equals(MeManager.getUid())) {
                     ToastUtils.showToast(R.string.phone_issame);
                 } else {
-                    UIUtils.saveHistory(UIUtils.getContext(), "history", phoneNum);
-                    TimeCount time = new TimeCount(mGetCaptcha, 60000, 1000);
-                    time.start();
-                    getSmsCode(newSmsCodeUrl + phoneNum);
+                    getSmsCode(SMSREPORT);
                 }
                 break;
             case R.id.save_phone_button://保存
@@ -116,17 +107,12 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
                 } else if (TextUtils.isEmpty(phone)) {
                     ToastUtils.showToast(R.string.please_input_phonenumber);
-                } else if (phone.equals(MeManager.getSid())) {
+                } else if (phone.equals(MeManager.getUid())) {
                     ToastUtils.showToast(R.string.phone_issame);
                 } else if (TextUtils.isEmpty(smsCode)) {
                     ToastUtils.showToast(R.string.please_input_smscode);
                 } else {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("tel", MeManager.getSid());
-                    params.put("new_tel", phone);
-                    params.put("tel_change_code", smsCode);
-                    params.put("sms_id", smsID);
-                    telChange(params);
+                    telChange();
                 }
                 break;
         }
@@ -141,8 +127,10 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = get(url, new JSONObject());
-                e.onNext(result);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("tel",mPhoneNum);
+                jsonObject.put("type","5");
+                e.onNext(OkClient.get(NetConfig.consistUrl(url),jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -158,9 +146,12 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                                 phone = jsonvar.getString("tel");
                                 PrefUtils.setString(App.get(), "pr_sms_id", smsID);//rp_sms_id
                                 ToastUtils.showToast(R.string.send_success);
+                                UIUtils.saveHistory(UIUtils.getContext(), "history", mPhoneNum);
+                                TimeCount time = new TimeCount(mGetCaptcha, 60000, 1000);
+                                time.start();
                             }
                             if (code.equals("err")) {
-                                ToastUtils.showToast(R.string.isregist);
+                                ToastUtils.showToast(R.string.unregist);
                                 return;
                             }
                         } catch (JSONException e) {
@@ -180,15 +171,18 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 
     /**
      * 修改手机号
-     * @param params
      */
-    private void telChange(Map<String, String> params) {
+    private void telChange() {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                Log.d(TAG, "subscribe: " + NetConfig.consistUrl(telChangeUrl, params));
-                e.onNext(OkClient.get(NetConfig.consistUrl(telChangeUrl, params), new JSONObject()));
+                JSONObject params = new JSONObject();
+                params.put("tel", MeManager.getUid());
+                params.put("new_tel", phone);
+                params.put("tel_change_code", smsCode);
+                params.put("sms_id", smsID);
+                e.onNext(OkClient.get(NetConfig.consistUrl(TELCHANGE), params));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

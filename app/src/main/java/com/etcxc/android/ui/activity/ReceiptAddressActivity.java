@@ -3,7 +3,6 @@ package com.etcxc.android.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,8 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 import io.reactivex.Observable;
@@ -33,12 +30,11 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.Api.FUNC_FIND_POSTADDRESS;
-import static com.etcxc.android.net.Api.FUNC_POSTADDRESS;
-import static com.etcxc.android.net.Api.FUNC_RECEIPT_POSTADDRESS;
+import static com.etcxc.android.net.FUNC.FIND_POSTADDRESS;
+import static com.etcxc.android.net.FUNC.RECEIPT_POSTADDRESS;
 
 /**
- * 给后端做json接口测试
+ * 我的收货地址
  * Created by xwpeng on 2017/7/24.
  */
 
@@ -50,7 +46,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
 
     private EditText mReceiverEdit, mPhoneNumberEdit, mDetailAddressEdit;
 
-    private String mReceiver, mPhoneNumber, mRegion, mStreet, mDetailaddress;
+    private String mReceiver, mPhoneNumber, mRegion, mStreet, mDetailaddress,mId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +54,20 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         setContentView(R.layout.activity_receipt_address);
         setTitle(getString(R.string.my_receipt_address));
         initView();
-        findAddress(NetConfig.HOST + FUNC_FIND_POSTADDRESS + "/tel/" + MeManager.getSid());
+        findAddress();
     }
 
     /**
      * 查询用户收货地址
-     *
-     * @param url
      */
-    private void findAddress(String url) {
-        Log.d(TAG, "findAddress: " + url);
+    private void findAddress() {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(url, new JSONObject()));
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("tel",MeManager.getUid());
+                e.onNext(OkClient.get(NetConfig.consistUrl(FIND_POSTADDRESS), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -81,7 +76,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull String s) throws Exception {
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
-                        String code = jsonObject.getString("code");
+                        String code = jsonObject.optString("code");
                         if ("s_ok".equals(code)) {
                             setForm(jsonObject);
                         }
@@ -96,11 +91,17 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                 });
     }
 
+    /**
+     * 数据解析赋值
+     * @param jsonObject
+     * @throws JSONException
+     */
     private void setForm(JSONObject jsonObject) throws JSONException {
         JSONArray ja = jsonObject.optJSONArray("var");
         if (ja == null && ja.length() < 1) return;
         jsonObject = ja.getJSONObject(0);
         mReceiver = jsonObject.optString("receiver");//收件人
+        mId = jsonObject.optString("id");//收件人
         String area_province = jsonObject.getString("area_province");//省
         String area_city = jsonObject.getString("area_city");//市
         String area_county = jsonObject.getString("area_county");//区，县
@@ -148,16 +149,20 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                         && checkDetailAddress(detailaddress)
                         && checkChange(receiver,phoneNumber,region,street,detailaddress)
                         ) {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("receiver", receiver);
-                    params.put("mail_tel", phoneNumber);
-                    params.put("province", regions[0]);
-                    params.put("city", regions[1]);
-                    params.put("county", regions[2]);
-                    params.put("street", street);
-                    params.put("address", detailaddress);
-                    params.put("tel", MeManager.getSid());
-                    commitNet(params);
+                    JSONObject params = new JSONObject();
+                    try {
+                        params.put("receiver", receiver);
+                        params.put("mail_tel", phoneNumber);
+                        params.put("province", regions[0]);
+                        params.put("city", regions[1]);
+                        params.put("county", regions[2]);
+                        params.put("street", street);
+                        params.put("address", detailaddress);
+                        params.put("tel", MeManager.getUid());
+                        commitNet(params);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 break;
@@ -194,17 +199,14 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
     }
 
     /**
-     * 保存我的地址
-     *
-     * @param params
+     * 修改我的地址
      */
-    private void commitNet(Map<String, String> params) {
+    private void commitNet(JSONObject jsonObject) {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                Log.d(TAG, "subscribe: " + NetConfig.consistUrl(FUNC_RECEIPT_POSTADDRESS, params));
-                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC_RECEIPT_POSTADDRESS, params), new JSONObject()));
+                e.onNext(OkClient.get(NetConfig.consistUrl(RECEIPT_POSTADDRESS), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -213,7 +215,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
                     public void accept(@NonNull String s) throws Exception {
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
-                        String code = jsonObject.getString("code");
+                        String code = jsonObject.optString("code");
                         if ("s_ok".equals(code)) {
                             ToastUtils.showToast(R.string.finish);
                             finish();

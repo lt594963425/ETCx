@@ -13,6 +13,7 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.bean.VersionCheckInfo;
 import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.net.download.DownloadConfig1;
@@ -48,7 +49,7 @@ public class VersionUpdateHelper {
     private VersionCheckInfo mVersionInfo;
     private RxAppCompatActivity mActivity;
     private ProgressDialog mPd;
-    private final static String FUNC = "/xczx/version_manage/versionmanage";
+//    private final static String FUNC = "/xczx/version_manage/versionmanage";
 
     public VersionUpdateHelper(RxAppCompatActivity mActivity) {
         this.mActivity = mActivity;
@@ -60,7 +61,7 @@ public class VersionUpdateHelper {
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("version_code", String.valueOf(BuildConfig.VERSION_CODE));
-                e.onNext(OkClient.get( NetConfig.consistUrl(FUNC, null), jsonObject));
+                e.onNext(OkClient.get( NetConfig.consistUrl(FUNC.VERSION_FUNC, null), jsonObject));
                 e.onComplete();
             }
         }).compose(RxUtil.io())

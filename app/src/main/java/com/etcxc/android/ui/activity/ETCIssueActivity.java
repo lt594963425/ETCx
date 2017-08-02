@@ -19,6 +19,7 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -32,7 +33,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.Api.FUNC;
+import static com.etcxc.android.net.FUNC.FUNC;
 
 /**
  * etc发行Activity
@@ -89,23 +90,31 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
             case R.id.commit_button:
                 String carCard = mCarCardEdit.getText().toString();
                 if (okCarCard(carCard)) {
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("veh_plate_code",carCard)
+                                .put("veh_plate_colour",mCarColor)
+                                .put("user_properties",mPersonalRadiobutton.isChecked()? 1 : 0);
+                        net(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST)
                             .append(FUNC)
                             .append(File.separator).append("veh_plate_code").append(File.separator).append(carCard)
                             .append(File.separator).append("veh_plate_colour").append(File.separator).append(mCarColor)
                             .append(File.separator).append("user_type").append(File.separator).append(mPersonalRadiobutton.isChecked() ? 1 : 0);
-                    net(urlBuilder.toString());
                 } else ToastUtils.showToast(getString(R.string.please_input_correct));
                 break;
         }
     }
 
-    private void net(String url) {
+    private void net(JSONObject jsonObject) {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(url, new JSONObject()));
+                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

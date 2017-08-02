@@ -1,9 +1,9 @@
 package com.etcxc.android.ui.activity;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.net.Api;
+import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.Md5Utils;
@@ -27,19 +27,25 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 
-import static com.etcxc.android.net.NetConfig.HOST;
+
+import static com.etcxc.android.net.FUNC.FIND_POSTADDRESS;
+import static com.etcxc.android.net.FUNC.MODIFYPWD;
 import static com.etcxc.android.utils.UIUtils.isLook;
 
 /**
  * Created by 刘涛 on 2017/7/4 0004.
- *
  */
 
 public class ChangePasswordActivity extends BaseActivity implements View.OnClickListener {
     private EditText mOldPwdEdt, mNewPwdEdt;
     private ImageView mOldPwdDte, mNewPwdSee, mOldPwdSee, mNewPwdDte;
     private Button mSavePwdBtn;
+    private String mOldPassWord,mNewPassWord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,16 +88,11 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                 isLook(mNewPwdEdt, mNewPwdSee, R.drawable.vd_close_eyes_black, R.drawable.vd_open_eyes_black);
                 break;
 
-            case R.id.password_save_button:  //保存
-                String oldPassWord = mOldPwdEdt.getText().toString().trim();
-                String newPassWord = mNewPwdEdt.getText().toString().trim();
-                String data;
-
-                if (!LocalThrough(oldPassWord, newPassWord)) {
-                    data = "tel/" + MeManager.getSid() +
-                            "/pwd/" + Md5Utils.encryptpwd(oldPassWord) +
-                            "/new_pwd/" + Md5Utils.encryptpwd(newPassWord);
-                    modifyPwd(Api.modifyPwdServerUrl + data);
+            case R.id.password_save_button:  //修改
+                mOldPassWord = mOldPwdEdt.getText().toString().trim();
+                mNewPassWord = mNewPwdEdt.getText().toString().trim();
+                if (!LocalThrough(mOldPassWord, mNewPassWord)) {
+                    modifyPwd();
                 }
                 break;
         }
@@ -99,23 +100,24 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
 
     /**
      * 修改密码网络请求
-     *
-     * @param url 修改密码url
      */
-    private void modifyPwd(String url) {
-        showProgressDialog(getString(R.string.modify_pwd));
+    private void modifyPwd() {
+        showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                Log.d(TAG, "subscribe: "+url);
-                String result = OkClient.get(url, new JSONObject());
-                e.onNext(result);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("tel",MeManager.getUid());
+                jsonObject.put("pwd", Md5Utils.encryptpwd(mOldPassWord));
+                jsonObject.put("new_pwd", Md5Utils.encryptpwd(mNewPassWord));
+                e.onNext(OkClient.get(NetConfig.consistUrl(MODIFYPWD), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        closeProgressDialog();
                         parseResultJson(s);
                     }
                 }, new Consumer<Throwable>() {
@@ -142,7 +144,6 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                 String returnMsg = jsonObject.getString("message");//返回的信息
                 closeProgressDialog();
                 ToastUtils.showToast(returnMsg);
-
                 return;
             }
         }

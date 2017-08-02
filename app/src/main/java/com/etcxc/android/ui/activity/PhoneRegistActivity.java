@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
@@ -31,9 +32,6 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-
-import static com.etcxc.android.net.Api.loginSmsUrl;
-import static com.etcxc.android.net.Api.smsCodeUrl;
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
@@ -108,7 +106,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 UIUtils.saveHistory(UIUtils.getContext(), "history", phoneNum2);
                 TimeCount time = new TimeCount(mVerificodeButton,60000, 1000);
                 time.start();
-                getSmsCode(smsCodeUrl + phoneNum2);
+                getSmsCode(FUNC.SMSREPORT + phoneNum2);
                 break;
             case R.id.phonenumber_delete://置空手机号
                 mPhoneNumberEdit.setText("");
@@ -147,7 +145,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             return;
         }
         saveHistory(this, "history", phoneNum);
-        loginUUrl(loginSmsUrl + data);
+        //todo 接口调整
+//        loginUUrl(loginSmsUrl + data);
     }
 
     public void loginUUrl(String url) {
@@ -163,6 +162,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        closeProgressDialog();
                         parseJson(s);
                     }
                 }, new Consumer<Throwable>() {
@@ -172,6 +172,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                         ToastUtils.showToast(R.string.intenet_err);
                     }
                 });
+
     }
 
     private void parseJson(String s) {
@@ -198,27 +199,23 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             }
             if (code.equals("err")) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
-                if (returnMsg.equals("sms_code_error")) {
-                    closeProgressDialog();
-                    ToastUtils.showToast(R.string.smscodeerr);
-                } else if (returnMsg.equals("telphone_unregistered")) {
-                    closeProgressDialog();
-                    ToastUtils.showToast(R.string.telphoneunregistered);
-                } else if (returnMsg.equals("err_password")) {
-                    closeProgressDialog();
-                    ToastUtils.showToast(R.string.passworderr);
-                } else if (returnMsg.equals("telphoner_has_been_registered")) {
-                    closeProgressDialog();
-                    ToastUtils.showToast(R.string.isregist);
-                } else {
-                    closeProgressDialog();
-                    ToastUtils.showToast(returnMsg);
+                switch (returnMsg) {
+                    case "sms_code_error":
+                        ToastUtils.showToast(R.string.smscodeerr);
+                        break;
+                    case "telphone_unregistered":
+                        ToastUtils.showToast(R.string.telphoneunregistered);
+                        break;
+                    case "err_password":
+                        ToastUtils.showToast(R.string.passworderr);
+                        break;
+                    case "telphoner_has_been_registered":
+                        ToastUtils.showToast(R.string.isregist);
+                        break;
                 }
-                return;
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            closeProgressDialog();
             ToastUtils.showToast(R.string.para_err);
         }
     }

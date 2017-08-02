@@ -5,16 +5,11 @@
     android:layout_height="match_parent"
     android:background="#f0f0f0"
     android:orientation="vertical">
-     <include layout="@layout/activity_login"
-         android:id="@+id/login_page"/>
-
-
     <LinearLayout
         android:id="@+id/info_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:visibility="invisible">
+        android:orientation="vertical">
 
         <include
             android:id="@+id/person_toolbar"

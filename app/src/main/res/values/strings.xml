@@ -137,6 +137,7 @@
     <string name="about_us">关于我们</string>
     <string name="check_update">检查更新</string>
     <string name="isregist">手机号码已经注册</string>
+    <string name="unregist">手机号码未注册</string>
     <string name="harvestaddress">我的收货地址</string>
     <string name="recommendfriend">推荐好友</string>
     <string name="changepassword">修改密码</string>

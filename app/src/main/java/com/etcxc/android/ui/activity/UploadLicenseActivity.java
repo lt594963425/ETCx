@@ -49,7 +49,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.Api.UPLOAD_FUNC;
+import static com.etcxc.android.net.FUNC.UPLOAD_FUNC;
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 import static com.etcxc.android.utils.FileUtils.rotateBitmapByDegree;
 

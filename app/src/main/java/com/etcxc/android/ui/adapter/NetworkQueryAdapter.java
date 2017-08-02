@@ -3,7 +3,14 @@ package com.etcxc.android.ui.adapter;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -20,7 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etcxc.android.R;
+import com.etcxc.android.base.Constants;
 import com.etcxc.android.ui.activity.MainActivity;
+import com.etcxc.android.ui.activity.NetworkQueryActivity;
+import com.etcxc.android.ui.server.GeocodeAddressIntentService;
 import com.etcxc.android.utils.OpenExternalMapAppUtils;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -29,6 +39,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import static com.etcxc.android.utils.UIUtils.getString;
@@ -47,8 +60,9 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
     private int position;
     private String phone_nums[];
     private Location mLocation;
+    int fetchType = Constants.USE_ADDRESS_LOCATION;
 
-    public NetworkQueryAdapter(JSONArray mData, Context context,Location location) {
+    public NetworkQueryAdapter(JSONArray mData, Context context, Location location) {
         this.mData = mData;
         this.mContext = context;
         this.mLocation = location;
@@ -191,13 +205,20 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
                     break;
                 case 1://高德
                     if (OpenExternalMapAppUtils.isInstallByread("com.autonavi.minimap")) {
-                        OpenExternalMapAppUtils.goToNaviActivity(mContext, "", mDestination, "0", "0");
+                        AddressResultReceiver mResultReceiver = new AddressResultReceiver(null);
+                        fetchType = Constants.USE_ADDRESS_NAME;
+                        Intent intent = new Intent(mContext, GeocodeAddressIntentService.class);
+                        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+                        intent.putExtra(Constants.FETCH_TYPE_EXTRA, fetchType);
+                        intent.putExtra(Constants.LOCATION_NAME_DATA_EXTRA, mDestination);
+                        Log.e(TAG, "Starting Service");
+                        mContext.startService(intent);
                     } else {
                         ToastUtils.showToast("您未安装高德地图");
                     }
                     break;
                 case 2://百度地图WEB版
-                    OpenExternalMapAppUtils.openBrosserNaviMap(mContext,mLocation,mDestination);
+                    OpenExternalMapAppUtils.openBrosserNaviMap(mContext, mLocation, mDestination);
                     break;
             }
         } else {
@@ -213,13 +234,27 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
                 String phone = jsonObject.optString("phone");
                 phone_nums = phone.split("、");
                 if (phone_nums.length > 1) {//多个号码时弹出提示框
-                    SystemUtil.showCallDialog(mContext,phone_nums);
+                    SystemUtil.showCallDialog(mContext, phone_nums);
                 } else {//单个号码直接拨打
-                    SystemUtil.callPhone(mContext,phone_nums[0]);
+                    SystemUtil.callPhone(mContext, phone_nums[0]);
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, final Bundle resultData) {
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                final Address address = resultData.getParcelable(Constants.RESULT_ADDRESS);
+                OpenExternalMapAppUtils.goToNaviActivity(mContext, "", address.getLatitude(), address.getLongitude(), "1", "0");
+            }
         }
     }
 }

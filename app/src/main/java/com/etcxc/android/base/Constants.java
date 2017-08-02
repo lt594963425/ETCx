@@ -28,9 +28,9 @@ public class Constants {
     //微信下单支付WX
     public final static String WXOrderUrl = "http://192.168.6.126:9999/pay/pay/payment/pay_message/";
     /**
-     * PersonalInfoActivity
+     * LoginActivity
      */
-    // PersonalInfoActivity 更换图形验证码url
+    // LoginActivity 更换图形验证码url
     public final static String pictureCodeUrl = "http://192.168.6.58/login/login/captcha/code_key/";
     //用户登录url
     public final static String loginServerUrl = "http://192.168.6.58/login/login/login/";
@@ -52,5 +52,22 @@ public class Constants {
     public final static String loginSmsUrl = "http://192.168.6.58/register/register/register/";
     public final static String smsCodeUrl = "http://192.168.6.58/register/reg_sms/smsreport/tel/";
     //短信验证码统一接口
+
+
+    public static final int SUCCESS_RESULT = 0;
+    public static final int FAILURE_RESULT = 1;
+
+    public static final int USE_ADDRESS_NAME = 1;
+    public static final int USE_ADDRESS_LOCATION = 2;
+
+    public static final String PACKAGE_NAME =
+            "com.etcxc.android";
+    public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
+    public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
+    public static final String RESULT_ADDRESS = PACKAGE_NAME + ".RESULT_ADDRESS";
+    public static final String LOCATION_LATITUDE_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_LATITUDE_DATA_EXTRA";
+    public static final String LOCATION_LONGITUDE_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_LONGITUDE_DATA_EXTRA";
+    public static final String LOCATION_NAME_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_NAME_DATA_EXTRA";
+    public static final String FETCH_TYPE_EXTRA = PACKAGE_NAME + ".FETCH_TYPE_EXTRA";
 
 }

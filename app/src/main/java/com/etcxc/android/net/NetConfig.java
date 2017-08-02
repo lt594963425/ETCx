@@ -18,8 +18,9 @@ import java.util.Map;
 public class NetConfig {
     public static final String CODE_FA_INVALID_SESSION = "FA_INVALID_SESSION";
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
-    public final static String HOST = "http://192.168.6.58";
-//    public final static String HOST = "http://192.168.6.126:9999";
+//    public final static String HOST = "http://192.168.6.58";
+//    public final static String HOST = "http://192.168.6.50:8080";
+    public final static String HOST = "http://192.168.6.43:80";
 
     /**
      * @return 当前网络状态，详见{@link NetworkInfo}
@@ -57,15 +58,19 @@ public class NetConfig {
 
     /**
      * 20170726 by xwpeng
-     *后端接口改成params用json传输，所以params一般传空
+     * 后端接口改成params用json传输，所以params一般传空
      */
     public static String consistUrl(@NonNull String func, Map<String, String> params) {
         StringBuilder builder = new StringBuilder(HOST).append(func);
         if (params != null) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                 builder.append(File.separator).append(entry.getKey()).append(File.separator).append(entry.getValue());
+                builder.append(File.separator).append(entry.getKey()).append(File.separator).append(entry.getValue());
             }
         }
         return builder.toString();
+    }
+
+    public static String consistUrl(@NonNull String func) {
+        return consistUrl(func, null);
     }
 }

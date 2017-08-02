@@ -25,6 +25,7 @@ import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
 import com.etcxc.android.ui.activity.LargeImageActivity;
+import com.etcxc.android.ui.activity.LoginActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
@@ -94,7 +95,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         @Override
         public void run() {
             if (MeManager.getIsLogin()) {
-                mUsername.setText(MeManager.getSid());
+                mUsername.setText(MeManager.getUid());
                 initData();
             } else {
                 VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
@@ -126,37 +127,49 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_layout:  //用户信息页面
-                Intent intent1 = new Intent(mActivity, PersonalInfoActivity.class);
-                startActivityForResult(intent1, 0);
+                if (!MeManager.getIsLogin()) {
+                    //未登录：点击修改密码跳入登录页面
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivityForResult(intent, 0);
+                } else {
+                    //已登录
+                    Intent intent1 = new Intent(getActivity(), PersonalInfoActivity.class);
+                    startActivity(intent1);
+                }
+
                 break;
             case R.id.userhead: //头像
                 startLoadHead();
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 if (!MeManager.getIsLogin()) {
-                    ToastUtils.showToast(R.string.nologin);
+                    //未登录：点击修改密码跳入登录页面
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivityForResult(intent,0);
                     return;
                 } else {
-                    startActivity(new Intent(mActivity, ReceiptAddressActivity.class));
+                    startActivity(new Intent(getActivity(), ReceiptAddressActivity.class));
                 }
                 break;
             case R.id.mine_recommendfriend_toright: // 推荐好友
                 //showShareDialog();
-                startActivity(new Intent(mActivity, ShareActivity.class));
+                startActivity(new Intent(getActivity(), ShareActivity.class));
                 break;
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    Intent intent = new Intent(mActivity, PersonalInfoActivity.class);
-                    startActivityForResult(intent, 0);
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivityForResult(intent,0);
                 } else {
                     //已登录：点击修改密码进入修改密码页面
-                    startActivity(new Intent(mActivity, ChangePasswordActivity.class));
+                    startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
                 }
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
                 if (!MeManager.getIsLogin()) {
-                    ToastUtils.showToast(R.string.nologin);
+                    //未登录：点击修改密码跳入登录页面
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivityForResult(intent,0);
                     return;
                 } else {
                     startActivity(new Intent(getActivity(), ChangePhoneActivity.class));
@@ -171,7 +184,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private void startLoadHead() {
         if (!MeManager.getIsLogin()) {
             ToastUtils.showToast(R.string.nologin);
-            Intent intent2 = new Intent(mActivity, PersonalInfoActivity.class);
+            Intent intent2 = new Intent(mActivity, LoginActivity.class);
             startActivityForResult(intent2, 0);
             return;
         }

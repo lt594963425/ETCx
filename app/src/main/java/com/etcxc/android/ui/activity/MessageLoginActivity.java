@@ -38,8 +38,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.base.App.isLogin;
-import static com.etcxc.android.net.Api.SMSUrl;
-import static com.etcxc.android.net.Api.smsLoginServerUrl;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.net.OkClient.get;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
@@ -116,7 +115,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 saveHistory(UIUtils.getContext(),"history",phoneNum2);
                 TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
                 time.start();
-                getSmsCodeBtn(SMSUrl + phoneNum2);
+                getSmsCodeBtn(SMSREPORT + phoneNum2);
                 break;
             case R.id.message_login_button://登录
                 String smsid = PrefUtils.getString(App.get(), "ml_sms_id", null);
@@ -135,7 +134,8 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     ToastUtils.showToast(R.string.please_input_smscode);
                     return;
                 }
-                loginUUrl(smsLoginServerUrl + data);
+                // TODO: 2017/8/1 需要接口调整 
+//                loginUUrl(smsLoginServerUrl + data);
                 break;
         }
     }

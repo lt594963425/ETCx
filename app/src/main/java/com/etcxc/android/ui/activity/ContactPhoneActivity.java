@@ -33,8 +33,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.Api.FUNC_COMMIT_CONTACT_PHONE;
-import static com.etcxc.android.net.Api.FUNC_SEND_CODE;
+import static com.etcxc.android.net.FUNC.FUNC_COMMIT_CONTACT_PHONE;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
 
 /**
  * 联系手机验证录入
@@ -125,7 +125,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(FUNC_SEND_CODE)
+                StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(SMSREPORT)
                         .append(File.separator).append("tel").append(File.separator).append(tel);
                 e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));
             }

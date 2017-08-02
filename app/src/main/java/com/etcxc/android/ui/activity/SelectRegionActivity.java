@@ -7,6 +7,8 @@ import android.view.MenuItem;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.net.FUNC;
+import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.adapter.SelectRegionAdapter;
 import com.etcxc.android.ui.view.XRecyclerView;
@@ -26,6 +28,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.FUNC.CITY;
+import static com.etcxc.android.net.FUNC.PROVINCE;
 import static com.etcxc.android.net.NetConfig.HOST;
 
 /**
@@ -51,9 +55,9 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
         String county = getIntent().getStringExtra("county");
         mIsRegionSelect = TextUtils.isEmpty(county);
         initView();
-        net(HOST + (mIsRegionSelect
-                ?  "/transaction/transaction/areaprovince/"
-                : "/transaction/transaction/areastreet/county/") + county);
+        net(mIsRegionSelect
+                ? FUNC.AREAPROVINCE
+                : FUNC.COUNTY +county);
     }
 
     private List<String> parseRegion(String result) throws Exception {
@@ -78,7 +82,7 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
             @Override
             public void subscribe(@NonNull ObservableEmitter<List<String>> e) throws Exception {
                 List<String> temp;
-                String result = OkClient.get(url, new JSONObject());
+                String result = OkClient.get(NetConfig.consistUrl(url), new JSONObject());
                 temp = parseRegion(result);
                 if (temp == null) e.onError(new Exception());
                 else e.onNext(temp);
@@ -132,10 +136,10 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
         mResult.add(content);
         switch (mResult.size()) {
             case 1:
-                net(HOST + "/transaction/transaction/areacity/province/" + content);
+                net(PROVINCE + content);
                 break;
             case 2:
-                net(HOST + "/transaction/transaction/areacounty/city/" + content);
+                net(CITY + content);
                 break;
             case 3:
                 String s = mResult.get(0) + " " + mResult.get(1) + " " + mResult.get(2);

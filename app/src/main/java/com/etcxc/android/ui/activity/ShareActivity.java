@@ -28,8 +28,10 @@ import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.umeng.analytics.MobclickAgent;
 
+import static com.etcxc.android.base.Constants.QQ_APP_ID;
+
 /**
- * 推荐好友  （微信、QQ、短信）分享
+ * 推荐好友  （微信好友、微信朋友圈、QQ、短信）分享
  * Created by caoyu on 2017/7/14.
  * */
 public class ShareActivity extends BaseActivity implements View.OnClickListener {
@@ -41,22 +43,24 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
 
     private static String SHARE_URL = "http://www.xckjetc.com/";
     Dialog dialog;
-
+    public static Tencent mTencent;// 新建Tencent实例用于调用分享方法
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
         mIUiListener = new BaseUiListener();
         initView();
+        mTencent = Tencent.createInstance(QQ_APP_ID,this);
     }
 
     private void initView() {
         share_toolbar = (Toolbar) findViewById(R.id.share_toolbar);
+        btn_share = (Button) findViewById(R.id.btn_share);
+
         setSupportActionBar(share_toolbar);
         share_toolbar.setTitle(R.string.my_share);
         share_toolbar.inflateMenu(R.menu.menu_share);
         setBarBack(share_toolbar);
-        btn_share = (Button) findViewById(R.id.btn_share);
         btn_share.setOnClickListener(this);
         share_toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -162,7 +166,6 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
 
 
         @Override
-
         public void onCancel() {
             ToastUtils.showToast(getString(R.string.share_cancel));
         }
@@ -183,7 +186,7 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
         bundle.putString(QQShare.SHARE_TO_QQ_SUMMARY, "我正在浏览这个,觉得真不错,推荐给你哦~");
         //手Q客户端顶部，替换“返回”按钮文字，如果为空，用返回代替
         bundle.putString(QQShare.SHARE_TO_QQ_APP_NAME, "我正在浏览这个,觉得真不错,推荐给你哦~");
-        App.mTencent.shareToQQ(this, bundle, mIUiListener);
+        mTencent.shareToQQ(this, bundle, mIUiListener);
     }
 
     /**

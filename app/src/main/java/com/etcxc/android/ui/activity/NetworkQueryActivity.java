@@ -9,11 +9,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.net.Api;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.adapter.NetworkQueryAdapter;
@@ -60,7 +61,7 @@ public class NetworkQueryActivity extends BaseActivity {
         initView();
         getLocation(this);
         if (NetConfig.isAvailable()) {//网络是否可用
-            getNetwork(Api.networkUrl);
+            getNetwork();
         } else {
             try {
                 parseResultJson(FileUtils.readJson(this, docCache));
@@ -68,7 +69,14 @@ public class NetworkQueryActivity extends BaseActivity {
                 e.printStackTrace();
             }
         }
+    }
 
+    private void setResult(String strLocation, String locationX, String locationY) {
+        if (TextUtils.isEmpty(strLocation)) {
+            return;
+        }
+        Log.e(TAG, "setResult: " + strLocation + locationX + locationY);
+        finish();
     }
 
 
@@ -90,14 +98,12 @@ public class NetworkQueryActivity extends BaseActivity {
 
     /**
      * 获取网点地址
-     *
-     * @param url
      */
-    private void getNetwork(String url) {
+    private void getNetwork() {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(url, new JSONObject()));
+                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC.NETWORK), new JSONObject()));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
