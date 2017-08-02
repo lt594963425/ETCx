@@ -211,6 +211,7 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
                         } catch (URISyntaxException e) {
                             e.printStackTrace();
                         }
+
                     } else {
                         ToastUtils.showToast("您未安装高德地图");
                     }
