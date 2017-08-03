@@ -205,6 +205,7 @@
         <activity android:name=".ui.activity.NetworkQueryActivity" />
         <activity android:name=".ui.activity.TestJsonApiActivity" />
         <activity android:name=".ui.activity.PersonalInfoActivity"></activity>
+        <service android:name=".ui.service.GeocodeAddressIntentService"/>
     </application>
 
 </manifest>

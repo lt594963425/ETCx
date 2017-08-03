@@ -177,7 +177,7 @@ public class SystemUtil {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                callPhone(context,phones[which]);
+                dialPhone(context,phones[which]);
             }
         });
 

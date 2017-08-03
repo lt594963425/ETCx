@@ -2,6 +2,7 @@ package com.etcxc.android.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
 import android.location.Location;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -13,8 +14,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * 调用本地地图app
@@ -22,15 +26,19 @@ import java.net.URLConnection;
  */
 
 public class OpenExternalMapAppUtils {
+
+    private static final double EARTH_RADIUS = 6378.137;
+
     /**
      * 调起百度客户端 自定义打点
+     *
      * @param activity
-     * @param content 目的地
-     * mode 导航方式
+     * @param content  目的地
+     *                 mode 导航方式
      */
     public static void openBaiduMarkerMap(Context activity, String content) {
         Intent intent = new Intent();
-        intent.setData(Uri.parse("baidumap://map/direction?region=&origin=&destination="+content+"&mode=driving"));
+        intent.setData(Uri.parse("baidumap://map/direction?region=&origin=&destination=" + content + "&mode=driving"));
         activity.startActivity(intent);
     }
 
@@ -39,6 +47,7 @@ public class OpenExternalMapAppUtils {
      * lat,lng (先纬度，后经度)
      * 40.057406655722,116.2964407172
      * lat,lng,lat,lng (先纬度，后经度, 先左下,后右上)
+     *
      * @param activity
      */
     public static void openBaiduiDrectionMap(Context activity, String sLongitude, String sLatitude, String sName,
@@ -53,55 +62,85 @@ public class OpenExternalMapAppUtils {
 
     /**
      * 启动高德App进行导航
-     * @param poiname 非必填 POI 名称
-     * @param lat 必填 纬度
-     * @param lon 必填 经度
-     * @param dev 必填 是否偏移(0:lat 和 lon 是已经加密后的,不需要国测加密; 1:需要国测加密)
-     * @param style 必填 导航方式(0 速度快; 1 费用少; 2 路程短; 3 不走高速；4 躲避拥堵；5 不走高速且避免收费；6 不走高速且躲避拥堵；7 躲避收费和拥堵；8 不走高速躲避收费和拥堵))
      */
-    public static void goToNaviActivity(Context context, String poiname , Double lat , Double lon , String dev , String style){
-        StringBuffer stringBuffer  = new StringBuffer("androidamap://navi?sourceApplication=")
-                .append("");
-        if (!TextUtils.isEmpty(poiname)){
-            stringBuffer.append("&poiname=").append(poiname);
+    public static void openNaviActivity(Context context, String mDestination) {
+        try {
+            Intent intent = Intent.getIntent("androidamap://route?sourceApplication=softname" + "&sname=我的位置&dname=" + mDestination + "&dev=0&m=0&t=1");
+            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+            intent.setPackage("com.autonavi.minimap");// pkg=com.autonavi.minimap
+            intent.addCategory("android.intent.category.DEFAULT");
+            context.startActivity(intent);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-        stringBuffer
-                .append("&lat=").append(lat)
-                .append("&lon=").append(lon)
-                .append("&destination=").append(context)
-                .append("&dev=").append(dev)
-                .append("&style=").append(style);
-
-        Intent intent = new Intent("android.intent.action.VIEW", android.net.Uri.parse(stringBuffer.toString()));
-        intent.setPackage("com.autonavi.minimap");
-        context.startActivity(intent);
     }
 
-
     /**
-     * 打开百度网页版 导航
+     * 打开网页版 导航
+     *
      * @param activity
+     * @param sLocation 起点经纬度
+     * @param sName     起点名字
+     * @param dLocation 目的地经纬度
+     * @param dName     目的地名字
      */
-    public static void openBrosserNaviMap(Context activity, Location location,String content) {
-        Uri webpage = Uri.parse("http://api.map.baidu.com/marker?location="+
-                location.getLatitude() +","+ location.getLongitude()+
-                "&title="+content+
-                "&content="+content+
-                "&output=html");
+    public static void openBrosserNaviMap(Context activity, Location sLocation,
+                                          String sName, Address dLocation, String dName) {
         Uri mapUri = Uri.parse("http://api.map.baidu.com/direction?origin=latlng:" +
-                location.getLatitude() +","+ location.getLongitude()+ "|name:" + content + "&destination=latlng:" +
-                "|name:" + content + "&mode=driving&region="+
-                "&output=html");
-        Log.d("百度地图", "openBrosserNaviMap: "+webpage.toString());
-
-        Intent webIntent = new Intent(Intent.ACTION_VIEW,webpage);
-        activity.startActivity(webIntent);
+                sLocation.getLatitude() + "," + sLocation.getLongitude() + "|name:" + sName + "&destination=latlng:" +
+                dLocation.getLatitude() + "," + dLocation.getLongitude() + "|name:" + dName + "&mode=driving&region=长沙" +
+                "&output=html&src=迅畅在线");
+        Intent loction = new Intent(Intent.ACTION_VIEW, mapUri);
+        activity.startActivity(loction);
     }
 
     //判断是否安装目标应用
     public static boolean isInstallByread(String packageName) {
         return new File("/data/data/" + packageName)
                 .exists();
+    }
+
+    private static double rad(double d) {
+        return d * Math.PI / 180.0;
+    }
+
+    /**
+     * 根据两点间经纬度坐标（double值），计算两点间距离，
+     *
+     * @param lat1
+     * @param lng1
+     * @param lat2
+     * @param lng2
+     * @return 距离：单位为米
+     */
+    public static double DistanceOfTwoPoints(double lat1, double lng1,
+                                             double lat2, double lng2) {
+        double radLat1 = rad(lat1);
+        double radLat2 = rad(lat2);
+        double a = radLat1 - radLat2;
+        double b = rad(lng1) - rad(lng2);
+        double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
+                + Math.cos(radLat1) * Math.cos(radLat2)
+                * Math.pow(Math.sin(b / 2), 2)));
+        s = s * EARTH_RADIUS;
+        s = Math.round(s * 10000) / 10;
+        Log.i("距离", s + "");
+        return s;
+    }
+
+    /**
+     * 单位换算
+     * @param s 米
+     * @return
+     */
+    public static String unitConversion(double s) {
+        String distance = "";
+        if (s > 0 && s < 1000) {//大于0并小于1000米，返回米
+            distance = s + "米";
+        } else if (s > 1000) {//大于1000米，返回公里
+            distance = s / 1000 + "公里";
+        }
+        return distance;
     }
 
 }

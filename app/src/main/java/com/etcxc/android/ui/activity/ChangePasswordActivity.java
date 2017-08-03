@@ -28,6 +28,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.MODIFYPWD;
+import static com.etcxc.android.net.FUNC.RECEIPT_POSTADDRESS;
 import static com.etcxc.android.utils.UIUtils.isLook;
 
 /**
@@ -38,7 +39,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     private EditText mOldPwdEdt, mNewPwdEdt;
     private ImageView mOldPwdDte, mNewPwdSee, mOldPwdSee, mNewPwdDte;
     private Button mSavePwdBtn;
-    private String mOldPassWord,mNewPassWord;
+    private String mOldPassWord, mNewPassWord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,12 +96,12 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
      * 修改密码网络请求
      */
     private void modifyPwd() {
+        JSONObject jsonObject = new JSONObject();
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("tel",MeManager.getUid());
+            public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
+                jsonObject.put("tel", MeManager.getUid());
                 jsonObject.put("pwd", mOldPassWord);
                 jsonObject.put("new_pwd", mNewPassWord);
                 e.onNext(OkClient.get(NetConfig.consistUrl(MODIFYPWD), jsonObject));
@@ -109,13 +110,13 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                 .compose(RxUtil.activityLifecycle(this))
                 .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
+                    public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                         closeProgressDialog();
                         parseResultJson(s);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
                         closeProgressDialog();
                         ToastUtils.showToast(R.string.modify_pwd_fail);
                         LogUtil.e(TAG, "changePwd", throwable);

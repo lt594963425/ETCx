@@ -1,5 +1,6 @@
 package com.etcxc.android.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -182,7 +184,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         String key2 = PrefUtils.getString(App.get(), "code_key", null);
         String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
         String passWord = mLoginPasswordEdt.getText().toString().trim();
-        String pwd = passWord;
+        String pwd = Md5Utils.encryptpwd(passWord);
         String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
         //定义一个JSON，用于向服务器提交数据
         JSONObject data = new JSONObject();
@@ -324,7 +326,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         mLoginFreshVerification.clearAnimation();
                     }
                 });
-
             }
 
             @Override

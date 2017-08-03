@@ -18,12 +18,12 @@ public class FUNC {
      * 短信验证码
      * 1-登录 2-注册  3-修改信息  4-办理  5-号码变更
      */
-    public final static String SMSREPORT = "/xczx/sms/smsReport/";
+    public final static String SMSREPORT = "/xczx/sms/smsReport";
 
     /**
      * 密码（找回，修改）模块
      */
-    public final static String resetPwdUrl = "/xczx/user_information_modify/informationmodify/";
+    public final static String INFORMATIONMODIFY = "/xczx/user_information_modify/informationmodify/";
     public final static String MODIFYPWD = "/xczx/login/pwdchange/";
 
 
@@ -73,8 +73,7 @@ public class FUNC {
     /**
      * ETC 充值
      */
-    // 微信获取下单信息
-    public final static String infoWXUrl = "http://192.168.6.126:9999/pay/pay/addcard/";
+    public final static String ADDCARD = "/xczx/pay/addcard/";
     //微信下单支付
-    public final static String WXOrderUrl = "http://192.168.6.126:9999/pay/pay/payment/pay_message/";
+    public final static String WXORDER = "/xczx/pay/payment/";
 }

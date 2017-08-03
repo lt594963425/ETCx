@@ -4,32 +4,42 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.bean.Networkstore;
 import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.adapter.NetworkQueryAdapter;
 import com.etcxc.android.ui.view.XRecyclerView;
+import com.etcxc.android.utils.DistanceLowToHighComparator;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.OpenExternalMapAppUtils;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
+import com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -44,7 +54,7 @@ import io.reactivex.functions.Consumer;
 public class NetworkQueryActivity extends BaseActivity {
 
     private XRecyclerView mXrecycler;
-    private JSONArray mData;
+    private List<Networkstore.VarBean> mData;
     private NetworkQueryAdapter mAdapter;
     //定义缓存文件的名字，方便外部调用
     public static final String docCache = "xczx_netstore_cache.txt";//缓存文件
@@ -54,12 +64,25 @@ public class NetworkQueryActivity extends BaseActivity {
     private Location mLocation;
     private ProgressDialog dialog;
 
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mXrecycler.setDefaultLayoutManager();
+            mXrecycler.setDivider(R.color.bg_gray, 10);
+            mAdapter = new NetworkQueryAdapter(mData, NetworkQueryActivity.this, mLocation);
+            mXrecycler.setAdapter(mAdapter);
+            closeProgressDialog();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network_query);
         initView();
         getLocation(this);
+        showProgressDialog(getString(R.string.loading));
         if (NetConfig.isAvailable()) {//网络是否可用
             getNetwork();
         } else {
@@ -71,15 +94,6 @@ public class NetworkQueryActivity extends BaseActivity {
         }
     }
 
-    private void setResult(String strLocation, String locationX, String locationY) {
-        if (TextUtils.isEmpty(strLocation)) {
-            return;
-        }
-        Log.e(TAG, "setResult: " + strLocation + locationX + locationY);
-        finish();
-    }
-
-
     private void initView() {
         setTitle(getString(R.string.website_check));
         mXrecycler = (XRecyclerView) findViewById(R.id.xrecycler);
@@ -87,13 +101,10 @@ public class NetworkQueryActivity extends BaseActivity {
 
 
     //初始化数据
-    private void initData(JSONArray jsonArray) {
-        mData = new JSONArray();
+    private void initData(List<Networkstore.VarBean> jsonArray) {
+        mData = new ArrayList<>();
         mData = jsonArray;
-        mXrecycler.setDefaultLayoutManager();
-        mXrecycler.setDivider(R.color.bg_gray, 10);
-        mAdapter = new NetworkQueryAdapter(mData, this, mLocation);
-        mXrecycler.setAdapter(mAdapter);
+        initDistance(mData);
     }
 
     /**
@@ -114,6 +125,7 @@ public class NetworkQueryActivity extends BaseActivity {
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
+                closeProgressDialog();
                 LogUtil.e(TAG, "net", throwable);
                 ToastUtils.showToast(R.string.request_failed);
             }
@@ -126,15 +138,14 @@ public class NetworkQueryActivity extends BaseActivity {
      * @param s
      */
     private void parseResultJson(String s) throws JSONException {
-        JSONObject jsonObject = new JSONObject(s);
-        if (jsonObject == null) return;
-        String code = jsonObject.optString("code");
-        if (code.equals("s_ok")) {
-            if (jsonObject.optJSONArray("var") != null && jsonObject.optJSONArray("var").length() > 0) {
-                initData(jsonObject.optJSONArray("var"));
+        Gson gson = new Gson();
+        Networkstore networkstore = gson.fromJson(s, Networkstore.class);
+        if ("s_ok".equals(networkstore.getCode())) {
+            if (networkstore.getVar() != null && networkstore.getVar().size() > 0) {
+                initData(networkstore.getVar());
                 //判断外部SD卡是否存在，true是存在
                 if (PermissionUtil.hasWritePermission(this)) {
-                    FileUtils.writeJson(this, jsonObject.toString(), docCache, false);
+                    FileUtils.writeJson(this, s, docCache, false);
                 } else {
                     ToastUtils.showToast("没权限");
                 }
@@ -142,6 +153,8 @@ public class NetworkQueryActivity extends BaseActivity {
             } else {
                 ToastUtils.showToast("没有网点信息");
             }
+        } else {
+            closeProgressDialog();
         }
     }
 
@@ -213,4 +226,56 @@ public class NetworkQueryActivity extends BaseActivity {
             dialog.dismiss();
         }
     };
+
+
+    private void initDistance(List<Networkstore.VarBean> mData) {
+        if (mData != null && mData.size() > 0) {
+            //执行一些其他操作
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < mData.size(); i++) {
+                        Geocoder geocoder = new Geocoder(NetworkQueryActivity.this, Locale.getDefault());
+                        String errorMessage = "";
+                        List<Address> addresses = null;
+                        Address mAddress = null;
+                        try {
+                            addresses = geocoder.getFromLocationName(mData.get(i).getNetstores_address(), 1);
+                        } catch (IOException ioe) {
+                            errorMessage = "Service not available";
+                            Log.e(TAG, errorMessage, ioe);
+                        }
+                        if (addresses == null || addresses.size() == 0) {
+                            mData.get(i).setDistance(100000.0 * 1000000);
+                            if (errorMessage.isEmpty()) {
+                                errorMessage = "Not Found";
+                                Log.e(TAG, errorMessage);
+                            }
+                        } else {
+                            for (Address address : addresses) {
+                                String outputAddress = "";
+                                for (int j = 0; j < address.getMaxAddressLineIndex(); j++) {
+                                    outputAddress += " --- " + address.getAddressLine(j);
+                                }
+                                Log.e(TAG, outputAddress);
+                            }
+                            mAddress = addresses.get(0);
+                            Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
+                                    mLocation.getLatitude(),
+                                    mLocation.getLongitude(),
+                                    mAddress.getLatitude(),
+                                    mAddress.getLongitude());
+                            Log.d(TAG, "run: " + d);
+                            mData.get(i).setDistance(d);
+                        }
+                    }
+                    DistanceLowToHighComparator comparator = new DistanceLowToHighComparator();
+                    Collections.sort(mData, comparator);
+                    mHandler.sendEmptyMessage(0);
+                }
+            }).start();
+        } else {
+            closeProgressDialog();
+        }
+    }
 }

@@ -26,6 +26,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.adapter.RechargeOrderFormAdapter;
 import com.etcxc.android.ui.adapter.SelectMoneyAdapter;
@@ -50,7 +51,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.base.Constants.infoWXUrl;
+import static com.etcxc.android.net.FUNC.ADDCARD;
 import static com.etcxc.android.utils.UIUtils.delete;
 import static com.etcxc.android.utils.UIUtils.getInfoList;
 import static com.etcxc.android.utils.UIUtils.initAutoCompleteCard;
@@ -275,7 +276,16 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         }
         showProgressDialog(getString(R.string.add_card_ing));
         Log.e(TAG, "+++++++++++++++++++++++++金钱：" + (int) (parseDouble(mMoneyNumber) * 100));//这里是分
-        net(infoWXUrl + "card_num/" + mRechargeCardNumber + "/fee/" + (int) (parseDouble(mMoneyNumber) * 100));
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("card_num",mRechargeCardNumber);
+            jsonObject.put("fee", (int) (parseDouble(mMoneyNumber) * 100));
+            jsonObject.put("card_num",mRechargeCardNumber);
+            net(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private boolean LocalThrough() {
@@ -298,11 +308,11 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         return false;
     }
 
-    private void net(String url) {
+    private void net(JSONObject jsonObject) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(url, new JSONObject());
+                String result = OkClient.get(NetConfig.consistUrl(ADDCARD), jsonObject);
                 e.onNext(result);
             }
         }).compose(RxUtil.io())

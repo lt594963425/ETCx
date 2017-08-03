@@ -133,7 +133,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_layout:  //用户信息页面
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    openActivity(LoginActivity.class);
+                    openActivityForResult(LoginActivity.class,0);
                 } else {
                     //已登录
                     openActivity(PersonalInfoActivity.class);
@@ -144,7 +144,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 if (!MeManager.getIsLogin()) {
-                    ToastUtils.showToast(R.string.nologin);
+                    //未登录：点击修改密码跳入登录页面
+                    openActivityForResult(LoginActivity.class,0);
                     return;
                 } else {
                     openActivity(ReceiptAddressActivity.class);
@@ -157,7 +158,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    openActivityForResult(PersonalInfoActivity.class,0);
+                    openActivityForResult(LoginActivity.class,0);
                 } else {
                     //已登录：点击修改密码进入修改密码页面
                     openActivity(ChangePasswordActivity.class);

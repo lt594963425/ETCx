@@ -21,17 +21,14 @@ import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.Constants;
+import com.etcxc.android.bean.Networkstore;
+import com.etcxc.android.ui.service.GeocodeAddressIntentService;
 import com.etcxc.android.utils.OpenExternalMapAppUtils;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
-import java.net.URISyntaxException;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.etcxc.android.utils.UIUtils.getString;
 
 /**
@@ -41,19 +38,19 @@ import static com.etcxc.android.utils.UIUtils.getString;
 
 public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapter.ViewHolder> implements View.OnClickListener {
     private static final String TAG = "NetworkQueryAdapter";
-    private JSONArray mData;
+    private List<Networkstore.VarBean> mData;
     private Context mContext;
     private Dialog mDialog;
     private String mDestination;//目的地
     private int position;
     private String phone_nums[];
     private Location mLocation;
-    int fetchType = Constants.USE_ADDRESS_LOCATION;
 
-    public NetworkQueryAdapter(JSONArray mData, Context context, Location location) {
+    public NetworkQueryAdapter(List<Networkstore.VarBean> mData, Context context, Location location) {
         this.mData = mData;
         this.mContext = context;
         this.mLocation = location;
+
     }
 
     @Override
@@ -65,16 +62,16 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
 
     @Override
     public void onBindViewHolder(NetworkQueryAdapter.ViewHolder holder, int position) {
-        try {
-            if (mData.getJSONObject(position) != null) {
-                JSONObject jsonObject = mData.getJSONObject(position);
-                holder.mTv_netstores_address.setText(jsonObject.optString("netstores_address"));
-                holder.mTv_netstores_name.setText(String.format(jsonObject.optString("netstores_name")));
-                holder.mTV_person_charge.setText(
-                        String.format(getString(R.string.person_charge), jsonObject.optString("person_charge")));
+        if (mData.get(position) != null) {
+            holder.mTv_netstores_address.setText(mData.get(position).getNetstores_address());
+            holder.mTv_netstores_name.setText(mData.get(position).getNetstores_name());
+            if (mData.get(position).getDistance() != 100000.0 * 1000000) {
+                holder.mTv_distance.setText(OpenExternalMapAppUtils.unitConversion(mData.get(position).getDistance()));
+            } else {
+                holder.mTv_distance.setText("未知");
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            holder.mTV_person_charge.setText(
+                    String.format(getString(R.string.person_charge), mData.get(position).getPerson_charge()));
         }
         holder.mTv_map.setOnClickListener(this);
         holder.mTv_map.setTag(position);//设置点击position
@@ -84,7 +81,7 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
 
     @Override
     public int getItemCount() {
-        return mData.length();
+        return mData.size();
     }
 
 
@@ -119,7 +116,7 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mTv_map, mTv_call, mTv_netstores_address, mTv_netstores_name, mTV_person_charge;
+        private TextView mTv_map, mTv_call, mTv_netstores_address, mTv_netstores_name, mTV_person_charge, mTv_distance;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -128,6 +125,7 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
             mTv_netstores_address = (TextView) itemView.findViewById(R.id.tv_netstores_address);
             mTv_netstores_name = (TextView) itemView.findViewById(R.id.tv_netstores_name);
             mTV_person_charge = (TextView) itemView.findViewById(R.id.tv_person_charge);
+            mTv_distance = (TextView) itemView.findViewById(R.id.tv_distance);
         }
     }
 
@@ -174,13 +172,8 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
      * @param type 0：百度地图 1：高德地图 2:百度地图web
      */
     private void selectMap(int type) {
-        try {
-            if (mData.getJSONObject(position) != null) {
-                JSONObject jsonObject = mData.getJSONObject(position);
-                mDestination = jsonObject.optString("netstores_address");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (mData.get(position) != null) {
+            mDestination = mData.get(position).getNetstores_address();
         }
         if (!TextUtils.isEmpty(mDestination)) {
             switch (type) {
@@ -193,31 +186,19 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
                     break;
                 case 1://高德
                     if (OpenExternalMapAppUtils.isInstallByread("com.autonavi.minimap")) {
-//                        AddressResultReceiver mResultReceiver = new AddressResultReceiver(null);
-//                        fetchType = Constants.USE_ADDRESS_NAME;
-//                        Intent intent = new Intent(mContext, GeocodeAddressIntentService.class);
-//                        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-//                        intent.putExtra(Constants.FETCH_TYPE_EXTRA, fetchType);
-//                        intent.putExtra(Constants.LOCATION_NAME_DATA_EXTRA, mDestination);
-//                        Log.e(TAG, "Starting Service");
-//                        mContext.startService(intent);
-                        //地理编码
-                        try {
-                            Intent intent = Intent.getIntent("androidamap://route?sourceApplication=softname" + "&sname=我的位置&dname=" + mDestination + "&dev=0&m=0&t=1");
-                            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                            intent.setPackage("com.autonavi.minimap");// pkg=com.autonavi.minimap
-                            intent.addCategory("android.intent.category.DEFAULT");
-                            mContext.startActivity(intent);
-                        } catch (URISyntaxException e) {
-                            e.printStackTrace();
-                        }
-
+                        OpenExternalMapAppUtils.openNaviActivity(mContext, mDestination);
                     } else {
                         ToastUtils.showToast("您未安装高德地图");
                     }
                     break;
                 case 2://百度地图WEB版
-                    OpenExternalMapAppUtils.openBrosserNaviMap(mContext, mLocation, mDestination);
+                    AddressResultReceiver mResultReceiver = new AddressResultReceiver(null);
+                    Intent intent = new Intent(mContext, GeocodeAddressIntentService.class);
+                    intent.putExtra(Constants.RECEIVER, mResultReceiver);
+                    intent.putExtra(Constants.FLAG, Constants.LOCATION);
+                    intent.putExtra(Constants.RECEIVER, mResultReceiver);
+                    intent.putExtra(Constants.LOCATION_NAME_DATA_EXTRA, mDestination);
+                    mContext.startService(intent);
                     break;
             }
         } else {
@@ -227,19 +208,14 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
 
     //拨号
     private void callPhone() {
-        try {
-            if (mData.getJSONObject(position) != null) {
-                JSONObject jsonObject = mData.getJSONObject(position);
-                String phone = jsonObject.optString("phone");
-                phone_nums = phone.split("、");
-                if (phone_nums.length > 1) {//多个号码时弹出提示框
-                    SystemUtil.showCallDialog(mContext, phone_nums);
-                } else {//单个号码直接拨打
-                    SystemUtil.callPhone(mContext, phone_nums[0]);
-                }
+        if (mData.get(position) != null) {
+            String phone = mData.get(position).getPhone();
+            phone_nums = phone.split("、");
+            if (phone_nums.length > 1) {//多个号码时弹出提示框
+                SystemUtil.showCallDialog(mContext, phone_nums);
+            } else {//单个号码直接拨打
+                SystemUtil.dialPhone(mContext, phone_nums[0]);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -250,10 +226,24 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
 
         @Override
         protected void onReceiveResult(int resultCode, final Bundle resultData) {
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                final Address address = resultData.getParcelable(Constants.RESULT_ADDRESS);
-                OpenExternalMapAppUtils.goToNaviActivity(mContext, "", address.getLatitude(), address.getLongitude(), "1", "0");
+            final Address address = resultData.getParcelable(Constants.RESULT_ADDRESS);
+            if (resultCode == Constants.LOCATION) {
+                OpenExternalMapAppUtils.openBrosserNaviMap(mContext,
+                        mLocation,
+                        "我的位置",
+                        address,
+                        mDestination);
+            }
+            if (resultCode == Constants.DISTANCE) {
+                if (address != null) {
+                    Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
+                            mLocation.getLatitude(),
+                            mLocation.getLongitude(),
+                            address.getLatitude(),
+                            address.getLongitude());
+                }
             }
         }
     }
+
 }
