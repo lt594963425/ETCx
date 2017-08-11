@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.R;
@@ -27,7 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +40,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.etcxc.android.base.Constants.WXOrderUrl;
+import static com.etcxc.android.net.FUNC.WXORDER;
+
 
 /**
  * Created by 刘涛 on 2017/7/5 0005.
@@ -140,7 +139,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                         .append(";");
             }
         }
-        urls = WXOrderUrl + mStrBuilder.toString();
+        urls = WXORDER + mStrBuilder.toString();
         Log.e(TAG, urls + ",list.length:" + list.size());
         return false;
     }

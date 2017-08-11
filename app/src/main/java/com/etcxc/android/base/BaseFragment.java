@@ -2,13 +2,11 @@ package com.etcxc.android.base;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.etcxc.android.R;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 import com.umeng.analytics.MobclickAgent;
 
@@ -18,8 +16,7 @@ import com.umeng.analytics.MobclickAgent;
  */
 public abstract class BaseFragment extends RxFragment {
     protected final String TAG = this.getClass().getSimpleName();
-    protected BaseActivity mActivity = (BaseActivity) getActivity();
-
+    protected BaseActivity mActivity; //在类实例化的时候，Activity是null
     protected void setTitle(int titleId) {
         setTitle(getString(titleId));
     }
@@ -62,8 +59,6 @@ public abstract class BaseFragment extends RxFragment {
         }
         super.onDestroy();
     }
-
-
 
     //	加载对话框相关
     private ProgressDialog mProgressDialog;
@@ -110,13 +105,12 @@ public abstract class BaseFragment extends RxFragment {
 
 
     private View mView;
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mView = view;
         super.onViewCreated(view, savedInstanceState);
     }
-    @SuppressWarnings("unchecked")
+
     protected <T extends View> T find(int id) {
         return (T) mView.findViewById(id);
     }
@@ -132,15 +126,18 @@ public abstract class BaseFragment extends RxFragment {
         super.onPause();
         MobclickAgent.onPageEnd(getClass().getName());
     }
-    protected void openActivity(Class<?> pClass) {
-        Intent mIntent = new Intent(getActivity(), pClass);
-        this.startActivity(mIntent);
-        getActivity().overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+       mActivity = (BaseActivity) getActivity();
     }
 
-    protected void openActivityForResult(Class<?> pClass, int i) {
-        Intent mIntent = new Intent(getActivity(), pClass);
-        this.startActivityForResult(mIntent, i);
-        getActivity().overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+    protected void openActivity(Class<?> c) {
+       if (mActivity != null) mActivity.openActivity(c);
+    }
+
+    protected void openActivityForResult(Class<?> c, int i) {
+        if (mActivity != null) mActivity.openActivityForResult(c, i);
     }
 }

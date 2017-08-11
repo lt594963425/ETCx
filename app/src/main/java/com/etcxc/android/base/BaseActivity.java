@@ -137,6 +137,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         startActivityForResult(mIntent, i);
         overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
     }
+
     public void onBackPressed() {
         finish();
         overridePendingTransition(0,R.anim.zoom_exit);

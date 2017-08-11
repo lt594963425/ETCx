@@ -45,6 +45,7 @@ import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 /**
+ * 我的页面
  * Created by 刘涛 on 2017/6/2 0002.
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
@@ -133,10 +134,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_layout:  //用户信息页面
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    openActivityForResult(LoginActivity.class,0);
+                    mActivity.openActivityForResult(LoginActivity.class,0);
                 } else {
                     //已登录
-                    openActivity(PersonalInfoActivity.class);
+                    mActivity.openActivity(PersonalInfoActivity.class);
                 }
                 break;
             case R.id.userhead: //头像
@@ -234,6 +235,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         Intent intent4 = new Intent(getActivity(), LargeImageActivity.class);
         intent4.putExtra("path", FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg");
         startActivity(intent4);
+        mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
     }
 
     /**
