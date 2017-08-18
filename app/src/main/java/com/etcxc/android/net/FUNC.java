@@ -15,10 +15,10 @@ public class FUNC {
     public final static String LOGIN_PWD = "/xczx/login/loginpwd";
 
     /**
-     * 短信验证码
+     * 获取验证码
      * 1-登录 2-注册  3-修改信息  4-办理  5-号码变更
      */
-    public final static String SMSREPORT = "/xczx/sms/smsReport";
+    public final static String SEND_SMS = "/xczx/sms/sendSms";
 
     /**
      * 密码（找回，修改）模块

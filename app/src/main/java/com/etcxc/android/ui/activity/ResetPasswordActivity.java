@@ -34,13 +34,10 @@ import io.reactivex.functions.Consumer;
 import static com.etcxc.android.R.drawable.vd_close_eyes;
 import static com.etcxc.android.R.drawable.vd_open_eyes;
 import static com.etcxc.android.net.FUNC.INFORMATIONMODIFY;
-import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
-import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isLook;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
-import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -92,8 +89,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         mResetPwdDelete.setOnClickListener(this);
         mPhoneNumberEdit.addTextChangedListener(new myTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
         mResetPwd.addTextChangedListener(new myTextWatcher(mResetPwd, mResetPwdDelete));  // mResetPwd  mResetPwdDelete
-        initAutoComplete(this, "history", mPhoneNumberEdit);
-
+//        initAutoComplete(this, "history", mPhoneNumberEdit);
     }
 
 
@@ -138,9 +134,9 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                     return;
                 }
-                saveHistory(this, "history", phoneNum2);
+//                saveHistory(this, "history", phoneNum2);
                 //todo：向后端请求获取短信验证码
-                getSmsCode(SMSREPORT + phoneNum2);
+//                getSmsCode(SMSREPORT + phoneNum2);
                 break;
             case R.id.reset_phonenumber_delete://置空手机号
                 mPhoneNumberEdit.setText("");

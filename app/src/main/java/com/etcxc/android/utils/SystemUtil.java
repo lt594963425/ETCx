@@ -17,11 +17,15 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
 import com.etcxc.android.BuildConfig;
+import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.etcxc.android.utils.UIUtils.getString;
 
 /**
  * 系统级工具类
@@ -31,6 +35,18 @@ import java.util.regex.Pattern;
 public class SystemUtil {
     private static String TAG = "SystemUtil";
     public static Pattern phonePattern = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$"); //手机号正则
+
+    public static String verifyPhoneNumber(String phoneNumber) {
+        if (TextUtils.isEmpty(phoneNumber)) {
+            ToastUtils.showToast(getString(R.string.phone_number_notallow_empty));
+            return "";
+        }
+        Matcher m = SystemUtil.phonePattern.matcher(phoneNumber);
+        if (m.matches()) {
+            return phoneNumber;
+        } else ToastUtils.showToast(R.string.please_input_correct_phone_number);
+        return "";
+    }
 
     public static String getVersionName() {
         String name = BuildConfig.VERSION_NAME;

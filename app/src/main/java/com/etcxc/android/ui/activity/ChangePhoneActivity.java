@@ -21,7 +21,6 @@ import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.myTextWatcher;
 
 import org.json.JSONException;
@@ -33,9 +32,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.net.FUNC.TELCHANGE;
-import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
 /**
@@ -79,7 +76,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 //        mOldPhoneEdt.addTextChangedListener(new myTextWatcher(mOldPhoneEdt, mOldPhoneDle));
         mNewPhoneEdt.addTextChangedListener(new myTextWatcher(mNewPhoneEdt, mNewPhoneDle));
 //        initAutoComplete(this,"history",mOldPhoneEdt);
-        initAutoComplete(this, "history", mNewPhoneEdt);
+//        initAutoComplete(this, "history", mNewPhoneEdt);
     }
 
     @Override
@@ -98,7 +95,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                 } else if (mPhoneNum.equals(MeManager.getUid())) {
                     ToastUtils.showToast(R.string.phone_issame);
                 } else {
-                    getSmsCode(SMSREPORT);
+//                    getSmsCode(SMSREPORT);
                 }
                 break;
             case R.id.save_phone_button://保存
@@ -146,7 +143,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                                 phone = jsonvar.getString("tel");
                                 PrefUtils.setString(App.get(), "pr_sms_id", smsID);//rp_sms_id
                                 ToastUtils.showToast(R.string.send_success);
-                                UIUtils.saveHistory(UIUtils.getContext(), "history", mPhoneNum);
+//                                UIUtils.saveHistory(UIUtils.getContext(), "history", mPhoneNum);
                                 TimeCount time = new TimeCount(mGetCaptcha, 60000, 1000);
                                 time.start();
                             }

@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -159,19 +160,16 @@ public class UIUtils {
     }
 
     /**
-     * 保存历史号码
-     *
-     * @param context
+     * 保存历史记录
      * @param field
      * @param text
      */
-    public static void saveHistory(Context context, String field, String text) {
-        SharedPreferences sp = context.getSharedPreferences("phone_history", 0);
-        String phonehistory = sp.getString(field, "nothing");
+    public static void saveHistory(String field, String text) {
+        String phonehistory = PublicSPUtil.getInstance().getString(field, "");
         if (!phonehistory.contains(text + ",")) {
             StringBuilder sb = new StringBuilder(phonehistory);
             sb.insert(0, text + ",");
-            sp.edit().putString("history", sb.toString()).commit();
+            PublicSPUtil.getInstance().putString(field, sb.toString());
         }
     }
 
@@ -186,28 +184,15 @@ public class UIUtils {
         }
     }
 
-    //初始化用户号码
-    public static void initAutoComplete(Context context, String field, AutoCompleteTextView auto) {
-        SharedPreferences sp = context.getSharedPreferences("phone_history", 0);
-        initAutoTextView(context, field, auto, sp);
-    }
-
-    //初始化用户号码
-    public static void initAutoCompleteCard(Context context, String field, AutoCompleteTextView auto) {
-        SharedPreferences sp = context.getSharedPreferences("card_history", 0);
-        initAutoTextView(context, field, auto, sp);
-    }
-
-    private static void initAutoTextView(Context context, String field, AutoCompleteTextView auto, SharedPreferences sp) {
-        String longhistory = sp.getString(field, " ");
-        String[] hisArrays = longhistory.split(",");
-        if (hisArrays.length < 2) {
-            return;
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, hisArrays);
-        if (hisArrays.length > 50) {
+    public static void initAutoTextView( String field, AutoCompleteTextView auto) {
+        Context context = auto.getContext();
+        String historyStr = PublicSPUtil.getInstance().getString(field, "");
+        String[] historys = historyStr.split(",");
+        if (historys.length < 2) return;
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, historys);
+        if (historys.length > 50) {
             String[] newArrays = new String[50];
-            System.arraycopy(hisArrays, 0, newArrays, 0, 50);
+            System.arraycopy(historys, 0, newArrays, 0, 50);
             adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, newArrays);
         }
         auto.setAdapter(adapter);
@@ -217,9 +202,7 @@ public class UIUtils {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 AutoCompleteTextView view = (AutoCompleteTextView) v;
-                if (hasFocus) {
-                    view.showDropDown();
-                }
+                if (hasFocus) view.showDropDown();
             }
         });
     }

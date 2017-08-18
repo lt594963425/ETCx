@@ -54,7 +54,6 @@ import io.reactivex.functions.Consumer;
 import static com.etcxc.android.net.FUNC.ADDCARD;
 import static com.etcxc.android.utils.UIUtils.delete;
 import static com.etcxc.android.utils.UIUtils.getInfoList;
-import static com.etcxc.android.utils.UIUtils.initAutoCompleteCard;
 import static com.etcxc.android.utils.UIUtils.saveCardHistory;
 import static com.etcxc.android.utils.UIUtils.setPricePoint;
 import static java.lang.Double.parseDouble;
@@ -105,7 +104,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         mRechaergeAddDetailBtn = find(R.id.recharge_add_detail_btn); //添加
         mRechaergePrepaidRecyler = find(R.id.prepaid_recharge_recylerview); //待支付的订单列表
         setPricePoint(mRechaergeMoneyEdt);
-        initAutoCompleteCard(this, "cardhistory", mRechaergeCardEdt);
+//        initAutoCompleteCard(this, "cardhistory", mRechaergeCardEdt);
         init();
     }
 

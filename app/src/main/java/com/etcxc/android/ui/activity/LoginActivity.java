@@ -1,6 +1,5 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -60,9 +58,7 @@ import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.base.App.onProfileSignIn;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
-import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
-import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * 用户信息页面
@@ -122,7 +118,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         addIcon(mLoginPhonenumberEdt, R.drawable.vd_my, LEFT);
         addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password, LEFT);
         addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha, LEFT);
-        initAutoComplete(this, "history", mLoginPhonenumberEdt);
+//        initAutoComplete(this, "history", mLoginPhonenumberEdt);
         init();
     }
 
@@ -184,16 +180,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         String key2 = PrefUtils.getString(App.get(), "code_key", null);
         String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
         String passWord = mLoginPasswordEdt.getText().toString().trim();
-        String pwd = Md5Utils.encryptpwd(passWord);
         String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
         //定义一个JSON，用于向服务器提交数据
         JSONObject data = new JSONObject();
         try {
             if (veriFicodem.isEmpty()) {
-                data.put("tel", phoneNum).put("pwd", pwd);
+                data.put("tel", phoneNum).put("pwd", passWord);
             } else {
                 data.put("tel", phoneNum)
-                        .put("pwd", pwd)
+                        .put("pwd", passWord)
                         .put("code", veriFicodem)
                         .put("code_key", key2);
             }
@@ -201,7 +196,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             LogUtil.e(TAG, "startUserLoging", e);
         }
         if (LocalThrough(phoneNum, passWord, veriFicodem)) return true;
-        saveHistory(this, "history", phoneNum);
+//        saveHistory(this, "history", phoneNum);
         loginRun(data);
         return false;
     }

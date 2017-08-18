@@ -38,11 +38,8 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.base.App.isLogin;
-import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.net.OkClient.get;
-import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
-import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -86,7 +83,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
         addIcon(mMVeriFicodeEdt,R.drawable.vd_regist_captcha);
         mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt,mMPhoneNumberDelete));
-        initAutoComplete(this,"history",mMPhoneNumberEdt);
+//        initAutoComplete(this,"history",mMPhoneNumberEdt);
     }
 
 
@@ -138,10 +135,10 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             ToastUtils.showToast(R.string.please_input_phonenumber);
             return;
         }
-        saveHistory(UIUtils.getContext(),"history",phoneNum2);
+//        saveHistory(UIUtils.getContext(),"history",phoneNum2);
         TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
         time.start();
-        getSmsCodeBtn(SMSREPORT + phoneNum2);
+//        getSmsCodeBtn(SMSREPORT + phoneNum2);
     }
 
     public void getSmsCodeBtn(String url) {

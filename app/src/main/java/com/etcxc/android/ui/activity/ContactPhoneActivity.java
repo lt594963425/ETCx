@@ -24,7 +24,6 @@ import com.etcxc.android.utils.ToastUtils;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.regex.Matcher;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -33,7 +32,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.FUNC_COMMIT_CONTACT_PHONE;
-import static com.etcxc.android.net.FUNC.SMSREPORT;
 
 /**
  * 联系手机验证录入
@@ -83,35 +81,24 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         });
     }
 
-
-    private String verifyPhoneEdit() {
-        String tel1 = mPhoneEditText.getText().toString();
-        if (TextUtils.isEmpty(tel1)) {
-            ToastUtils.showToast(getString(R.string.phone_number_notallow_empty));
-            return "";
-        }
-        Matcher m = SystemUtil.phonePattern.matcher(tel1);
-        if (m.matches()) {
-            return tel1;
-        } else ToastUtils.showToast(R.string.please_input_correct_phone_number);
-        return "";
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.commit_button:
-                String tel1 = verifyPhoneEdit();
-                if (!TextUtils.isEmpty(tel1)) {
+            case R.id.commit_button: {
+                String tel = mPhoneEditText.getText().toString();
+                tel = SystemUtil.verifyPhoneNumber(tel);
+                if (!TextUtils.isEmpty(tel)) {
                     EditText verifyEdit = find(R.id.verificode_edittext);
                     String verifyCode = verifyEdit.getText().toString();
                     if (TextUtils.isEmpty(verifyCode))
                         ToastUtils.showToast(R.string.set_verifycodes);
-                    else commitNet(tel1, verifyCode);
+                    else commitNet(tel, verifyCode);
                 }
-                break;
+            }
+            break;
             case R.id.get_verificode_button:
-                String tel = verifyPhoneEdit();
+                String tel = mPhoneEditText.getText().toString();
+                tel = SystemUtil.verifyPhoneNumber(tel);
                 if (!TextUtils.isEmpty(tel)) sendCode(tel);
                 break;
             case R.id.phone_number_delete:
@@ -124,9 +111,9 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(SMSREPORT)
+            /*    StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(SMSREPORT)
                         .append(File.separator).append("tel").append(File.separator).append(tel);
-                e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));
+                e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));*/
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {

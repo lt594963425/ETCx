@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.MeManager;
+import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
@@ -123,7 +124,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 uri = Uri.fromFile(mFile);
             } else {
                 //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
-                uri = FileProvider.getUriForFile(App.get(), "com.etcxc.useravatar", mFile);
+                uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", mFile);
             }
             if (mFile.exists()) {
                 getImageToView();//初始化
