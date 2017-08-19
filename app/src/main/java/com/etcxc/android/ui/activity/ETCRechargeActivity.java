@@ -26,12 +26,12 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.adapter.RechargeOrderFormAdapter;
 import com.etcxc.android.ui.adapter.SelectMoneyAdapter;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
@@ -54,6 +54,7 @@ import io.reactivex.functions.Consumer;
 import static com.etcxc.android.net.FUNC.ADDCARD;
 import static com.etcxc.android.utils.UIUtils.delete;
 import static com.etcxc.android.utils.UIUtils.getInfoList;
+import static com.etcxc.android.utils.UIUtils.initAutoCompleteCard;
 import static com.etcxc.android.utils.UIUtils.saveCardHistory;
 import static com.etcxc.android.utils.UIUtils.setPricePoint;
 import static java.lang.Double.parseDouble;
@@ -79,7 +80,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     private double allMoney;
     private RechargeOrderFormAdapter myRechaergeRecylerViewAdapter;
     private DecimalFormat df;
-    private Boolean isShowLeadPager = true;
+    private Boolean isShowLeadPager = true;//是否显示过充值提示引导页面
     private Handler mHandler = null;
     public static final String RESP_CODE_INFO = "com.etcxc.android.ui.activity.ETCRechargeActivity.code";
 
@@ -104,7 +105,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         mRechaergeAddDetailBtn = find(R.id.recharge_add_detail_btn); //添加
         mRechaergePrepaidRecyler = find(R.id.prepaid_recharge_recylerview); //待支付的订单列表
         setPricePoint(mRechaergeMoneyEdt);
-//        initAutoCompleteCard(this, "cardhistory", mRechaergeCardEdt);
+        initAutoCompleteCard("cardhistory", mRechaergeCardEdt);
         init();
     }
 
@@ -179,7 +180,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     }
 
     private Runnable LOAD_DATA = () -> {
-        isShowLeadPager = PrefUtils.getBoolean(ETCRechargeActivity.this, "isShowLeadPager", true);
+        isShowLeadPager = PublicSPUtil.getInstance().getBoolean("isShowLeadPager", true);
         if (isShowLeadPager) {
             showLeadHintPager();
         }
@@ -190,7 +191,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
         isShowLeadPager = false;
-        PrefUtils.setBoolean(this, "isShowLeadPager", isShowLeadPager);
+        PublicSPUtil.getInstance().putBoolean("isShowLeadPager", isShowLeadPager);
         View contentView = LayoutInflater.from(App.get()).inflate(R.layout.pup_lead_hint_one, null);
         View contentView2 = LayoutInflater.from(App.get()).inflate(R.layout.pup_lead_hint_two, null);
         PopupWindow pw = new PopupWindow(contentView, mRecharge.getWidth() * 3, UIUtils.dip2Px(100));

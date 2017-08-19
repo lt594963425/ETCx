@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -17,8 +18,10 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.MessageEvent;
+import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.FUNC;
+import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
@@ -34,12 +37,16 @@ import java.util.ArrayList;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
-import static com.etcxc.android.base.App.isLogin;
-import static com.etcxc.android.net.OkClient.get;
+
+import static com.etcxc.android.net.FUNC.LOGIN_SMS;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
+import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * Created by 刘涛 on 2017/6/14 0014.
@@ -55,7 +62,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private RelativeLayout mMsgLVLayout;
     private EditText mMPicCodeEdt;
     private RelativeLayout mMsgVodeLayout;//图形验证码http://192.168.6.58/login/login/login/
-
+    private String mSMSID;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +90,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
         addIcon(mMVeriFicodeEdt,R.drawable.vd_regist_captcha);
         mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt,mMPhoneNumberDelete));
-//        initAutoComplete(this,"history",mMPhoneNumberEdt);
+        initAutoComplete("history",mMPhoneNumberEdt);
     }
 
 
@@ -101,14 +108,12 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 mMPhoneNumberEdt.setText("");
                 break;
             case R.id.get_msg_sms_code_button://获取短信验证码 //http://192.169.6.119/login/sms/smsreport/tel/'tel'
-                getSMSCode();
+                requestSMSCode();
                 break;
             case R.id.message_login_button://登录
-                String smsid = PrefUtils.getString(App.get(), "ml_sms_id", null);
-                //loginRun("http://wthrcdn.etouch.cn/weather_mini?city=%E6%B7%B1%E5%9C%B3");
+                String smsid = PublicSPUtil.getInstance().getString("sms_id", null);
                 String smsCode = mMVeriFicodeEdt.getText().toString().trim();//短信验证码
                 String phoneNum = mMPhoneNumberEdt.getText().toString().trim();//手机号码
-                String data = "tel/" + phoneNum + "/sms_code/" + smsCode + "/sms_id/" + smsid;
                 //判断
                 if (phoneNum.isEmpty()) {
                     ToastUtils.showToast(R.string.phone_isempty);
@@ -120,13 +125,23 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     ToastUtils.showToast(R.string.please_input_smscode);
                     return;
                 }
-                // TODO: 2017/8/1 需要接口调整 
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("tel",phoneNum);
+                    jsonObject.put("sms_code",smsCode);
+                    jsonObject.put("sms_id",smsid);
+                    requestSMSLogin(jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                // TODO: 2017/8/1 需要接口调整
 //                loginUUrl(smsLoginServerUrl + data);
+
                 break;
         }
     }
 
-    private void getSMSCode() {
+    private void requestSMSCode() {
         String phoneNum2 = mMPhoneNumberEdt.getText().toString().trim();
         if (!isMobileNO(phoneNum2)) {
             ToastUtils.showToast(R.string.please_input_correct_phone_number);
@@ -135,37 +150,46 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             ToastUtils.showToast(R.string.please_input_phonenumber);
             return;
         }
-//        saveHistory(UIUtils.getContext(),"history",phoneNum2);
+        saveHistory("history",phoneNum2);
         TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
         time.start();
-//        getSmsCodeBtn(SMSREPORT + phoneNum2);
+        getSmsCode(phoneNum2);
     }
 
-    public void getSmsCodeBtn(String url) {
+    public void getSmsCode(String phonenum) {
+        JSONObject jsonObject = new JSONObject();
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = get(url, new JSONObject());
+                jsonObject.put("tel", phonenum);
+
+                String result = OkClient.get(NetConfig.consistUrl(FUNC.SMSREPORT), jsonObject);
                 e.onNext(result);
             }
-        }).compose(RxUtil.io())
-                .compose(RxUtil.activityLifecycle(this))
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        JSONObject object = new JSONObject(s);
-                        String code = object.getString("code");
-                        if (code.equals("s_ok")) {//返回tel,sms_id
-                            JSONObject jsonVar = object.getJSONObject("var");
-                            String smstel = jsonVar.getString("tel");
-                            String smsID = jsonVar.getString("sms_id");
-                            PrefUtils.setString(App.get(), "ml_tel", smstel);
-                            PrefUtils.setString(App.get(), "ml_sms_id", smsID);
-                          return;
-                        }
-                        if (code.equals("err")) {//返回失败原因
-                            String msg = object.getString("messsage");
-                           ToastUtils.showToast(R.string.send_faid );
+                        try {
+                            Log.e(TAG, s);
+                            JSONObject object = new JSONObject(s);
+                            String code = object.getString("code");
+                            if (code.equals("s_ok")) {
+                                mSMSID= object.getString("sms_id");
+                                PublicSPUtil.getInstance().putString("sms_id", mSMSID);
+                                ToastUtils.showToast(R.string.send_success);
+                            }
+                            if (code.equals("error")) {
+                                // String msg = object.getString("");
+
+                                ToastUtils.showToast(R.string.request_failed);
+
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            ToastUtils.showToast(R.string.request_failed);
                             return;
                         }
                     }
@@ -178,12 +202,13 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 });
     }
 
-    public void loginUUrl(String url) {
+    public void requestSMSLogin(JSONObject jsonObject) {
+        Log.e(TAG,jsonObject.toString());
         showProgressDialog(getString(R.string.logining));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(url, new JSONObject());
+                String result = OkClient.get(NetConfig.consistUrl(LOGIN_SMS), jsonObject);
                 e.onNext(result);
             }
         }).compose(RxUtil.activityLifecycle(this))
@@ -206,23 +231,35 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         try {
             JSONObject jsonObject = new JSONObject(s);
             String code = jsonObject.getString("code");
+            Log.e(TAG,s);
             if (code.equals("s_ok")) {
-                //请求成功
+                Log.e(TAG, "登录成功"+s);
                 JSONObject varJson = jsonObject.getJSONObject("var");
-                String tel = varJson.getString("tel");
-                String pwd = varJson.getString("pwd");
-                String loginTime = varJson.getString("login_time");
-                String nickName = varJson.getString("nick_name");
-                EventBus.getDefault().post(new MessageEvent(tel));
-                isLogin = true;//登录成功
-                MeManager.setSid(tel);
+                String token = varJson.getString("token");
+                JSONObject userJson = varJson.getJSONObject("user");
+                String uid = userJson.getString("uid");
+                String nickName = userJson.getString("nick_name");
+                String tel = userJson.getString("tel");
+                String pwd = userJson.getString("pwd");
+                //String head_image = varJson.getString("head_image");
+                PublicSPUtil.getInstance().putString("tel", tel);
+                PublicSPUtil.getInstance().putString("pwd", pwd);
+                PublicSPUtil.getInstance().putString("nickname", nickName);
+                Log.e(TAG, nickName + ":" + nickName + ":" + token);
+                EventBus.getDefault().post(new MessageEvent(nickName));
+                MeManager.setUid(uid);   //todo
+                MeManager.setPhone(tel);
                 MeManager.setName(nickName);
-                MeManager.setIsLgon(isLogin);
+                MeManager.setToken(token);
+                MeManager.setIsLgon(true);
+                MeManager.setPWD(pwd);
+                ToastUtils.showToast(R.string.login_success);
+                App.onProfileSignIn("mLoginSMS");//帐号登录统计
                 closeProgressDialog();
-                ToastUtils.showToast(R.string.regist_success);
+                openActivity(MainActivity.class);
                 finish();
             }
-            if (code.equals("err")) {
+            if (code.equals("error")) {
                 String returnMsg = jsonObject.getString("message");
                 if (returnMsg.equals("telphone_unregistered")) {
                     closeProgressDialog();
@@ -230,7 +267,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     finish();
                 } else {
                     closeProgressDialog();
-                    ToastUtils.showToast(R.string.login_failed);
+                    ToastUtils.showToast(R.string.login_failed+returnMsg);
                 }
                 return;
             }

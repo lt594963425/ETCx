@@ -2,6 +2,7 @@ package com.etcxc.android.base;
 
 import android.app.Application;
 
+import com.etcxc.android.crash.CrashHandler;
 import com.etcxc.android.utils.LogUtil;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -15,7 +16,6 @@ import static com.etcxc.android.base.Constants.WX_APP_ID;
  */
 public class App extends Application {
     private static final String TAG = App.class.getSimpleName();
-    public static Boolean isLogin = false;//未登录状态false ，登录状态true
     private static App sInstance = null;
     public static IWXAPI WXapi;
 
@@ -25,10 +25,12 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         MobclickAgent.setDebugMode(true);//日志加密传输
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);
-        super.onCreate();
+        CrashHandler catchHandler = CrashHandler.getInstance();
+        catchHandler.init(getApplicationContext());
         LogUtil.d(TAG, "App Application onCreate");
     }
 

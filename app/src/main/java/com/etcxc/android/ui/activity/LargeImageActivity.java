@@ -7,7 +7,7 @@ import android.text.TextUtils;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.utils.PrefUtils;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.shizhefei.view.largeimage.LargeImageView;
 
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
@@ -52,13 +52,14 @@ public class LargeImageActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PrefUtils.setBoolean(this,"isScal",false);
+
+        PublicSPUtil.getInstance().putBoolean("isScal",false);
         finish();
     }
 
     @Override
     protected void onPause() {
-        if (PrefUtils.getBoolean(this,"isScal",false)) {
+        if (PublicSPUtil.getInstance().getBoolean("isScal",false)) {
             this.overridePendingTransition(R.anim.anim_out, R.anim.zoom_exit);
         }
         super.onPause();

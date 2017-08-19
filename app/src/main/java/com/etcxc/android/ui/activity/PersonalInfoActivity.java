@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,9 +56,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.IOException;
 
-import static com.etcxc.MeManager.setIsLgon;
-import static com.etcxc.android.base.App.isLogin;
-
 /**
  * 个人信息界面（通过登录界面拆分）
  * Created by caoyu on 2017/8/2
@@ -65,8 +63,8 @@ import static com.etcxc.android.base.App.isLogin;
 public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
     // 用户信息操作界面
-    private ImageView mPersonHead;
-    private TextView mPersonName;
+    private RelativeLayout mHeadLayout, mNameLayout, mPhoneLayout;
+
     /*头像名称*/
     private File mFile;
     private Uri uri;
@@ -76,6 +74,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private static final int REQUEST_CODE_CROUP_PHOTO = 3;
     private Toolbar mToolbar2;
     private Button mExitLogin;
+    private TextView mUserName, mUserPhone;
+    private ImageView mUserHead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +92,19 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         mToolbar2.setTitle(R.string.personinfo);
         mToolbar2.inflateMenu(R.menu.menu);
         setBarBack(mToolbar2);
-        mPersonHead = (ImageView) findViewById(R.id.person_userhead);
-        mPersonName = (TextView) findViewById(R.id.person_username);
+        mHeadLayout = (RelativeLayout) findViewById(R.id.info_head_layout);
+        mNameLayout = (RelativeLayout) findViewById(R.id.info_name_layout);
+        mPhoneLayout = (RelativeLayout) findViewById(R.id.info_phone_layout);
+
+        mUserHead = (ImageView) findViewById(R.id.user_head);
+        mUserName = (TextView) findViewById(R.id.user_name);
+        mUserPhone = (TextView) findViewById(R.id.user_phone);
+
         mExitLogin = (Button) findViewById(R.id.exit_login_btn);
-        mPersonHead.setOnClickListener(this);
+        mHeadLayout.setOnClickListener(this);
+        mNameLayout.setOnClickListener(this);
+        mPhoneLayout.setOnClickListener(this);
+
         mExitLogin.setOnClickListener(this);
         mToolbar2.setOnMenuItemClickListener(this);
         setstatus();
@@ -114,10 +123,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
     //用户信息操作界面
     private void setstatus() {
-        isLogin = MeManager.getIsLogin();
-        if (isLogin) {
-            String name = MeManager.getUid();
-            mPersonName.setText(name);
+        if (MeManager.getIsLogin()) {
+            mUserName.setText(MeManager.getName());
+            mUserPhone.setText(MeManager.getPhone());
             //适配7.0以上和以下的手机
             mFile = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -131,7 +139,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             }
         } else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-            mPersonHead.setImageDrawable(drawable);
+            mUserHead.setImageDrawable(drawable);
         }
 
     }
@@ -203,7 +211,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                     .error(R.drawable.vd_head2)
                     .dontAnimate()
                     .transform(new GlideCircleTransform(this))
-                    .into(mPersonHead);
+                    .into(mUserHead);
             Intent intent2 = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             intent2.setData(uri);
             this.sendBroadcast(intent2);
@@ -337,7 +345,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             e.printStackTrace();
         }
         //userHead.setImageURI(uri);
-        mPersonHead.setImageBitmap(toRoundBitmap(userBitmap));
+        mUserHead.setImageBitmap(toRoundBitmap(userBitmap));
         // todo 上传图片到服务器
     }
 
@@ -383,21 +391,22 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.person_userhead://头像
-                if (!isLogin) {
-                    ToastUtils.showToast(R.string.nologin);
-                    return;
-                }
+            case R.id.info_head_layout:
                 show2Dialog();
                 break;
+            case R.id.info_name_layout:
+                openActivity(ChangeNickNameActivity.class);
+                break;
+            case R.id.info_phone_layout:
+                openActivity(ChangePhoneActivity.class);
+                break;
             case R.id.exit_login_btn://退出登录
-                if (!isLogin) {
+                if (!MeManager.getIsLogin()) {
                     ToastUtils.showToast(R.string.nologin);
                     return;
                 }
-                MeManager.logoutClear();
-                MeManager.loginClear();
-                setIsLgon(false);
+                MeManager.clearAll();
+                MeManager.setIsLgon(false);
                 ToastUtils.showToast(R.string.exitlogin);
                 finish();
                 break;
@@ -406,11 +415,10 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent messageEvent) {
-        mPersonName.setText(messageEvent.message);
-        Boolean isLogin = MeManager.getIsLogin();
-        if (!isLogin) {
+        mUserName.setText(messageEvent.message);
+        if (!MeManager.getIsLogin()) {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-            mPersonHead.setImageDrawable(drawable);
+            mUserHead.setImageDrawable(drawable);
         }
     }
 }

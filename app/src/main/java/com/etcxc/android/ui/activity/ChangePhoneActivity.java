@@ -3,6 +3,7 @@ package com.etcxc.android.ui.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -12,12 +13,11 @@ import android.widget.TextView;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
@@ -32,7 +32,9 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.net.FUNC.TELCHANGE;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
 /**
@@ -40,16 +42,17 @@ import static com.etcxc.android.utils.UIUtils.isMobileNO;
  */
 
 public class ChangePhoneActivity extends BaseActivity implements View.OnClickListener {
-    private AutoCompleteTextView  mNewPhoneEdt;
+    private AutoCompleteTextView mNewPhoneEdt;
     private EditText mNewCaptchaEdt;
     private TextView mGetCaptcha;
     private Button mSavePhoneBtn;
-    private ImageView  mNewPhoneDle;
+    private ImageView mNewPhoneDle;
 
     private String smsCode;//验证码
-    private String smsID;//验证码id
-    private String phone;//返回的手机号码
     private String mPhoneNum;//输入的验证码
+    private String mOldPhone;
+    private String mNewPhone;
+    private String mSMSID;
 
 
     @Override
@@ -64,19 +67,22 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
         setTitle(R.string.changephone);
 //        mOldPhoneEdt = find(R.id.old_phone_edt);
 //        mOldPhoneDle = find(R.id.old_phone_delete);
+//        mOldPhoneDle.setOnClickListener(this);
+//        mOldPhoneEdt.addTextChangedListener(new myTextWatcher(mOldPhoneEdt, mOldPhoneDle));
+//        initAutoComplete("history", mOldPhoneEdt);
         mNewPhoneDle = find(R.id.new_phone_delete);
         mGetCaptcha = find(R.id.get_captcha);
         mNewPhoneEdt = find(R.id.new_phone_edt);
         mNewCaptchaEdt = find(R.id.new_captcha_edt);
         mSavePhoneBtn = find(R.id.save_phone_button);
-//        mOldPhoneDle.setOnClickListener(this);
+
         mNewPhoneDle.setOnClickListener(this);
         mGetCaptcha.setOnClickListener(this);
         mSavePhoneBtn.setOnClickListener(this);
-//        mOldPhoneEdt.addTextChangedListener(new myTextWatcher(mOldPhoneEdt, mOldPhoneDle));
+
         mNewPhoneEdt.addTextChangedListener(new myTextWatcher(mNewPhoneEdt, mNewPhoneDle));
-//        initAutoComplete(this,"history",mOldPhoneEdt);
-//        initAutoComplete(this, "history", mNewPhoneEdt);
+
+        initAutoComplete("history", mNewPhoneEdt);
     }
 
     @Override
@@ -95,16 +101,17 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                 } else if (mPhoneNum.equals(MeManager.getUid())) {
                     ToastUtils.showToast(R.string.phone_issame);
                 } else {
-//                    getSmsCode(SMSREPORT);
+                    getSmsCode(SMSREPORT);
                 }
                 break;
             case R.id.save_phone_button://保存
+                mNewPhone = mNewPhoneEdt.getText().toString().trim();
                 smsCode = mNewCaptchaEdt.getText().toString().trim();
-                if (!isMobileNO(phone)) {
+                if (!isMobileNO(mNewPhone)) {
                     ToastUtils.showToast(R.string.please_input_correct_phone_number);
-                } else if (TextUtils.isEmpty(phone)) {
+                } else if (TextUtils.isEmpty(mNewPhone)) {
                     ToastUtils.showToast(R.string.please_input_phonenumber);
-                } else if (phone.equals(MeManager.getUid())) {
+                } else if (mNewPhone.equals(MeManager.getUid())) {
                     ToastUtils.showToast(R.string.phone_issame);
                 } else if (TextUtils.isEmpty(smsCode)) {
                     ToastUtils.showToast(R.string.please_input_smscode);
@@ -118,6 +125,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 
     /**
      * 获取验证码
+     *
      * @param url
      */
     public void getSmsCode(String url) {
@@ -125,9 +133,8 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("tel",mPhoneNum);
-                jsonObject.put("type","5");
-                e.onNext(OkClient.get(NetConfig.consistUrl(url),jsonObject));
+                jsonObject.put("tel", mPhoneNum);
+                e.onNext(OkClient.get(NetConfig.consistUrl(url), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -137,17 +144,16 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                         try {
                             JSONObject object = new JSONObject(s);
                             String code = object.getString("code");
+                            Log.e(TAG, s);
                             if (code.equals("s_ok")) {
-                                JSONObject jsonvar = object.getJSONObject("var");
-                                smsID = jsonvar.getString("sms_id");
-                                phone = jsonvar.getString("tel");
-                                PrefUtils.setString(App.get(), "pr_sms_id", smsID);//rp_sms_id
+                                mSMSID = object.getString("sms_id");
+                                PublicSPUtil.getInstance().putString("pr_sms_id", mSMSID);
                                 ToastUtils.showToast(R.string.send_success);
 //                                UIUtils.saveHistory(UIUtils.getContext(), "history", mPhoneNum);
                                 TimeCount time = new TimeCount(mGetCaptcha, 60000, 1000);
                                 time.start();
                             }
-                            if (code.equals("err")) {
+                            if (code.equals("error")) {
                                 ToastUtils.showToast(R.string.unregist);
                                 return;
                             }
@@ -175,10 +181,12 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject params = new JSONObject();
-                params.put("tel", MeManager.getUid());
-                params.put("new_tel", phone);
-                params.put("tel_change_code", smsCode);
-                params.put("sms_id", smsID);
+                params.put("uid", MeManager.getUid());
+                params.put("new_tel", mNewPhone);
+                params.put("sms_code", smsCode);
+                params.put("sms_id", mSMSID);
+                params.put("token", PublicSPUtil.getInstance().getString("token", ""));
+                Log.e(TAG, params.toString());
                 e.onNext(OkClient.get(NetConfig.consistUrl(TELCHANGE), params));
             }
         }).compose(RxUtil.io())
@@ -189,9 +197,12 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
+                        Log.e(TAG, s);
                         if ("s_ok".equals(code)) {
                             ToastUtils.showToast(R.string.finish);
-                            MeManager.setSid(phone);
+                            MeManager.clearPhone();
+                            MeManager.setPhone(mNewPhone);
+                            openActivity(MainActivity.class);
                             finish();
                         } else {
                             ToastUtils.showToast(R.string.smscodeerr);

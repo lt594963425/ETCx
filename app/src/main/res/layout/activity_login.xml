@@ -5,14 +5,18 @@
     android:layout_height="match_parent"
     android:background="@mipmap/bg_regist"
     android:orientation="vertical">
-    <include layout="@layout/toolbar"
-        android:id="@+id/login_toolbar"/>
+
+    <include
+        android:id="@+id/login_toolbar"
+        layout="@layout/toolbar" />
+
     <RelativeLayout
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
         <RelativeLayout
             android:id="@+id/login_phonenumber_layout"
             android:layout_width="match_parent"
@@ -21,8 +25,8 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="40dp"
             android:gravity="center_vertical">
+
             <AutoCompleteTextView
-                android:textColor="@color/white"
                 android:id="@+id/login_phonenumber_edt"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -30,10 +34,11 @@
                 android:layout_toLeftOf="@+id/login_phonenumber_delete"
                 android:background="@null"
                 android:drawablePadding="16dp"
-                android:textColorHint="@color/white"
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="number"
                 android:maxLength="11"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:textSize="15sp" />
 
             <ImageView
@@ -42,8 +47,8 @@
                 android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
-
                 android:padding="12dp"
+                android:visibility="invisible"
                 app:srcCompat="@drawable/vd_delete" />
 
             <View
@@ -62,40 +67,42 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="24dp"
             android:gravity="center_vertical">
+
             <EditText
-                android:textColor="@color/white"
                 android:id="@+id/login_password_edt"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/login_eye"
                 android:background="@null"
-                android:hint="@string/please_input_passwords"
-                android:textColorHint="@color/white"
-                android:inputType="textPassword"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
+                android:hint="@string/please_input_passwords"
+                android:inputType="textPassword"
                 android:maxLength="16"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:textSize="15sp" />
+
             <ImageView
                 android:id="@+id/login_password_delete"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/login_eye"
                 android:layout_toStartOf="@+id/login_eye"
                 android:clickable="true"
-                android:padding="5dp"
+                android:padding="12dp"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/vd_delete" />
 
             <ImageView
-                android:padding="5dp"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
                 android:id="@+id/login_eye"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:clickable="true"
+                android:padding="12dp"
                 app:srcCompat="@drawable/vd_regist_close_eye" />
 
             <View
@@ -104,8 +111,8 @@
                 android:layout_below="@+id/login_password_edt"
                 android:background="@color/white" />
         </RelativeLayout>
+
         <RelativeLayout
-            android:visibility="gone"
             android:id="@+id/login_verificode_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -113,7 +120,8 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="18dp"
-           >
+            android:visibility="gone">
+
             <EditText
 
                 android:id="@+id/login_verificode_edt"
@@ -170,13 +178,13 @@
             android:gravity="center_vertical">
 
             <TextView
-                android:textColor="@color/white"
                 android:id="@+id/login_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:textSize="14sp"
-                android:text="@string/login_message" />
+                android:text="@string/login_message"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -186,14 +194,14 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
                     android:id="@+id/login_fast"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:padding="3dp"
-                    android:text="@string/login_fast_regist" />
+                    android:text="@string/login_fast_regist"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
 
                 <View
                     android:layout_width="1dp"
@@ -201,14 +209,14 @@
                     android:background="@color/white" />
 
                 <TextView
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
                     android:id="@+id/forget_password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:padding="3dp"
-                    android:text="@string/forget_password" />
+                    android:text="@string/forget_password"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -223,8 +231,8 @@
             android:layout_marginTop="80dp"
             android:background="@drawable/bg_button"
             android:text="@string/login"
-            android:textSize="16sp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:layout_width="wrap_content"

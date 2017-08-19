@@ -21,7 +21,6 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!-- android:hardwareAccelerated="false" -->
     <application
         android:name=".base.App"
         android:allowBackup="true"
@@ -36,10 +35,8 @@
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="tencent1106278726" />
             </intent-filter>
         </activity>
@@ -52,7 +49,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -68,6 +64,7 @@
         <activity
             android:name=".ui.activity.LoginActivity"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ui.activity.ChangePasswordActivity"
             android:screenOrientation="portrait" />
@@ -82,6 +79,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.HistoryRechargeCardActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.ChangeNickNameActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
@@ -131,7 +130,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.etcxc.android.action.DSERVICE" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

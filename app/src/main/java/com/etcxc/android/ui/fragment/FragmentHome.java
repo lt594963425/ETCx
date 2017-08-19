@@ -16,7 +16,6 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
-import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
@@ -62,7 +61,6 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity = (MainActivity) getActivity();
         View view = inflater.inflate(R.layout.fragment_home, null);
         mETCOnline = (LinearLayout) view.findViewById(R.id.home_etc_online_lly);//ETC在线办理
         mETCRecharge = (RelativeLayout) view.findViewById(R.id.home_etc_recharge_rly);//ETC充值
@@ -156,6 +154,8 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
         super.onPause();
         MobclickAgent.onPageEnd("FragmentExpand");
     }
+
+
 
     @Override
     public void onDestroy() {

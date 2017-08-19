@@ -11,13 +11,13 @@ import java.util.List;
  * Created by 刘涛 on 2017/6/2 0002.
  */
 
-public class MyFragmentAdapter extends FragmentPagerAdapter{
-    List<Fragment> mlist;
+public class MyFragmentAdapter extends FragmentPagerAdapter {
+    private List<String> mTags;
+    private List<Fragment> mlist;
     public MyFragmentAdapter(FragmentManager fm, List<Fragment> list) {
         super(fm);
         this.mlist = list;
     }
-
     @Override
     public Fragment getItem(int arg0) {
         return mlist.get(arg0);
@@ -32,4 +32,5 @@ public class MyFragmentAdapter extends FragmentPagerAdapter{
     public void destroyItem(ViewGroup container, int position, Object object) {
         //super.destroyItem(container, position, object);
     }
+
 }

@@ -10,30 +10,37 @@ public class FUNC {
     /**
      * 登录注册模块
      */
-    public final static String REGISTER = "/xczx/register/register/";
-    public final static String VIRIFY_CODE = "/login/login/captcha/code_key/";
+    public final static String REGISTER = "/xczx/user/register";
+    public final static String VIRIFY_CODE = "/xczx/login/captcha"; //图形验证码
     public final static String LOGIN_PWD = "/xczx/login/loginpwd";
+    public final static String LOGIN_SMS = "/xczx/login/loginSms";
 
     /**
-     * 获取验证码
-     * 1-登录 2-注册  3-修改信息  4-办理  5-号码变更
+     * 短信验证码
      */
-    public final static String SEND_SMS = "/xczx/sms/sendSms";
+    public final static String SMSREPORT = "/xczx/common/sendSms";
 
     /**
      * 密码（找回，修改）模块
      */
     public final static String INFORMATIONMODIFY = "/xczx/user_information_modify/informationmodify/";
-    public final static String MODIFYPWD = "/xczx/login/pwdchange/";
+    public final static String MODIFYPWD = "/xczx/user/updatePwd";//
 
 
     /**
-     * 用户手机号（联系手机验证录入、修改手机号）模块
+     * 用户信息（联系手机验证录入、修改手机号、修改昵称、头像等）模块
      */
     //联系手机验证录入
     public final static String FUNC_COMMIT_CONTACT_PHONE = "/transaction/transaction/transactiontel";
-    //修改手机号
-    public final static String TELCHANGE = "/xczx/login/telchange";
+    //更换手机号
+    public final static String TELCHANGE = "/xczx/user/updateTel";
+   //昵称
+
+    public final static String NICKNAME_CHANGE = "/xczx/user/updateNickName";
+    //获取用户头像
+    public final static String GET_HEAD = "/xczx/user/getHeadImage";
+    //修改头像
+    public final static String HEAD_CHANGE = "/xczx/user/updateHeadImage?tel=17375851914&token=a93f62aef94251d098636086c91714d8";
 
 
     /**
@@ -62,7 +69,7 @@ public class FUNC {
      * 网点查询
      */
     //网点查询
-    public final static String NETWORK = "/xczx/login/networkstores";
+    public final static String NETWORK = "/xczx/common/networkStores";
 
     /**
      * 关于我们

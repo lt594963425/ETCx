@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,14 +21,13 @@ import android.widget.TextView;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.MessageEvent;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
@@ -38,27 +38,27 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import okhttp3.Call;
-import okhttp3.Callback;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.etcxc.android.R.id.login_phonenumber_delete;
-import static com.etcxc.android.base.App.isLogin;
 import static com.etcxc.android.base.App.onProfileSignIn;
+import static com.etcxc.android.net.FUNC.VIRIFY_CODE;
+import static com.etcxc.android.net.NetConfig.consistUrl;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
+import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * 用户信息页面
@@ -84,12 +84,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private boolean isShowPictureCode = false;
 
     private Toolbar mToolbar1;
+    String s;
+    private String mVerfiyToken;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initLoginView();
+
     }
 
     @Override
@@ -98,6 +101,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void initLoginView() {
+
         mToolbar1 = find(R.id.login_toolbar);
         setTitle(R.string.login);
         setBarBack(mToolbar1);
@@ -118,7 +122,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         addIcon(mLoginPhonenumberEdt, R.drawable.vd_my, LEFT);
         addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password, LEFT);
         addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha, LEFT);
-//        initAutoComplete(this, "history", mLoginPhonenumberEdt);
+        initAutoComplete("history", mLoginPhonenumberEdt);
         init();
     }
 
@@ -133,7 +137,25 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mForgetPassword.setOnClickListener(this);
         mLoginPhonenumberEdt.addTextChangedListener(new myTextWatcher(mLoginPhonenumberEdt, mLoginPhonenumberDelete));
         mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt, mLoginPasswordDelete));
+        mLoginPhonenumberEdt.setText(PublicSPUtil.getInstance().getString("tel", null));
+        mLoginPasswordEdt.setText(PublicSPUtil.getInstance().getString("pwd", null));
+        autoLogin();
+    }
 
+    private void autoLogin() {
+        boolean b = PublicSPUtil.getInstance().getBoolean("IS_REGIST", false);
+        if (b) {
+            JSONObject premes = new JSONObject();
+            try {
+                PublicSPUtil.getInstance().putBoolean("IS_REGIST", false);
+                premes.put("tel", PublicSPUtil.getInstance().getString("tel", null));
+                premes.put("pwd", PublicSPUtil.getInstance().getString("pwd", null));
+                loginRun(premes);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
 
@@ -154,12 +176,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.login_message:  //短信验证码登录
                 openActivity(MessageLoginActivity.class);
+                finish();
                 break;
             case R.id.login_fast:
                 openActivity(PhoneRegistActivity.class);
+                finish();
                 break;
             case R.id.forget_password:
                 openActivity(ResetPasswordActivity.class);
+                finish();
                 break;
             case R.id.login_button:  // 登录
                 MobclickAgent.onEvent(this, "LoginClick");
@@ -169,15 +194,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void refrePictureCode() {
-        long longTime = System.currentTimeMillis();
-        timeStr = String.valueOf(longTime);
-        PrefUtils.setString(App.get(), "code_key", timeStr);
+        PublicSPUtil.getInstance().getString("verfiy_token", mVerfiyToken);
         startRotateAnimation(mLoginFreshVerification, R.anim.login_code_rotate);
-        setPicCode(NetConfig.consistUrl(FUNC.VIRIFY_CODE));
+        requstVerfiyCode(mVerfiyToken);
     }
 
     private boolean startUserLoging() {
-        String key2 = PrefUtils.getString(App.get(), "code_key", null);
+        String code_key = PublicSPUtil.getInstance().getString("verfiy_token", null);
         String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
         String passWord = mLoginPasswordEdt.getText().toString().trim();
         String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
@@ -185,19 +208,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         JSONObject data = new JSONObject();
         try {
             if (veriFicodem.isEmpty()) {
-                data.put("tel", phoneNum).put("pwd", passWord);
+                data.put("tel", phoneNum);
+                data.put("pwd", passWord);
             } else {
                 data.put("tel", phoneNum)
                         .put("pwd", passWord)
                         .put("code", veriFicodem)
-                        .put("code_key", key2);
+                        .put("token", code_key);
             }
         } catch (Exception e) {
             LogUtil.e(TAG, "startUserLoging", e);
         }
         if (LocalThrough(phoneNum, passWord, veriFicodem)) return true;
-//        saveHistory(this, "history", phoneNum);
+        saveHistory("history", phoneNum);
         loginRun(data);
+        Log.e(TAG, "++++++++++++++登录失败1+++++++++++++++");
         return false;
     }
 
@@ -236,107 +261,128 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loginRun(JSONObject jsonObject) {
+        Log.e(TAG, jsonObject.toString());
         showProgressDialog(getString(R.string.logining));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC.LOGIN_PWD), jsonObject));
+                String result = OkClient.get(consistUrl(FUNC.LOGIN_PWD), jsonObject);
+                e.onNext(result);
             }
-        }).compose(RxUtil.io())
-                .compose(RxUtil.activityLifecycle(this))
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
                         closeProgressDialog();
-                        parseResultJson(s);
+                        Log.e(TAG, s);
+                        try {
+                            JSONObject jsonObject = new JSONObject(s);
+                            String code = jsonObject.getString("code");
+                            if ("s_ok".equals(code)) {
+                                successResult(jsonObject);
+                            }
+                            if (code.equals("error")) {
+                                errorResult(jsonObject);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         closeProgressDialog();
                         ToastUtils.showToast(R.string.login_failed);
-                        LogUtil.e(TAG, "loginRun", throwable);
+                        Log.e(TAG, "++++++++++++++登录失败+2++++++++++++++", throwable);
                     }
                 });
     }
 
-    private void parseResultJson(@NonNull String s) throws JSONException {
-        JSONObject jsonObject = new JSONObject(s);
-        String code = jsonObject.getString("code");
-        if ("s_ok".equals(code)) {
-            JSONObject varJson = jsonObject.getJSONObject("var");
-            String tel = varJson.getString("tel");
-            String nickName = varJson.getString("nick_name");
-            //  todo   保存用户信息到本地  通过eventbus 把手机号码传递到Mine界面
-            EventBus.getDefault().post(new MessageEvent(tel));
-            isLogin = true;
-            MeManager.setUid(tel);
-            MeManager.setName(nickName);
-            MeManager.setIsLgon(isLogin);
-            ToastUtils.showToast(R.string.login_success);
-            onProfileSignIn("mLoginPhone");//帐号登录统计
-            finish();
-        }
-        if (code.equals("err")) {
-            String returnMsg = jsonObject.getString("message");//返回的信息
-            if (returnMsg.equals("telphone_unregistered")) {
-                closeProgressDialog();
-                ToastUtils.showToast(R.string.telphoneunregistered);
-            } else if (returnMsg.equals("need_captcha")) {
-                long longTime = System.currentTimeMillis();
-                timeStr = String.valueOf(longTime);
-                PrefUtils.setString(App.get(), "code_key", timeStr);
-                setPicCode(NetConfig.consistUrl(FUNC.VIRIFY_CODE));
-                mPictureCodeLayout.setVisibility(View.VISIBLE);
-                closeProgressDialog();
-                ToastUtils.showToast(R.string.input_pwd_ismore);
-                isShowPictureCode = true;
-            } else if (returnMsg.equals("err_password")) {
-                closeProgressDialog();
-                ToastUtils.showToast(R.string.passworderr);//
-            } else if (returnMsg.equals("err_captcha")) {
-                closeProgressDialog();
-                ToastUtils.showToast(R.string.err_captcha);
-            } else {
-                closeProgressDialog();
-                ToastUtils.showToast(returnMsg);
-            }
+
+    private void successResult(JSONObject jsonObject) throws JSONException {
+        Log.e(TAG, "登录成功" + s);
+        JSONObject varJson = jsonObject.getJSONObject("var");
+        String token = varJson.getString("token");
+        JSONObject userJson = varJson.getJSONObject("user");
+
+        String uid = userJson.getString("uid");
+        String nickName = userJson.getString("nick_name");
+        String tel = userJson.getString("tel");
+        String pwd = userJson.getString("pwd");
+        //String head_image = varJson.getString("head_image");
+        PublicSPUtil.getInstance().putString("tel", tel);
+        PublicSPUtil.getInstance().putString("pwd", pwd);
+        PublicSPUtil.getInstance().putString("nickname", nickName);
+        Log.e(TAG, uid + ":" + nickName + ":" + token + ":" + uid);
+        EventBus.getDefault().post(new MessageEvent(nickName));
+        isShowPictureCode = false;
+        MeManager.setUid(uid);   //todo
+        MeManager.setPhone(tel);
+        MeManager.setName(nickName);
+        MeManager.setToken(token);
+        MeManager.setIsLgon(true);
+        MeManager.setPWD(pwd);
+        ToastUtils.showToast(R.string.login_success);
+        onProfileSignIn("mLoginPhone");//帐号登录统计
+        closeProgressDialog();
+        finish();
+    }
+
+    private void errorResult(JSONObject jsonObject) throws JSONException {
+        Log.e(TAG, "++++++++++++++登录失败++3+++++++++++++");
+        String returnMsg = jsonObject.getString("message");//返回的信息
+        if (returnMsg.equals("telphone_unregistered")) {
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.telphoneunregistered);
+        } else if (returnMsg.equals("verifycode error")) {
+            mVerfiyToken = jsonObject.getString("token");
+            PublicSPUtil.getInstance().putString("verfiy_token", mVerfiyToken);
+            jsonObject.put("token", mVerfiyToken);
+            Log.e(TAG, "mVerfiyToken:" + mVerfiyToken);
+            requstVerfiyCode(mVerfiyToken);
+            mPictureCodeLayout.setVisibility(View.VISIBLE);
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.input_pwd_ismore);
+            isShowPictureCode = true;
+        } else if (returnMsg.equals("err_password")) {
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.passworderr);//
+        } else if (returnMsg.equals("err_captcha")) {
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.err_captcha);
+        } else {
+            closeProgressDialog();
+            ToastUtils.showToast(R.string.tel_and_pwd_err + returnMsg);
         }
     }
 
-    Bitmap bitmap;
-
-    private Bitmap setPicCode(final String url) {
-        Request requst = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-        client.newCall(requst).enqueue(new Callback() {
+    private void requstVerfiyCode(String mVerfiytoken) {
+        Observable.create(new ObservableOnSubscribe<InputStream>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                LoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastUtils.showToast(R.string.request_failed);
-                        mLoginFreshVerification.clearAnimation();
-                    }
-                });
+            public void subscribe(@NonNull ObservableEmitter<InputStream> e) throws Exception {
+                OkHttpClient client = OkClient.rightClient(NetConfig.consistUrl(VIRIFY_CODE));
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("token", mVerfiytoken);
+                Request request = OkClient.initRequest(NetConfig.consistUrl(VIRIFY_CODE), null, jsonObject.toString());
+                Response response = client.newCall(request).execute();
+                e.onNext(response.body().byteStream());
             }
-
+        }).compose(RxUtil.io())
+                .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<InputStream>() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                InputStream is = response.body().byteStream();//字节流
-                bitmap = BitmapFactory.decodeStream(is);
-                LoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {//mLoginVerificodeEdt
-                        mLoginImageVerificode.setImageBitmap(bitmap);
-                        mLoginFreshVerification.clearAnimation();
-                    }
-                });
+            public void accept(@NonNull InputStream s) throws Exception {
+                Bitmap bitmap = BitmapFactory.decodeStream(s);
+                mLoginImageVerificode.setImageBitmap(bitmap);
+
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                LogUtil.e(TAG, "net", throwable);
+                ToastUtils.showToast(R.string.request_failed);
             }
         });
-        return bitmap;
     }
 
     /**
@@ -346,6 +392,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * @param setid
      */
     public void startRotateAnimation(View view, int setid) {
+
         Animation rotateAnim = AnimationUtils.loadAnimation(this, setid);
         LinearInterpolator lin = new LinearInterpolator();
         rotateAnim.setInterpolator(lin);
@@ -361,18 +408,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         v.clearAnimation();
     }
 
-    //将map型转为请求参数型
-    public static String urlencode(Map<String, String> data) {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry i : data.entrySet()) {
-            try {
-                sb.append(i.getKey()).append("=").append(URLEncoder.encode(i.getValue() + "", "UTF-8")).append("&");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-        return sb.toString();
-    }
 
     @Override
     protected void onDestroy() {

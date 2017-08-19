@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,7 +29,6 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.MODIFYPWD;
-import static com.etcxc.android.net.FUNC.RECEIPT_POSTADDRESS;
 import static com.etcxc.android.utils.UIUtils.isLook;
 
 /**
@@ -101,9 +101,11 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
-                jsonObject.put("tel", MeManager.getUid());
+                jsonObject.put("uid", MeManager.getUid());
                 jsonObject.put("pwd", mOldPassWord);
-                jsonObject.put("new_pwd", mNewPassWord);
+                jsonObject.put("newPwd", mNewPassWord);
+                jsonObject.put("token", MeManager.getToken());
+                Log.e(TAG,jsonObject.toString());
                 e.onNext(OkClient.get(NetConfig.consistUrl(MODIFYPWD), jsonObject));
             }
         }).compose(RxUtil.io())
@@ -131,13 +133,27 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
             if (code.equals("s_ok")) {
                 //请求成功
                 closeProgressDialog();
-                ToastUtils.showToast(getString(R.string.modify_pwd_succ));
+                ToastUtils.showToast(R.string.request_success);
                 finish();
+//                MeManager.setIsLgon(false);
+//                JSONObject parames = new JSONObject();
+//                parames.put("tel", PublicSPUtil.getInstance().getString("tel",""));
+//                parames.put("pwd", mNewPassWord);
+//                showProgressDialog(R.string.loading);
+//                LoginApi.loginRun(parames);
+//                if (MeManager.getIsLogin()) {
+//                    openActivity(PersonalInfoActivity.class);
+//                    finish();
+//                }else {
+//                    openActivity(LoginActivity.class);
+//                    finish();
+//                }
+
             }
-            if (code.equals("err")) {
+            if (code.equals("error")) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
                 closeProgressDialog();
-                ToastUtils.showToast(returnMsg);
+                ToastUtils.showToast(R.string.request_failed);
                 return;
             }
         }

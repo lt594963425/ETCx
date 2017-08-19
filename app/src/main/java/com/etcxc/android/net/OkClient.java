@@ -76,7 +76,7 @@ public class OkClient {
         return body instanceof String ? body.toString() : null;
     }
 
-    private static Request initRequest(String url, Map<String, String> differentHeaders, String requestBody) {
+    public static Request initRequest(String url, Map<String, String> differentHeaders, String requestBody) {
         //url可能需要修正
         url = rightUrl(url);
         Request.Builder builder = new Request.Builder().url(url);

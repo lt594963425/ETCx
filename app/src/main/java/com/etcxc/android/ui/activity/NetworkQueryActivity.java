@@ -3,6 +3,7 @@ package com.etcxc.android.ui.activity;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -12,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -47,6 +49,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
+
 /**
  * 网点查询
  * Created by caoyu on 2017/7/26
@@ -58,15 +61,16 @@ public class NetworkQueryActivity extends BaseActivity {
     private NetworkQueryAdapter mAdapter;
     //定义缓存文件的名字，方便外部调用
     public static final String docCache = "xczx_netstore_cache.txt";//缓存文件
-
     private LocationManager locationManager;
     private String locationProvider;//位置提供器
     private Location mLocation;
     private ProgressDialog dialog;
 
     private Handler mHandler = new Handler() {
+
         @Override
         public void handleMessage(Message msg) {
+
             super.handleMessage(msg);
             mXrecycler.setDefaultLayoutManager();
             mXrecycler.setDivider(R.color.bg_gray, 10);
@@ -81,6 +85,10 @@ public class NetworkQueryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network_query);
         initView();
+
+    }
+
+    private void initView() {
         getLocation(this);
         showProgressDialog(getString(R.string.loading));
         if (NetConfig.isAvailable()) {//网络是否可用
@@ -92,9 +100,6 @@ public class NetworkQueryActivity extends BaseActivity {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void initView() {
         setTitle(getString(R.string.website_check));
         mXrecycler = (XRecyclerView) findViewById(R.id.xrecycler);
     }
@@ -177,7 +182,10 @@ public class NetworkQueryActivity extends BaseActivity {
             locationProvider = LocationManager.GPS_PROVIDER;
             dialog.dismiss();
         } else {
-            ToastUtils.showToast("没有可用的位置提供器");
+            ToastUtils.showToast("请开启网络定位或者GPS定位...");
+            //返回开启GPS导航设置界面
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivityForResult(intent, 0);
             dialog.dismiss();
             return;
         }
@@ -229,7 +237,7 @@ public class NetworkQueryActivity extends BaseActivity {
 
 
     private void initDistance(List<Networkstore.VarBean> mData) {
-        if (mData != null && mData.size() > 0) {
+        if (mData != null && mData.size() > 0 && mLocation != null) {
             //执行一些其他操作
             new Thread(new Runnable() {
                 @Override
@@ -278,4 +286,11 @@ public class NetworkQueryActivity extends BaseActivity {
             closeProgressDialog();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
 }

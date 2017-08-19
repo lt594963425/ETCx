@@ -33,7 +33,6 @@ import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
 import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.FileUtils;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
@@ -41,18 +40,18 @@ import com.umeng.analytics.MobclickAgent;
 import java.io.File;
 import java.io.IOException;
 
-import static com.etcxc.MeManager.setIsLgon;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 /**
- * 我的页面
  * Created by 刘涛 on 2017/6/2 0002.
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
-    private RelativeLayout  mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mAboutUs;
+    private static final int REQUST_CODE = 1;
+    private RelativeLayout mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mAboutUs;
     private File mFile;
-    private ImageView mUserHead;
-    private TextView mUsername,mExit;
+    private ImageView mMineUserHead;
+    private TextView mMineUserName;
+    private TextView mExit;
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private ColorCircle mUpdateDot;
@@ -67,7 +66,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         initView();
     }
-
     private void initView() {
         mHarvestAddress = find(R.id.mine_harvestaddress_toright);
         mRecommendFriend = find(R.id.mine_recommendfriend_toright);
@@ -75,21 +73,22 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mChangePhone = find(R.id.mine_changephone_toright);
         mAboutUs = find(R.id.mine_aboutus_toright);
         mMinewLauout = find(R.id.mine_layout);
-        mUserHead = find(R.id.userhead);
-        mUsername = find(R.id.username);
-        mExit =find(R.id.mine_exit_login);
+        mMineUserHead = find(R.id.mine_user_head);
+        mMineUserName = find(R.id.mine_user_name);
+        mExit = find(R.id.mine_exit_login);
         mHarvestAddress.setOnClickListener(this);
         mRecommendFriend.setOnClickListener(this);
         mChangePassWord.setOnClickListener(this);
         mChangePhone.setOnClickListener(this);
         mAboutUs.setOnClickListener(this);
-        mUserHead.setOnClickListener(this);
+        mMineUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
         mExit.setOnClickListener(this);
         mUpdateDot = find(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
-        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE) mUpdateDot.setVisibility(View.VISIBLE);
+        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
+            mUpdateDot.setVisibility(View.VISIBLE);
         mHandler.postDelayed(LOAD_DATA, 500);
     }
 
@@ -99,24 +98,27 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private Runnable LOAD_DATA = new Runnable() {
         @Override
         public void run() {
-            if (MeManager.getIsLogin()) {
-                mUsername.setText(MeManager.getUid());
-                initData();
-            } else {
-                VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-                mUserHead.setImageDrawable(drawable);
-                mUsername.setText(R.string.now_login);
-            }
+                if (MeManager.getIsLogin()) {
+                    mExit.setVisibility(View.VISIBLE);
+                    mMineUserName.setText(MeManager.getName());
+                    initUserInfo();
+                } else {
+                    mExit.setVisibility(View.INVISIBLE);
+                    VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
+                    mMineUserHead.setImageDrawable(drawable);
+                    mMineUserName.setText(R.string.now_login);
+                }
+
         }
     };
 
-    public void initData() {
-        mFile = new File(getCachePath( getActivity()), "user-avatar.jpg");
+    public void initUserInfo() {
+        mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
         if (mFile.exists()) {
             getImageToView();//初始化
         } else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-            mUserHead.setImageDrawable(drawable);
+            mMineUserHead.setImageDrawable(drawable);
         }
     }
 
@@ -132,21 +134,22 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_layout:  //用户信息页面
-                if (!MeManager.getIsLogin()) {
-                    //未登录：点击修改密码跳入登录页面
-                    mActivity.openActivityForResult(LoginActivity.class,0);
-                } else {
+                if (MeManager.getIsLogin()) {
                     //已登录
-                    mActivity.openActivity(PersonalInfoActivity.class);
+                    openActivityForResult(PersonalInfoActivity.class,REQUST_CODE);
+
+                } else {
+                    //未登录：点击修改密码跳入登录页面
+                    openActivityForResult(LoginActivity.class,REQUST_CODE);
                 }
                 break;
-            case R.id.userhead: //头像
+            case R.id.mine_user_head: //头像
                 startLoadHead();
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    openActivityForResult(LoginActivity.class,0);
+                    openActivityForResult(LoginActivity.class, REQUST_CODE);
                     return;
                 } else {
                     openActivity(ReceiptAddressActivity.class);
@@ -159,16 +162,16 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_changepassword_toright:  //修改密码
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    openActivityForResult(LoginActivity.class,0);
+                    openActivityForResult(LoginActivity.class, REQUST_CODE);
                 } else {
                     //已登录：点击修改密码进入修改密码页面
-                    openActivity(ChangePasswordActivity.class);
+                    openActivityForResult(ChangePasswordActivity.class,REQUST_CODE);
                 }
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
-                    openActivityForResult(LoginActivity.class,0);
+                    openActivityForResult(LoginActivity.class, REQUST_CODE);
                     return;
                 } else {
                     openActivity(ChangePhoneActivity.class);
@@ -185,23 +188,19 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     private void exitLogin() {
-        MeManager.logoutClear();
-        MeManager.loginClear();
-        setIsLgon(false);
-        mHandler.postDelayed(LOAD_DATA, 200);
+        MeManager.clearAll();
+        MeManager.setIsLgon(false);
+        mHandler.postDelayed(LOAD_DATA, 400);
         ToastUtils.showToast(R.string.exitlogin);
     }
+
     private void showExitDialog() {
-        if (!MeManager.getIsLogin()) {
-          mExit.setVisibility(View.INVISIBLE);
-        }else{
-            mExit.setVisibility(View.VISIBLE);
-        }
         View longinDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.exit_login, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         TextView dialogDismiss = (TextView) longinDialogView.findViewById(R.id.dialog_dismiss);
         TextView dialogExit = (TextView) longinDialogView.findViewById(R.id.dialog_exit);
         builder.setView(longinDialogView);
+        builder.setCancelable(false);
         final Dialog dialog = builder.show();
         dialogDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,10 +216,11 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             }
         });
     }
+
     private void startLoadHead() {
         if (!MeManager.getIsLogin()) {
             ToastUtils.showToast(R.string.nologin);
-            openActivityForResult(LoginActivity.class,2);
+            openActivityForResult(LoginActivity.class,REQUST_CODE);
             return;
         }
         String path = FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg";
@@ -229,13 +229,11 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             ToastUtils.showToast(R.string.nosethead);
             return;
         }
-        //PublicSPUtil.getInstance().putBoolean("isScal",true);
-        PrefUtils.setBoolean(getActivity(), "isScal", true);
-        //加载本地图片
+        PublicSPUtil.getInstance().putBoolean("isScal", true);
         Intent intent4 = new Intent(getActivity(), LargeImageActivity.class);
         intent4.putExtra("path", FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg");
         startActivity(intent4);
-        mActivity.overridePendingTransition(R.anim.zoom_enter, R.anim.anim_out);
+        UIUtils.openAnimator(getActivity());
     }
 
     /**
@@ -255,7 +253,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             e.printStackTrace();
         }
         if (userBitmap != null) {
-            mUserHead.setImageBitmap(FileUtils.toRoundBitmap(userBitmap));
+            mMineUserHead.setImageBitmap(FileUtils.toRoundBitmap(userBitmap));
         }
     }
 
@@ -265,25 +263,30 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case 0:
-                mHandler.postDelayed(LOAD_DATA, 200);
+            case REQUST_CODE:
+                mHandler.postDelayed(LOAD_DATA,300);
                 break;
             default:
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     @Override
     public void onResume() {
         MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("FragmentExpand");
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacks(LOAD_DATA);
+
     }
 }

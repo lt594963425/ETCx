@@ -11,12 +11,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.Md5Utils;
-import com.etcxc.android.utils.PrefUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
@@ -100,7 +99,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 mResetPwd.setText("");
                 break;
             case R.id.reset_button://找回密码完成，跳回登录界面
-                smsID = PrefUtils.getString(App.get(), "rp_sms_id", null);
+                smsID = PublicSPUtil.getInstance().getString("rp_sms_id", null);
                 //tel/15974255013/inf_modify_sms_code/190881/pwd/lt767435/sms_id/90743520170623203308
                 //data = /tel/'tel'/inf_modify_sms_code/'inf_modify_sms_code'/pwd/'pwd'/sms_id/'sms_id'
                 phoneNum = mPhoneNumberEdit.getText().toString();
@@ -248,7 +247,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             if (code.equals("s_ok")) {//返回tel,sms_id
                 JSONObject jsonvar = object.getJSONObject("var");
                 String smsID = jsonvar.getString("sms_id");
-                PrefUtils.setString(App.get(), "rp_sms_id", smsID);//rp_sms_id
+                PublicSPUtil.getInstance().putString( "rp_sms_id", smsID);//rp_sms_id
                 ToastUtils.showToast(R.string.send_success);
                 TimeCount time = new TimeCount(mVerificodeButton, 60000, 1000);
                 time.start();

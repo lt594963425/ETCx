@@ -24,7 +24,7 @@
     <string name="password_isshort">亲，您输入的密码太短了</string>
     <string name="please_input_phonenumbers">请输入您的手机号码</string>
     <string name="please_input_passwords">请您输入6～16位密码</string>
-    <string name="set_verifycodes">请输入您的短信验证码</string>
+    <string name="set_verifycodes">请输入短信验证码</string>
     <string name="set_ig_verifycodes">请输入验证码</string>
     <string name="please_set_passwords">设置6~16位含数字和字母的密码</string>
     <string name="set_password_text">此手机号码没有注册，设置密码完成注册</string>
@@ -175,7 +175,7 @@
     <string name="my_receipt_address">我的收货地址</string>
     <string name="modify_pwd">修改密码中...</string>
     <string name="modify_pwd_fail">修改密码失败</string>
-    <string name="modify_pwd_succ">修改密码成功</string>
+    <string name="modify_pwd_succ">修改密码成功，请使用新密码重新登录</string>
     <string name="password_issame">亲，你输入的新密码和原密码不能一样哦</string>
     <string name="app_tip">提示</string>
     <!-- WXPayEntryActivity -->
@@ -233,5 +233,14 @@
     <string name="recharge_success">充值成功</string>
     <string name="my_card">我的卡</string>
     <string name="unregist">该手机号码已经被注册</string>
+    <string name="tel_and_pwd_err">帐号或者密码错误</string>
+    <string name="regist_error">注册失败</string>
+    <string name="change_head">头像</string>
+    <string name="change_nickName">昵称</string>
+    <string name="change_tel">手机号码</string>
+    <string name="change_nick_Name">更改名字</string>
+    <string name="save_success">修改成功</string>
+    <string name="request_success">请求成功</string>
+    <string name="change_sex">性别</string>
 
 </resources>

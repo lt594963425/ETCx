@@ -53,6 +53,8 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
             App.get().getString(R.string.index_expand),
             App.get().getString(R.string.mime)};
     private VersionUpdateHelper mHelper;
+    private MyFragmentAdapter mAdapter;
+    private FragmentMine mFragmentMine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +71,13 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(0, false);
-        mTabHost = find(android.R.id.tabhost);
         mViewPager.setOffscreenPageLimit(3);
+        mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
         initTabs();
     }
+
     private void initTabs() {
         int count = mTextViewArray.length;
         for (int i = 0; i < count; i++) {
@@ -86,10 +89,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
 
-
     public View getTabItemView(int i) {
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
-        ImageView  mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
+        ImageView mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
         TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
         mImageView.setBackgroundResource(mImageViewArray[i]);
         mTextView.setText(mTextViewArray[i]);
@@ -99,13 +101,16 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     private void initPage() {
         ArrayList<Fragment> list = new ArrayList<>();
+        mFragmentMine = new FragmentMine();
         list.add(new FragmentHome());
         list.add(new FragmentExpand());
-        list.add(new FragmentMine());
+        list.add(mFragmentMine);
         //绑定Fragment适配器
-        mViewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), list));
+        mAdapter = new MyFragmentAdapter(getSupportFragmentManager(), list);
+        mViewPager.setAdapter(mAdapter);
         mTabHost.getTabWidget().setDividerDrawable(null);
     }
+
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -157,8 +162,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        FragmentMine fragmentMine = new FragmentMine();
-        fragmentMine.onActivityResult(requestCode, resultCode, data);
+        mFragmentMine.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }
 

@@ -10,7 +10,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -79,7 +78,7 @@ public class UIUtils {
      */
     public static int getColor(int resId) {
         // 同时兼容高、低版本
-        return ContextCompat.getColor(getContext(),resId);
+        return ContextCompat.getColor(getContext(), resId);
     }
 
     /**
@@ -89,9 +88,22 @@ public class UIUtils {
         return getContext().getPackageName();
     }
 
-    public static void openAnimator(AppCompatActivity activity) {
-        activity.overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+    public static void openAnimator(Activity activity) {
+        activity.overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
     }
+
+    /**
+     * 将sp值转换为px值，保证文字大小不变
+     * @param spValue
+     * *@param
+     * *（DisplayMetrics类中属性scaledDensity）
+     * * @return
+     */
+    public static int sp2px(Context context, float spValue) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (spValue * fontScale + 0.5f);
+    }
+
     /**
      * dip-->px
      */
@@ -160,7 +172,9 @@ public class UIUtils {
     }
 
     /**
-     * 保存历史记录
+     * 保存历史号码
+     *
+     * @param
      * @param field
      * @param text
      */
@@ -183,7 +197,15 @@ public class UIUtils {
             sp.edit().putString("cardhistory", sb.toString()).commit();
         }
     }
+    //初始化用户号码
+    public static void initAutoComplete( String field, AutoCompleteTextView auto) {
+        initAutoTextView(field, auto);
+    }
 
+    //初始化用户号码
+    public static void initAutoCompleteCard(String field, AutoCompleteTextView auto) {
+        initAutoTextView(field, auto);
+    }
     public static void initAutoTextView( String field, AutoCompleteTextView auto) {
         Context context = auto.getContext();
         String historyStr = PublicSPUtil.getInstance().getString(field, "");

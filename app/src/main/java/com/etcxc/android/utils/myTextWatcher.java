@@ -20,7 +20,7 @@ public class myTextWatcher implements TextWatcher {
 
 
     }
-    CharSequence temp ;
+    CharSequence temp = "" ;
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         temp = s;
@@ -35,9 +35,12 @@ public class myTextWatcher implements TextWatcher {
     public void afterTextChanged(Editable s) {
         if (temp.length() > 0 && !editView.getText().toString().isEmpty()) {
             imageView.setVisibility(View.VISIBLE);
+            temp = "";
+        }else if(editView.getText().toString().trim().length()>0){
+            imageView.setVisibility(View.VISIBLE);
         } else {
             imageView.setVisibility(View.INVISIBLE);
-            temp = "";
         }
+
     }
 }

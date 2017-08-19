@@ -80,7 +80,7 @@
 
             <Button
                 android:id="@+id/get_msg_sms_code_button"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
@@ -122,7 +122,7 @@
 
             <ImageView
                 android:id="@+id/message_login_image_verificode"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
@@ -136,8 +136,9 @@
 
             <ImageView
                 android:id="@+id/message_login_fresh_verification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="12dp"
                 android:layout_alignBottom="@+id/login_verificode_edt"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
