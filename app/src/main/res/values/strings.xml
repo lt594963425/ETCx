@@ -97,7 +97,7 @@
     <string name="passworderr">密码错误</string>
     <string name="telphoneunregistered">手机尚未注册</string>
     <string name="jsonexception">jsonErr</string>
-    <string name="request_failed">请求失败，请检查网络连接</string>
+    <string name="request_failed">请求失败，请检查网络连接是否正常</string>
     <string name="send_faid">请求失败,请检查手机号码是否正确</string>
     <string name="send_success">发送成功</string>
     <string name="login_success">登录成功</string>
@@ -242,5 +242,6 @@
     <string name="save_success">修改成功</string>
     <string name="request_success">请求成功</string>
     <string name="change_sex">性别</string>
+    <string name="change_head_success">修改头像成功</string>
 
 </resources>

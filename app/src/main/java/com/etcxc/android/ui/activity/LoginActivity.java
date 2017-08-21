@@ -305,7 +305,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         JSONObject varJson = jsonObject.getJSONObject("var");
         String token = varJson.getString("token");
         JSONObject userJson = varJson.getJSONObject("user");
-
+        MeManager.clearToken();
         String uid = userJson.getString("uid");
         String nickName = userJson.getString("nick_name");
         String tel = userJson.getString("tel");
@@ -372,6 +372,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<InputStream>() {
             @Override
             public void accept(@NonNull InputStream s) throws Exception {
+                 Log.e(TAG,"验证码图片："+s.toString());
                 Bitmap bitmap = BitmapFactory.decodeStream(s);
                 mLoginImageVerificode.setImageBitmap(bitmap);
 

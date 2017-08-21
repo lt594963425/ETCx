@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
@@ -33,29 +36,44 @@ import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
 import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.FileUtils;
+import com.etcxc.android.utils.LoadImageHeapler;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
+import static com.etcxc.android.utils.FileUtils.toRoundBitmap;
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
+    protected final String TAG = "FragmentMine";
     private static final int REQUST_CODE = 1;
     private RelativeLayout mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mAboutUs;
-    private File mFile;
     private ImageView mMineUserHead;
     private TextView mMineUserName;
     private TextView mExit;
     private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private ColorCircle mUpdateDot;
-
+    /*头像名称*/
+    private File mFile;
+    private Uri uri;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fargment_mine, null);
@@ -66,6 +84,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         initView();
     }
+
     private void initView() {
         mHarvestAddress = find(R.id.mine_harvestaddress_toright);
         mRecommendFriend = find(R.id.mine_recommendfriend_toright);
@@ -84,12 +103,14 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mMineUserHead.setOnClickListener(this);
         mMinewLauout.setOnClickListener(this);
         mExit.setOnClickListener(this);
+        mHandler.postDelayed(LOAD_DATA, 500);
         mUpdateDot = find(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
+
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
             mUpdateDot.setVisibility(View.VISIBLE);
-        mHandler.postDelayed(LOAD_DATA, 500);
+
     }
 
     /**
@@ -98,37 +119,39 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private Runnable LOAD_DATA = new Runnable() {
         @Override
         public void run() {
-                if (MeManager.getIsLogin()) {
-                    mExit.setVisibility(View.VISIBLE);
-                    mMineUserName.setText(MeManager.getName());
-                    initUserInfo();
-                } else {
-                    mExit.setVisibility(View.INVISIBLE);
-                    VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-                    mMineUserHead.setImageDrawable(drawable);
-                    mMineUserName.setText(R.string.now_login);
-                }
+            if (MeManager.getIsLogin()) {
+                mMineUserName.setText(MeManager.getName());
+                initUserInfo();
+            } else {
+                VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
+                mMineUserHead.setImageDrawable(drawable);
+                mMineUserName.setText(R.string.now_login);
+            }
 
         }
     };
 
     public void initUserInfo() {
+        LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(),"user-avatar.jpg");
         mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
-        if (mFile.exists()) {
-            getImageToView();//初始化
-        } else {
-            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-            mMineUserHead.setImageDrawable(drawable);
-        }
+
+            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                @Override
+                public void loadImage(Bitmap bmp) {
+                    mMineUserHead.setImageBitmap(toRoundBitmap(bmp));
+                }
+            });
+
+           // getImageToView();//初始化
     }
 
-    @Override
+ /*   @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (!isVisibleToUser && mHandler != null) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
-    }
+    }*/
 
     @Override
     public void onClick(View v) {
@@ -136,11 +159,11 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_layout:  //用户信息页面
                 if (MeManager.getIsLogin()) {
                     //已登录
-                    openActivityForResult(PersonalInfoActivity.class,REQUST_CODE);
+                    openActivityForResult(PersonalInfoActivity.class, REQUST_CODE);
 
                 } else {
                     //未登录：点击修改密码跳入登录页面
-                    openActivityForResult(LoginActivity.class,REQUST_CODE);
+                    openActivityForResult(LoginActivity.class, REQUST_CODE);
                 }
                 break;
             case R.id.mine_user_head: //头像
@@ -165,7 +188,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     openActivityForResult(LoginActivity.class, REQUST_CODE);
                 } else {
                     //已登录：点击修改密码进入修改密码页面
-                    openActivityForResult(ChangePasswordActivity.class,REQUST_CODE);
+                    openActivityForResult(ChangePasswordActivity.class, REQUST_CODE);
                 }
                 break;
             case R.id.mine_changephone_toright:     // 修改手机
@@ -187,14 +210,44 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     }
 
-    private void exitLogin() {
-        MeManager.clearAll();
-        MeManager.setIsLgon(false);
-        mHandler.postDelayed(LOAD_DATA, 400);
-        ToastUtils.showToast(R.string.exitlogin);
+    private void requestLoginOut() {
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("uid", MeManager.getUid());
+                jsonObject.put("token", MeManager.getToken());
+                Log.e(TAG, String.valueOf(jsonObject));
+                e.onNext(OkClient.get(NetConfig.consistUrl(LOGIN_OUT), jsonObject));
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String s) throws Exception {
+                JSONObject result = new JSONObject(s);
+                Log.e(TAG,result.toString());
+                String code = result.getString("code");
+                if (code.equals("s_ok")) {
+                    ToastUtils.showToast(R.string.exitlogin);
+                    MeManager.clearAll();
+                    MeManager.setIsLgon(false);
+                    mHandler.postDelayed(LOAD_DATA, 400);
+                } else {
+                    ToastUtils.showToast(R.string.request_failed);
+                }
+
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                ToastUtils.showToast(R.string.request_failed);
+            }
+        });
     }
 
     private void showExitDialog() {
+        if (!MeManager.getIsLogin()){
+            return;
+        }
         View longinDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.exit_login, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         TextView dialogDismiss = (TextView) longinDialogView.findViewById(R.id.dialog_dismiss);
@@ -211,7 +264,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         dialogExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exitLogin();
+
+                requestLoginOut();
                 dialog.dismiss();
             }
         });
@@ -220,7 +274,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private void startLoadHead() {
         if (!MeManager.getIsLogin()) {
             ToastUtils.showToast(R.string.nologin);
-            openActivityForResult(LoginActivity.class,REQUST_CODE);
+            openActivityForResult(LoginActivity.class, REQUST_CODE);
             return;
         }
         String path = FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg";
@@ -249,11 +303,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         Uri uri = Uri.fromFile(cover);
         try {
             userBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            mMineUserHead.setImageBitmap(toRoundBitmap(userBitmap));
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        if (userBitmap != null) {
-            mMineUserHead.setImageBitmap(FileUtils.toRoundBitmap(userBitmap));
         }
     }
 
@@ -264,7 +316,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUST_CODE:
-                mHandler.postDelayed(LOAD_DATA,300);
+                mHandler.postDelayed(LOAD_DATA, 300);
                 break;
             default:
                 break;
@@ -289,4 +341,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mHandler.removeCallbacks(LOAD_DATA);
 
     }
+
+
+
 }

@@ -5,11 +5,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,10 +33,13 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
+import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.view.GlideCircleTransform;
 import com.etcxc.android.utils.CropUtils;
 import com.etcxc.android.utils.DialogPermission;
 import com.etcxc.android.utils.FileUtils;
+import com.etcxc.android.utils.LoadImageHeapler;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SharedPreferenceMark;
 import com.etcxc.android.utils.ToastUtils;
@@ -52,16 +50,40 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static android.R.attr.path;
+import static com.etcxc.android.net.FUNC.HEAD_CHANGE;
+import static com.etcxc.android.net.FUNC.LOGIN_OUT;
+import static com.etcxc.android.utils.FileUtils.getCachePath;
+import static com.etcxc.android.utils.FileUtils.toRoundBitmap;
 
 /**
  * 个人信息界面（通过登录界面拆分）
  * Created by caoyu on 2017/8/2
  */
 public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
-
+    protected final String TAG = "PersonalInfoActivity";
     // 用户信息操作界面
     private RelativeLayout mHeadLayout, mNameLayout, mPhoneLayout;
 
@@ -123,20 +145,26 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
     //用户信息操作界面
     private void setstatus() {
+        //适配7.0以上和以下的手机
+        mFile = new File(getCachePath(this), "user-avatar.jpg");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            uri = Uri.fromFile(mFile);
+        } else {
+            //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
+            uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", mFile);
+        }
+        LoadImageHeapler headLoader = new LoadImageHeapler(this, "user-avatar.jpg");
         if (MeManager.getIsLogin()) {
             mUserName.setText(MeManager.getName());
             mUserPhone.setText(MeManager.getPhone());
-            //适配7.0以上和以下的手机
-            mFile = new File(FileUtils.getCachePath(this), "user-avatar.jpg");
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                uri = Uri.fromFile(mFile);
-            } else {
-                //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
-                uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", mFile);
-            }
-            if (mFile.exists()) {
-                getImageToView();//初始化
-            }
+            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                @Override
+                public void loadImage(Bitmap bmp) {
+                    mUserHead.setImageBitmap(toRoundBitmap(bmp));
+                }
+            });
+            //getImageToView();//加载头像
+
         } else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
             mUserHead.setImageDrawable(drawable);
@@ -212,9 +240,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                     .dontAnimate()
                     .transform(new GlideCircleTransform(this))
                     .into(mUserHead);
-            Intent intent2 = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            intent2.setData(uri);
-            this.sendBroadcast(intent2);
+            Log.e(TAG, "################提交服务器################");
+            updateHeadToServer();
         }
     }
 
@@ -282,44 +309,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         }
     }
 
-    /**
-     * 圆形
-     *
-     * @param bitmap
-     * @return
-     */
-    public Bitmap toRoundBitmap(Bitmap bitmap) {
-        //圆形图片宽高
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        //正方形的边长
-        int r = 0;
-        //取最短边做边长
-        if (width > height) {
-            r = height;
-        } else {
-            r = width;
-        }
-        //构建一个bitmap
-        Bitmap backgroundBmp = Bitmap.createBitmap(width,
-                height, Bitmap.Config.ARGB_8888);
-        //new一个Canvas，在backgroundBmp上画图
-        Canvas canvas = new Canvas(backgroundBmp);
-        Paint paint = new Paint();
-        //设置边缘光滑，去掉锯齿
-        paint.setAntiAlias(true);
-        //宽高相等，即正方形
-        RectF rect = new RectF(0, 0, r, r);
-        //通过制定的rect画一个圆角矩形，当圆角X轴方向的半径等于Y轴方向的半径时，
-        //且都等于r/2时，画出来的圆角矩形就是圆形
-        canvas.drawRoundRect(rect, r / 2, r / 2, paint);
-        //设置当两个图形相交时的模式，SRC_IN为取SRC图形相交的部分，多余的将被去掉
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        //canvas将bitmap画在backgroundBmp上
-        canvas.drawBitmap(bitmap, null, rect, paint);
-        //返回已经绘画好的backgroundBmp
-        return backgroundBmp;
-    }
 
     /**
      * 保存裁剪之后的图片数据
@@ -333,12 +322,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         final File cover = FileUtils.getSmallBitmap(mFile.getPath());
         Uri uri = Uri.fromFile(cover);
         Log.e(TAG, "#############################路径uri：" + uri);
-        //通知相册更新
-        // File file = new File(path);
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        //   Uri uri = Uri.fromFile(file);
-        intent.setData(uri);
-        this.sendBroadcast(intent);
         try {
             userBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
         } catch (IOException e) {
@@ -346,7 +329,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         }
         //userHead.setImageURI(uri);
         mUserHead.setImageBitmap(toRoundBitmap(userBitmap));
-        // todo 上传图片到服务器
     }
 
     @Override
@@ -401,16 +383,46 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 openActivity(ChangePhoneActivity.class);
                 break;
             case R.id.exit_login_btn://退出登录
-                if (!MeManager.getIsLogin()) {
-                    ToastUtils.showToast(R.string.nologin);
-                    return;
-                }
-                MeManager.clearAll();
-                MeManager.setIsLgon(false);
-                ToastUtils.showToast(R.string.exitlogin);
-                finish();
+                requestLoginOut();
                 break;
         }
+    }
+
+    private void requestLoginOut() {
+
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("uid", MeManager.getUid());
+                jsonObject.put("token", MeManager.getToken());
+                Log.e(TAG, jsonObject.toString());
+                e.onNext(OkClient.get(NetConfig.consistUrl(LOGIN_OUT), jsonObject));
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        JSONObject result = new JSONObject(s);
+                        String code = result.getString("code");
+                        if (code.equals("s_ok")) {
+
+                            MeManager.clearAll();
+                            MeManager.setIsLgon(false);
+                            ToastUtils.showToast(R.string.exitlogin);
+                            finish();
+                        } else {
+                            ToastUtils.showToast(R.string.request_failed);
+                        }
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        ToastUtils.showToast(R.string.request_failed);
+                    }
+                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -420,5 +432,76 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
             mUserHead.setImageDrawable(drawable);
         }
+    }
+
+    /**
+     * 提交头像之服务器
+     */
+    private void updateHeadToServer() {
+        final File file = FileUtils.getSmallBitmap(mFile.getPath());
+        Uri uri = Uri.fromFile(file);
+        Log.e(TAG, "path:" + path);
+        Log.e(TAG, "mFile:" + String.valueOf(mFile));
+        Log.e(TAG, "file:" + String.valueOf(file));
+        Log.e(TAG, "uri:" + String.valueOf(uri));
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image"), new File(getCachePath(this), "user-avatar.jpg"));
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image[]", "user-avatar.jpg", fileBody)
+                .addFormDataPart("uid", MeManager.getUid())
+                .addFormDataPart("token", MeManager.getToken())
+                .build();
+        Request request = new Request.Builder()
+                .url(NetConfig.HOST + HEAD_CHANGE)
+                .post(requestBody)
+                .build();
+        final okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
+        OkHttpClient client = httpBuilder
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "uploadMultiFile() e=" + e);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showToast(R.string.request_failed);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                try {
+                    Log.e(TAG, "修改头像:" + result);
+                    JSONObject jsonObject = new JSONObject(result);
+                    String code = jsonObject.getString("code");
+                    if (code.equals("s_ok")) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtils.showToast(R.string.change_head_success);
+                                getImageToView();
+                            }
+                        });
+                    } else if (code.equals("error")) {
+                        String error = jsonObject.getString("message");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtils.showToast(R.string.request_failed + error);
+                                getImageToView();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 }

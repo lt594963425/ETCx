@@ -31,7 +31,6 @@ import static com.etcxc.android.net.NetConfig.HOST;
  */
 
 public class ChangeNickNameActivity extends BaseActivity implements View.OnClickListener {
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private EditText mNickname;
     private Button mSaveNN;
 
@@ -73,7 +72,7 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        RequestBody body = RequestBody.create(JSON, String.valueOf(jsonObject));
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), String.valueOf(jsonObject));
         Request request = new Request.Builder()
                 .url(HOST + NICKNAME_CHANGE)
                 .post(body)

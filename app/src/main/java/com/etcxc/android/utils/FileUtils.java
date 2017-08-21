@@ -143,14 +143,13 @@ public class FileUtils {
     public static File getSmallBitmap(String fileSrc) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(fileSrc, options);
-        options.inSampleSize = calculateInSampleSize(options, 200, 200);//设置压缩比例
+        options.inSampleSize = calculateInSampleSize(options, 200, 400);//设置压缩比例
         Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
         options.inJustDecodeBounds = false;
-        Bitmap img = BitmapFactory.decodeFile(fileSrc, options);
+        Bitmap bitmap = BitmapFactory.decodeFile(fileSrc, options);
         // Log.i(TAG, "file size after compress-->" + img.getByteCount() / 256);
         String filename = "user-avatar" + ".jpg";
-        saveBitmap2File(img, fileSrc);
+        saveBitmap2File(bitmap, fileSrc);
         Log.e("TAG", "filename" + filename + ",fileSrc" + fileSrc);
         return new File(fileSrc);
     }

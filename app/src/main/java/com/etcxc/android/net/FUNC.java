@@ -1,6 +1,7 @@
 package com.etcxc.android.net;
 
-/**\
+/**
+ * \
  * 接口清单
  * Created by caoyu on 2017/7/26.
  */
@@ -14,7 +15,10 @@ public class FUNC {
     public final static String VIRIFY_CODE = "/xczx/login/captcha"; //图形验证码
     public final static String LOGIN_PWD = "/xczx/login/loginpwd";
     public final static String LOGIN_SMS = "/xczx/login/loginSms";
-
+    /**
+     * 退出登录
+     */
+    public final static String LOGIN_OUT = "/xczx/user/loginOut";
     /**
      * 短信验证码
      */
@@ -34,14 +38,13 @@ public class FUNC {
     public final static String FUNC_COMMIT_CONTACT_PHONE = "/transaction/transaction/transactiontel";
     //更换手机号
     public final static String TELCHANGE = "/xczx/user/updateTel";
-   //昵称
+    //昵称
 
     public final static String NICKNAME_CHANGE = "/xczx/user/updateNickName";
     //获取用户头像
     public final static String GET_HEAD = "/xczx/user/getHeadImage";
     //修改头像
     public final static String HEAD_CHANGE = "/xczx/user/updateHeadImage?tel=17375851914&token=a93f62aef94251d098636086c91714d8";
-
 
     /**
      * etc申请模块
