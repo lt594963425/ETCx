@@ -22,7 +22,6 @@ import com.etcxc.android.utils.ToastUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -33,7 +32,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.FUNC.FUNC;
+import static com.etcxc.android.net.FUNC.CAN_ISSUE;
 
 /**
  * etc发行Activity
@@ -92,18 +91,13 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                 if (okCarCard(carCard)) {
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("veh_plate_code",carCard)
-                                .put("veh_plate_colour",mCarColor)
-                                .put("user_properties",mPersonalRadiobutton.isChecked()? 1 : 0);
+                        jsonObject.put("licensePlate",carCard)
+                                .put("plateColor",mCarColor)
+                                .put("userType",mPersonalRadiobutton.isChecked()? 1 : 2);
                         net(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST)
-                            .append(FUNC)
-                            .append(File.separator).append("veh_plate_code").append(File.separator).append(carCard)
-                            .append(File.separator).append("veh_plate_colour").append(File.separator).append(mCarColor)
-                            .append(File.separator).append("user_type").append(File.separator).append(mPersonalRadiobutton.isChecked() ? 1 : 0);
                 } else ToastUtils.showToast(getString(R.string.please_input_correct));
                 break;
         }
@@ -114,13 +108,14 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC), jsonObject));
+                e.onNext(OkClient.get(NetConfig.consistUrl(CAN_ISSUE), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
                         if ("s_ok".equals(code)) {
@@ -131,14 +126,13 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             startActivity(intent);
                             overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
                         } else ToastUtils.showToast(R.string.request_failed);
-                        closeProgressDialog();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
+                        closeProgressDialog();
                         LogUtil.e(TAG, "net", throwable);
                         ToastUtils.showToast(R.string.request_failed);
-                        closeProgressDialog();
                     }
                 });
     }

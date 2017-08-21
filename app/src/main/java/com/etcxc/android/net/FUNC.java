@@ -44,10 +44,10 @@ public class FUNC {
 
 
     /**
-     * etc发行模块
+     * etc申请模块
      */
-    //etc 发行
-    public final static String FUNC = "/xczx/transaction/transactionveh";
+    //第一步，车辆是否可申请
+    public final static String CAN_ISSUE = "/xczx/issue/canIssue";
     //上传证件
     public final static String UPLOAD_FUNC = "/transaction/transaction/upload";
 

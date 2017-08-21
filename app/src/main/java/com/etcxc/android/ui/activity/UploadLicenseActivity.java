@@ -70,12 +70,12 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private ImageView mFristImageView, mFristCamera, mSecondImageView, mSecondCamera, mDriveImageView, mDriveCamera;
     private int mClickFlag;
     private Uri uri;
-    private final static String IMAGENAME_IDCARD = "idcard.png";
-    private final static String IMAGENAME_ORG = "org_license.png";
-    private final static String IMAGENAME_DRIVEN = "driven_license.png";
-    private final static String CROPENAME_IDCARD = "crop_idcard.png";
-    private final static String CROPENAME_ORG = "crop_org_license.png";
-    private final static String CROPENAME_DRIVEN = "crop_driven_license.png";
+    private final static String IMAGE_IDCARD = "idcard.png";
+    private final static String IMAGE_ORG = "org_license.png";
+    private final static String IMAGE_DRIVEN = "driven_license.png";
+    private final static String CROP_IDCARD = "crop_idcard.png";
+    private final static String CROP_ORG = "crop_org_license.png";
+    private final static String CROP_DRIVEN = "crop_driven_license.png";
     private String mCachePath;
     private final static int CLICK_IDCARD = 1;
     private final static int CLICK_ORG = 2;
@@ -123,12 +123,12 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
      * fixme:加载太卡，考虑延迟加载
      */
     private void showOldImage() {
-        if (cropExists(CROPENAME_DRIVEN))
-            setImageFromUri(mDriveImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_DRIVEN)));
-        if (cropExists(CROPENAME_ORG))
-            setImageFromUri(mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_ORG)));
-        if (cropExists(CROPENAME_IDCARD))
-            setImageFromUri(mIsOrg ? mSecondImageView : mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROPENAME_IDCARD)));
+        if (cropExists(CROP_DRIVEN))
+            setImageFromUri(mDriveImageView, Uri.fromFile(new File(mCachePath + File.separator + CROP_DRIVEN)));
+        if (cropExists(CROP_ORG))
+            setImageFromUri(mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROP_ORG)));
+        if (cropExists(CROP_IDCARD))
+            setImageFromUri(mIsOrg ? mSecondImageView : mFristImageView, Uri.fromFile(new File(mCachePath + File.separator + CROP_IDCARD)));
     }
 
     private void setListener() {
@@ -160,9 +160,9 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                     e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_ORG), ""));
             }*/
                 List<File> files = new ArrayList<>();
-                files.add(new File(mCachePath, CROPENAME_IDCARD));
-                files.add(new File(mCachePath, CROPENAME_DRIVEN));
-                if (mIsOrg) files.add(new File(mCachePath, CROPENAME_ORG));
+                files.add(new File(mCachePath, CROP_IDCARD));
+                files.add(new File(mCachePath, CROP_DRIVEN));
+                if (mIsOrg) files.add(new File(mCachePath, CROP_ORG));
                 StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST).append(UPLOAD_FUNC)
                         .append(File.separator).append("veh_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
                         .append(File.separator).append("veh_code_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""));
@@ -193,9 +193,9 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
-                boolean drivenOK = cropExists(CROPENAME_DRIVEN);
-                boolean orgOK = cropExists(CROPENAME_ORG);
-                boolean idCradOk = cropExists(CROPENAME_IDCARD);
+                boolean drivenOK = cropExists(CROP_DRIVEN);
+                boolean orgOK = cropExists(CROP_ORG);
+                boolean idCradOk = cropExists(CROP_IDCARD);
                 if (drivenOK && (mIsOrg ? idCradOk && orgOK : idCradOk)) {
                     upload();
                 } else {
@@ -218,14 +218,14 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 showDialog();
                 break;
             case R.id.fisrt_license_imageview:
-                String name = mIsOrg ? CROPENAME_ORG : CROPENAME_IDCARD;
+                String name = mIsOrg ? CROP_ORG : CROP_IDCARD;
                 previewLargeImage(name);
                 break;
             case R.id.second_license_imageview:
-                previewLargeImage(CROPENAME_IDCARD);
+                previewLargeImage(CROP_IDCARD);
                 break;
             case R.id.drive_license_imageview:
-                previewLargeImage(CROPENAME_DRIVEN);
+                previewLargeImage(CROP_DRIVEN);
                 break;
         }
     }
@@ -289,7 +289,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
 
     private void startCamera2() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File imageFile = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? IMAGENAME_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? IMAGENAME_ORG : IMAGENAME_DRIVEN);
+        File imageFile = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? IMAGE_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? IMAGE_ORG : IMAGE_DRIVEN);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", imageFile);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);//这个权限要添加
@@ -316,7 +316,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 setImageFromUri(imageView, UCrop.getOutput(data));
                 break;
             case REQUEST_CAMERA:
-                File file = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROPENAME_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROPENAME_ORG : CROPENAME_DRIVEN);
+                File file = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROP_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROP_ORG : CROP_DRIVEN);
                 if (file.exists()) file.delete();
                 try {
                     boolean success = file.createNewFile();
@@ -327,7 +327,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 break;
             case REQUEST_ALBUM:
                 if (data == null) return;
-                File file1 = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROPENAME_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROPENAME_ORG : CROPENAME_DRIVEN);
+                File file1 = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROP_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROP_ORG : CROP_DRIVEN);
                 if (file1.exists()) file1.delete();
                 try {
                     boolean success = file1.createNewFile();
@@ -344,7 +344,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private void setImageFromUri(ImageView imageView, Uri uri) {
         if (imageView == null || uri == null) return;
         try {
-            String cropName = (mClickFlag & CLICK_IDCARD) != 0 ? CROPENAME_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROPENAME_ORG : CROPENAME_DRIVEN;
+            String cropName = (mClickFlag & CLICK_IDCARD) != 0 ? CROP_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROP_ORG : CROP_DRIVEN;
             int degree = getImageDegree(mCachePath + File.separator + cropName);
             imageView.setImageBitmap(rotateBitmapByDegree(loadBitmap(uri), degree));
         } catch (IOException e) {
