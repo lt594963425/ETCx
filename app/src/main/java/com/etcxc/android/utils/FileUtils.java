@@ -143,7 +143,7 @@ public class FileUtils {
     public static File getSmallBitmap(String fileSrc) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        options.inSampleSize = calculateInSampleSize(options, 200, 400);//设置压缩比例
+        options.inSampleSize = calculateInSampleSize(options, 200, 700);//设置压缩比例
         Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(fileSrc, options);
@@ -167,8 +167,8 @@ public class FileUtils {
         int width = options.outWidth;  //图片的原始宽度
         int inSampleSize = 1;          //压缩比例
         if (height > reqHeight || width > reqWidth) {  //
-            int heightRatio = Math.round(height) / reqHeight;
-            int widthRatio = Math.round(width) / reqWidth;
+            int heightRatio = Math.round((float) height/ (float)reqHeight);
+            int widthRatio = Math.round((float)width /(float) reqWidth);
             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
         return inSampleSize;
@@ -182,8 +182,7 @@ public class FileUtils {
      * @return
      */
     public static boolean saveBitmap2File(Bitmap bmp, String filename) {
-        Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
-        int quality = 50;//压缩50% 100表示不压缩
+        int quality = 30;//100表示不压缩
         OutputStream stream = null;
         try {
             stream = new FileOutputStream(filename);
@@ -191,7 +190,7 @@ public class FileUtils {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return bmp.compress(format, quality, stream);
+        return bmp.compress(Bitmap.CompressFormat.JPEG, quality, stream);
     }
 
     //把bitmap转换成String

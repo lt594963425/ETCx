@@ -33,7 +33,6 @@ import okhttp3.Response;
 
 import static com.etcxc.android.net.FUNC.GET_HEAD;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
-import static com.etcxc.android.utils.FileUtils.saveBitmap2File;
 
 /**
  * Created by LiuTao on 2017/8/21 0021.
@@ -69,7 +68,7 @@ public class LoadImageHeapler {
     }
 
     public void loadUserHead(ImageLoadListener listener) {
-        LogUtil.e(TAG, "从网络中下载数据");
+        Log.e(TAG, "从网络中下载数据");
         requestHead(listener);
 
     }
@@ -114,8 +113,6 @@ public class LoadImageHeapler {
                             @Override
                             public void run() {
                                 listener.loadImage(mBitmap);
-                                //saveBitMap(file);
-                                //saveToCache(key, mBitmap);
                             }
                         });
                     }
@@ -127,30 +124,13 @@ public class LoadImageHeapler {
                             //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
                             Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head2);
                             listener.loadImage(bmp);
+
                         }
                     });
                 }
             }
         });
     }
-
-
-    private void saveBitMap(File file) {
-        String fileSrc = file.getPath();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inSampleSize = FileUtils.calculateInSampleSize(options, 200, 400);//设置压缩比例
-        Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
-        options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(fileSrc, options);
-        saveBitmap2File(bitmap, fileSrc);
-    }
-
-    private void saveToCache(String key, Bitmap bitmap) {
-        Log.e(TAG, "key:" + key + "bitmap:" + bitmap.toString());
-        cache.put(key, bitmap);
-    }
-
     /**
      * 定义一个接口，里面有一个方法，
      * 这里有一个Bitmap对象参数，作用是让调用这接收这个Bitmap对象，实际这bitmap对象就是缓存中的对象

@@ -4,24 +4,27 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.MeManager;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
+import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
@@ -34,7 +37,9 @@ import com.etcxc.android.ui.activity.LoginActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
+import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.ui.view.ColorCircle;
+import com.etcxc.android.ui.view.GlideCircleTransform;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LoadImageHeapler;
 import com.etcxc.android.utils.ToastUtils;
@@ -44,7 +49,6 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -56,7 +60,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
-import static com.etcxc.android.utils.FileUtils.toRoundBitmap;
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
@@ -65,7 +68,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     protected final String TAG = "FragmentMine";
     private static final int REQUST_CODE = 1;
     private RelativeLayout mHarvestAddress, mRecommendFriend, mChangePassWord, mChangePhone, mAboutUs;
-    private ImageView mMineUserHead;
+    private CircleImageView mMineUserHead;
     private TextView mMineUserName;
     private TextView mExit;
     private FrameLayout mMinewLauout;
@@ -74,6 +77,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     /*头像名称*/
     private File mFile;
     private Uri uri;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fargment_mine, null);
@@ -86,6 +90,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     private void initView() {
+        initFile();
         mHarvestAddress = find(R.id.mine_harvestaddress_toright);
         mRecommendFriend = find(R.id.mine_recommendfriend_toright);
         mChangePassWord = find(R.id.mine_changepassword_toright);
@@ -107,10 +112,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mUpdateDot = find(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
-
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
             mUpdateDot.setVisibility(View.VISIBLE);
 
+    }
+
+    private void initFile() {
+        //适配7.0以上和以下的手机
+        mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            uri = Uri.fromFile(mFile);
+        } else {
+            //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
+            uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", mFile);
+        }
     }
 
     /**
@@ -132,26 +147,33 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     };
 
     public void initUserInfo() {
-        LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(),"user-avatar.jpg");
         mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
-
-            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
-                @Override
-                public void loadImage(Bitmap bmp) {
-                    mMineUserHead.setImageBitmap(toRoundBitmap(bmp));
-                }
-            });
-
-           // getImageToView();//初始化
+        if (NetConfig.isAvailable()) {
+            if (mFile.exists()) {
+                getImageToView();
+            } else {
+                LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), "user-avatar.jpg");
+                headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                    @Override
+                    public void loadImage(Bitmap bmp) {
+                        mMineUserHead.setImageBitmap(bmp);
+                    }
+                });
+            }
+        } else {
+            getImageToView();//初始化
+        }
+        //
     }
 
- /*   @Override
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (!isVisibleToUser && mHandler != null) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
-    }*/
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -211,6 +233,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     private void requestLoginOut() {
+        showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -224,7 +247,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             @Override
             public void accept(@NonNull String s) throws Exception {
                 JSONObject result = new JSONObject(s);
-                Log.e(TAG,result.toString());
+                Log.e(TAG, result.toString());
                 String code = result.getString("code");
                 if (code.equals("s_ok")) {
                     ToastUtils.showToast(R.string.exitlogin);
@@ -234,18 +257,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 } else {
                     ToastUtils.showToast(R.string.request_failed);
                 }
+                closeProgressDialog();
 
             }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
                 ToastUtils.showToast(R.string.request_failed);
+                closeProgressDialog();
             }
         });
     }
 
     private void showExitDialog() {
-        if (!MeManager.getIsLogin()){
+        if (!MeManager.getIsLogin()) {
             return;
         }
         View longinDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.exit_login, null);
@@ -290,33 +315,32 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         UIUtils.openAnimator(getActivity());
     }
 
-    /**
-     * 保存裁剪之后的图片数据
-     *
-     * @param uri
-     */
-    private Bitmap userBitmap;
 
     private void getImageToView() {
-        //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(mFile.getPath());
-        Uri uri = Uri.fromFile(cover);
-        try {
-            userBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-            mMineUserHead.setImageBitmap(toRoundBitmap(userBitmap));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Glide.with(getActivity().getApplicationContext())
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(R.drawable.vd_head2)
+                .dontAnimate()
+                .transform(new GlideCircleTransform(getActivity()))
+                .into(mMineUserHead);
+
     }
 
-    /**
-     * 回调
-     */
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUST_CODE:
-                mHandler.postDelayed(LOAD_DATA, 300);
+                if (MeManager.getIsLogin()) {
+                    getImageToView();
+                    mMineUserName.setText(MeManager.getName());
+                } else {
+                    VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
+                    mMineUserHead.setImageDrawable(drawable);
+                    mMineUserName.setText(R.string.now_login);
+                }
                 break;
             default:
                 break;
@@ -341,7 +365,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mHandler.removeCallbacks(LOAD_DATA);
 
     }
-
 
 
 }

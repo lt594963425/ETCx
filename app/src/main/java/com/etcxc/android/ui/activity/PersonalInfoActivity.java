@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,8 +32,10 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
+import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.ui.view.GlideCircleTransform;
 import com.etcxc.android.utils.CropUtils;
 import com.etcxc.android.utils.DialogPermission;
@@ -72,11 +73,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.path;
 import static com.etcxc.android.net.FUNC.HEAD_CHANGE;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
-import static com.etcxc.android.utils.FileUtils.toRoundBitmap;
 
 /**
  * 个人信息界面（通过登录界面拆分）
@@ -84,9 +83,6 @@ import static com.etcxc.android.utils.FileUtils.toRoundBitmap;
  */
 public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
     protected final String TAG = "PersonalInfoActivity";
-    // 用户信息操作界面
-    private RelativeLayout mHeadLayout, mNameLayout, mPhoneLayout;
-
     /*头像名称*/
     private File mFile;
     private Uri uri;
@@ -97,7 +93,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private Toolbar mToolbar2;
     private Button mExitLogin;
     private TextView mUserName, mUserPhone;
-    private ImageView mUserHead;
+    private CircleImageView mUserHead;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,20 +106,19 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
     private void initUserInfoView() {
         //登录之后显示的页面info_page
-        mToolbar2 = (Toolbar) findViewById(R.id.person_toolbar);
+        mToolbar2 = find(R.id.person_toolbar);
         setSupportActionBar(mToolbar2);
         mToolbar2.setTitle(R.string.personinfo);
         mToolbar2.inflateMenu(R.menu.menu);
         setBarBack(mToolbar2);
-        mHeadLayout = (RelativeLayout) findViewById(R.id.info_head_layout);
-        mNameLayout = (RelativeLayout) findViewById(R.id.info_name_layout);
-        mPhoneLayout = (RelativeLayout) findViewById(R.id.info_phone_layout);
+        RelativeLayout mHeadLayout = find(R.id.info_head_layout);
+        RelativeLayout mNameLayout = find(R.id.info_name_layout);
+        RelativeLayout mPhoneLayout = find(R.id.info_phone_layout);
+        mUserHead = find(R.id.user_head);
+        mUserName = find(R.id.user_name);
+        mUserPhone = find(R.id.user_phone);
 
-        mUserHead = (ImageView) findViewById(R.id.user_head);
-        mUserName = (TextView) findViewById(R.id.user_name);
-        mUserPhone = (TextView) findViewById(R.id.user_phone);
-
-        mExitLogin = (Button) findViewById(R.id.exit_login_btn);
+        mExitLogin = find(R.id.exit_login_btn);
         mHeadLayout.setOnClickListener(this);
         mNameLayout.setOnClickListener(this);
         mPhoneLayout.setOnClickListener(this);
@@ -155,16 +151,38 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         }
         LoadImageHeapler headLoader = new LoadImageHeapler(this, "user-avatar.jpg");
         if (MeManager.getIsLogin()) {
-            mUserName.setText(MeManager.getName());
-            mUserPhone.setText(MeManager.getPhone());
-            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
-                @Override
-                public void loadImage(Bitmap bmp) {
-                    mUserHead.setImageBitmap(toRoundBitmap(bmp));
+            if (NetConfig.isAvailable()) {
+                mUserName.setText(MeManager.getName());
+                mUserPhone.setText(MeManager.getPhone());
+                if (mFile.exists()) {
+                    Glide.with(this.getApplicationContext())
+                            .load(uri)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .error(R.drawable.vd_head2)
+                            .dontAnimate()
+                            .transform(new GlideCircleTransform(this))
+                            .into(mUserHead);
+                } else {
+                    headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                        @Override
+                        public void loadImage(Bitmap bmp) {
+                            mUserHead.setImageBitmap(bmp);
+                        }
+                    });
                 }
-            });
-            //getImageToView();//加载头像
-
+            } else {
+                Glide.with(this.getApplicationContext())
+                        .load(uri)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .error(R.drawable.vd_head2)
+                        .dontAnimate()
+                        .transform(new GlideCircleTransform(this))
+                        .into(mUserHead);
+                mUserName.setText(MeManager.getName());
+                mUserPhone.setText(MeManager.getPhone());
+            }
         } else {
             VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
             mUserHead.setImageDrawable(drawable);
@@ -186,10 +204,15 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //申请相机权限
+                if (!NetConfig.isAvailable()) {
+                    ToastUtils.showToast(R.string.network_isdown);
+                    return;
+                }
                 if (PermissionUtil.hasCameraPermission(PersonalInfoActivity.this)) {
                     uploadAvatarFromPhotoRequest();
+                    dialog.dismiss();
                 }
-                dialog.dismiss();
+
             }
         });
         /*
@@ -198,6 +221,10 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!NetConfig.isAvailable()) {
+                    ToastUtils.showToast(R.string.network_isdown);
+                    return;
+                }
                 uploadAvatarFromAlbumRequest();
                 dialog.dismiss();
             }
@@ -227,19 +254,14 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             if (newUri != null) {
                 startPhotoZoom(newUri);
             } else {
-                Toast.makeText(this, "没有得到相册图片", Toast.LENGTH_LONG).show();
+                ToastUtils.showToast(R.string.not_get_image);
             }
         } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {//相机
-            startPhotoZoom(uri);
+            File cover = FileUtils.getSmallBitmap(mFile.getPath());
+            Uri newuri = Uri.fromFile(cover);
+            startPhotoZoom(newuri);
         } else if (requestCode == REQUEST_CODE_CROUP_PHOTO) {
-            Glide.with(this.getApplicationContext())
-                    .load(uri)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .error(R.drawable.vd_head2)
-                    .dontAnimate()
-                    .transform(new GlideCircleTransform(this))
-                    .into(mUserHead);
+            Uri.fromFile(FileUtils.getSmallBitmap(mFile.getPath()));
             Log.e(TAG, "################提交服务器################");
             updateHeadToServer();
         }
@@ -251,7 +273,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
      * @param uri
      */
     public void startPhotoZoom(Uri uri) {
-        Uri newuri = Uri.fromFile(mFile);
+        Uri newuri = Uri.fromFile(FileUtils.getSmallBitmap(mFile.getPath()));
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*")
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -261,8 +283,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 .putExtra("output", newuri)
                 .putExtra("outputFormat", "JPEG");// 返回格式
         startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
-
-
     }
 
     /**
@@ -313,22 +333,18 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     /**
      * 保存裁剪之后的图片数据
      *
-     * @param uri
+     * @param
      */
-    private Bitmap userBitmap;
-
     private void getImageToView() {
-        //加载本地图片
-        final File cover = FileUtils.getSmallBitmap(mFile.getPath());
-        Uri uri = Uri.fromFile(cover);
         Log.e(TAG, "#############################路径uri：" + uri);
-        try {
-            userBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //userHead.setImageURI(uri);
-        mUserHead.setImageBitmap(toRoundBitmap(userBitmap));
+        Glide.with(this.getApplicationContext())
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(R.drawable.vd_head2)
+                .dontAnimate()
+                .transform(new GlideCircleTransform(this))
+                .into(mUserHead);
     }
 
     @Override
@@ -389,7 +405,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     }
 
     private void requestLoginOut() {
-
+        showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
@@ -407,12 +423,13 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                         JSONObject result = new JSONObject(s);
                         String code = result.getString("code");
                         if (code.equals("s_ok")) {
-
+                            closeProgressDialog();
                             MeManager.clearAll();
                             MeManager.setIsLgon(false);
                             ToastUtils.showToast(R.string.exitlogin);
                             finish();
                         } else {
+                            closeProgressDialog();
                             ToastUtils.showToast(R.string.request_failed);
                         }
 
@@ -421,6 +438,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         ToastUtils.showToast(R.string.request_failed);
+                        closeProgressDialog();
                     }
                 });
     }
@@ -438,12 +456,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
      * 提交头像之服务器
      */
     private void updateHeadToServer() {
-        final File file = FileUtils.getSmallBitmap(mFile.getPath());
-        Uri uri = Uri.fromFile(file);
-        Log.e(TAG, "path:" + path);
-        Log.e(TAG, "mFile:" + String.valueOf(mFile));
-        Log.e(TAG, "file:" + String.valueOf(file));
-        Log.e(TAG, "uri:" + String.valueOf(uri));
+        showProgressDialog(R.string.loading);
         RequestBody fileBody = RequestBody.create(MediaType.parse("image"), new File(getCachePath(this), "user-avatar.jpg"));
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -470,6 +483,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                         ToastUtils.showToast(R.string.request_failed);
                     }
                 });
+                closeProgressDialog();
             }
 
             @Override
@@ -485,20 +499,24 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                             public void run() {
                                 ToastUtils.showToast(R.string.change_head_success);
                                 getImageToView();
+                                PublicSPUtil.getInstance().putBoolean("CHANGE_INFO", true);
+
                             }
                         });
-                    } else if (code.equals("error")) {
+                        closeProgressDialog();
+                    } else {
                         String error = jsonObject.getString("message");
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 ToastUtils.showToast(R.string.request_failed + error);
-                                getImageToView();
                             }
                         });
+                        closeProgressDialog();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    closeProgressDialog();
                 }
 
             }
