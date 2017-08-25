@@ -29,6 +29,6 @@ public class TimeCount extends CountDownTimer{
         view.setText(getString(R.string.reStartGetCode));
         view.setTextSize(UIUtils.px2Dip(39));
         view.setClickable(true);
-        view.setBackgroundColor(UIUtils.getColor(R.color.colorGreen));
+        view.setBackgroundResource(R.drawable.bg_sms_button);
     }
 }

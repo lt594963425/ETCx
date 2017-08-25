@@ -34,8 +34,6 @@ public class FUNC {
     /**
      * 用户信息（联系手机验证录入、修改手机号、修改昵称、头像等）模块
      */
-    //联系手机验证录入
-    public final static String FUNC_COMMIT_CONTACT_PHONE = "/transaction/transaction/transactiontel";
     //更换手机号
     public final static String TELCHANGE = "/xczx/user/updateTel";
     //昵称
@@ -51,22 +49,32 @@ public class FUNC {
      */
     //第一步，车辆是否可申请
     public final static String CAN_ISSUE = "/xczx/issue/canIssue";
-    //上传证件
-    public final static String UPLOAD_FUNC = "/transaction/transaction/upload";
-
+    //上传申请证件
+    public final static String UPLOAD_FUNC = "/xczx/issue/uploadLicense";
+    //车主手机号码验证
+    public final static String OWNERPHONE_VERIFY = "/xczx/issue/ownerPhone";
+    //上传邮寄地址
+    public final static String POST_INFO = "/xczx/issue/postInfo";
+    //支付obu与预存金
+    public final static String WX_PAY_ISSUE ="/xczx/issue/wxPay";
     /**
      * 用户地址管理模块
      */
+
     //填写收货地址
     public final static String FUNC_POSTADDRESS = "/xczx/transaction/transactionmail";
     //获取收获地址
     public final static String FIND_POSTADDRESS = "/xczx/login/deliaddress";
     //修改收获地址
     public final static String RECEIPT_POSTADDRESS = "/xczx/login/deliaddressadd";
-    public final static String AREAPROVINCE = "/xczx/transaction/areaprovince/";
-    public final static String COUNTY = "/xczx/transaction/areastreet/county/";
-    public final static String PROVINCE = "/xczx/transaction/areacity/province/";
-    public final static String CITY = "/xczx/transaction/areacounty/city/";
+    //获取地址街道
+    public final static String STREET = "/xczx/issue/getStreet";
+    //选择地址获取省
+    public final static String AREAPROVINCE = "/xczx/issue/getProvince";
+    //选择地址获取县
+    public final static String COUNTY = "/xczx/issue/getCounty";
+    //选择地址获取城市
+    public final static String CITY = "/xczx/issue/getCity";
 
     /**
      * 网点查询

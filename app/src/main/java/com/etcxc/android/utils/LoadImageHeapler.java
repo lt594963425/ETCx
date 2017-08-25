@@ -123,6 +123,7 @@ public class LoadImageHeapler {
                             ToastUtils.showToast(R.string.request_failed);
                             //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
                             Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head2);
+
                             listener.loadImage(bmp);
 
                         }

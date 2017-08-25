@@ -3,6 +3,7 @@ package com.etcxc.android.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,13 +11,13 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 
 import org.json.JSONException;
@@ -29,10 +30,13 @@ import java.util.regex.Pattern;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.CAN_ISSUE;
+import static com.etcxc.android.utils.UIUtils.openAnimator;
 
 /**
  * etc发行Activity
@@ -87,13 +91,19 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
+                if (!MeManager.getIsLogin()){
+                    openActivity(LoginActivity.class);
+                    return;
+                }
                 String carCard = mCarCardEdit.getText().toString();
                 if (okCarCard(carCard)) {
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("licensePlate",carCard)
                                 .put("plateColor",mCarColor)
-                                .put("userType",mPersonalRadiobutton.isChecked()? 1 : 2);
+                                .put("userType",mPersonalRadiobutton.isChecked()? 1 : 2)
+                                .put("uid", MeManager.getUid())
+                                .put("token",MeManager.getToken());
                         net(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -104,19 +114,24 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void net(JSONObject jsonObject) {
+        //OkHttpClient client = new OkHttpClient();
+        Log.e(TAG, String.valueOf(jsonObject));
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(CAN_ISSUE), jsonObject));
+                String result = OkClient.get(NetConfig.consistUrl(CAN_ISSUE), jsonObject);
+                Log.e(TAG,result);
+                e.onNext(result);
             }
-        }).compose(RxUtil.io())
-                .compose(RxUtil.activityLifecycle(this))
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
+                        Log.e(TAG, String.valueOf(jsonObject));
                         String code = jsonObject.getString("code");
                         if ("s_ok".equals(code)) {
                             Intent intent = new Intent(ETCIssueActivity.this, UploadLicenseActivity.class);
@@ -124,8 +139,11 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             PublicSPUtil.getInstance().putString("carCardColor", mCarColor);
                             intent.putExtra("isOrg", !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
-                            overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
-                        } else ToastUtils.showToast(R.string.request_failed);
+                            openAnimator(ETCIssueActivity.this);
+                        } else {
+                            closeProgressDialog();
+                            ToastUtils.showToast(R.string.request_failed);
+                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override

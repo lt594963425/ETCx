@@ -245,5 +245,6 @@
     <string name="change_head_success">修改头像成功</string>
     <string name="network_isdown">你的网络连接已断开，不能修改头像</string>
     <string name="not_get_image">没有得到相册图片</string>
+    <string name="getting_prepayid">获取prepayID</string>
 
 </resources>

@@ -32,6 +32,7 @@ import static com.etcxc.android.net.FUNC.MODIFYPWD;
 import static com.etcxc.android.utils.UIUtils.isLook;
 
 /**
+ * 修改密码
  * Created by 刘涛 on 2017/7/4 0004.
  */
 
@@ -135,20 +136,6 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                 closeProgressDialog();
                 ToastUtils.showToast(R.string.request_success);
                 finish();
-//                MeManager.setIsLgon(false);
-//                JSONObject parames = new JSONObject();
-//                parames.put("tel", PublicSPUtil.getInstance().getString("tel",""));
-//                parames.put("pwd", mNewPassWord);
-//                showProgressDialog(R.string.loading);
-//                LoginApi.loginRun(parames);
-//                if (MeManager.getIsLogin()) {
-//                    openActivity(PersonalInfoActivity.class);
-//                    finish();
-//                }else {
-//                    openActivity(LoginActivity.class);
-//                    finish();
-//                }
-
             }
             if (code.equals("error")) {
                 String returnMsg = jsonObject.getString("message");//返回的信息

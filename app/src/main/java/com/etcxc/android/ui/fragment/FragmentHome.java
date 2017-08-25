@@ -1,7 +1,10 @@
 package com.etcxc.android.ui.fragment;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,7 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
+import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
@@ -99,6 +103,9 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             case 1:
                 break;
             case 2://网点查询
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
                 openActivity(NetworkQueryActivity.class);
                 break;
             case 3:
@@ -106,6 +113,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
             case 4:
                 break;
             case 5:
+                openActivity(IssuePayActivity.class);
                 break;
         }
     }

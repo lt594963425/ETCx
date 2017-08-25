@@ -107,6 +107,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 Looper.loop();
             }
         }).start();
+
         saveCatchInfo2File(ex);
         return true;
     }
@@ -181,7 +182,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         String time = formatter.format(new Date());
         String fileName = "crash-" + time + "-" + timestamp + ".log";
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String path = "/mnt/sdcard/crash/";
+            String path = "/mnt/sdcard/crash/";//文件路径
             File dir = new File(path);
             if (!dir.exists()) {
                 dir.mkdirs();

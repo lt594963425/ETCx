@@ -12,8 +12,10 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
+import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
+import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
@@ -26,6 +28,7 @@ import static com.etcxc.android.utils.UIUtils.clearDetialData;
 public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandler {
 
     private static final String TAG = "MicroMsg.SDKSample.WXPayEntryActivity";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +52,17 @@ public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandl
     public void onResp(BaseResp resp) {
         Log.e(TAG, "onPayFinish, errCode = " + resp.errCode);
         if (resp.errCode == 0) {
+            //todo  两种情况  1、ETC在线申请办理支付成功 显示支付结果
+            //todo          2、ETC在线充值成功或失败之后 显示结果
+            openActivity(IssueFinishActivity.class);
             showInfoDialog();
             clearDetialData(this);
         }
+
+        ToastUtils.showToast(resp.errCode + "");
         finish();
     }
+
     private void showInfoDialog() {
         View longinDialogView = LayoutInflater.from(this).inflate(R.layout.recharge_info_dialog, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

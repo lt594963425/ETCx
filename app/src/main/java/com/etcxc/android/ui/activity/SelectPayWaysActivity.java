@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.R;
@@ -27,7 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -197,13 +195,12 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
             closeProgressDialog();
         }
     }
-
     private void TuneUpWxPay(JSONObject varObject) throws JSONException {
         mWxApi = WXAPIFactory.createWXAPI(SelectPayWaysActivity.this, Constants.WX_APP_ID, true);
         mWxApi.registerApp(Constants.WX_APP_ID);
         PayReq req = new PayReq();
         req.appId = Constants.WX_APP_ID;
-        req.partnerId = Constants.WX_PARTNER_ID;
+        req.partnerId = Constants.MCH_ID;
         req.sign = varObject.getString("sign");
         req.prepayId = varObject.getString("prepay_id");
         req.nonceStr = varObject.getString("nonce_str");

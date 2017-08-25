@@ -1,21 +1,18 @@
 package com.etcxc.android.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
+import com.etcxc.android.base.App;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -193,13 +190,31 @@ public class FileUtils {
         return bmp.compress(Bitmap.CompressFormat.JPEG, quality, stream);
     }
 
-    //把bitmap转换成String
-    public static String bitmapToString(String filePath) {
-        Bitmap bm = getSmallBitmaps(filePath);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 40, baos);
-        byte[] b = baos.toByteArray();
-        return Base64.encodeToString(b, Base64.DEFAULT);
+    /**
+     * 文件的写入
+     * 传入一个文件的名称和一个Bitmap对象
+     * 最后的结果是保存一个图片
+     */
+    public  static  void saveToFile(String path,String key, Bitmap bmp) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(new File(path, key));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        File file = new File(path);
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(file);
+        intent.setData(uri);
+        App.get().sendBroadcast(intent);
+        //保存图片的设置，压缩图片
+        bmp.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+        try {
+
+            fos.close();//关闭流
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // 根据路径获得图片并压缩，返回bitmap用于显示
@@ -653,45 +668,6 @@ public class FileUtils {
         Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 //        if (!bitmap.isRecycled()) bitmap.recycle();
         return newBitmap;
-    }
-
-    /**
-     * 圆形
-     *
-     * @param bitmap
-     * @return
-     */
-    public static Bitmap toRoundBitmap(Bitmap bitmap) {
-        //圆形图片宽高
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        //正方形的边长
-        int r = 0;
-        //取最短边做边长
-        if (width > height) {
-            r = height;
-        } else {
-            r = width;
-        }
-        //构建一个bitmap
-        Bitmap backgroundBmp = Bitmap.createBitmap(width,
-                height, Bitmap.Config.ARGB_8888);
-        //new一个Canvas，在backgroundBmp上画图
-        Canvas canvas = new Canvas(backgroundBmp);
-        Paint paint = new Paint();
-        //设置边缘光滑，去掉锯齿
-        paint.setAntiAlias(true);
-        //宽高相等，即正方形
-        RectF rect = new RectF(0, 0, r, r);
-        //通过制定的rect画一个圆角矩形，当圆角X轴方向的半径等于Y轴方向的半径时，
-        //且都等于r/2时，画出来的圆角矩形就是圆形
-        canvas.drawRoundRect(rect, r / 2, r / 2, paint);
-        //设置当两个图形相交时的模式，SRC_IN为取SRC图形相交的部分，多余的将被去掉
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        //canvas将bitmap画在backgroundBmp上
-        canvas.drawBitmap(bitmap, null, rect, paint);
-        //返回已经绘画好的backgroundBmp
-        return backgroundBmp;
     }
 
 

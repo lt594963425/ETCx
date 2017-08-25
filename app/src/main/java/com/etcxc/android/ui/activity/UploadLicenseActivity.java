@@ -25,11 +25,9 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.upload.UploadTask;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
-import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
@@ -40,18 +38,25 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import static com.etcxc.android.net.FUNC.UPLOAD_FUNC;
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 import static com.etcxc.android.utils.FileUtils.rotateBitmapByDegree;
+import static com.etcxc.android.utils.UIUtils.openAnimator;
 
 /**
  * 上传证件信息
@@ -73,6 +78,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private final static String IMAGE_IDCARD = "idcard.png";
     private final static String IMAGE_ORG = "org_license.png";
     private final static String IMAGE_DRIVEN = "driven_license.png";
+
     private final static String CROP_IDCARD = "crop_idcard.png";
     private final static String CROP_ORG = "crop_org_license.png";
     private final static String CROP_DRIVEN = "crop_driven_license.png";
@@ -94,7 +100,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
 
     private void initData() {
         Intent intent = getIntent();
-       mIsOrg = intent.getBooleanExtra("isOrg", false);
+        mIsOrg = intent.getBooleanExtra("isOrg", false);
     }
 
     private void initView() {
@@ -153,40 +159,65 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                UploadTask u = new UploadTask();
-          /*      e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_IDCARD), ""));
-                e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_DRIVEN), ""));
-                if (mIsOrg)
-                    e.onNext(u.doUpload(UPLOAD_PATH, new File(mCachePath, CROPENAME_ORG), ""));
-            }*/
-                List<File> files = new ArrayList<>();
-                files.add(new File(mCachePath, CROP_IDCARD));
-                files.add(new File(mCachePath, CROP_DRIVEN));
-                if (mIsOrg) files.add(new File(mCachePath, CROP_ORG));
-                StringBuilder urlBuilder = new StringBuilder(NetConfig.HOST).append(UPLOAD_FUNC)
-                        .append(File.separator).append("veh_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
-                        .append(File.separator).append("veh_code_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""));
-                e.onNext(UploadTask.getUploadCall(urlBuilder.toString(), "", files).execute().body().string());
+                Request request = getRequest();
+                okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
+                OkHttpClient client = httpBuilder
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(180, TimeUnit.SECONDS)
+                        .build();
+                e.onNext(client.newCall(request).execute().body().string());
             }
-        }).compose(RxUtil.activityLifecycle(this))
-                .compose(RxUtil.io())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        JSONObject jsonObject = new JSONObject(s);
-                        String code = jsonObject.getString("code");
-                        if ("s_ok".equals(code)) startActivity(new Intent(UploadLicenseActivity.this, ContactPhoneActivity.class));
-                        else ToastUtils.showToast(R.string.request_failed);
-                        closeProgressDialog();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        LogUtil.e(TAG, "upload", throwable);
-                        ToastUtils.showToast(R.string.request_failed);
-                        closeProgressDialog();
-                    }
-                });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String s) throws Exception {
+                closeProgressDialog();
+                JSONObject jsonObject = new JSONObject(s);
+                String code = jsonObject.getString("code");
+                if (code.equals("s_ok")) {
+                    openActivity(ContactPhoneActivity.class);
+                } else {
+                    ToastUtils.showToast(R.string.request_failed);
+                }
+
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                closeProgressDialog();
+                ToastUtils.showToast(R.string.request_failed);
+            }
+        });
+
+    }
+
+    private Request getRequest() {
+        File fileIDCard = new File(mCachePath, CROP_IDCARD);
+        File fileDRiven = new File(mCachePath, CROP_DRIVEN);
+        MultipartBody.Builder multipartBodyBuilder  = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        if (mIsOrg) {
+            File fileORg = new File(mCachePath, CROP_ORG);
+            multipartBodyBuilder
+                    .addFormDataPart("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""))
+                    .addFormDataPart("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""))
+                    .addFormDataPart("image[]", fileIDCard.getName(), RequestBody.create(MediaType.parse("image"), fileIDCard))
+                    .addFormDataPart("image[]", fileDRiven.getName(), RequestBody.create(MediaType.parse("image"), fileDRiven))
+                    .addFormDataPart("image[]", fileORg.getName(), RequestBody.create(MediaType.parse("image"), fileORg))
+                    .build();
+        } else {
+            multipartBodyBuilder
+                    .addFormDataPart("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""))
+                    .addFormDataPart("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""))
+                    .addFormDataPart("image[]", fileIDCard.getName(), RequestBody.create(MediaType.parse("image"), fileIDCard))
+                    .addFormDataPart("image[]", fileDRiven.getName(), RequestBody.create(MediaType.parse("image"), fileDRiven))
+                    .build();
+        }
+        MultipartBody requestBody = multipartBodyBuilder .build();
+        return new Request.Builder()
+                .url(NetConfig.HOST+UPLOAD_FUNC)
+                .post(requestBody)
+                .build();
     }
 
     @Override
@@ -235,6 +266,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
             Intent i = new Intent(this, LargeImageActivity.class);
             i.putExtra("path", mCachePath + File.separator + fileName);
             startActivity(i);
+            openAnimator(this);
         }
     }
 
@@ -309,10 +341,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         if (RESULT_OK != resultCode) return;
         switch (requestCode) {
             case UCrop.REQUEST_CROP:
-                ImageView imageView = (mClickFlag & CLICK_DRIVEN) != 0
-                        ? mDriveImageView
-                        : (mClickFlag & CLICK_ORG) != 0 ? mFristImageView
-                        : mIsOrg ? mSecondImageView : mFristImageView;
+                ImageView imageView = (mClickFlag & CLICK_DRIVEN) != 0 ? mDriveImageView : (mClickFlag & CLICK_ORG) != 0 ? mFristImageView : mIsOrg ? mSecondImageView : mFristImageView;
                 setImageFromUri(imageView, UCrop.getOutput(data));
                 break;
             case REQUEST_CAMERA:

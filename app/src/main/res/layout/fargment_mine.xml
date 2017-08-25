@@ -28,6 +28,7 @@
                 android:background="@color/white"
                 android:clickable="true"
                 android:padding="2dp"
+                app:srcCompat="@drawable/vd_head2"
                 lt:backgroundHeadColor="@color/yellow"
                 lt:circleBorderHeadWidth="5dp"
                 lt:ringHeadColor="@color/colorAccent" />

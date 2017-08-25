@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,12 +20,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.MeManager;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
@@ -32,29 +32,28 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
-import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.ui.view.CircleImageView;
-import com.etcxc.android.ui.view.GlideCircleTransform;
-import com.etcxc.android.utils.CropUtils;
 import com.etcxc.android.utils.DialogPermission;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LoadImageHeapler;
+import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SharedPreferenceMark;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.yalantis.ucrop.UCrop;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -64,18 +63,16 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import static com.etcxc.android.net.FUNC.HEAD_CHANGE;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
+import static com.etcxc.android.utils.FileUtils.getImageDegree;
 
 /**
  * 个人信息界面（通过登录界面拆分）
@@ -83,18 +80,17 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
  */
 public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
     protected final String TAG = "PersonalInfoActivity";
-    /*头像名称*/
-    private File mFile;
+
     private Uri uri;
     /* 请求码*/
     private static final int REQUEST_CODE_TAKE_PHOTO = 1;
     private static final int REQUEST_CODE_ALBUM = 2;
-    private static final int REQUEST_CODE_CROUP_PHOTO = 3;
     private Toolbar mToolbar2;
     private Button mExitLogin;
     private TextView mUserName, mUserPhone;
     private CircleImageView mUserHead;
-
+    private final static String IMAGE_HEAD = "head.jpg";
+    private String CROP_HEAD = "user_head.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,47 +135,28 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         });
     }
 
-    //用户信息操作界面
+    private boolean cropExists(String cropName) {
+        File file = new File(FileUtils.getCachePath(this), cropName);
+        return file.exists() && file.length() > 0;
+    }
+
     private void setstatus() {
-        //适配7.0以上和以下的手机
-        mFile = new File(getCachePath(this), "user-avatar.jpg");
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            uri = Uri.fromFile(mFile);
-        } else {
-            //通过FileProvider创建一个content类型的Uri(android 7.0需要这样的方法跨应用访问)
-            uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", mFile);
-        }
-        LoadImageHeapler headLoader = new LoadImageHeapler(this, "user-avatar.jpg");
+        LoadImageHeapler headLoader = new LoadImageHeapler(this, CROP_HEAD);
         if (MeManager.getIsLogin()) {
             if (NetConfig.isAvailable()) {
                 mUserName.setText(MeManager.getName());
                 mUserPhone.setText(MeManager.getPhone());
-                if (mFile.exists()) {
-                    Glide.with(this.getApplicationContext())
-                            .load(uri)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
-                            .error(R.drawable.vd_head2)
-                            .dontAnimate()
-                            .transform(new GlideCircleTransform(this))
-                            .into(mUserHead);
-                } else {
-                    headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
-                        @Override
-                        public void loadImage(Bitmap bmp) {
-                            mUserHead.setImageBitmap(bmp);
-                        }
-                    });
-                }
+
+                headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                    @Override
+                    public void loadImage(Bitmap bmp) {
+                        mUserHead.setImageBitmap(bmp);
+                    }
+                });
             } else {
-                Glide.with(this.getApplicationContext())
-                        .load(uri)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .error(R.drawable.vd_head2)
-                        .dontAnimate()
-                        .transform(new GlideCircleTransform(this))
-                        .into(mUserHead);
+                if (cropExists(CROP_HEAD)) {
+                    setImageFromUri(mUserHead, Uri.fromFile(new File(FileUtils.getCachePath(this) + File.separator + CROP_HEAD)));
+                }
                 mUserName.setText(MeManager.getName());
                 mUserPhone.setText(MeManager.getPhone());
             }
@@ -221,10 +198,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         selectPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!NetConfig.isAvailable()) {
-                    ToastUtils.showToast(R.string.network_isdown);
-                    return;
-                }
                 uploadAvatarFromAlbumRequest();
                 dialog.dismiss();
             }
@@ -241,58 +214,87 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != -1) {
+        if (resultCode == UCrop.RESULT_ERROR) {
+            final Throwable cropError = UCrop.getError(data);
+            LogUtil.e(TAG, "crop", cropError);
+        }
+        if (resultCode != RESULT_OK) {
             return;
         }
         if (requestCode == REQUEST_CODE_ALBUM && data != null) {//相册
-            Uri newUri;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                newUri = Uri.parse("file:///" + CropUtils.getPath(this, data.getData()));
-            } else {
-                newUri = data.getData();
+            if (data == null) return;
+            File file1 = new File(FileUtils.getCachePath(this), CROP_HEAD);
+            if (file1.exists()) file1.delete();
+            try {
+                boolean success = file1.createNewFile();
+                if (success) UCrop.of(data.getData(), Uri.fromFile(file1)).withAspectRatio(1, 1).start(this);
+            } catch (IOException e) {
+                LogUtil.e(TAG, "result_album", e);
             }
-            if (newUri != null) {
-                startPhotoZoom(newUri);
-            } else {
-                ToastUtils.showToast(R.string.not_get_image);
-            }
+
         } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {//相机
-            File cover = FileUtils.getSmallBitmap(mFile.getPath());
-            Uri newuri = Uri.fromFile(cover);
-            startPhotoZoom(newuri);
-        } else if (requestCode == REQUEST_CODE_CROUP_PHOTO) {
-            Uri.fromFile(FileUtils.getSmallBitmap(mFile.getPath()));
-            Log.e(TAG, "################提交服务器################");
-            updateHeadToServer();
+            File file = new File(FileUtils.getCachePath(this), CROP_HEAD);
+            if (file.exists())
+                file.delete();
+            try {
+                boolean success = file.createNewFile();
+                if (success) UCrop.of(uri, Uri.fromFile(file)).withAspectRatio(1, 1).start(this);
+            } catch (IOException e) {
+                LogUtil.e(TAG, "result_camera", e);
+            }
+        } else if (requestCode == UCrop.REQUEST_CROP) {
+//                Uri uri = UCrop.getOutput(data);
+//                if (uri == null) return;
+//                Bitmap bitmap = loadBitmap(uri);
+                updateHeadToServer(data);
+
+
         }
     }
 
-    /**
-     * 裁剪拍照
-     *
-     * @param uri
-     */
-    public void startPhotoZoom(Uri uri) {
-        Uri newuri = Uri.fromFile(FileUtils.getSmallBitmap(mFile.getPath()));
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*")
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .putExtra("crop", "true")// crop=true 有这句才能出来最后的裁剪页面.
-                .putExtra("aspectX", 1)// 这两项为裁剪框的比例.
-                .putExtra("aspectY", 1)// x:y=1:1
-                .putExtra("output", newuri)
-                .putExtra("outputFormat", "JPEG");// 返回格式
-        startActivityForResult(intent, REQUEST_CODE_CROUP_PHOTO);
+    private void saveBmpToFile(String path) {
+        //String path = FileUtils.getCachePath(this) + File.separator + CROP_HEAD;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inSampleSize = FileUtils.calculateInSampleSize(options, 200, 700);//设置压缩比例
+        Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
+        options.inJustDecodeBounds = false;
+        Bitmap bitmapFactory = BitmapFactory.decodeFile(path, options);
+        FileUtils.saveToFile(path, CROP_HEAD, bitmapFactory);
+    }
+
+
+    private void setImageFromUri(ImageView imageView, Uri uri) {
+        if (imageView == null || uri == null) return;
+        try {
+            String cropName = CROP_HEAD;
+            int degree = getImageDegree(FileUtils.getCachePath(this) + File.separator + cropName);
+            imageView.setImageBitmap(FileUtils.rotateBitmapByDegree(loadBitmap(uri), degree));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //reduce
+    private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inSampleSize = FileUtils.calculateInSampleSize(opt, 200, 700);
+        return BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, opt);
     }
 
     /**
      * camera,相机
      */
     private void uploadAvatarFromPhotoRequest() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .putExtra(MediaStore.Images.Media.ORIENTATION, 0)
-                .putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File imageFile = new File(FileUtils.getCachePath(this), IMAGE_HEAD);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", imageFile);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);//这个权限要添加
+        } else uri = Uri.fromFile(imageFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
         startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
     }
 
@@ -329,23 +331,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         }
     }
 
-
-    /**
-     * 保存裁剪之后的图片数据
-     *
-     * @param
-     */
-    private void getImageToView() {
-        Log.e(TAG, "#############################路径uri：" + uri);
-        Glide.with(this.getApplicationContext())
-                .load(uri)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(R.drawable.vd_head2)
-                .dontAnimate()
-                .transform(new GlideCircleTransform(this))
-                .into(mUserHead);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -432,7 +417,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                             closeProgressDialog();
                             ToastUtils.showToast(R.string.request_failed);
                         }
-
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -455,71 +439,54 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     /**
      * 提交头像之服务器
      */
-    private void updateHeadToServer() {
+    private void updateHeadToServer(Intent data) {
         showProgressDialog(R.string.loading);
-        RequestBody fileBody = RequestBody.create(MediaType.parse("image"), new File(getCachePath(this), "user-avatar.jpg"));
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image[]", "user-avatar.jpg", fileBody)
-                .addFormDataPart("uid", MeManager.getUid())
-                .addFormDataPart("token", MeManager.getToken())
-                .build();
-        Request request = new Request.Builder()
-                .url(NetConfig.HOST + HEAD_CHANGE)
-                .post(requestBody)
-                .build();
-        final okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
-        OkHttpClient client = httpBuilder
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "uploadMultiFile() e=" + e);
-                runOnUiThread(new Runnable() {
+            public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
+                RequestBody fileBody = RequestBody.create(MediaType.parse("image"), new File(getCachePath(PersonalInfoActivity.this), CROP_HEAD));
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("image[]", CROP_HEAD, fileBody)
+                        .addFormDataPart("uid", MeManager.getUid())
+                        .addFormDataPart("token", MeManager.getToken())
+                        .build();
+                Request request = new Request.Builder()
+                        .url(NetConfig.HOST + HEAD_CHANGE)
+                        .post(requestBody)
+                        .build();
+                final okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
+                OkHttpClient client = httpBuilder
+                        .connectTimeout(10, TimeUnit.SECONDS)
+                        .writeTimeout(15, TimeUnit.SECONDS)
+                        .build();
+                e.onNext(client.newCall(request).execute().body().string());
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void run() {
+                    public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                        Log.e(TAG, "修改头像:" + s);
+                        JSONObject jsonObject = new JSONObject(s);
+                        String code = jsonObject.getString("code");
+                        if (code.equals("s_ok")) {
+                            closeProgressDialog();
+                            ToastUtils.showToast(R.string.change_head_success);
+                           // mUserHead.setImageBitmap(bitmap);
+                            setImageFromUri(mUserHead, UCrop.getOutput(data));
+
+                        } else {
+                            closeProgressDialog();
+                            ToastUtils.showToast(R.string.request_failed );
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+                        Log.e(TAG, "uploadMultiFile() e=" + throwable);
                         ToastUtils.showToast(R.string.request_failed);
+                        closeProgressDialog();
                     }
                 });
-                closeProgressDialog();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    Log.e(TAG, "修改头像:" + result);
-                    JSONObject jsonObject = new JSONObject(result);
-                    String code = jsonObject.getString("code");
-                    if (code.equals("s_ok")) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.showToast(R.string.change_head_success);
-                                getImageToView();
-                                PublicSPUtil.getInstance().putBoolean("CHANGE_INFO", true);
-
-                            }
-                        });
-                        closeProgressDialog();
-                    } else {
-                        String error = jsonObject.getString("message");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.showToast(R.string.request_failed + error);
-                            }
-                        });
-                        closeProgressDialog();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    closeProgressDialog();
-                }
-
-            }
-        });
     }
 }

@@ -169,6 +169,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
             case R.id.receipt_address_region_layout:
                 startActivityForResult(new Intent(this, SelectRegionActivity.class), REQUEST_REGION);
                 break;
+
             case R.id.receipt_address_street_layout:
                 String county = mRegionResultTextView.getText().toString();
                 if (TextUtils.isEmpty(county)) {

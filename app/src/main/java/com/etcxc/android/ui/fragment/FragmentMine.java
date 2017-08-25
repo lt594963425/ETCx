@@ -3,6 +3,7 @@ package com.etcxc.android.ui.fragment;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -49,6 +51,8 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -60,6 +64,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
+import static com.etcxc.android.utils.FileUtils.getImageDegree;
 
 /**
  * Created by 刘涛 on 2017/6/2 0002.
@@ -77,6 +82,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     /*头像名称*/
     private File mFile;
     private Uri uri;
+    private String CROP_HEAD = "user_head.jpg";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,7 +96,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     private void initView() {
-        initFile();
         mHarvestAddress = find(R.id.mine_harvestaddress_toright);
         mRecommendFriend = find(R.id.mine_recommendfriend_toright);
         mChangePassWord = find(R.id.mine_changepassword_toright);
@@ -119,7 +124,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     private void initFile() {
         //适配7.0以上和以下的手机
-        mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
+        mFile = new File(getCachePath(getActivity()), CROP_HEAD);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             uri = Uri.fromFile(mFile);
         } else {
@@ -147,23 +152,55 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     };
 
     public void initUserInfo() {
-        mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
         if (NetConfig.isAvailable()) {
-            if (mFile.exists()) {
-                getImageToView();
-            } else {
-                LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), "user-avatar.jpg");
-                headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
-                    @Override
-                    public void loadImage(Bitmap bmp) {
-                        mMineUserHead.setImageBitmap(bmp);
-                    }
-                });
-            }
+            LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), CROP_HEAD);
+            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                @Override
+                public void loadImage(Bitmap bmp) {
+                    mMineUserHead.setImageBitmap(bmp);
+                }
+            });
         } else {
-            getImageToView();//初始化
+            if (cropExists(CROP_HEAD)) {
+                setImageFromUri(mMineUserHead, Uri.fromFile(new File(FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD)));
+            }
+            //getImageToView();//初始化
         }
-        //
+    }
+
+    private void setImageFromUri(ImageView imageView, Uri uri) {
+        if (imageView == null || uri == null) return;
+        try {
+            String cropName = CROP_HEAD;
+            int degree = getImageDegree(FileUtils.getCachePath(getActivity()) + File.separator + cropName);
+            imageView.setImageBitmap(FileUtils.rotateBitmapByDegree(loadBitmap(uri), degree));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inSampleSize = 2;
+        return BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri), null, opt);
+    }
+
+    private boolean cropExists(String cropName) {
+        File file = new File(FileUtils.getCachePath(getActivity()), cropName);
+        return file.exists() && file.length() > 0;
+    }
+
+    private void getImageToView() {
+        uri = Uri.fromFile(new File(FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD));
+        Glide.with(getActivity().getApplicationContext())
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .error(R.drawable.vd_head2)
+                .dontAnimate()
+                .transform(new GlideCircleTransform(getActivity()))
+                .into(mMineUserHead);
     }
 
     @Override
@@ -172,7 +209,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         if (!isVisibleToUser && mHandler != null) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
-
     }
 
     @Override
@@ -187,9 +223,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     //未登录：点击修改密码跳入登录页面
                     openActivityForResult(LoginActivity.class, REQUST_CODE);
                 }
+
                 break;
             case R.id.mine_user_head: //头像
-                startLoadHead();
+                previewLargeImage();
                 break;
             case R.id.mine_harvestaddress_toright:  // 我的收获地址
                 if (!MeManager.getIsLogin()) {
@@ -253,18 +290,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     ToastUtils.showToast(R.string.exitlogin);
                     MeManager.clearAll();
                     MeManager.setIsLgon(false);
+                    closeProgressDialog();
                     mHandler.postDelayed(LOAD_DATA, 400);
                 } else {
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.request_failed);
                 }
-                closeProgressDialog();
 
             }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
-                ToastUtils.showToast(R.string.request_failed);
                 closeProgressDialog();
+                ToastUtils.showToast(R.string.request_failed);
+
             }
         });
     }
@@ -296,46 +335,25 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         });
     }
 
-    private void startLoadHead() {
+    private void previewLargeImage() {
         if (!MeManager.getIsLogin()) {
             ToastUtils.showToast(R.string.nologin);
             openActivityForResult(LoginActivity.class, REQUST_CODE);
             return;
         }
-        String path = FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg";
-        File file = new File(path);
-        if (!file.exists()) {
-            ToastUtils.showToast(R.string.nosethead);
-            return;
-        }
-        PublicSPUtil.getInstance().putBoolean("isScal", true);
+        if(!cropExists(CROP_HEAD)) openActivity(PersonalInfoActivity.class);
+        String path = FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD;
         Intent intent4 = new Intent(getActivity(), LargeImageActivity.class);
-        intent4.putExtra("path", FileUtils.getCachePath(getActivity()) + File.separator + "user-avatar.jpg");
+        intent4.putExtra("path", path);
         startActivity(intent4);
         UIUtils.openAnimator(getActivity());
     }
-
-
-    private void getImageToView() {
-        Glide.with(getActivity().getApplicationContext())
-                .load(uri)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(R.drawable.vd_head2)
-                .dontAnimate()
-                .transform(new GlideCircleTransform(getActivity()))
-                .into(mMineUserHead);
-
-    }
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUST_CODE:
                 if (MeManager.getIsLogin()) {
-                    getImageToView();
-                    mMineUserName.setText(MeManager.getName());
+                    mHandler.postDelayed(LOAD_DATA, 300);
                 } else {
                     VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
                     mMineUserHead.setImageDrawable(drawable);

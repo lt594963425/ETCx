@@ -42,7 +42,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-
 import static com.etcxc.android.net.FUNC.LOGIN_SMS;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
@@ -63,6 +62,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private EditText mMPicCodeEdt;
     private RelativeLayout mMsgVodeLayout;//图形验证码http://192.168.6.58/login/login/login/
     private String mSMSID;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,9 +88,9 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         mMRefrshCodeIv = find(R.id.message_login_fresh_verification); //刷新图形验证码 message_login_fresh_verificatio
         addIcon(mMPicCodeEdt, R.drawable.vd_regist_captcha);
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
-        addIcon(mMVeriFicodeEdt,R.drawable.vd_regist_captcha);
-        mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt,mMPhoneNumberDelete));
-        initAutoComplete("history",mMPhoneNumberEdt);
+        addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);
+        mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt, mMPhoneNumberDelete));
+        initAutoComplete("history", mMPhoneNumberEdt);
     }
 
 
@@ -100,7 +100,8 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         view.setCompoundDrawablePadding(UIUtils.dip2Px(16));
     }
 
-   private ArrayList<String> list;
+    private ArrayList<String> list;
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -127,9 +128,9 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 }
                 try {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("tel",phoneNum);
-                    jsonObject.put("sms_code",smsCode);
-                    jsonObject.put("sms_id",smsid);
+                    jsonObject.put("tel", phoneNum);
+                    jsonObject.put("sms_code", smsCode);
+                    jsonObject.put("sms_id", smsid);
                     requestSMSLogin(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -150,9 +151,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             ToastUtils.showToast(R.string.please_input_phonenumber);
             return;
         }
-        saveHistory("history",phoneNum2);
-        TimeCount time = new TimeCount(mGetMsgVeriFicodeButton,60000, 1000);
-        time.start();
+        saveHistory("history", phoneNum2);
         getSmsCode(phoneNum2);
     }
 
@@ -171,27 +170,21 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        try {
                             Log.e(TAG, s);
                             JSONObject object = new JSONObject(s);
                             String code = object.getString("code");
                             if (code.equals("s_ok")) {
-                                mSMSID= object.getString("sms_id");
+                                mSMSID = object.getString("sms_id");
                                 PublicSPUtil.getInstance().putString("sms_id", mSMSID);
                                 ToastUtils.showToast(R.string.send_success);
+                                TimeCount time = new TimeCount(mGetMsgVeriFicodeButton, 60000, 1000);
+                                time.start();
                             }
                             if (code.equals("error")) {
-                                // String msg = object.getString("");
-
                                 ToastUtils.showToast(R.string.request_failed);
-
                                 return;
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            ToastUtils.showToast(R.string.request_failed);
-                            return;
-                        }
+
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -203,7 +196,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     }
 
     public void requestSMSLogin(JSONObject jsonObject) {
-        Log.e(TAG,jsonObject.toString());
+        Log.e(TAG, jsonObject.toString());
         showProgressDialog(getString(R.string.logining));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
@@ -211,8 +204,8 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 String result = OkClient.get(NetConfig.consistUrl(LOGIN_SMS), jsonObject);
                 e.onNext(result);
             }
-        }).compose(RxUtil.activityLifecycle(this))
-                .compose(RxUtil.io())
+        })
+                .compose(RxUtil.io()).compose(RxUtil.activityLifecycle(this))
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
@@ -231,9 +224,9 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         try {
             JSONObject jsonObject = new JSONObject(s);
             String code = jsonObject.getString("code");
-            Log.e(TAG,s);
+            Log.e(TAG, s);
             if (code.equals("s_ok")) {
-                Log.e(TAG, "登录成功"+s);
+                Log.e(TAG, "登录成功" + s);
                 JSONObject varJson = jsonObject.getJSONObject("var");
                 String token = varJson.getString("token");
                 JSONObject userJson = varJson.getJSONObject("user");
@@ -267,7 +260,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     finish();
                 } else {
                     closeProgressDialog();
-                    ToastUtils.showToast(R.string.login_failed+returnMsg);
+                    ToastUtils.showToast(R.string.login_failed + returnMsg);
                 }
                 return;
             }

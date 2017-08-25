@@ -10,18 +10,21 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.utils.ToastUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.Call;
-import okhttp3.Callback;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import static com.etcxc.android.net.FUNC.NICKNAME_CHANGE;
 import static com.etcxc.android.net.NetConfig.HOST;
@@ -63,61 +66,53 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
 
     private void modifyNickName(String newNickName) {
         showProgressDialog(R.string.loading);
-        OkHttpClient client = new OkHttpClient();
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("uid", MeManager.getUid());
-            jsonObject.put("token", MeManager.getToken());
-            jsonObject.put("nick_name", newNickName);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), String.valueOf(jsonObject));
-        Request request = new Request.Builder()
-                .url(HOST + NICKNAME_CHANGE)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                ToastUtils.showToast(R.string.send_faid);
-                closeProgressDialog();
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
+                OkHttpClient client = httpBuilder
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(180, TimeUnit.SECONDS)
+                        .build();
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("uid", MeManager.getUid());
+                jsonObject.put("token", MeManager.getToken());
+                jsonObject.put("nick_name", newNickName);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), String.valueOf(jsonObject));
+                Request request = new Request.Builder()
+                        .url(HOST + NICKNAME_CHANGE)
+                        .post(body)
+                        .build();
+                e.onNext(client.newCall(request).execute().body().string());
             }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        closeProgressDialog();
+                        JSONObject jsonObject = new JSONObject(s);
+                        String code = jsonObject.getString("code");
+                        if (code.equals("s_ok")) {
+                            MeManager.clearName();
+                            MeManager.setName(newNickName);
+                            openActivity(PersonalInfoActivity.class);
+                            ToastUtils.showToast(R.string.save_success);
+                            finish();
+                        }
+                        if (code.equals("error")) {
+                            ToastUtils.showToast(R.string.send_faid);
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    String code = jsonObject.getString("code");
-                    if (code.equals("s_ok")) {
-                        MeManager.clearName();
-                        MeManager.setName(newNickName);
-                        openActivity(PersonalInfoActivity.class);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.showToast(R.string.save_success);
-                            }
-                        });
-                        closeProgressDialog();
-                        finish();
+                        }
                     }
-                    if (code.equals("error")) {
-                        String resultError = jsonObject.getString("message");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.showToast(resultError);
-                            }
-                        });
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
                         closeProgressDialog();
+                        ToastUtils.showToast(R.string.send_faid);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+                });
     }
 }
 

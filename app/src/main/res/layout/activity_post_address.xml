@@ -37,10 +37,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:background="@null"
+                android:maxEms="1"
                 android:textColor="@color/textcolor"
-                android:textSize="15sp"
-                android:singleLine="true"
-                />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <View
@@ -97,8 +96,7 @@
                 android:gravity="right"
                 android:maxLines="2"
                 android:textColor="@color/textcolor"
-                android:textSize="15sp"
-                />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <View
@@ -139,11 +137,14 @@
             android:id="@+id/detailedly_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_white_line"
             android:gravity="top"
             android:hint="@string/detailedly_address"
             android:lines="3"
             android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:paddingTop="5dp"
             android:textColor="@color/textcolor"
             android:textSize="15sp" />
@@ -158,6 +159,7 @@
         android:layout_marginTop="139dp"
         android:background="@drawable/bg_button"
         android:gravity="center"
+
         android:text="@string/next_step"
         android:textColor="@color/white"
         android:textSize="16sp" />

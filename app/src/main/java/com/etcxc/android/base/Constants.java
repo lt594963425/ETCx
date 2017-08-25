@@ -10,9 +10,13 @@ public class Constants {
     //appid 微信分配的公众账号ID
     public static final String WX_APP_ID = "wx21d6d90cd6a3a206";
     //商户ID
-    public static final String WX_PARTNER_ID = "1482001172";
+    public static final String MCH_ID = "1482001172";
     //  微信 API密钥，在商户平台设置
-    public static final String WX_APP_SECRET = "2e08ae5ae947e7bb99bfd32e24e1e7cd";
+    public static final String WX_APP_KEY = "2e08ae5ae947e7bb99bfd32e24e1e7cd";
+    //微信统一下单接口
+    public static final String UNIFIED_ORDER ="https://api.mch.weixin.qq.com/pay/unifiedorder";
+
+
     /**
      * qq
      */

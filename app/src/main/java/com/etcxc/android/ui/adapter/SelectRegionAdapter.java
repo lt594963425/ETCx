@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
+import com.etcxc.android.bean.AddressBean;
 import com.etcxc.android.utils.UIUtils;
 
 import java.util.List;
@@ -17,10 +18,10 @@ import java.util.List;
  */
 
 public class SelectRegionAdapter extends RecyclerView.Adapter {
-    private List<String> mDatas;
+    private List<AddressBean> mDatas;
     private CallBack mCallback;
 
-    public SelectRegionAdapter(List<String> datas, CallBack callBack) {
+    public SelectRegionAdapter(List<AddressBean> datas, CallBack callBack) {
         this.mDatas = datas;
         this.mCallback = callBack;
     }
@@ -33,13 +34,16 @@ public class SelectRegionAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemViewHolder viewHolder = (ItemViewHolder) holder;
-        String region = mDatas.get(position);
+        AddressBean addressBean = new AddressBean();
+        addressBean = mDatas.get(position);
+        String region = addressBean.getName();
+        String code = addressBean.getCode();
         UIUtils.addIcon(viewHolder.regionView, R.drawable.vd_right_arrow, UIUtils.RIGHT);
         viewHolder.regionView.setText(region);
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onItemClick(region);
+                mCallback.onItemClick(code,region);
             }
         });
     }
@@ -61,7 +65,7 @@ public class SelectRegionAdapter extends RecyclerView.Adapter {
     }
 
     public interface CallBack {
-        void onItemClick(String content);
+        void onItemClick(String code,String content);
     }
 
 }

@@ -1,10 +1,10 @@
 package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,11 +19,10 @@ import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
+import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 
 import org.json.JSONObject;
-
-import java.io.File;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -31,7 +30,9 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.FUNC.FUNC_COMMIT_CONTACT_PHONE;
+import static com.etcxc.android.net.FUNC.OWNERPHONE_VERIFY;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
+import static com.etcxc.android.utils.UIUtils.saveHistory;
 
 /**
  * 联系手机验证录入
@@ -52,8 +53,8 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_contact_phone);
         setTitle(R.string.post_address_contact_phone);
         mPhoneEditText = find(R.id.phone_number_edittext);
-        String uid = MeManager.getUid();
-        if (!TextUtils.isEmpty(uid)) mPhoneEditText.setText(uid);
+        String tel = MeManager.getPhone();
+        if (!TextUtils.isEmpty(tel)) mPhoneEditText.setText(tel);
         mGetVerifyCodeButton = find(R.id.get_verificode_button);
         mDeleteImageView = find(R.id.phone_number_delete);
         setListener();
@@ -100,6 +101,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 String tel = mPhoneEditText.getText().toString();
                 tel = SystemUtil.verifyPhoneNumber(tel);
                 if (!TextUtils.isEmpty(tel)) sendCode(tel);
+                saveHistory("history", tel);
                 break;
             case R.id.phone_number_delete:
                 mPhoneEditText.setText("");
@@ -111,9 +113,9 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-            /*    StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(SMSREPORT)
-                        .append(File.separator).append("tel").append(File.separator).append(tel);
-                e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));*/
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("tel", tel);
+                e.onNext(OkClient.get(NetConfig.consistUrl(SMSREPORT), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
@@ -122,22 +124,9 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 JSONObject jsonObject = new JSONObject(s);
                 String code = jsonObject.getString("code");
                 if ("s_ok".equals(code)) {
-                    jsonObject = jsonObject.getJSONObject("var");
-                    mSmsId = jsonObject.getString("tran_sms_id");
-                    mGetVerifyCodeButton.setEnabled(false);
-                    CountDownTimer ct = new CountDownTimer(60000, 1000) {
-                        @Override
-                        public void onTick(long millisUntilFinished) {
-                            mGetVerifyCodeButton.setText(millisUntilFinished / 1000 + "S后再试");
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            mGetVerifyCodeButton.setText(R.string.reget_verify_code);
-                            mGetVerifyCodeButton.setEnabled(true);
-                        }
-                    };
-                    ct.start();
+                    mSmsId = jsonObject.getString("sms_id");
+                    TimeCount time = new TimeCount(mGetVerifyCodeButton, 60000, 1000);
+                    time.start();
                 } else ToastUtils.showToast(R.string.request_failed);
             }
         }, new Consumer<Throwable>() {
@@ -154,18 +143,20 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                StringBuilder urlBUilder = new StringBuilder(NetConfig.HOST).append(FUNC_COMMIT_CONTACT_PHONE)
-                        .append(File.separator).append("tran_sms_code").append(File.separator).append(verifyCode)
-                        .append(File.separator).append("tran_sms_id").append(File.separator).append(mSmsId)
-                        .append(File.separator).append("veh_plate_code").append(File.separator).append(PublicSPUtil.getInstance().getString("carCard", ""))
-                        .append(File.separator).append("veh_plate_colour").append(File.separator).append(PublicSPUtil.getInstance().getString("carCardColor", ""))
-                        .append(File.separator).append("tran_tel").append(File.separator).append(tel);
-                e.onNext(OkClient.get(urlBUilder.toString(), new JSONObject()));
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""))
+                        .put("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""))
+                        .put("tel", tel)
+                        .put("sms_code", verifyCode)
+                        .put("sms_id", mSmsId);
+                Log.e(TAG, jsonObject.toString());
+                e.onNext(OkClient.get(NetConfig.consistUrl(OWNERPHONE_VERIFY), jsonObject));
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
             @Override
             public void accept(@NonNull String s) throws Exception {
+                Log.e(TAG, s);
                 JSONObject jsonObject = new JSONObject(s);
                 String code = jsonObject.getString("code");
                 if ("s_ok".equals(code))

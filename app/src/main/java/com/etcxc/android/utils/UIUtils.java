@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -25,7 +26,6 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.bean.OrderRechargeInfo;
-import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -94,10 +94,10 @@ public class UIUtils {
 
     /**
      * 将sp值转换为px值，保证文字大小不变
-     * @param spValue
-     * *@param
-     * *（DisplayMetrics类中属性scaledDensity）
-     * * @return
+     *
+     * @param spValue *@param
+     *                *（DisplayMetrics类中属性scaledDensity）
+     *                * @return
      */
     public static int sp2px(Context context, float spValue) {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
@@ -179,52 +179,65 @@ public class UIUtils {
      * @param text
      */
     public static void saveHistory(String field, String text) {
-        String phonehistory = PublicSPUtil.getInstance().getString(field, "");
+        //String phonehistory = PublicSPUtil.getInstance().getString(field, " ");
+        SharedPreferences sp = App.get().getSharedPreferences("phone_history", 0);
+        String phonehistory = sp.getString(field, " ");
         if (!phonehistory.contains(text + ",")) {
             StringBuilder sb = new StringBuilder(phonehistory);
             sb.insert(0, text + ",");
-            PublicSPUtil.getInstance().putString(field, sb.toString());
+            //PublicSPUtil.getInstance().putString(field,sb.toString());
+            sp.edit().putString(field, sb.toString()).apply();
         }
     }
 
     //保存卡号
-    public static void saveCardHistory(Context context, String field, String text) {
-        SharedPreferences sp = context.getSharedPreferences("card_history", 0);
+    public static void saveCardHistory(String field, String text) {
+        //String phonehistory = PublicSPUtil.getInstance().getString(field, " ");
+        SharedPreferences sp = App.get().getSharedPreferences("card_history", 0);
         String phonehistory = sp.getString(field, "");
         if (!phonehistory.contains(text + ",")) {
             StringBuilder sb = new StringBuilder(phonehistory);
             sb.insert(0, text + ",");
-            sp.edit().putString("cardhistory", sb.toString()).commit();
+            //PublicSPUtil.getInstance().putString(field,sb.toString());
+            sp.edit().putString(field, sb.toString()).apply();
         }
-    }
-    //初始化用户号码
-    public static void initAutoComplete( String field, AutoCompleteTextView auto) {
-        initAutoTextView(field, auto);
     }
 
     //初始化用户号码
-    public static void initAutoCompleteCard(String field, AutoCompleteTextView auto) {
-        initAutoTextView(field, auto);
+    public static void initAutoComplete(String field, AutoCompleteTextView auto) {
+        SharedPreferences sp = App.get().getSharedPreferences("phone_history", 0);
+        initAutoTextView(field, auto, sp);
     }
-    public static void initAutoTextView( String field, AutoCompleteTextView auto) {
-        Context context = auto.getContext();
-        String historyStr = PublicSPUtil.getInstance().getString(field, "");
-        String[] historys = historyStr.split(",");
-        if (historys.length < 2) return;
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, historys);
-        if (historys.length > 50) {
+
+    //初始化用户卡号
+    public static void initAutoCompleteCard(String field, AutoCompleteTextView auto) {
+        SharedPreferences sp = App.get().getSharedPreferences("card_history", 0);
+        initAutoTextView(field, auto, sp);
+    }
+
+    private static void initAutoTextView(String field, AutoCompleteTextView auto, SharedPreferences sp) {
+        String longhistory = sp.getString(field, " ");
+        String[] hisArrays = longhistory.split(",");
+        if (hisArrays.length < 2) {
+            return;
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.get(), R.layout.simple_dropdown_item_1line, hisArrays);
+        if (hisArrays.length > 50) {
             String[] newArrays = new String[50];
-            System.arraycopy(historys, 0, newArrays, 0, 50);
-            adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, newArrays);
+            System.arraycopy(hisArrays, 0, newArrays, 0, 50);
+            adapter = new ArrayAdapter<String>(App.get(), R.layout.simple_dropdown_item_1line, newArrays);
         }
         auto.setAdapter(adapter);
         auto.setDropDownHeight(350);
+        auto.setTextColor(Color.BLACK);
         auto.setThreshold(1);
         auto.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 AutoCompleteTextView view = (AutoCompleteTextView) v;
-                if (hasFocus) view.showDropDown();
+                if (hasFocus) {
+                    view.showDropDown();
+                }
             }
         });
     }
@@ -247,7 +260,7 @@ public class UIUtils {
         String jsonStr = gson.toJson(list); //将List转换成Json
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("KEY_INFO_list", jsonStr); //存入json串
-        editor.commit();  //提交
+        editor.apply();  //提交
     }
 
     //取或查
@@ -269,7 +282,7 @@ public class UIUtils {
         SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
 
     //删除
@@ -285,7 +298,7 @@ public class UIUtils {
             String jsonStr = gson.toJson(peopleList); //4.将删除完的List转换成Json
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("KEY_INFO_list", jsonStr); //存入json串
-            editor.commit();  //提交
+            editor.apply();  //提交
         }
     }
 

@@ -117,7 +117,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginFast = find(R.id.login_fast);
         mForgetPassword = find(R.id.forget_password);
         mLoginButton = find(R.id.login_button);
-        // todo 密码输入超过三次增加图形验证码 校验 mPictureCodeLayout
         mPictureCodeLayout = find(R.id.login_verificode_layout);
         addIcon(mLoginPhonenumberEdt, R.drawable.vd_my, LEFT);
         addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password, LEFT);
@@ -222,7 +221,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (LocalThrough(phoneNum, passWord, veriFicodem)) return true;
         saveHistory("history", phoneNum);
         loginRun(data);
-        Log.e(TAG, "++++++++++++++登录失败1+++++++++++++++");
         return false;
     }
 
@@ -326,7 +324,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         ToastUtils.showToast(R.string.login_success);
         onProfileSignIn("mLoginPhone");//帐号登录统计
         closeProgressDialog();
-        finish();
+        openActivity(MainActivity.class);
     }
 
     private void errorResult(JSONObject jsonObject) throws JSONException {

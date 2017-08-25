@@ -179,10 +179,13 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         super.onResume();
     }
 
-    private Runnable LOAD_DATA = () -> {
-        isShowLeadPager = PublicSPUtil.getInstance().getBoolean("isShowLeadPager", true);
-        if (isShowLeadPager) {
-            showLeadHintPager();
+    private Runnable LOAD_DATA = new Runnable() {
+        @Override
+        public void run() {
+            isShowLeadPager = PublicSPUtil.getInstance().getBoolean("isShowLeadPager", true);
+            if (isShowLeadPager) {
+                showLeadHintPager();
+            }
         }
     };
 
@@ -358,7 +361,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
                 }
                 //总数
                 mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
-                saveCardHistory(this, "cardhistory", mRechargeCardNumber);
+                saveCardHistory("cardhistory", mRechargeCardNumber);
 
             }
             if (code.equals("err")) {

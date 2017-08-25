@@ -50,7 +50,6 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 
     private String smsCode;//验证码
     private String mPhoneNum;//输入的验证码
-    private String mOldPhone;
     private String mNewPhone;
     private String mSMSID;
 
@@ -65,11 +64,6 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 
     private void initView() {
         setTitle(R.string.changephone);
-//        mOldPhoneEdt = find(R.id.old_phone_edt);
-//        mOldPhoneDle = find(R.id.old_phone_delete);
-//        mOldPhoneDle.setOnClickListener(this);
-//        mOldPhoneEdt.addTextChangedListener(new myTextWatcher(mOldPhoneEdt, mOldPhoneDle));
-//        initAutoComplete("history", mOldPhoneEdt);
         mNewPhoneDle = find(R.id.new_phone_delete);
         mGetCaptcha = find(R.id.get_captcha);
         mNewPhoneEdt = find(R.id.new_phone_edt);
@@ -81,7 +75,6 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
         mSavePhoneBtn.setOnClickListener(this);
 
         mNewPhoneEdt.addTextChangedListener(new myTextWatcher(mNewPhoneEdt, mNewPhoneDle));
-
         initAutoComplete("history", mNewPhoneEdt);
     }
 
