@@ -141,6 +141,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     }
 
     private void setstatus() {
+        VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
+        mUserHead.setImageDrawable(drawable);
         LoadImageHeapler headLoader = new LoadImageHeapler(this, CROP_HEAD);
         if (MeManager.getIsLogin()) {
             if (NetConfig.isAvailable()) {
@@ -160,9 +162,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 mUserName.setText(MeManager.getName());
                 mUserPhone.setText(MeManager.getPhone());
             }
-        } else {
-            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
-            mUserHead.setImageDrawable(drawable);
         }
 
     }
@@ -431,7 +430,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     public void onMessageEvent(MessageEvent messageEvent) {
         mUserName.setText(messageEvent.message);
         if (!MeManager.getIsLogin()) {
-            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head2, null);
+            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
             mUserHead.setImageDrawable(drawable);
         }
     }

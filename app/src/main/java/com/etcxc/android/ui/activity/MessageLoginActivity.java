@@ -91,6 +91,9 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);
         mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt, mMPhoneNumberDelete));
         initAutoComplete("history", mMPhoneNumberEdt);
+        long timeDef =60000-(System.currentTimeMillis()-PublicSPUtil.getInstance().getLong("timeMsgLog",0));
+        if (timeDef>0) new TimeCount(mGetMsgVeriFicodeButton,timeDef , 1000).start();
+
     }
 
 
@@ -177,8 +180,8 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                                 mSMSID = object.getString("sms_id");
                                 PublicSPUtil.getInstance().putString("sms_id", mSMSID);
                                 ToastUtils.showToast(R.string.send_success);
-                                TimeCount time = new TimeCount(mGetMsgVeriFicodeButton, 60000, 1000);
-                                time.start();
+                                PublicSPUtil.getInstance().putLong("timeMsgLog", System.currentTimeMillis());
+                                new TimeCount(mGetMsgVeriFicodeButton, 60000, 1000).start();
                             }
                             if (code.equals("error")) {
                                 ToastUtils.showToast(R.string.request_failed);

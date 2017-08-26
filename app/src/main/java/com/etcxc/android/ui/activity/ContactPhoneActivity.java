@@ -80,6 +80,9 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 mDeleteImageView.setVisibility(TextUtils.isEmpty(s.toString()) ? View.GONE : View.VISIBLE);
             }
         });
+        long timeDef =60000-(System.currentTimeMillis()-PublicSPUtil.getInstance().getLong("timeContact",0));
+        if (timeDef>0) new TimeCount(mGetVerifyCodeButton,timeDef , 1000).start();
+
     }
 
     @Override
@@ -125,8 +128,9 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 String code = jsonObject.getString("code");
                 if ("s_ok".equals(code)) {
                     mSmsId = jsonObject.getString("sms_id");
-                    TimeCount time = new TimeCount(mGetVerifyCodeButton, 60000, 1000);
-                    time.start();
+                    saveHistory("history",tel);
+                    PublicSPUtil.getInstance().putLong("timeContact",System.currentTimeMillis());
+                    new TimeCount(mGetVerifyCodeButton, 60000, 1000).start();
                 } else ToastUtils.showToast(R.string.request_failed);
             }
         }, new Consumer<Throwable>() {
@@ -150,6 +154,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                         .put("sms_code", verifyCode)
                         .put("sms_id", mSmsId);
                 Log.e(TAG, jsonObject.toString());
+
                 e.onNext(OkClient.get(NetConfig.consistUrl(OWNERPHONE_VERIFY), jsonObject));
             }
         }).compose(RxUtil.io())
@@ -159,8 +164,10 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 Log.e(TAG, s);
                 JSONObject jsonObject = new JSONObject(s);
                 String code = jsonObject.getString("code");
-                if ("s_ok".equals(code))
+                if ("s_ok".equals(code)) {
+                    PublicSPUtil.getInstance().putString("issueContactTel",tel);
                     openActivity(PostAddressActivity.class);
+                }
                 else ToastUtils.showToast(R.string.request_failed);
                 closeProgressDialog();
             }

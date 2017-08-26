@@ -5,11 +5,17 @@ import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.modle.sp.PublicSPUtil;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 发行流程完成
@@ -27,13 +33,17 @@ public class IssueFinishActivity extends BaseActivity implements View.OnClickLis
 
     private void initView() {
         setTitle(R.string.finish);
+        long time = System.currentTimeMillis();
+        time += 2*24*60*60*1000;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时mm分");
+        Date dt = new Date(time);
+        Log.e(TAG,"time:"+ sdf.format(dt));
         mCheckingHintTextView = find(R.id.issue_checking_hint_textview);
         mTimeHintTextView = find(R.id.issue_checkfinish_time_textview);
-        mCheckingHintTextView.setText(getString(R.string.checking_hint, "15512345678"));
-        String timeStr = "2017年9月1号14:15";
-        mTimeHintTextView.setText(getString(R.string.checking_finish_time_hint, "2017年9月1号14:15"));
+        mCheckingHintTextView.setText(getString(R.string.checking_hint,PublicSPUtil.getInstance().getString("issueContactTel", MeManager.getPhone())));
+        mTimeHintTextView.setText(getString(R.string.checking_finish_time_hint, sdf.format(dt)));
         SpannableStringBuilder builder = new SpannableStringBuilder(mTimeHintTextView.getText());
-        builder.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this,R.color.issue_finish_time)), 7, 7 + timeStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this,R.color.issue_finish_time)), 7, 7 +  sdf.format(dt).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         mTimeHintTextView.setText(builder);
         find(R.id.commit_button).setOnClickListener(this);
     }

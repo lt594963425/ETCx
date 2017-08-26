@@ -19,6 +19,7 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
+import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
@@ -33,8 +34,10 @@ import com.youth.banner.Transformer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 /**
- * Created by 刘涛 on 2017/6/2 0002.
+ * 首页
+ * Created by LiuTao on 2017/6/2 0002.
  */
 
 public class FragmentHome extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
@@ -109,6 +112,7 @@ public class FragmentHome extends BaseFragment implements AdapterView.OnItemClic
                 openActivity(NetworkQueryActivity.class);
                 break;
             case 3:
+                openActivity(IssueFinishActivity.class);
                 break;
             case 4:
                 break;

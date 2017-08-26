@@ -84,6 +84,9 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mPhoneNumberEdit.addTextChangedListener(new myTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
         mPswEdit.addTextChangedListener(new myTextWatcher(mPswEdit, mPwdDeleteBtn));
         initAutoComplete("history", mPhoneNumberEdit);
+        long timeDef =60000-(System.currentTimeMillis()-PublicSPUtil.getInstance().getLong("timeReGist",0));
+        if (timeDef>0) new TimeCount(mVerificodeButton,timeDef , 1000).start();
+
     }
 
 
@@ -118,7 +121,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         }
 
         UIUtils.saveHistory("history", phoneNum2);
-         new TimeCount(mVerificodeButton, 60000, 1000).start();
+
          getSmsCode(phoneNum2);
     }
 
@@ -261,6 +264,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                             if (code.equals("s_ok")) {
                                 mSMSID= object.getString("sms_id");
                                 PublicSPUtil.getInstance().putString("pr_sms_id", mSMSID);
+                                PublicSPUtil.getInstance().putLong("timeReGist",System.currentTimeMillis());
+                                new TimeCount(mVerificodeButton, 60000, 1000).start();
                                 ToastUtils.showToast(R.string.send_success);
                             }
                             if (code.equals("error")) {

@@ -96,7 +96,7 @@ public class LoadImageHeapler {
                     public void run() {
                         ToastUtils.showToast(R.string.request_failed);
                         //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
-                        Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head2);
+                        Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
                         listener.loadImage(bmp);
                     }
                 });
@@ -122,8 +122,7 @@ public class LoadImageHeapler {
                         public void run() {
                             ToastUtils.showToast(R.string.request_failed);
                             //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
-                            Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head2);
-
+                            Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
                             listener.loadImage(bmp);
 
                         }

@@ -99,11 +99,12 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
         String editMoney = mRechargeEdittext.getText().toString().trim();
         DecimalFormat df = new DecimalFormat("0.00");
         if (editMoney.isEmpty()) {
+            ToastUtils.showToast(R.string.money_isempty);
             return;
         }
-        int moneyInt = Integer.valueOf(editMoney);
-        Double moneyDb = Double.valueOf(df.format(200 + moneyInt));
+        int moneyInt = Integer.valueOf(editMoney);//元
 
+        Double moneyDb = Double.valueOf(df.format((200 + moneyInt)*100)); //分;
         JSONObject jsonObject = new JSONObject();
         try {
             //PublicSPUtil.getInstance().getString("carCard", "")
@@ -175,9 +176,10 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
         req.timeStamp = String.valueOf(varObject.getInt("timestamp"));
         req.packageValue = "Sign=WXPay";
         Boolean b = mWxApi.sendReq(req);
-        PublicSPUtil.getInstance().putString("prepayId",req.prepayId);
+        Constants.ETC_ISSUE = true;
         Log.e(TAG, getString(R.string.pay_result_log) + b + "，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
                 ",time_start=" + req.timeStamp + ",sign=" + req.sign + ",nonce_str=" + req.nonceStr);
-
+        PublicSPUtil.getInstance().putBoolean("ETC_ISSUE",b);
+        closeProgressDialog();
     }
 }

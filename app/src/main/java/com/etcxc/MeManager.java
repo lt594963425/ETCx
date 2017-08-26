@@ -26,11 +26,11 @@ public class MeManager {
     private static final int clear_pwd = 6;
     private static final int clear_all = 0;
     public static String getSid() {
-        return PublicSPUtil.getInstance().getString(KEY_Sid, null);
+        return PublicSPUtil.getInstance().getString(KEY_Sid, "");
     }
 
     public static String getUid() {
-        return PublicSPUtil.getInstance().getString(KEY_Uid, null);
+        return PublicSPUtil.getInstance().getString(KEY_Uid, "");
     }
 
     public static Boolean getIsLogin() {
@@ -42,14 +42,14 @@ public class MeManager {
     }
 
     public static String getPhone() {
-        return PublicSPUtil.getInstance().getString(KEY_Phone, null);
+        return PublicSPUtil.getInstance().getString(KEY_Phone, "");
     }
 
     public static String getToken() {
-        return PublicSPUtil.getInstance().getString(KEY_Token, null);
+        return PublicSPUtil.getInstance().getString(KEY_Token, "");
     }
     public static String getPWD() {
-        return PublicSPUtil.getInstance().getString(KEY_PWD, null);
+        return PublicSPUtil.getInstance().getString(KEY_PWD, "");
     }
     public static void setSid(String sid) {
         PublicSPUtil.getInstance().putString(KEY_Sid, sid);

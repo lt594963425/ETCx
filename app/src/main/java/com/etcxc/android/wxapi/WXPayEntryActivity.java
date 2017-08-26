@@ -24,11 +24,13 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import static com.etcxc.android.base.App.WXapi;
 import static com.etcxc.android.utils.UIUtils.clearDetialData;
 
-
+/**
+ * 微信支付
+ * Created by LiuTao on 2017/7/2 0002.
+ */
 public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandler {
 
     private static final String TAG = "MicroMsg.SDKSample.WXPayEntryActivity";
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,22 +50,40 @@ public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandl
     public void onReq(BaseReq req) {
     }
 
+    /**
+     * int ERR_OK = 0;
+     * int ERR_COMM = -1;
+     * int ERR_USER_CANCEL = -2;
+     * @param resp
+     */
     @Override
     public void onResp(BaseResp resp) {
-        Log.e(TAG, "onPayFinish, errCode = " + resp.errCode);
-        if (resp.errCode == 0) {
-            //todo  两种情况  1、ETC在线申请办理支付成功 显示支付结果
-            //todo          2、ETC在线充值成功或失败之后 显示结果
-            openActivity(IssueFinishActivity.class);
-            showInfoDialog();
-            clearDetialData(this);
+        Log.e(TAG, "onPayFinish, errCode = " + resp.errCode + "type:" + resp.getType());
+        switch (resp.errCode){
+            case BaseResp.ErrCode.ERR_OK:
+                if (Constants.ETC_ISSUE) {
+                    Constants.ETC_ISSUE = false;
+                    openActivity(IssueFinishActivity.class);
+                    Log.e(TAG, "完成在线申请");
+                } else {
+                    Log.e(TAG, "ETC充值成功");
+                    showInfoDialog();
+                    clearDetialData(this);
+                }
+                break;
+            case BaseResp.ErrCode.ERR_COMM:
+                ToastUtils.showToast(R.string.pay_failed);
+                finish();
+                break;
+            case BaseResp.ErrCode.ERR_USER_CANCEL:
+                ToastUtils.showToast(R.string.pay_cancle);
+                finish();
+                break;
+
         }
 
-        ToastUtils.showToast(resp.errCode + "");
-        finish();
     }
-
-    private void showInfoDialog() {
+    private void showInfoDialog(){
         View longinDialogView = LayoutInflater.from(this).inflate(R.layout.recharge_info_dialog, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         TextView creditForLoad = (TextView) longinDialogView.findViewById(R.id.to_CreditForLoad);

@@ -25,6 +25,7 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:name=".base.App"
         android:allowBackup="true"
@@ -48,7 +49,7 @@
         </activity>
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY"/>
         <activity
             android:name=".ui.activity.MainActivity"
             android:launchMode="singleTask"
@@ -60,36 +61,45 @@
         </activity>
         <activity
             android:name=".ui.activity.PhoneRegistActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.MessageLoginActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.SetPasswordActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.LoginActivity"
-            android:screenOrientation="portrait" />
-
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.ChangePasswordActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.ChangePhoneActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.ETCRechargeActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.SelectPayWaysActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.HistoryRechargeCardActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.ChangeNickNameActivity"
-            android:screenOrientation="portrait" />
-
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.NetworkQueryActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.TestJsonApiActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.PersonalInfoActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity android:name=".ui.activity.UserCardActivity"
+            android:theme="@style/BG_GRAY"/>
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
             android:screenOrientation="portrait"
@@ -163,7 +173,7 @@
 
         <activity
             android:name=".ui.activity.ReceiptAddressActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/BG_GRAY" />
         <!-- 微信配置 -->
         <activity
             android:name=".wxapi.WXEntryActivity"
@@ -190,7 +200,6 @@
         </activity>
         <activity android:name=".ui.activity.BluetoothStoreActivity" />
         <activity android:name=".ui.activity.StoreSuccessActivity" />
-        <activity android:name=".ui.activity.TestJsonApiActivity" />
         //友盟
         <meta-data
             android:name="UMENG_APPKEY"
@@ -208,9 +217,6 @@
             android:configChanges="orientation|keyboardHidden|navigation"
             android:exported="false"
             android:screenOrientation="behind" />
-        <activity android:name=".ui.activity.NetworkQueryActivity" />
-        <activity android:name=".ui.activity.TestJsonApiActivity" />
-        <activity android:name=".ui.activity.PersonalInfoActivity"></activity>
 
         <service android:name=".ui.service.GeocodeAddressIntentService" />
     </application>

@@ -79,7 +79,8 @@
                 android:textSize="14sp" />
 
             <Button
-
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:id="@+id/telregist_get_verificode_button"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"

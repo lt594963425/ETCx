@@ -8,6 +8,7 @@ import com.etcxc.android.R;
 import com.youth.banner.loader.ImageLoader;
 
 /**
+ * 广告栏
  * Created by 刘涛 on 2017/6/27 0027.
  */
 

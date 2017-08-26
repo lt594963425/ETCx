@@ -10,5 +10,5 @@
     android:background="@color/white"
     app:theme ="@style/toolbar_theme"
     app:navigationIcon="@drawable/vd_return"
-    app:titleTextColor="@color/colorOrange"/>
+    app:titleTextColor="@color/colorOrange" />
 

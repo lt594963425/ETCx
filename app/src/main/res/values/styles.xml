@@ -18,6 +18,7 @@
     <style name="BG_GRAY" parent="AppTheme.Base">
         <!--Window color-->
         <item name="android:windowBackground">@color/space_line_color</item>
+        <item name="android:screenOrientation">portrait</item>
     </style>
 
     <style name="CActionMenuTextAppearance" parent="@android:style/TextAppearance.Holo.Small">
@@ -37,6 +38,7 @@
         <!--修改toolbar的图标颜色.-->
         <item name="colorControlNormal">@color/colorOrange</item>
     </style>
+
     <style name="popup_theme" parent="@style/ThemeOverlay.AppCompat.Light">
         <!--设置背景-->
         <item name="android:background">@android:color/white</item>
@@ -54,6 +56,7 @@
         <!--设置不覆盖锚点-->
         <item name="overlapAnchor">false</item>
     </style>
+
     <style name="TranslucentActivityTheme" parent="AppTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
@@ -122,5 +125,13 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/colorGray</item>
     </style>
-
+    <!--控制头部据appbar的样式-->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <!--用于控制toolbar溢出菜单的样式-->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <!--tablayout-->
+    <style name="TabLayoutTextStyle" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:background">@color/white</item>
+    </style>
 </resources>

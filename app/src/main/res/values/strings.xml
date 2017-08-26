@@ -167,7 +167,7 @@
     <string name="nothing_card">没有充值记录！</string>
     <string name="recharge">充值</string>
     <string name="card_isempty">请输入ETC卡号</string>
-    <string name="money_isempty">请输入充值金额</string>
+    <string name="money_isempty">充值金额不能为空</string>
     <string name="add_success">添加成功</string>
     <string name="nothing_isempty">没数据了</string>
     <string name="orgin_money">0.00元</string>
@@ -246,5 +246,7 @@
     <string name="network_isdown">你的网络连接已断开，不能修改头像</string>
     <string name="not_get_image">没有得到相册图片</string>
     <string name="getting_prepayid">获取prepayID</string>
+    <string name="pay_cancle">取消支付</string>
+    <string name="user_etc_card">ETC状态</string>
 
 </resources>

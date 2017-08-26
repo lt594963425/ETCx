@@ -28,7 +28,6 @@ import com.etcxc.android.R;
  * 圆形头像
  * Created by LiuTao on 2017/8/22 0022.
  */
-
 public class CircleImageView extends ImageView {
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;

@@ -9,10 +9,11 @@
     <include layout="@layout/toolbar" />
     <!--手机号码-->
     <RelativeLayout
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
         <RelativeLayout
             android:id="@+id/message_phonenumber_layout"
             android:layout_width="match_parent"
@@ -23,7 +24,6 @@
             android:gravity="center_vertical">
 
             <AutoCompleteTextView
-                android:textColor="@color/white"
                 android:id="@+id/message_phonenumber_edt"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -31,10 +31,11 @@
                 android:layout_toLeftOf="@+id/message_phonenumber_delete"
                 android:background="@null"
                 android:drawablePadding="16dp"
-                android:textColorHint="@color/white"
                 android:hint="@string/please_input_phonenumbers"
                 android:inputType="phone"
                 android:maxLength="11"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:textSize="15sp" />
 
             <ImageView
@@ -66,8 +67,6 @@
             android:gravity="center">
 
             <EditText
-                android:textColor="@color/white"
-                android:textColorHint="@color/white"
                 android:id="@+id/message_verificode_edt"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
@@ -76,18 +75,22 @@
                 android:background="@null"
                 android:hint="@string/set_verifycodes"
                 android:maxLength="8"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
                 android:textSize="15sp" />
 
             <Button
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:id="@+id/get_msg_sms_code_button"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
-                android:textSize="13sp"
                 android:background="@drawable/bg_button"
                 android:text="@string/get_verifycode"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="13sp" />
 
             <View
                 android:layout_width="match_parent"
@@ -138,10 +141,10 @@
                 android:id="@+id/message_login_fresh_verification"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:padding="12dp"
                 android:layout_alignBottom="@+id/login_verificode_edt"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:padding="12dp"
                 app:srcCompat="@drawable/vd_renovate" />
 
             <View
@@ -156,7 +159,6 @@
 
         <!--登录-->
         <Button
-            android:textSize="16sp"
             android:id="@+id/message_login_button"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -167,7 +169,8 @@
             android:layout_marginTop="120dp"
             android:background="@drawable/bg_button"
             android:text="@string/login"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
 
         <LinearLayout

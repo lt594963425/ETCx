@@ -21,6 +21,7 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.myTextWatcher;
 
 import org.json.JSONException;
@@ -76,6 +77,9 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 
         mNewPhoneEdt.addTextChangedListener(new myTextWatcher(mNewPhoneEdt, mNewPhoneDle));
         initAutoComplete("history", mNewPhoneEdt);
+        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeChPh", 0));
+        if (timeDef > 0) new TimeCount(mNewCaptchaEdt, timeDef, 1000).start();
+
     }
 
     @Override
@@ -142,9 +146,9 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                                 mSMSID = object.getString("sms_id");
                                 PublicSPUtil.getInstance().putString("pr_sms_id", mSMSID);
                                 ToastUtils.showToast(R.string.send_success);
-//                                UIUtils.saveHistory(UIUtils.getContext(), "history", mPhoneNum);
-                                TimeCount time = new TimeCount(mGetCaptcha, 60000, 1000);
-                                time.start();
+                                UIUtils.saveHistory("history", mPhoneNum);
+                                PublicSPUtil.getInstance().putLong("timeChPh", System.currentTimeMillis());
+                                new TimeCount(mGetCaptcha, 60000, 1000).start();
                             }
                             if (code.equals("error")) {
                                 ToastUtils.showToast(R.string.unregist);

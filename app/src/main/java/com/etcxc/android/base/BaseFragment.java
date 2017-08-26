@@ -130,7 +130,7 @@ public abstract class BaseFragment extends RxFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       mActivity = (BaseActivity) getActivity();
+         mActivity = (BaseActivity) getActivity();
     }
 
     protected void openActivity(Class<?> c) {
