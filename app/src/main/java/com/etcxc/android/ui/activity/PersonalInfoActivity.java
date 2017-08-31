@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,7 +87,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private static final int REQUEST_CODE_ALBUM = 2;
     private Toolbar mToolbar2;
     private Button mExitLogin;
-    private TextView mUserName, mUserPhone;
+    private TextView mUserName, mUserPhone, mUserSex;
     private CircleImageView mUserHead;
     private final static String IMAGE_HEAD = "head.jpg";
     private String CROP_HEAD = "user_head.jpg";
@@ -101,27 +101,60 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     }
 
     private void initUserInfoView() {
-        //登录之后显示的页面info_page
         mToolbar2 = find(R.id.person_toolbar);
         setSupportActionBar(mToolbar2);
         mToolbar2.setTitle(R.string.personinfo);
         mToolbar2.inflateMenu(R.menu.menu);
         setBarBack(mToolbar2);
-        RelativeLayout mHeadLayout = find(R.id.info_head_layout);
-        RelativeLayout mNameLayout = find(R.id.info_name_layout);
-        RelativeLayout mPhoneLayout = find(R.id.info_phone_layout);
+        find(R.id.info_head_layout).setOnClickListener(this);
+        find(R.id.info_name_layout).setOnClickListener(this);
+        find(R.id.info_phone_layout).setOnClickListener(this);
+        find(R.id.info_sex_layout).setOnClickListener(this);
         mUserHead = find(R.id.user_head);
         mUserName = find(R.id.user_name);
         mUserPhone = find(R.id.user_phone);
+        mUserSex = find(R.id.user_sex);
 
         mExitLogin = find(R.id.exit_login_btn);
-        mHeadLayout.setOnClickListener(this);
-        mNameLayout.setOnClickListener(this);
-        mPhoneLayout.setOnClickListener(this);
+
 
         mExitLogin.setOnClickListener(this);
         mToolbar2.setOnMenuItemClickListener(this);
         setstatus();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.info_head_layout:
+                show2Dialog();
+                break;
+            case R.id.info_name_layout:
+                openActivity(ChangeNickNameActivity.class);
+                break;
+            case R.id.info_phone_layout:
+                openActivity(ChangePhoneActivity.class);
+                break;
+            case R.id.info_sex_layout:
+                View view = LayoutInflater.from(this).inflate(R.layout.select_sex, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setView(view);
+                Dialog dialog = builder.show();
+                view.findViewById(R.id.select_confirm).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (((RadioButton) view.findViewById(R.id.select_man)).isChecked()) {
+                            mUserSex.setText("男");
+                        } else mUserSex.setText("女");
+                        dialog.dismiss();
+                    }
+                });
+
+                break;
+            case R.id.exit_login_btn://退出登录
+                requestLoginOut();
+                break;
+        }
     }
 
     private void setBarBack(Toolbar toolbar) {
@@ -167,17 +200,14 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     }
 
     private void show2Dialog() {
-        //动态加载布局生成View对象
-        View longinDialogView = LayoutInflater.from(this).inflate(R.layout.cameral_album, null);
+        View view = LayoutInflater.from(this).inflate(R.layout.cameral_album, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        TextView takePicture = (TextView) longinDialogView.findViewById(R.id.take_picture);
-        TextView selectPhoto = (TextView) longinDialogView.findViewById(R.id.select_photo);
-        builder.setView(longinDialogView);
-        final Dialog dialog = builder.show();
+        builder.setView(view);
+        Dialog dialog = builder.show();
         /*
         相机
          */
-        takePicture.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.take_picture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //申请相机权限
                 if (!NetConfig.isAvailable()) {
@@ -191,10 +221,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
             }
         });
-        /*
-        相册
-         */
-        selectPhoto.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.select_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 uploadAvatarFromAlbumRequest();
@@ -226,7 +253,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             if (file1.exists()) file1.delete();
             try {
                 boolean success = file1.createNewFile();
-                if (success) UCrop.of(data.getData(), Uri.fromFile(file1)).withAspectRatio(1, 1).start(this);
+                if (success)
+                    UCrop.of(data.getData(), Uri.fromFile(file1)).withAspectRatio(1, 1).start(this);
             } catch (IOException e) {
                 LogUtil.e(TAG, "result_album", e);
             }
@@ -242,26 +270,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 LogUtil.e(TAG, "result_camera", e);
             }
         } else if (requestCode == UCrop.REQUEST_CROP) {
-//                Uri uri = UCrop.getOutput(data);
-//                if (uri == null) return;
-//                Bitmap bitmap = loadBitmap(uri);
-                updateHeadToServer(data);
-
-
+            updateHeadToServer(data);
         }
     }
-
-    private void saveBmpToFile(String path) {
-        //String path = FileUtils.getCachePath(this) + File.separator + CROP_HEAD;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inSampleSize = FileUtils.calculateInSampleSize(options, 200, 700);//设置压缩比例
-        Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
-        options.inJustDecodeBounds = false;
-        Bitmap bitmapFactory = BitmapFactory.decodeFile(path, options);
-        FileUtils.saveToFile(path, CROP_HEAD, bitmapFactory);
-    }
-
 
     private void setImageFromUri(ImageView imageView, Uri uri) {
         if (imageView == null || uri == null) return;
@@ -370,23 +381,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             ToastUtils.showToast("用户未安装微信");
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.info_head_layout:
-                show2Dialog();
-                break;
-            case R.id.info_name_layout:
-                openActivity(ChangeNickNameActivity.class);
-                break;
-            case R.id.info_phone_layout:
-                openActivity(ChangePhoneActivity.class);
-                break;
-            case R.id.exit_login_btn://退出登录
-                requestLoginOut();
-                break;
-        }
-    }
 
     private void requestLoginOut() {
         showProgressDialog(R.string.loading);
@@ -471,12 +465,12 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                         if (code.equals("s_ok")) {
                             closeProgressDialog();
                             ToastUtils.showToast(R.string.change_head_success);
-                           // mUserHead.setImageBitmap(bitmap);
+                            // mUserHead.setImageBitmap(bitmap);
                             setImageFromUri(mUserHead, UCrop.getOutput(data));
 
                         } else {
                             closeProgressDialog();
-                            ToastUtils.showToast(R.string.request_failed );
+                            ToastUtils.showToast(R.string.request_failed);
                         }
                     }
                 }, new Consumer<Throwable>() {

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="#f4f4f4"
     android:orientation="vertical">
-
     <com.youth.banner.Banner xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/home_banner"
         android:layout_width="match_parent"
@@ -14,28 +13,26 @@
         app:indicator_height="7dp"
         app:indicator_margin="5dp"
         app:indicator_width="7dp" />
-    <GridView
-        android:id="@+id/home_gridview"
+    <com.etcxc.android.ui.view.GridRecyclerView
+        android:id="@+id/home_recylerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/home_banner"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:background="#ffffff"
-        android:numColumns="3"
+        android:background="@color/white"
+        android:padding="5dp"
+        android:clipToPadding="false"
         android:paddingBottom="16dp"
         android:scrollbars="none"
-        android:stretchMode="columnWidth"
-        tools:listitem="@layout/item_home_gridview"/>
-
+        tools:listitem="@layout/item_home_gridview" />
     <LinearLayout
         android:id="@+id/home_etcmore_llayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/home_gridview"
+        android:layout_below="@id/home_recylerview"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
+
         <LinearLayout
             android:id="@+id/home_etc_online_lly"
             android:layout_width="0dp"
@@ -43,6 +40,7 @@
             android:layout_weight="0.8"
             android:background="@color/white"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/home_etconline_tv"
                 android:layout_width="match_parent"

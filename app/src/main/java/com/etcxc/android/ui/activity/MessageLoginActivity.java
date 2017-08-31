@@ -60,7 +60,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
     private Button mMLoginButton;
     private RelativeLayout mMsgLVLayout;
     private EditText mMPicCodeEdt;
-    private RelativeLayout mMsgVodeLayout;//图形验证码http://192.168.6.58/login/login/login/
+    private RelativeLayout mMsgVodeLayout;
     private String mSMSID;
 
     @Override
@@ -81,7 +81,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         mMPhoneNumberDelete.setOnClickListener(this);
         mGetMsgVeriFicodeButton.setOnClickListener(this);
         mMLoginButton.setOnClickListener(this);
-        //todo 输入的次数超过3次要求输入图形验证码 显示mMsgLVLayout 控件
         mMsgLVLayout = find(R.id.message_login_verificode_layout);
         mMPicCodeEdt = find(R.id.message_login_verificode_edt); //输入图形验证码message_login_image_verificode
         mMPicCodeIV = find(R.id.message_login_image_verificode); //图形验证码 message_login_image_verificode
@@ -138,9 +137,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                // TODO: 2017/8/1 需要接口调整
-//                loginUUrl(smsLoginServerUrl + data);
-
                 break;
         }
     }
@@ -164,7 +160,6 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 jsonObject.put("tel", phonenum);
-
                 String result = OkClient.get(NetConfig.consistUrl(FUNC.SMSREPORT), jsonObject);
                 e.onNext(result);
             }

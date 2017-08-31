@@ -2,10 +2,12 @@ package com.etcxc.android.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.LruCache;
@@ -14,12 +16,15 @@ import android.util.Log;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
+import com.etcxc.android.base.App;
 import com.etcxc.android.net.NetConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,6 +47,7 @@ public class LoadImageHeapler {
     protected final String TAG = "LoadImageHeapler";
     //缓存类，能过获取和写入数据到缓存中，短时间的存储！！
     private static LruCache<String, Bitmap> cache;
+    private final String dirName;
     //文件操作类对象
     private Activity context;
     private Bitmap mBitmap;
@@ -52,6 +58,7 @@ public class LoadImageHeapler {
      */
 
     public LoadImageHeapler(Activity context, String dirName) {
+        this.dirName= dirName;
         this.context = context;
         //获取系统分配的最大内存
         int maxSize = (int) (Runtime.getRuntime().maxMemory() / 8);
@@ -68,11 +75,22 @@ public class LoadImageHeapler {
     }
 
     public void loadUserHead(ImageLoadListener listener) {
-        Log.e(TAG, "从网络中下载数据");
-        requestHead(listener);
-
+        if(readFromCache(dirName) != null){
+            Log.e(TAG, "从内存中加载数据");
+            listener.loadImage(readFromCache(dirName));
+        }else {
+            Bitmap bitmap = readFromSDCard(dirName);
+            if (bitmap != null){
+                Log.e(TAG, "从SD卡中加载数据");
+                saveToCache(dirName, bitmap);//把从SD卡中读取到的数据保存到缓存中，
+                //返回
+                listener.loadImage(readFromSDCard(dirName));//返回一个数据给调用者
+            }else {
+                Log.e(TAG, "从网络中下载数据");
+                requestHead(listener);
+            }
+        }
     }
-
     private void requestHead(ImageLoadListener listener) {
         OkHttpClient client = new OkHttpClient();
         JSONObject jsonObject = new JSONObject();
@@ -95,7 +113,6 @@ public class LoadImageHeapler {
                     @Override
                     public void run() {
                         ToastUtils.showToast(R.string.request_failed);
-                        //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
                         Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
                         listener.loadImage(bmp);
                     }
@@ -113,21 +130,24 @@ public class LoadImageHeapler {
                             @Override
                             public void run() {
                                 listener.loadImage(mBitmap);
+                                saveToCache(dirName, mBitmap);
+                                saveToSDCard(dirName,mBitmap);
                             }
                         });
                     }
-                }else {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtils.showToast(R.string.request_failed);
-                            //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
-                            Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
-                            listener.loadImage(bmp);
-
-                        }
-                    });
                 }
+//                else {
+//                    context.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            ToastUtils.showToast(R.string.request_failed);
+//                            //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
+//                            Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
+//                            listener.loadImage(bmp);
+//
+//                        }
+//                    });
+//                }
             }
         });
     }
@@ -138,7 +158,12 @@ public class LoadImageHeapler {
     public interface ImageLoadListener {
         void loadImage(Bitmap bmp);
     }
-
+    /**
+     * 使用缓存类存储Bitmap对象
+     */
+    private void saveToCache(String key, Bitmap bmp) {
+        cache.put(key, bmp);
+    }
     /**
      * 使用缓存类获取Bitmap对象
      */
@@ -151,10 +176,35 @@ public class LoadImageHeapler {
      * 根据文件的名字，读取出一个Bitmap的对象，
      * 如果之前保存过就有值，否则是null
      */
-    //  mFile = new File(getCachePath(getActivity()), "user-avatar.jpg");
     public Bitmap readFromSDCard(String key) {
         return BitmapFactory.decodeFile(new File(getCachePath(context), key).getAbsolutePath());
     }
+    /**
+     *保存bitmap
+     */
+    public void saveToSDCard(String key, Bitmap bmp) {
+        String path = getCachePath(context);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(new File(path, key));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        File file = new File(path);
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(file);
+        intent.setData(uri);
+        App.get().sendBroadcast(intent);
+        //保存图片的设置，压缩图片
+        bmp.compress(Bitmap.CompressFormat.PNG, 50, fos);
+        try {
+
+            fos.close();//关闭流
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * drawable 转bitmap

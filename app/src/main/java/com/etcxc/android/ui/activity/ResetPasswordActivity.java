@@ -1,24 +1,26 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.utils.Md5Utils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.myTextWatcher;
 
 import org.json.JSONException;
@@ -27,14 +29,16 @@ import org.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.R.drawable.vd_close_eyes;
 import static com.etcxc.android.R.drawable.vd_open_eyes;
-import static com.etcxc.android.net.FUNC.INFORMATIONMODIFY;
-import static com.etcxc.android.utils.UIUtils.LEFT;
-import static com.etcxc.android.utils.UIUtils.addIcon;
+import static com.etcxc.android.net.FUNC.RESET_PWD;
+import static com.etcxc.android.utils.UIUtils.closeAnimator;
+import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isLook;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
@@ -46,16 +50,15 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
 
     private EditText mResetPwd, mVerifiCodeEdit;
     private AutoCompleteTextView mPhoneNumberEdit;
-    private Button mRegistButton, mVerificodeButton;
+    private Button mVerificodeButton;
     private ImageView mPhonenumberDelete, mEye, mResetPwdDelete;
-    private SharedPreferences sPUser;
-    private String phoneNum, passWord, pwd, veriFicode, smsID;
+    private String mPhoneNum, mPassWord;
+    private String mSMSID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
-        sPUser = getSharedPreferences("user_info", MODE_PRIVATE);
         initView();
     }
 
@@ -68,6 +71,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View view) {
                 finish();
+                closeAnimator(ResetPasswordActivity.this);
             }
         });
         mPhoneNumberEdit = find(R.id.reset_phonenumber_edt);//手机号码
@@ -77,18 +81,19 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         mEye = find(R.id.reset_eye);
         mVerifiCodeEdit = find(R.id.reset_verificode_edt);
         mVerificodeButton = find(R.id.get_reset_verificode_button);
-        mRegistButton = find(R.id.reset_button);
-        addIcon(mPhoneNumberEdit, R.drawable.vd_my, LEFT);
-        addIcon(mResetPwd, R.drawable.vd_regist_password, LEFT);
-        addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha, LEFT);
-        mRegistButton.setOnClickListener(this);
+        find(R.id.reset_button).setOnClickListener(this);
         mVerificodeButton.setOnClickListener(this);
         mPhonenumberDelete.setOnClickListener(this);
         mEye.setOnClickListener(this);
         mResetPwdDelete.setOnClickListener(this);
         mPhoneNumberEdit.addTextChangedListener(new myTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
         mResetPwd.addTextChangedListener(new myTextWatcher(mResetPwd, mResetPwdDelete));  // mResetPwd  mResetPwdDelete
-//        initAutoComplete(this, "history", mPhoneNumberEdit);
+        UIUtils.addIcon(mPhoneNumberEdit, R.drawable.vd_my, UIUtils.LEFT);
+        UIUtils.addIcon(mResetPwd, R.drawable.vd_regist_password, UIUtils.LEFT);
+        UIUtils.addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha, UIUtils.LEFT);
+        initAutoComplete("history", mPhoneNumberEdit);
+        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeReset", 0));
+        if (timeDef > 0) new TimeCount(mVerificodeButton, timeDef, 1000).start();
     }
 
 
@@ -99,30 +104,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                 mResetPwd.setText("");
                 break;
             case R.id.reset_button://找回密码完成，跳回登录界面
-                smsID = PublicSPUtil.getInstance().getString("rp_sms_id", null);
-                //tel/15974255013/inf_modify_sms_code/190881/pwd/lt767435/sms_id/90743520170623203308
-                //data = /tel/'tel'/inf_modify_sms_code/'inf_modify_sms_code'/pwd/'pwd'/sms_id/'sms_id'
-                phoneNum = mPhoneNumberEdit.getText().toString();
-                passWord = mResetPwd.getText().toString().trim();
-                pwd = Md5Utils.encryptpwd(passWord);
-                veriFicode = mVerifiCodeEdit.getText().toString().trim();
-                if (phoneNum.isEmpty()) {
-                    ToastUtils.showToast(R.string.phone_isempty);
-                    return;
-                } else if (!isMobileNO(phoneNum)) {
-                    ToastUtils.showToast(R.string.please_input_correct_phone_number);
-                    return;
-                } else if (veriFicode.isEmpty()) {
-                    ToastUtils.showToast(R.string.set_verifycodes);
-                    return;
-                } else if (passWord.isEmpty()) {
-                    ToastUtils.showToast(R.string.password_isempty);
-                    return;
-                } else if (passWord.length() < 6) {
-                    ToastUtils.showToast(R.string.password_isshort);
-                    return;
-                }
-                ResetPwdUrl();
+                RequstResetPwd();
                 break;
             case R.id.get_reset_verificode_button://获取短息验证码
                 String phoneNum2 = mPhoneNumberEdit.getText().toString();
@@ -133,9 +115,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                     ToastUtils.showToast(R.string.please_input_phonenumber);
                     return;
                 }
-//                saveHistory(this, "history", phoneNum2);
-                //todo：向后端请求获取短信验证码
-//                getSmsCode(SMSREPORT + phoneNum2);
+                getSmsCode(phoneNum2);
                 break;
             case R.id.reset_phonenumber_delete://置空手机号
                 mPhoneNumberEdit.setText("");
@@ -145,17 +125,45 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    public void ResetPwdUrl() {
+    private void RequstResetPwd() {
+        mPhoneNum = mPhoneNumberEdit.getText().toString();
+        mPassWord = mResetPwd.getText().toString().trim();
+        String veriFicode = mVerifiCodeEdit.getText().toString().trim();
+        if (mPhoneNum.isEmpty()) {
+            ToastUtils.showToast(R.string.phone_isempty);
+            return;
+        } else if (!isMobileNO(mPhoneNum)) {
+            ToastUtils.showToast(R.string.please_input_correct_phone_number);
+            return;
+        } else if (veriFicode.isEmpty()) {
+            ToastUtils.showToast(R.string.set_verifycodes);
+            return;
+        } else if (mPassWord.isEmpty()) {
+            ToastUtils.showToast(R.string.password_isempty);
+            return;
+        } else if (mPassWord.length() < 6) {
+            ToastUtils.showToast(R.string.password_isshort);
+            return;
+        }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("tel", mPhoneNum);
+            jsonObject.put("pwd", mPassWord);
+            jsonObject.put("sms_code", veriFicode);
+            jsonObject.put("sms_id", mSMSID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ResetPwdNet(jsonObject);
+    }
+
+    public void ResetPwdNet(JSONObject jsonObject) {
+        Log.e(TAG,jsonObject.toString());
         showProgressDialog(getString(R.string.loading));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("tel", phoneNum);
-                jsonObject.put("pwd", pwd);
-                jsonObject.put("inf_modify_sms_code", veriFicode);
-                jsonObject.put("sms_id", smsID);
-                String result = OkClient.get(NetConfig.consistUrl(INFORMATIONMODIFY), new JSONObject());
+                String result = OkClient.get(NetConfig.consistUrl(RESET_PWD), jsonObject);
                 e.onNext(result);
             }
         }).compose(RxUtil.activityLifecycle(this))
@@ -164,6 +172,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
 
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        Log.e(TAG,s);
                         closeProgressDialog();
                         parseJson(s);
                     }
@@ -183,17 +192,10 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             if (jsonObject == null) return;
             String code = jsonObject.getString("code");
             if (code.equals("s_ok")) {
-                JSONObject varJson = jsonObject.getJSONObject("var");
-                String tel = varJson.getString("tel");
-                String pwd = varJson.getString("pwd");
-                String lastmodifyTime = varJson.getString("last_modify_time");//标准的时间格式
-                String nickName = varJson.getString("nick_name");
-                SharedPreferences.Editor editor = sPUser.edit();
-                editor.putString("telphone", tel);
-                editor.putString("password", pwd);
-                editor.putString("lastmodifyTime", lastmodifyTime);
-                editor.putString("nickname", nickName);
-                editor.commit();
+                MeManager.setPhone(mPhoneNum);
+                MeManager.setPWD(mPassWord);
+                MeManager.clearToken();
+                openActivity(LoginActivity.class);
                 ToastUtils.showToast(R.string.find_success);
                 finish();
             }
@@ -212,61 +214,48 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            ToastUtils.showToast(R.string.find_faid);// todo 返回数据待改进
+            ToastUtils.showToast(R.string.find_faid);
             return;
         }
     }
 
-    public void getSmsCode(String url) {
+    public void getSmsCode(String phonenum) {
+        JSONObject jsonObject = new JSONObject();
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(url, new JSONObject());
+                jsonObject.put("tel", phonenum);
+
+                String result = OkClient.get(NetConfig.consistUrl(FUNC.SMSREPORT), jsonObject);
                 e.onNext(result);
             }
-        }).compose(RxUtil.activityLifecycle(this))
-                .compose(RxUtil.io())
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        parseSmsCodeJson(s);
+                        Log.e(TAG, s);
+                        JSONObject object = new JSONObject(s);
+                        String code = object.getString("code");
+                        if (code.equals("s_ok")) {
+                            mSMSID = object.getString("sms_id");
+                            ToastUtils.showToast(R.string.send_success);
+                            PublicSPUtil.getInstance().putLong("timeReset", System.currentTimeMillis());
+                            new TimeCount(mVerificodeButton, 60000, 1000).start();
+                        }
+                        if (code.equals("error")) {
+                            ToastUtils.showToast(R.string.request_failed);
+                            return;
+                        }
+
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-
                         ToastUtils.showToast(R.string.send_faid);
+                        return;
                     }
                 });
-    }
-
-    private void parseSmsCodeJson(@NonNull String s) {
-        try {
-            JSONObject object = new JSONObject(s);
-            String code = object.getString("code");
-            if (code.equals("s_ok")) {//返回tel,sms_id
-                JSONObject jsonvar = object.getJSONObject("var");
-                String smsID = jsonvar.getString("sms_id");
-                PublicSPUtil.getInstance().putString( "rp_sms_id", smsID);//rp_sms_id
-                ToastUtils.showToast(R.string.send_success);
-                TimeCount time = new TimeCount(mVerificodeButton, 60000, 1000);
-                time.start();
-            }
-            if (code.equals("err")) {
-                String msg = object.getString("message");
-                if (msg.equals("password_too_easy")) {
-                    ToastUtils.showToast(R.string.pwd_easy);
-                } else if (msg.equals("telphone_unregistered")) {
-                    ToastUtils.showToast(R.string.telphoneunregistered);
-                } else {
-                    ToastUtils.showToast(R.string.send_faid);
-                }
-                return;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            ToastUtils.showToast(R.string.send_faid);
-        }
     }
 
     @Override

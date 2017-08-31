@@ -18,8 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.MeManager;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
@@ -31,13 +29,12 @@ import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
 import com.etcxc.android.ui.activity.LoginActivity;
+import com.etcxc.android.ui.activity.MineCardActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
-import com.etcxc.android.ui.activity.UserCardActivity;
 import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.ui.view.ColorCircle;
-import com.etcxc.android.ui.view.GlideCircleTransform;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LoadImageHeapler;
 import com.etcxc.android.utils.ToastUtils;
@@ -170,17 +167,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         return file.exists() && file.length() > 0;
     }
 
-    private void getImageToView() {
-        uri = Uri.fromFile(new File(FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD));
-        Glide.with(getActivity().getApplicationContext())
-                .load(uri)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(R.drawable.vd_head)
-                .dontAnimate()
-                .transform(new GlideCircleTransform(getActivity()))
-                .into(mMineUserHead);
-    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -194,7 +180,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_my_card_toright:
-                openActivity(UserCardActivity.class);
+                openActivity(MineCardActivity.class);
                 break;
             case R.id.mine_layout:  //用户信息页面
                 if (MeManager.getIsLogin()) {

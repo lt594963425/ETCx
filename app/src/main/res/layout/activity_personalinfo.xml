@@ -157,11 +157,9 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
-                android:contentDescription="@string/harvestaddress"
                 android:focusable="false"
                 android:padding="15dp"
-                android:text=""
-                app:srcCompat="@drawable/vd_mine_toright" />
+                android:text="男" />
         </RelativeLayout>
 
         <RelativeLayout

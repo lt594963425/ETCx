@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -90,6 +89,10 @@ public class UIUtils {
 
     public static void openAnimator(Activity activity) {
         activity.overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
+    }
+
+    public static void closeAnimator(Activity activity) {activity.overridePendingTransition(0,R.anim.zoom_exit);
+
     }
 
     /**
@@ -229,7 +232,6 @@ public class UIUtils {
         }
         auto.setAdapter(adapter);
         auto.setDropDownHeight(350);
-        auto.setTextColor(Color.BLACK);
         auto.setThreshold(1);
         auto.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 /**
  * 主界面Activity
- * Created by 刘涛 on 2017/6/3 0003.
+ * Created by LiuTao on 2017/6/3 0003.
  */
 
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(0, false);
-        mViewPager.setOffscreenPageLimit(3);
+        //mViewPager.setOffscreenPageLimit(3);
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
@@ -105,7 +105,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         list.add(new FragmentHome());
         list.add(new FragmentExpand());
         list.add(mFragmentMine);
-        //绑定Fragment适配器
         mAdapter = new MyFragmentAdapter(getSupportFragmentManager(), list);
         mViewPager.setAdapter(mAdapter);
         mTabHost.getTabWidget().setDividerDrawable(null);

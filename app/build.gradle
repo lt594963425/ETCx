@@ -18,6 +18,12 @@ android {
         manifestPlaceholders = [UMENG_CHANNEL_VALUE: "default_channel"]
     }
     signingConfigs {
+        debug {
+            storeFile file('C:/ETCXc.keystore')
+            storePassword "xcdeetc"
+            keyAlias "ETCXcKey"
+            keyPassword "xcdeetc"
+        }
         release {
             storeFile file('C:/ETCXc.keystore')
             storePassword "xcdeetc"
@@ -28,22 +34,17 @@ android {
 
     buildTypes {
         debug {
-//          applicationIdSuffix ".debug"// 设置debug版本的报名为<应用id>.debug，这样就可以在设备上同时安装debug和release版本了。
-            versionNameSuffix ".${releaseTime()}.debug"
-            multiDexEnabled true
             signingConfig signingConfigs.debug
-            minifyEnabled false
+            versionNameSuffix ".${releaseTime()}.debug"
             zipAlignEnabled false
             shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
             signingConfig signingConfigs.debug
-            multiDexEnabled true
         }
 
         release {
             versionNameSuffix ".${releaseTime()}.release"
-            multiDexEnabled true
             signingConfig signingConfigs.release
             minifyEnabled true
             zipAlignEnabled true
@@ -65,7 +66,6 @@ android {
     productFlavors {
         default_channel {}
         wandoujia {}
-        _360 {}
         xiaomi {}
         tencent {}
         taobao {}
@@ -79,7 +79,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    android {
+        useLibrary 'org.apache.http.legacy'
+    }
 
 }
 
@@ -99,6 +101,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'

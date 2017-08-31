@@ -20,6 +20,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.WXShareUtils;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
@@ -207,6 +208,7 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onClick(View view) {
                 finish();
+                UIUtils.closeAnimator(ShareActivity.this);
             }
         });
     }

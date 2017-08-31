@@ -52,6 +52,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.ADDCARD;
+import static com.etcxc.android.utils.UIUtils.closeAnimator;
 import static com.etcxc.android.utils.UIUtils.delete;
 import static com.etcxc.android.utils.UIUtils.getInfoList;
 import static com.etcxc.android.utils.UIUtils.initAutoCompleteCard;
@@ -73,12 +74,12 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     private TextView mRechaergeDetailNum, mRechaergeTotalMoney, mRechaergeAddDetailBtn;
     private String[] money = {"50", "100", "500", "1000", "1500", "2000"};
     private TextView mRecharge;
-    private List<OrderRechargeInfo> mInfoList;
+    private List<OrderRechargeInfo> mDatas;
     private String mRechargeCardNumber;
     private String mMoneyNumber;
     private View viewEtc;
     private double allMoney;
-    private RechargeOrderFormAdapter myRechaergeRecylerViewAdapter;
+    private RechargeOrderFormAdapter mOrderFormAdapter;
     private DecimalFormat df;
     private Boolean isShowLeadPager = true;//是否显示过充值提示引导页面
     private Handler mHandler = null;
@@ -135,26 +136,26 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
 
     private void setOrderFormData() {
         mRechaergePrepaidRecyler.setLayoutManager(new LinearLayoutManager(this));
-        myRechaergeRecylerViewAdapter = new RechargeOrderFormAdapter(this, mInfoList);
-        mRechaergePrepaidRecyler.setAdapter(myRechaergeRecylerViewAdapter);
+        mOrderFormAdapter = new RechargeOrderFormAdapter(this, mDatas);
+        mRechaergePrepaidRecyler.setAdapter(mOrderFormAdapter);
         mRechaergePrepaidRecyler.setItemAnimator(new DefaultItemAnimator());
-        myRechaergeRecylerViewAdapter.setmOnItemRechargeClickListener(this);
+        mOrderFormAdapter.setmOnItemRechargeClickListener(this);
         mRechaergeCardEdt.addTextChangedListener(new myTextWatcher(mRechaergeCardEdt, mCardNumDelete));
         mCardNumDelete.setOnClickListener(this);
     }
 
     private void initData() {
-        mInfoList = new ArrayList<>();
-        mInfoList = getInfoList(this);
+        mDatas = new ArrayList<>();
+        mDatas = getInfoList(this);
         OrderRechargeInfo infos;
-        if (mInfoList != null) {
+        if (mDatas != null) {
             double allMoney = 0;
-            for (int i = 0; i < mInfoList.size(); i++) {
-                infos = mInfoList.get(i);
+            for (int i = 0; i < mDatas.size(); i++) {
+                infos = mDatas.get(i);
                 String money = infos.getRechargemoney();
                 allMoney = allMoney + parseDouble(money);
             }
-            mRechaergeDetailNum.setText(mInfoList.size() + "");
+            mRechaergeDetailNum.setText(mDatas.size() + "");
             mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
         }
 
@@ -167,7 +168,9 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
 
     @Override
     public void onItemRechargeClick(ImageView view, int position) {
-        myRechaergeRecylerViewAdapter.removeData(position);
+        mDatas.remove(position);
+        mOrderFormAdapter.notifyDataSetChanged();
+        //mOrderFormAdapter.removeData(position);
         delete(ETCRechargeActivity.this, position);
         initData();
         ToastUtils.showToast("删除");
@@ -255,13 +258,13 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
 
     private void addRechargeDetail() {
         if (LocalThrough()) return;
-        mInfoList = new ArrayList<>();
-        mInfoList = getInfoList(this);
+        mDatas = new ArrayList<>();
+        mDatas = getInfoList(this);
         allMoney = parseDouble(mMoneyNumber);
-        if (mInfoList != null) {
-            for (int i = 0; i < mInfoList.size(); i++) {
+        if (mDatas != null) {
+            for (int i = 0; i < mDatas.size(); i++) {
                 OrderRechargeInfo info;
-                info = mInfoList.get(i);
+                info = mDatas.get(i);
                 String cardNumber = info.getEtccarnumber();
                 String money = info.getRechargemoney();
                 allMoney = allMoney + parseDouble(money);
@@ -272,7 +275,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
                         return;
                     }
                     delete(this, i);
-                    myRechaergeRecylerViewAdapter.removeData(i);
+                    mOrderFormAdapter.removeData(i);
                     mMoneyNumber = String.valueOf(df.format(totalMoney));
                 }
             }
@@ -353,10 +356,10 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
                 info.setRechargemoney(mMoneyNumber);
                 info.setAlloney(String.valueOf((int) (allMoney * 100)));//
                 Log.e(TAG, "显示的结果：单个充值：" + mMoneyNumber + "总数" + String.valueOf((int) (allMoney * 100)));
-                if (mInfoList == null) {
-                    myRechaergeRecylerViewAdapter.addData(info, 0, mRechaergeDetailNum);
+                if (mDatas == null) {
+                    mOrderFormAdapter.addData(info, 0, mRechaergeDetailNum);
                 } else {
-                    myRechaergeRecylerViewAdapter.addData(info, mInfoList.size(), mRechaergeDetailNum);
+                    mOrderFormAdapter.addData(info, mDatas.size(), mRechaergeDetailNum);
                     mRechaergePrepaidRecyler.smoothScrollToPosition(0);
                 }
                 //总数
@@ -378,7 +381,13 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     }
 
     private void setBarBack(ImageView mImg) {
-        mImg.setOnClickListener(v -> finish());
+        mImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                closeAnimator(ETCRechargeActivity.this);
+            }
+        });
     }
 
     @Override

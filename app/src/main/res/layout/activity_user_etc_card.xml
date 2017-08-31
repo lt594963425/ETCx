@@ -1,35 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="true"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/user_card_toolbar"
-        android:background="@color/white"
-        app:theme ="@style/toolbar_theme"
-        app:navigationIcon="@drawable/vd_return"
-        app:titleTextColor="@color/colorOrange"
-           />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
-    <android.support.design.widget.TabLayout
-        android:id="@+id/user_card_tab"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:tabMode="scrollable"
-        app:tabIndicatorColor="@color/colorOrange"
-        app:tabSelectedTextColor="@color/colorOrange"
-        app:tabTextAppearance="@style/TabLayoutTextStyle" />
+    android:fitsSystemWindows="true">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/user_card_viewpager"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/user_card_tab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/colorOrange"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/colorOrange"
+            app:tabTextAppearance="@style/TabLayoutTextStyle" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/user_card_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/user_card_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/white"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:navigationIcon="@drawable/vd_return"
+                app:theme="@style/toolbar_theme"
+                app:titleTextColor="@color/colorOrange" />
+
+            <com.etcxc.android.ui.view.MaterialSearchView
+                android:id="@+id/search_view"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+</FrameLayout>

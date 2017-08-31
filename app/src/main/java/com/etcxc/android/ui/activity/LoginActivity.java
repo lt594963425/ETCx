@@ -56,6 +56,7 @@ import static com.etcxc.android.net.FUNC.VIRIFY_CODE;
 import static com.etcxc.android.net.NetConfig.consistUrl;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
+import static com.etcxc.android.utils.UIUtils.closeAnimator;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 import static com.etcxc.android.utils.UIUtils.saveHistory;
@@ -136,8 +137,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mForgetPassword.setOnClickListener(this);
         mLoginPhonenumberEdt.addTextChangedListener(new myTextWatcher(mLoginPhonenumberEdt, mLoginPhonenumberDelete));
         mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt, mLoginPasswordDelete));
-        mLoginPhonenumberEdt.setText(PublicSPUtil.getInstance().getString("tel", null));
-        mLoginPasswordEdt.setText(PublicSPUtil.getInstance().getString("pwd", null));
+        mLoginPhonenumberEdt.setText(MeManager.getPhone());
+        mLoginPasswordEdt.setText(MeManager.getPWD());
         autoLogin();
     }
 
@@ -146,9 +147,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (b) {
             JSONObject premes = new JSONObject();
             try {
+                mLoginPhonenumberEdt.setText(PublicSPUtil.getInstance().getString("tel", null));
+                mLoginPasswordEdt.setText(PublicSPUtil.getInstance().getString("pwd", null));
                 PublicSPUtil.getInstance().putBoolean("IS_REGIST", false);
                 premes.put("tel", PublicSPUtil.getInstance().getString("tel", null));
                 premes.put("pwd", PublicSPUtil.getInstance().getString("pwd", null));
+
                 loginRun(premes);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -156,7 +160,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         }
     }
-
 
     @Override
     public void onClick(View v) {
@@ -231,11 +234,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onClick(View view) {
                 finish();
+                closeAnimator(LoginActivity.this);
             }
         });
     }
-
-
     private boolean LocalThrough(String phoneNum, String passWord, String veriFicodem) {
         if (phoneNum.isEmpty()) {
             ToastUtils.showToast(R.string.phone_isempty);
@@ -415,5 +417,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         isShowPictureCode = false;
         stopRotateAnimation(mLoginFreshVerification);
         finish();
+        UIUtils.closeAnimator(LoginActivity.this);
     }
 }

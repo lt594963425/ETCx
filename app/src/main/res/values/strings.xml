@@ -248,5 +248,20 @@
     <string name="getting_prepayid">获取prepayID</string>
     <string name="pay_cancle">取消支付</string>
     <string name="user_etc_card">ETC状态</string>
+    <string name="card_total">全部</string>
+    <string name="card_inUser">使用中</string>
+    <string name="card_activa">待激活</string>
+    <string name="card_report">挂失中</string>
+    <string name="card_cancled">已注销</string>
+    <string name="search_hint">Search</string>
+    <string name="onlian_apply_schedule">在线申请进度</string>
+    <string name="etc_card_status">ETC卡状态</string>
+    <string name="binding_card">绑卡</string>
+    <string name="man">男</string>
+    <string name="woman">女</string>
+    <string name="to_binding_card">去绑卡</string>
+    <string name="card_num">卡号:</string>
+    <string name="card_type">卡类型：湘通卡（储蓄卡）</string>
+    <string name="phone_num">手机号：</string>
 
 </resources>

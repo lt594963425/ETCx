@@ -1,10 +1,7 @@
 package com.etcxc.android.ui.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,10 +20,52 @@ import static com.etcxc.android.utils.UIUtils.saveInfoList;
  * Created by 刘涛 on 2017/7/6 0006.
  */
 
-public class RechargeOrderFormAdapter extends RecyclerView.Adapter<RechargeOrderFormAdapter.ViewHolder> implements View.OnClickListener {
+public class RechargeOrderFormAdapter extends BaseSelectAdapter {
     private List<OrderRechargeInfo> mData;
     private Context con;
+    public TextView username;
+    public TextView carnumber;
+    public TextView etccard;
+    public TextView moneynumber;
+    public ImageView deletebtn;
     private OnItemRechargeClickListener mOnItemRechargeClickListener = null;
+    public RechargeOrderFormAdapter(Context con, List<OrderRechargeInfo> list) {
+        this.con = con;
+        this.mData = list;
+    }
+    @Override
+    public int getItemCount() {
+        return mData.size();
+    }
+    @Override
+    public void getInitView(View view) {
+        username = (TextView) view.findViewById(R.id.item_card_name);
+        carnumber = (TextView) view.findViewById(R.id.item_car_number);
+        etccard = (TextView) view.findViewById(R.id.item_recharge_card_number);
+        moneynumber = (TextView) view.findViewById(R.id.item_money_number);
+        deletebtn = (ImageView) view.findViewById(R.id.item_etc_delete_img);
+    }
+
+    @Override
+    public int getLayoutResId() {
+        return R.layout.item_recharge_form_recylerview;
+    }
+    @Override
+    public void getBindView(ViewHolder viewHolder, int position) {
+        OrderRechargeInfo info = mData.get(position);
+        if(info != null){
+           username.setText(info.getRechargename());
+           carnumber.setText(info.getCarnumber());
+           etccard.setText(info.getEtccarnumber());
+           moneynumber.setText(info.getRechargemoney());
+           deletebtn.setTag(position);
+        }
+    }
+
+    @Override
+    public void setItemOnclickListener() {
+      deletebtn.setOnClickListener(this);
+    }
 
     @Override
     public void onClick(View v) {
@@ -41,51 +80,6 @@ public class RechargeOrderFormAdapter extends RecyclerView.Adapter<RechargeOrder
 
     public interface OnItemRechargeClickListener {
         void onItemRechargeClick(ImageView view, int position);
-    }
-
-    public RechargeOrderFormAdapter(Context con, List<OrderRechargeInfo> list) {
-            this.con = con;
-            this.mData = list;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recharge_form_recylerview, parent, false);
-        ViewHolder holer = new ViewHolder(view);
-        holer.deletebtn.setOnClickListener(this);
-        return holer;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        OrderRechargeInfo info = mData.get(position);
-        if(info != null){
-            holder.username.setText(info.getRechargename());
-            holder.carnumber.setText(info.getCarnumber());
-            holder.etccard.setText(info.getEtccarnumber());
-            holder.moneynumber.setText(info.getRechargemoney());
-            holder.deletebtn.setTag(position);
-        }
-    }
-    @Override
-    public int getItemCount() {
-            return mData == null ?0:mData.size();
-    }
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView username;
-        public TextView carnumber;
-        public TextView etccard;
-        public TextView moneynumber;
-        public ImageView deletebtn;
-
-        public ViewHolder(View view) {
-            super(view);
-            username = (TextView) view.findViewById(R.id.item_card_name);
-            carnumber = (TextView) view.findViewById(R.id.item_car_number);
-            etccard = (TextView) view.findViewById(R.id.item_recharge_card_number);
-            moneynumber = (TextView) view.findViewById(R.id.item_money_number);
-            deletebtn = (ImageView) view.findViewById(R.id.item_etc_delete_img);
-        }
     }
 
     public void addData(OrderRechargeInfo ord, int poasation, TextView edt) {

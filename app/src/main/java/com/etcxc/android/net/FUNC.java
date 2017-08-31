@@ -4,7 +4,7 @@ package com.etcxc.android.net;
  * \
  * 接口清单
  * Created by caoyu on 2017/7/26.
- */
+ **/
 
 public class FUNC {
 
@@ -27,7 +27,7 @@ public class FUNC {
     /**
      * 密码（找回，修改）模块
      */
-    public final static String INFORMATIONMODIFY = "/xczx/user_information_modify/informationmodify/";
+    public final static String RESET_PWD = "/xczx/user/resetPwd";
     public final static String MODIFYPWD = "/xczx/user/updatePwd";//
 
 
@@ -56,7 +56,7 @@ public class FUNC {
     //上传邮寄地址
     public final static String POST_INFO = "/xczx/issue/postInfo";
     //支付obu与预存金
-    public final static String WX_PAY_ISSUE ="/xczx/issue/wxPay";
+    public final static String WX_PAY_ISSUE = "/xczx/issue/wxPay";
     /**
      * 用户地址管理模块
      */

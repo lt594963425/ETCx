@@ -16,11 +16,20 @@ import java.util.Map;
  */
 
 public class NetConfig {
+    /**
+     * 错误提示
+     */
+    public static final String ERROR_ONE = "params error";//传参错误
+    public static final String ERROR_TWO = "db error";//数据库操作错误
+    public static final String ERROR_THREE = "sms_error";//短信验证失败
+    public static final String ERROR_FOUR = "auth failed";//凭证认证失败。修改密码，其他手机登录等会造成这个错误，需要手动输入密码
+    public static final String ERROR_FIVE = "auth token no active";    //凭证过期，需要执行重登
+
     public static final String CODE_FA_INVALID_SESSION = "FA_INVALID_SESSION";
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
     //    public final static String HOST = "http://192.168.6.58";
-//    public final static String HOST = "http://192.168.6.50:8080";
-    // public final static String HOST = "http://46080450.nat123.net";
+    //    public final static String HOST = "http://192.168.6.50:8080";
+    //    public final static String HOST = "http://46080450.nat123.net";
     public final static String HOST = "http://192.168.6.50";
 
     /**

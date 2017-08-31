@@ -98,8 +98,12 @@
         <activity
             android:name=".ui.activity.PersonalInfoActivity"
             android:theme="@style/BG_GRAY" />
-        <activity android:name=".ui.activity.UserCardActivity"
+
+        <activity android:name=".ui.activity.OnlineSchedulActivity"
             android:theme="@style/BG_GRAY"/>
+        <activity android:name=".ui.activity.MineCardActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity android:name=".ui.activity.UserCardActivity"/>
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
             android:screenOrientation="portrait"
