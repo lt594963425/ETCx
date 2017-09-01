@@ -13,7 +13,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -78,7 +77,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private TextView mLoginMessage;//短信验证码登录
     private TextView mLoginFast;//快速注册
     private TextView mForgetPassword;//忘记密码
-    private Button mLoginButton;//  登录
     private RelativeLayout mPictureCodeLayout;
     private String timeStr;
 
@@ -102,7 +100,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void initLoginView() {
-
         mToolbar1 = find(R.id.login_toolbar);
         setTitle(R.string.login);
         setBarBack(mToolbar1);
@@ -114,11 +111,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginVerificodeEdt = find(R.id.login_verificode_edt);
         mLoginImageVerificode = find(R.id.login_image_verificode);
         mLoginFreshVerification = find(R.id.login_fresh_verification);
-        mLoginMessage = find(R.id.login_message);
-        mLoginFast = find(R.id.login_fast);
-        mForgetPassword = find(R.id.forget_password);
-        mLoginButton = find(R.id.login_button);
         mPictureCodeLayout = find(R.id.login_verificode_layout);
+        find(R.id.forget_password).setOnClickListener(this);
+        find(R.id.login_fast).setOnClickListener(this);
+        find(R.id.login_message).setOnClickListener(this);
+        find(R.id.login_button).setOnClickListener(this);
         addIcon(mLoginPhonenumberEdt, R.drawable.vd_my, LEFT);
         addIcon(mLoginPasswordEdt, R.drawable.vd_regist_password, LEFT);
         addIcon(mLoginVerificodeEdt, R.drawable.vd_regist_captcha, LEFT);
@@ -130,11 +127,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginPhonenumberDelete.setOnClickListener(this);
         mLoginPasswordDelete.setOnClickListener(this);
         mLoginFreshVerification.setOnClickListener(this);
-        mLoginButton.setOnClickListener(this);
         mLoginEye.setOnClickListener(this);
-        mLoginMessage.setOnClickListener(this);
-        mLoginFast.setOnClickListener(this);
-        mForgetPassword.setOnClickListener(this);
         mLoginPhonenumberEdt.addTextChangedListener(new myTextWatcher(mLoginPhonenumberEdt, mLoginPhonenumberDelete));
         mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt, mLoginPasswordDelete));
         mLoginPhonenumberEdt.setText(MeManager.getPhone());
@@ -152,6 +145,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 PublicSPUtil.getInstance().putBoolean("IS_REGIST", false);
                 premes.put("tel", PublicSPUtil.getInstance().getString("tel", null));
                 premes.put("pwd", PublicSPUtil.getInstance().getString("pwd", null));
+                premes.put("f", 1);
 
                 loginRun(premes);
             } catch (JSONException e) {
@@ -210,13 +204,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         JSONObject data = new JSONObject();
         try {
             if (veriFicodem.isEmpty()) {
-                data.put("tel", phoneNum);
-                data.put("pwd", passWord);
+                data.put("tel", phoneNum)
+                        .put("pwd", passWord)
+                        .put("f", 1);
             } else {
                 data.put("tel", phoneNum)
                         .put("pwd", passWord)
                         .put("code", veriFicodem)
-                        .put("token", code_key);
+                        .put("token", code_key)
+                        .put("f", 1);
             }
         } catch (Exception e) {
             LogUtil.e(TAG, "startUserLoging", e);
@@ -238,6 +234,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         });
     }
+
     private boolean LocalThrough(String phoneNum, String passWord, String veriFicodem) {
         if (phoneNum.isEmpty()) {
             ToastUtils.showToast(R.string.phone_isempty);
@@ -275,9 +272,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     @Override
                     public void accept(@NonNull String s) throws Exception {
                         closeProgressDialog();
-                        Log.e(TAG, s);
                         try {
                             JSONObject jsonObject = new JSONObject(s);
+                            Log.e(TAG, jsonObject.toString());
                             String code = jsonObject.getString("code");
                             if ("s_ok".equals(code)) {
                                 successResult(jsonObject);
@@ -353,7 +350,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             ToastUtils.showToast(R.string.err_captcha);
         } else {
             closeProgressDialog();
-            ToastUtils.showToast(R.string.tel_and_pwd_err + returnMsg);
+            ToastUtils.showToast(R.string.tel_and_pwd_err);
         }
     }
 
@@ -372,15 +369,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<InputStream>() {
             @Override
             public void accept(@NonNull InputStream s) throws Exception {
-                 Log.e(TAG,"验证码图片："+s.toString());
+                Log.e(TAG, "验证码图片：" + s.toString());
                 Bitmap bitmap = BitmapFactory.decodeStream(s);
                 mLoginImageVerificode.setImageBitmap(bitmap);
-
+                stopRotateAnimation(mLoginFreshVerification);
             }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
                 LogUtil.e(TAG, "net", throwable);
+                stopRotateAnimation(mLoginFreshVerification);
                 ToastUtils.showToast(R.string.request_failed);
             }
         });

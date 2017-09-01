@@ -1,7 +1,9 @@
 package com.etcxc.android.ui.fragment;
 
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -55,6 +57,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.etcxc.android.R.id.mine_user_head;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 
@@ -76,6 +79,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private File mFile;
     private Uri uri;
     private String CROP_HEAD = "user_head.jpg";
+    private Uri resultUri;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,7 +91,14 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         initView();
     }
+
     private void initView() {
+        Resources r = getActivity().getResources();
+        resultUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                + r.getResourcePackageName(R.drawable.vd_head) + "/"
+                + r.getResourceTypeName(R.drawable.vd_head) + "/"
+                + r.getResourceEntryName(R.drawable.vd_head));
+
         find(R.id.mine_my_card_toright).setOnClickListener(this);
         find(R.id.mine_harvestaddress_toright).setOnClickListener(this);
         find(R.id.mine_recommendfriend_toright).setOnClickListener(this);
@@ -95,7 +106,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         find(R.id.mine_changephone_toright).setOnClickListener(this);
         find(R.id.mine_aboutus_toright).setOnClickListener(this);
         find(R.id.mine_layout).setOnClickListener(this);
-        mMineUserHead = find(R.id.mine_user_head);
+        mMineUserHead = find(mine_user_head);
         mMineUserName = find(R.id.mine_user_name);
         mExit = find(R.id.mine_exit_login);
         mExit.setOnClickListener(this);
@@ -108,6 +119,18 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
             mUpdateDot.setVisibility(View.VISIBLE);
         mHandler.postDelayed(LOAD_DATA, 500);
+        mMineUserHead.setOnClickListener(this);
+        mMineUserHead.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                File file = new File(FileUtils.getCachePath(getActivity()), CROP_HEAD);
+                if (file.exists())
+                    resultUri = Uri.fromFile(file);
+                FileUtils.showBigImageView(getActivity(), resultUri);
+                return false;
+            }
+
+        });
     }
 
     private Runnable LOAD_DATA = new Runnable() {
@@ -127,61 +150,14 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         }
     };
 
-    public void initUserInfo() {
-        if (NetConfig.isAvailable()) {
-            LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), CROP_HEAD);
-            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
-                @Override
-                public void loadImage(Bitmap bmp) {
-                    mMineUserHead.setImageBitmap(bmp);
-                }
-            });
-        } else {
-            if (cropExists(CROP_HEAD)) {
-                setImageFromUri(mMineUserHead, Uri.fromFile(new File(FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD)));
-            }
-
-        }
-    }
-
-    private void setImageFromUri(ImageView imageView, Uri uri) {
-        if (imageView == null || uri == null) return;
-        try {
-            String cropName = CROP_HEAD;
-            int degree = getImageDegree(FileUtils.getCachePath(getActivity()) + File.separator + cropName);
-            imageView.setImageBitmap(FileUtils.rotateBitmapByDegree(loadBitmap(uri), degree));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inPreferredConfig = Bitmap.Config.RGB_565;
-        opt.inSampleSize = 2;
-        return BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri), null, opt);
-    }
-
-    private boolean cropExists(String cropName) {
-        File file = new File(FileUtils.getCachePath(getActivity()), cropName);
-        return file.exists() && file.length() > 0;
-    }
-
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && mHandler != null) {
-            mHandler.removeCallbacks(LOAD_DATA);
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_my_card_toright:
                 openActivity(MineCardActivity.class);
                 break;
+            case R.id.mine_user_head:
+
             case R.id.mine_layout:  //用户信息页面
                 if (MeManager.getIsLogin()) {
                     //已登录
@@ -234,6 +210,56 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     }
 
+    public void initUserInfo() {
+        if (NetConfig.isAvailable()) {
+            LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), CROP_HEAD);
+            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+                @Override
+                public void loadImage(Bitmap bmp) {
+                    mMineUserHead.setImageBitmap(bmp);
+                }
+            });
+        } else {
+            if (cropExists(CROP_HEAD)) {
+                setImageFromUri(mMineUserHead, Uri.fromFile(new File(FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD)));
+            }
+
+        }
+    }
+
+    private void setImageFromUri(ImageView imageView, Uri uri) {
+        if (imageView == null || uri == null) return;
+        try {
+            String cropName = CROP_HEAD;
+            int degree = getImageDegree(FileUtils.getCachePath(getActivity()) + File.separator + cropName);
+            imageView.setImageBitmap(FileUtils.rotateBitmapByDegree(loadBitmap(uri), degree));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inSampleSize = 2;
+        return BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri), null, opt);
+    }
+
+    private boolean cropExists(String cropName) {
+        File file = new File(FileUtils.getCachePath(getActivity()), cropName);
+        return file.exists() && file.length() > 0;
+    }
+
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser && mHandler != null) {
+            mHandler.removeCallbacks(LOAD_DATA);
+        }
+    }
+
+
     private void requestLoginOut() {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
@@ -248,8 +274,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
             public void accept(@NonNull String s) throws Exception {
+                Log.e(TAG, s);
                 JSONObject result = new JSONObject(s);
-                Log.e(TAG, result.toString());
                 String code = result.getString("code");
                 if (code.equals("s_ok")) {
                     ToastUtils.showToast(R.string.exitlogin);
@@ -267,6 +293,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
                 closeProgressDialog();
+                Log.e(TAG, throwable.toString());
                 ToastUtils.showToast(R.string.request_failed);
 
             }

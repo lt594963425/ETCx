@@ -29,12 +29,12 @@
             android:clickable="true"
             android:descendantFocusability="blocksDescendants"
             android:gravity="center"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp">
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:gravity="center"
                 android:paddingLeft="10dp"
                 android:text="@string/change_head"
@@ -42,15 +42,14 @@
 
             <com.etcxc.android.ui.view.CircleImageView
                 android:id="@+id/user_head"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="15dp"
+                android:background="@drawable/vd_head"
                 android:focusable="false"
                 android:gravity="center"
-                android:padding="5dp"
                 app:civ_border_width="1dp"
-                app:srcCompat="@drawable/vd_head"
                 lt:backgroundHeadColor="@color/yellow"
                 lt:circleBorderHeadWidth="5dp"
                 lt:ringHeadColor="@color/colorAccent" />
@@ -76,7 +75,6 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:paddingLeft="10dp"
-                android:paddingRight="15dp"
                 android:text="@string/change_nickName"
                 android:textSize="15sp" />
 
@@ -87,14 +85,16 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:focusable="false"
-                android:padding="15dp"
+                android:gravity="center"
                 android:text="细水长流"
                 app:srcCompat="@drawable/vd_mine_toright" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
 
         <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/info_phone_layout"
@@ -111,7 +111,6 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:paddingLeft="10dp"
-                android:paddingRight="15dp"
                 android:text="@string/change_tel"
                 android:textSize="15sp" />
 
@@ -123,14 +122,16 @@
                 android:layout_marginRight="10dp"
                 android:contentDescription="@string/harvestaddress"
                 android:focusable="false"
-                android:padding="15dp"
+                android:gravity="center"
                 android:text="15974255013"
                 app:srcCompat="@drawable/vd_mine_toright" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
 
         <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/info_sex_layout"
@@ -147,7 +148,6 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:paddingLeft="10dp"
-                android:paddingRight="15dp"
                 android:text="@string/change_sex"
                 android:textSize="15sp" />
 
@@ -158,7 +158,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
                 android:focusable="false"
-                android:padding="15dp"
+                android:gravity="center"
                 android:text="男" />
         </RelativeLayout>
 

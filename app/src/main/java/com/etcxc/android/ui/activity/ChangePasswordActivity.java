@@ -128,6 +128,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     }
 
     private void parseResultJson(@NonNull String s) throws JSONException {
+        Log.e(TAG,s);
         JSONObject jsonObject = new JSONObject(s);
         if (jsonObject != null) {
             String code = jsonObject.getString("code");

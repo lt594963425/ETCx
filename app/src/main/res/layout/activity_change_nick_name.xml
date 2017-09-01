@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_margin="5dp"
-        android:background="#25f75f"
+        android:background="@color/colorOrange"
          />
 
     <TextView

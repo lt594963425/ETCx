@@ -24,7 +24,7 @@
             android:background="@color/white"
             app:tabGravity="fill"
             app:tabIndicatorColor="@color/colorOrange"
-            app:tabMode="fixed"
+            app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/colorOrange"
             app:tabTextAppearance="@style/TabLayoutTextStyle" />
 

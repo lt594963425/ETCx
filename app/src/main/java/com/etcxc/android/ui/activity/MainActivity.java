@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         mViewPager = find(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(0, false);
-        //mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(3);
         mTabHost = find(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);

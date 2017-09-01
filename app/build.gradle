@@ -113,8 +113,6 @@ dependencies {
     //rx
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    //微信登录
-    compile files('libs/libammsdk.jar')
     //结合组件生命周期管理Rx
     compile 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
     compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.1.0'

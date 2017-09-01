@@ -2,8 +2,10 @@ package com.etcxc.android.ui.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -72,7 +74,6 @@ import okhttp3.RequestBody;
 import static com.etcxc.android.net.FUNC.HEAD_CHANGE;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
-import static com.etcxc.android.utils.FileUtils.getImageDegree;
 
 /**
  * 个人信息界面（通过登录界面拆分）
@@ -80,7 +81,7 @@ import static com.etcxc.android.utils.FileUtils.getImageDegree;
  */
 public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
     protected final String TAG = "PersonalInfoActivity";
-
+    //保存头像的uri
     private Uri uri;
     /* 请求码*/
     private static final int REQUEST_CODE_TAKE_PHOTO = 1;
@@ -91,7 +92,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private CircleImageView mUserHead;
     private final static String IMAGE_HEAD = "head.jpg";
     private String CROP_HEAD = "user_head.jpg";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +101,11 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     }
 
     private void initUserInfoView() {
+        Resources r =this.getResources();
+        uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                + r.getResourcePackageName(R.drawable.vd_head) + "/"
+                + r.getResourceTypeName(R.drawable.vd_head) + "/"
+                + r.getResourceEntryName(R.drawable.vd_head));
         mToolbar2 = find(R.id.person_toolbar);
         setSupportActionBar(mToolbar2);
         mToolbar2.setTitle(R.string.personinfo);
@@ -120,12 +125,26 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
 
         mExitLogin.setOnClickListener(this);
         mToolbar2.setOnMenuItemClickListener(this);
+        mUserHead.setOnClickListener(this);
+        mUserHead.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                File file = new File(FileUtils.getCachePath(PersonalInfoActivity.this), CROP_HEAD);
+                if (file.exists())
+                    uri = Uri.fromFile(file);
+                    FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
+                return false;
+            }
+        });
         setstatus();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.user_head:
+                show2Dialog();
+                break;
             case R.id.info_head_layout:
                 show2Dialog();
                 break;
@@ -277,9 +296,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private void setImageFromUri(ImageView imageView, Uri uri) {
         if (imageView == null || uri == null) return;
         try {
-            String cropName = CROP_HEAD;
-            int degree = getImageDegree(FileUtils.getCachePath(this) + File.separator + cropName);
-            imageView.setImageBitmap(FileUtils.rotateBitmapByDegree(loadBitmap(uri), degree));
+            imageView.setImageBitmap(loadBitmap(uri));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -289,7 +306,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
-        opt.inSampleSize = FileUtils.calculateInSampleSize(opt, 200, 700);
+        opt.inSampleSize = FileUtils.calculateInSampleSize(opt, 200, 300);
         return BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, opt);
     }
 
@@ -398,6 +415,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        Log.e(TAG,s);
                         JSONObject result = new JSONObject(s);
                         String code = result.getString("code");
                         if (code.equals("s_ok")) {

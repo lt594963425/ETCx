@@ -73,6 +73,7 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport()));
         mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled()));
         mViewPager.setAdapter(new UserTabAdapter(getSupportFragmentManager(), mItems));
+        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.addOnTabSelectedListener(this);
         LinearLayout linearLayout = (LinearLayout) mTabLayout.getChildAt(0);

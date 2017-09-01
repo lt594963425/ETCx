@@ -18,6 +18,7 @@ import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 
 import org.json.JSONException;
@@ -30,10 +31,8 @@ import java.util.regex.Pattern;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.CAN_ISSUE;
 import static com.etcxc.android.utils.UIUtils.openAnimator;
@@ -124,8 +123,8 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                 Log.e(TAG,result);
                 e.onNext(result);
             }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        }).compose(RxUtil.io())
+                .compose(RxUtil.activityLifecycle(this))
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {

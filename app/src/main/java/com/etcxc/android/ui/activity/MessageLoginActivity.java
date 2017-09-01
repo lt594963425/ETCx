@@ -90,8 +90,8 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);
         mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt, mMPhoneNumberDelete));
         initAutoComplete("history", mMPhoneNumberEdt);
-        long timeDef =60000-(System.currentTimeMillis()-PublicSPUtil.getInstance().getLong("timeMsgLog",0));
-        if (timeDef>0) new TimeCount(mGetMsgVeriFicodeButton,timeDef , 1000).start();
+        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeMsgLog", 0));
+        if (timeDef > 0) new TimeCount(mGetMsgVeriFicodeButton, timeDef, 1000).start();
 
     }
 
@@ -130,9 +130,11 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 }
                 try {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("tel", phoneNum);
-                    jsonObject.put("sms_code", smsCode);
-                    jsonObject.put("sms_id", smsid);
+                    jsonObject.put("tel", phoneNum)
+                            .put("sms_code", smsCode)
+                            .put("sms_id", smsid)
+                            .put("f", 1);
+
                     requestSMSLogin(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -168,20 +170,20 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                            Log.e(TAG, s);
-                            JSONObject object = new JSONObject(s);
-                            String code = object.getString("code");
-                            if (code.equals("s_ok")) {
-                                mSMSID = object.getString("sms_id");
-                                PublicSPUtil.getInstance().putString("sms_id", mSMSID);
-                                ToastUtils.showToast(R.string.send_success);
-                                PublicSPUtil.getInstance().putLong("timeMsgLog", System.currentTimeMillis());
-                                new TimeCount(mGetMsgVeriFicodeButton, 60000, 1000).start();
-                            }
-                            if (code.equals("error")) {
-                                ToastUtils.showToast(R.string.request_failed);
-                                return;
-                            }
+                        Log.e(TAG, s);
+                        JSONObject object = new JSONObject(s);
+                        String code = object.getString("code");
+                        if (code.equals("s_ok")) {
+                            mSMSID = object.getString("sms_id");
+                            PublicSPUtil.getInstance().putString("sms_id", mSMSID);
+                            ToastUtils.showToast(R.string.send_success);
+                            PublicSPUtil.getInstance().putLong("timeMsgLog", System.currentTimeMillis());
+                            new TimeCount(mGetMsgVeriFicodeButton, 60000, 1000).start();
+                        }
+                        if (code.equals("error")) {
+                            ToastUtils.showToast(R.string.request_failed);
+                            return;
+                        }
 
                     }
                 }, new Consumer<Throwable>() {

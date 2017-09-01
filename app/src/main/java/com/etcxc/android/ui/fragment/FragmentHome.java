@@ -183,8 +183,6 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
         MobclickAgent.onPageEnd("FragmentExpand");
     }
 
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();

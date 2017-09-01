@@ -10,8 +10,13 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 
+import com.etcxc.android.R;
 import com.etcxc.android.base.App;
+import com.etcxc.android.ui.view.RxDialog;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -94,7 +99,29 @@ public class FileUtils {
         }
         return cachePath;
     }
+    /**
+     * 显示大图
+     *
+     * @param context
+     * @param uri     图片的Uri
+     */
+    public static void showBigImageView(Context context, Uri uri) {
+        final RxDialog rxDialog = new RxDialog(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.image, null);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rxDialog.cancel();
+            }
+        });
+        ImageView imageView = (ImageView) view.findViewById(R.id.page_item);
 
+        imageView.setImageURI(uri);
+
+        rxDialog.setContentView(view);
+        rxDialog.show();
+        rxDialog.setFullScreen();
+    }
     /**
      * 读取缓存 返回字符串（json）
      *

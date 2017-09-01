@@ -36,11 +36,8 @@ public class FragmenTotal extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_card_total, null);
         initData();
         mRecyclerview = (RecyclerView) view.findViewById(R.id.expand_recyclerView);
-        //mRecyclerview.setHasFixedSize(true);
         setupRecyclerView();
         runLayoutAnimation(mRecyclerview);
-//        SnapHelper snapHelper = new LinearSnapHelper();
-//        snapHelper.attachToRecyclerView(mRecyclerview);
         final int spacing = getResources().getDimensionPixelOffset(R.dimen.default_spacing_small);
         mRecyclerview.addItemDecoration(new ItemOffsetDecoration(spacing));
         return view;
@@ -52,7 +49,6 @@ public class FragmenTotal extends BaseFragment {
 
         final LayoutAnimationController controller =
                 AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_bottom);
-
         recyclerView.setLayoutAnimation(controller);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.scheduleLayoutAnimation();
