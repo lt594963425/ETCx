@@ -6,6 +6,10 @@ package com.etcxc.android.base;
  */
 
 public class Constants {
+
+    public static String ORIENTION_KEY = "oriention";
+    public static String ORIENTION_VALUE = "f";
+
     //在线发行支付 标识issue
     public static boolean ETC_ISSUE = false;
     //appid 微信分配的公众账号ID

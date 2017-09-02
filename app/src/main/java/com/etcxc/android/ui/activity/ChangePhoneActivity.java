@@ -22,7 +22,7 @@ import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +75,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
         mGetCaptcha.setOnClickListener(this);
         mSavePhoneBtn.setOnClickListener(this);
 
-        mNewPhoneEdt.addTextChangedListener(new myTextWatcher(mNewPhoneEdt, mNewPhoneDle));
+        mNewPhoneEdt.addTextChangedListener(new mTextWatcher(mNewPhoneEdt, mNewPhoneDle));
         initAutoComplete("history", mNewPhoneEdt);
         long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeChPh", 0));
         if (timeDef > 0) new TimeCount(mNewCaptchaEdt, timeDef, 1000).start();

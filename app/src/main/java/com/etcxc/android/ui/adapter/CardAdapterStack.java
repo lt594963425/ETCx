@@ -57,7 +57,7 @@ public class CardAdapterStack extends RxAdapterStack<String> {
         }
 
         public void onBind(String data, int position) {
-            mLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.white), PorterDuff.Mode.SRC_IN);
+            mLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.color_card), PorterDuff.Mode.SRC_IN);
             mTextTitle.setText(String.valueOf(position + 1));
             mCardNumber.setText(data);
         }

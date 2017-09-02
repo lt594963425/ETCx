@@ -35,7 +35,7 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
@@ -140,7 +140,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         mRechaergePrepaidRecyler.setAdapter(mOrderFormAdapter);
         mRechaergePrepaidRecyler.setItemAnimator(new DefaultItemAnimator());
         mOrderFormAdapter.setmOnItemRechargeClickListener(this);
-        mRechaergeCardEdt.addTextChangedListener(new myTextWatcher(mRechaergeCardEdt, mCardNumDelete));
+        mRechaergeCardEdt.addTextChangedListener(new mTextWatcher(mRechaergeCardEdt, mCardNumDelete));
         mCardNumDelete.setOnClickListener(this);
     }
 

@@ -18,7 +18,7 @@ import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,8 +63,8 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         mNewPwdSee.setOnClickListener(this);
         mSavePwdBtn.setOnClickListener(this);
         mOldPwdSee.setOnClickListener(this);
-        mOldPwdEdt.addTextChangedListener(new myTextWatcher(mOldPwdEdt, mOldPwdDte));
-        mNewPwdEdt.addTextChangedListener(new myTextWatcher(mNewPwdEdt, mNewPwdDte));
+        mOldPwdEdt.addTextChangedListener(new mTextWatcher(mOldPwdEdt, mOldPwdDte));
+        mNewPwdEdt.addTextChangedListener(new mTextWatcher(mNewPwdEdt, mNewPwdDte));
     }
 
     @Override

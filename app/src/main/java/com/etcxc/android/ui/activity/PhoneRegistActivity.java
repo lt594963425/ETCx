@@ -18,7 +18,7 @@ import com.etcxc.android.net.OkClient;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,8 +81,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mPhonenumberDelete.setOnClickListener(this);
         mEye.setOnClickListener(this);
         mPwdDeleteBtn.setOnClickListener(this);
-        mPhoneNumberEdit.addTextChangedListener(new myTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
-        mPswEdit.addTextChangedListener(new myTextWatcher(mPswEdit, mPwdDeleteBtn));
+        mPhoneNumberEdit.addTextChangedListener(new mTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
+        mPswEdit.addTextChangedListener(new mTextWatcher(mPswEdit, mPwdDeleteBtn));
         initAutoComplete("history", mPhoneNumberEdit);
         long timeDef =60000-(System.currentTimeMillis()-PublicSPUtil.getInstance().getLong("timeReGist",0));
         if (timeDef>0) new TimeCount(mVerificodeButton,timeDef , 1000).start();

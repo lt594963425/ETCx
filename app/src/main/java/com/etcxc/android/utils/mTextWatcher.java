@@ -7,14 +7,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 /**
+ * Edit输入监听
  * Created by 刘涛 on 2017/7/4 0004.
  * @param
  */
 
-public class myTextWatcher implements TextWatcher {
+public class mTextWatcher implements TextWatcher {
     private EditText editView;
     private ImageView imageView;
-    public myTextWatcher(EditText editView,ImageView imageView){
+    public mTextWatcher(EditText editView, ImageView imageView){
          this.editView =editView;
          this.imageView =imageView;
 

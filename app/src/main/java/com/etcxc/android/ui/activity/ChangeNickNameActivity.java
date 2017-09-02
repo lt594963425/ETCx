@@ -1,6 +1,7 @@
 package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -79,7 +80,9 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                 jsonObject.put("uid", MeManager.getUid());
                 jsonObject.put("token", MeManager.getToken());
                 jsonObject.put("nick_name", newNickName);
+                //body
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), String.valueOf(jsonObject));
+                //request
                 Request request = new Request.Builder()
                         .url(HOST + NICKNAME_CHANGE)
                         .post(body)
@@ -91,8 +94,10 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
+                        Log.e(TAG,s);
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
+
                         String code = jsonObject.getString("code");
                         if (code.equals("s_ok")) {
                             MeManager.clearName();
@@ -102,7 +107,7 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                             finish();
                         }
                         if (code.equals("error")) {
-                            ToastUtils.showToast(R.string.send_faid);
+                            ToastUtils.showToast(R.string.request_failed);
 
                         }
                     }
@@ -110,7 +115,7 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         closeProgressDialog();
-                        ToastUtils.showToast(R.string.send_faid);
+                        ToastUtils.showToast(R.string.request_failed);
                     }
                 });
     }

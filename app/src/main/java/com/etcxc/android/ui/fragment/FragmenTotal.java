@@ -30,28 +30,30 @@ public class FragmenTotal extends BaseFragment {
     public ArrayList<String> mDatas;
     private Handler mHandler = new Handler();
 
+    public FragmenTotal(ArrayList<String> datas) {
+        this.mDatas = datas;
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_card_total, null);
-        initData();
-        mRecyclerview = (RecyclerView) view.findViewById(R.id.expand_recyclerView);
-        setupRecyclerView();
-        runLayoutAnimation(mRecyclerview);
-        final int spacing = getResources().getDimensionPixelOffset(R.dimen.default_spacing_small);
-        mRecyclerview.addItemDecoration(new ItemOffsetDecoration(spacing));
+        init(view);
         return view;
 
     }
 
-    private void runLayoutAnimation(final RecyclerView recyclerView) {
-        final Context context = recyclerView.getContext();
+    private void init(View view) {
+        mRecyclerview = (RecyclerView) view.findViewById(R.id.expand_recyclerView);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setupRecyclerView();
+                runLayoutAnimation(mRecyclerview);
+            }
+        },200);
 
-        final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_bottom);
-        recyclerView.setLayoutAnimation(controller);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
     }
 
     private void setupRecyclerView() {
@@ -62,13 +64,16 @@ public class FragmenTotal extends BaseFragment {
         mRecyclerview.setAdapter(mAdapter);
         mRecyclerview.addItemDecoration(new ItemOffsetDecoration(spacing));
     }
+    private void runLayoutAnimation(final RecyclerView recyclerView) {
+        final Context context = recyclerView.getContext();
 
-    protected void initData() {
-        mDatas = new ArrayList<String>();
-        for (int i = 'A'; i < 'z'; i++) {
-            mDatas.add("" + (char) i);
-        }
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_bottom);
+        recyclerView.setLayoutAnimation(controller);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
     }
+
 
     class MyRecylerAdapter extends RecyclerView.Adapter<MyRecylerAdapter.ViewHolder> {
         public ArrayList<String> datas = null;

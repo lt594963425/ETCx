@@ -26,6 +26,7 @@ import com.etcxc.android.ui.fragment.FragmentCanceled;
 import com.etcxc.android.ui.fragment.FragmentInUse;
 import com.etcxc.android.ui.fragment.FragmentReport;
 import com.etcxc.android.ui.view.MaterialSearchView;
+import com.etcxc.android.utils.Md5Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,29 +51,42 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_etc_card);
+        initView();
+        initData();
         init();
     }
-    private void init() {
-        mDatas = new ArrayList<>();
-        for (int i = 'A'; i < 'z'; i++) {
-            mDatas.add("ETC卡:" + (char) i);
-        }
+
+    private void initView() {
         mToolbar = (Toolbar) findViewById(R.id.user_card_toolbar);
         mToolbar.setTitle(R.string.user_etc_card);
-        mSearchView = (MaterialSearchView) findViewById(R.id.search_view);
-        mSearchView.setVoiceSearch(false);
-        mSearchView.setCursorDrawable(R.drawable.color_cursor_orange);
-        mSearchView.setSuggestions(mDatas.toArray(new String[mDatas.size()]));
         setBarBack(mToolbar);
         mTabLayout = (TabLayout) findViewById(R.id.user_card_tab);
         mViewPager = (ViewPager) findViewById(R.id.user_card_viewpager);
+    }
+
+    private void initData() {
+        mDatas = new ArrayList<>();
+        for (int i = 1; i < 20; i++) {
+            mDatas.add(Md5Utils.encryptpwd(String.valueOf(i)));
+        }
+
+    }
+
+    private void init() {
         mItems = new ArrayList<>();
-        mItems.add(new Pair<>(getString(R.string.card_total), new FragmenTotal()));
-        mItems.add(new Pair<>(getString(R.string.card_inUser), new FragmentInUse()));
-        mItems.add(new Pair<>(getString(R.string.card_activa), new FragmentActiva()));
-        mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport()));
-        mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled()));
+        mItems.add(new Pair<>(getString(R.string.card_total),   new FragmenTotal(mDatas)));
+        mItems.add(new Pair<>(getString(R.string.card_inUser), new FragmentInUse(mDatas)));
+        mItems.add(new Pair<>(getString(R.string.card_activa), new FragmentActiva(mDatas)));
+        mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport(mDatas)));
+        mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled(mDatas)));
         mViewPager.setAdapter(new UserTabAdapter(getSupportFragmentManager(), mItems));
+        mViewPager.setOffscreenPageLimit(5);
+        setupTabLayout();
+        setupSearch();
+
+    }
+
+    private void setupTabLayout() {
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.addOnTabSelectedListener(this);
@@ -82,6 +96,13 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         linearLayout.setPadding(0,6,0,6);
         linearLayout.setDividerDrawable(ContextCompat.getDrawable(this,
                 R.drawable.layout_divider_vertical));
+    }
+
+    private void setupSearch() {
+        mSearchView = (MaterialSearchView) findViewById(R.id.search_view);
+        mSearchView.setVoiceSearch(false);
+        mSearchView.setCursorDrawable(R.drawable.color_cursor_orange);
+        mSearchView.setSuggestions(mDatas.toArray(new String[mDatas.size()]));
         mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -137,9 +158,10 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search,menu);
-        MenuItem item = menu.findItem(R.id.item_search);
-        mSearchView.setMenuItem(item);
+        getMenuInflater().inflate(R.menu.menu_user_card,menu);
+        MenuItem search = menu.findItem(R.id.item_search);//搜索
+        mSearchView.setMenuItem(search);
+
         return true;
     }
     @Override

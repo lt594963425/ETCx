@@ -72,7 +72,6 @@
             android:inputType="number"
             android:maxLength="11"
             android:text="@string/new_phone"
-            android:textColor="@color/black"
             android:textSize="18sp" />
 
         <LinearLayout
@@ -111,14 +110,13 @@
         android:background="@color/white"
         android:orientation="horizontal">
         <ImageView
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
-            android:padding="14dp"
             app:srcCompat="@drawable/vd_captcha_black" />
 
         <EditText
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="20dp"
             android:id="@+id/new_captcha_edt"
             android:layout_width="0dp"
             android:hint="@string/set_verifycode"

@@ -4,13 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
   <View
-      android:background="@color/colorbg"
       android:layout_width="match_parent"
       android:layout_height="1dp" />
   <android.support.v7.widget.RecyclerView
       android:id="@+id/expand_recyclerView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:padding="4dp"
       android:clipToPadding="false"
       android:scrollbars="none"
@@ -18,5 +17,5 @@
   <View
       android:background="@color/colorbg"
       android:layout_width="match_parent"
-      android:layout_height="10dp" />
+      android:layout_height="5dp" />
 </LinearLayout>

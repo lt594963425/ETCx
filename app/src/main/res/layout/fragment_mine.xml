@@ -4,30 +4,26 @@
     xmlns:lt="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#f0f0f0"
         android:orientation="vertical">
-
-        <FrameLayout
+        <RelativeLayout
             android:id="@+id/mine_layout"
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:background="#ffffff"
             android:clickable="true"
-            android:descendantFocusability="blocksDescendants">
+            android:gravity="center_vertical">
 
             <com.etcxc.android.ui.view.CircleImageView
                 android:id="@+id/mine_user_head"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="30dp"
-                android:background="@drawable/vd_head"
+                android:gravity="center"
                 android:padding="2dp"
+                android:layout_marginLeft="40dp"
                 app:civ_border_color="@color/colorOrange"
                 app:civ_border_width="1dp"
                 lt:backgroundHeadColor="@color/yellow"
@@ -35,13 +31,18 @@
                 lt:ringHeadColor="@color/colorAccent" />
 
             <TextView
+                android:layout_marginTop="25dp"
                 android:id="@+id/mine_user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="130dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/mine_user_head"
+                android:background="@mipmap/nick_name_bg"
                 android:focusable="false"
                 android:gravity="center"
+                android:singleLine="true"
+                android:maxEms="1"
                 android:paddingBottom="5dp"
                 android:text="@string/now_login"
                 android:textColor="@color/colorOrange"
@@ -51,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="120dp" />
-        </FrameLayout>
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
@@ -75,8 +76,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
                 android:layout_toRightOf="@id/mine_iv_my_card"
                 android:gravity="center"
                 android:paddingLeft="2dp"
@@ -117,8 +117,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
                 android:layout_toRightOf="@id/mine_iv_harvestaddress"
                 android:gravity="center"
                 android:paddingLeft="2dp"
@@ -160,8 +159,7 @@
             <TextView
                 android:id="@+id/mine_tv_recommendfriend"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
                 android:layout_toRightOf="@id/mine_iv_recommendfriend"
                 android:gravity="center"
                 android:paddingLeft="2dp"
@@ -204,8 +202,7 @@
             <TextView
                 android:id="@+id/mine_tv_changepasswords"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
                 android:layout_toRightOf="@id/mine_iv_changepassword"
                 android:gravity="center"
                 android:paddingLeft="2dp"
@@ -248,8 +245,7 @@
             <TextView
                 android:id="@+id/mine_tv_changephone"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
                 android:layout_toRightOf="@id/mine_iv_changephone"
                 android:gravity="center"
                 android:paddingLeft="2dp"
@@ -292,8 +288,7 @@
             <TextView
                 android:id="@+id/mine_tv_aboutus"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
                 android:layout_toRightOf="@id/mine_iv_aboutus"
                 android:gravity="center"
                 android:paddingLeft="2dp"

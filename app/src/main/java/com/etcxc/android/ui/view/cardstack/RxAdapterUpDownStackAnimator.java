@@ -3,6 +3,10 @@ package com.etcxc.android.ui.view.cardstack;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
+/**
+ * 向上折叠的动画
+ * Created by LiuTao
+ */
 public class RxAdapterUpDownStackAnimator extends RxAdapterAnimator {
 
     public RxAdapterUpDownStackAnimator(RxCardStackView rxCardStackView) {

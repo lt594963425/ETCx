@@ -15,11 +15,12 @@ import android.view.WindowManager;
 import com.etcxc.android.R;
 import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.UIUtils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.umeng.analytics.MobclickAgent;
 
 import okhttp3.OkHttpClient;
+
+import static com.etcxc.android.utils.UIUtils.closeAnimator;
 
 
 /**
@@ -56,7 +57,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
-            UIUtils.closeAnimator(this);
+            closeAnimator(this);
             return true;
         }
         return super.onOptionsItemSelected(item);

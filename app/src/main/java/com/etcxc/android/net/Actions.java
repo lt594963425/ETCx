@@ -5,6 +5,7 @@ package com.etcxc.android.net;
  */
 
 public class Actions {
+
     public static final String ACTION_DOWNLOAD = "com.etcxc.android.action.DOWNLOAD";
     /**
      * Service about DOWNLOAD.

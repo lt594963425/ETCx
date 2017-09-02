@@ -3,6 +3,9 @@ package com.etcxc.android.ui.view.cardstack;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
+/**
+ * Created by LiuTao
+ */
 public class RxAdapterAllMoveDownAnimator extends RxAdapterAnimator {
 
     public RxAdapterAllMoveDownAnimator(RxCardStackView rxCardStackView) {

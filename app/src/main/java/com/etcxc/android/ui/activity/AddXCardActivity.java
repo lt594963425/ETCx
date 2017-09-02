@@ -15,5 +15,10 @@ public class AddXCardActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_xcard);
+        init();
+    }
+
+    private void init() {
+        setTitle("添加湘通卡");
     }
 }

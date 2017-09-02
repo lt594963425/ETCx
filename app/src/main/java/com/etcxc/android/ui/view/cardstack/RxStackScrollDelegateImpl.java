@@ -2,6 +2,10 @@ package com.etcxc.android.ui.view.cardstack;
 
 import android.view.View;
 
+/**
+ * 滑动的卡片
+ * Created by LiuTao
+ */
 public class RxStackScrollDelegateImpl implements RxScrollDelegate {
 
     private RxCardStackView mRxCardStackView;

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by Patrick Ivarsson on 7/18/17.
+ * Created by LiuTao
  */
 public class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
 

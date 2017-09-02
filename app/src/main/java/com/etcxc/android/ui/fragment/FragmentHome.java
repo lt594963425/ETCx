@@ -25,6 +25,7 @@ import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
+import com.etcxc.android.ui.activity.TestPostactivity;
 import com.etcxc.android.ui.adapter.BaseSelectAdapter;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.HomeRecyclerAdapter;
@@ -97,13 +98,12 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
         GridLayoutManager gridLayManager = new GridLayoutManager(getActivity(), 3);
         gridLayManager.setOrientation(GridLayoutManager.VERTICAL);
         mHomeRecycler.setLayoutManager(gridLayManager);
-
         HomeRecyclerAdapter homeRecyclerAdapter = new HomeRecyclerAdapter(mTitle,mImage);
         homeRecyclerAdapter.setOnItemClickListener(this);
         mHomeRecycler.setAdapter(homeRecyclerAdapter);
         final int spacing = getResources().getDimensionPixelOffset(R.dimen.default_spacing_small);
         mHomeRecycler.addItemDecoration(new ItemOffsetDecoration(spacing));
-//        mHomeRecycler.setHasFixedSize(true);
+        mHomeRecycler.setHasFixedSize(true);
 
     }
 
@@ -134,6 +134,7 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
                 openActivity(IssueFinishActivity.class);
                 break;
             case 4:
+                openActivity(TestPostactivity.class);
                 break;
             case 5:
                 openActivity(IssuePayActivity.class);

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.FUNC;
@@ -30,7 +31,7 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -128,8 +129,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mLoginPasswordDelete.setOnClickListener(this);
         mLoginFreshVerification.setOnClickListener(this);
         mLoginEye.setOnClickListener(this);
-        mLoginPhonenumberEdt.addTextChangedListener(new myTextWatcher(mLoginPhonenumberEdt, mLoginPhonenumberDelete));
-        mLoginPasswordEdt.addTextChangedListener(new myTextWatcher(mLoginPasswordEdt, mLoginPasswordDelete));
+        mLoginPhonenumberEdt.addTextChangedListener(new mTextWatcher(mLoginPhonenumberEdt, mLoginPhonenumberDelete));
+        mLoginPasswordEdt.addTextChangedListener(new mTextWatcher(mLoginPasswordEdt, mLoginPasswordDelete));
         mLoginPhonenumberEdt.setText(MeManager.getPhone());
         mLoginPasswordEdt.setText(MeManager.getPWD());
         autoLogin();
@@ -145,7 +146,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 PublicSPUtil.getInstance().putBoolean("IS_REGIST", false);
                 premes.put("tel", PublicSPUtil.getInstance().getString("tel", null));
                 premes.put("pwd", PublicSPUtil.getInstance().getString("pwd", null));
-                premes.put("f", 1);
+                premes.put(Constants.ORIENTION_KEY, Constants.ORIENTION_VALUE);
 
                 loginRun(premes);
             } catch (JSONException e) {

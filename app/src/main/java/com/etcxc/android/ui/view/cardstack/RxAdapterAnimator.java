@@ -5,6 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+/**
+ * 堆叠卡动画
+ * Created by LiuTao
+ */
 public abstract class RxAdapterAnimator {
     static final int ANIMATION_DURATION = 400;
 

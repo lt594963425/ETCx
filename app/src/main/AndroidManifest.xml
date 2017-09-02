@@ -49,7 +49,7 @@
         </activity>
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
-            android:theme="@style/BG_GRAY"/>
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.MainActivity"
             android:launchMode="singleTask"
@@ -59,14 +59,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.TestPostactivity"/>
         <activity
             android:name=".ui.activity.PhoneRegistActivity"
             android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.MessageLoginActivity"
-            android:theme="@style/BG_GRAY" />
-        <activity
-            android:name=".ui.activity.SetPasswordActivity"
             android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.LoginActivity"
@@ -99,12 +97,21 @@
             android:name=".ui.activity.PersonalInfoActivity"
             android:theme="@style/BG_GRAY" />
 
-        <activity android:name=".ui.activity.OnlineSchedulActivity"
-            android:theme="@style/BG_GRAY"/>
-        <activity android:name=".ui.activity.MineCardActivity"
+        <activity
+            android:name=".ui.activity.OnlineSchedulActivity"
             android:theme="@style/BG_GRAY" />
-        <activity android:name=".ui.activity.UserCardActivity"
-            android:theme="@style/BG_GRAY"/>
+        <activity
+            android:name=".ui.activity.MineCardActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.UserCardActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.BindCardActivity"
+            android:theme="@style/BG_GRAY" />
+        <activity
+            android:name=".ui.activity.AddXCardActivity"
+            android:theme="@style/BG_GRAY" />
         <activity
             android:name=".ui.activity.PermissionRequestingActivity"
             android:screenOrientation="portrait"

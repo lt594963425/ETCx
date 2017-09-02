@@ -42,7 +42,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 /**
- * @author Miguel Catalan Bañuls
+ * 搜索
+ * Created by LiuTao
  */
 public class MaterialSearchView extends FrameLayout implements Filter.FilterListener {
     public static final int REQUEST_VOICE = 9999;

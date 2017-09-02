@@ -17,6 +17,7 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.FUNC;
@@ -26,7 +27,7 @@ import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -88,7 +89,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         addIcon(mMPicCodeEdt, R.drawable.vd_regist_captcha);
         addIcon(mMPhoneNumberEdt, R.drawable.vd_my);
         addIcon(mMVeriFicodeEdt, R.drawable.vd_regist_captcha);
-        mMPhoneNumberEdt.addTextChangedListener(new myTextWatcher(mMPhoneNumberEdt, mMPhoneNumberDelete));
+        mMPhoneNumberEdt.addTextChangedListener(new mTextWatcher(mMPhoneNumberEdt, mMPhoneNumberDelete));
         initAutoComplete("history", mMPhoneNumberEdt);
         long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeMsgLog", 0));
         if (timeDef > 0) new TimeCount(mGetMsgVeriFicodeButton, timeDef, 1000).start();
@@ -133,7 +134,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                     jsonObject.put("tel", phoneNum)
                             .put("sms_code", smsCode)
                             .put("sms_id", smsid)
-                            .put("f", 1);
+                            .put(Constants.ORIENTION_KEY, Constants.ORIENTION_VALUE);
 
                     requestSMSLogin(jsonObject);
                 } catch (JSONException e) {

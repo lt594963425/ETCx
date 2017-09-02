@@ -19,6 +19,10 @@ import com.etcxc.android.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 自定义卡片堆叠效果
+ * Created by LiuTao
+ */
 public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
 
     private static final int INVALID_POINTER = -1;

@@ -19,7 +19,7 @@ import com.etcxc.android.R;
 import java.lang.reflect.Field;
 
 /**
- * 标题居中
+ * 标题居中 toolbar
  * Created by 刘涛 on 2017/6/13 0013.
  */
 

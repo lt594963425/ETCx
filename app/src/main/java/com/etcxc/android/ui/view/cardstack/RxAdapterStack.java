@@ -6,6 +6,11 @@ import android.view.LayoutInflater;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 卡片堆叠适配器，数据类型由子类决定
+ * @param <T>
+ *     Created by LiuTao
+ */
 public abstract class RxAdapterStack<T> extends RxCardStackView.Adapter<RxCardStackView.ViewHolder> {
 
     private final Context mContext;

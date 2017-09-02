@@ -263,5 +263,7 @@
     <string name="card_num">卡号:</string>
     <string name="card_type">卡类型：湘通卡（储蓄卡）</string>
     <string name="phone_num">手机号：</string>
+    <string name="can_use_money">可用余额:</string>
+    <string name="car_number">车牌号:</string>
 
 </resources>

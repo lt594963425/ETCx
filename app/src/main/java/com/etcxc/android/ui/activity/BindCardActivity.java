@@ -11,7 +11,7 @@ import com.etcxc.android.base.BaseActivity;
  * Created by LiuTao on 2017/8/29 0029.
  */
 
-class BindCardActivity extends BaseActivity implements View.OnClickListener {
+public class BindCardActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +20,7 @@ class BindCardActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void initView() {
+        setTitle("绑卡");
         find(R.id.to_bind_card_btn).setOnClickListener(this);
     }
 

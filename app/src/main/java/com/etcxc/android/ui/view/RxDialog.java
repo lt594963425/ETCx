@@ -9,6 +9,10 @@ import android.view.WindowManager.LayoutParams;
 
 import com.etcxc.android.R;
 
+/**
+ * ImageView显示大图
+ * Created by LiuTao
+ */
 public class RxDialog extends Dialog {
 
     protected Context mContext;

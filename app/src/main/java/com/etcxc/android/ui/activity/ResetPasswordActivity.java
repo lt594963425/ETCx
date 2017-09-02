@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.base.Constants;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
@@ -21,7 +22,7 @@ import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
-import com.etcxc.android.utils.myTextWatcher;
+import com.etcxc.android.utils.mTextWatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,8 +87,8 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         mPhonenumberDelete.setOnClickListener(this);
         mEye.setOnClickListener(this);
         mResetPwdDelete.setOnClickListener(this);
-        mPhoneNumberEdit.addTextChangedListener(new myTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
-        mResetPwd.addTextChangedListener(new myTextWatcher(mResetPwd, mResetPwdDelete));  // mResetPwd  mResetPwdDelete
+        mPhoneNumberEdit.addTextChangedListener(new mTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
+        mResetPwd.addTextChangedListener(new mTextWatcher(mResetPwd, mResetPwdDelete));  // mResetPwd  mResetPwdDelete
         UIUtils.addIcon(mPhoneNumberEdit, R.drawable.vd_my, UIUtils.LEFT);
         UIUtils.addIcon(mResetPwd, R.drawable.vd_regist_password, UIUtils.LEFT);
         UIUtils.addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha, UIUtils.LEFT);
@@ -151,6 +152,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             jsonObject.put("pwd", mPassWord);
             jsonObject.put("sms_code", veriFicode);
             jsonObject.put("sms_id", mSMSID);
+            jsonObject.put(Constants.ORIENTION_KEY, Constants.ORIENTION_VALUE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
