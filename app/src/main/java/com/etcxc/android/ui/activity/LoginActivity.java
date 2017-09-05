@@ -1,7 +1,6 @@
 package com.etcxc.android.ui.activity;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +15,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
@@ -24,11 +22,10 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.modle.sp.PublicSPUtil;
-import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.net.callback.BitmapCallback;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.mTextWatcher;
@@ -38,22 +35,19 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.Call;
 
 import static com.etcxc.android.R.id.login_phonenumber_delete;
 import static com.etcxc.android.base.App.onProfileSignIn;
+import static com.etcxc.android.net.FUNC.LOGIN_PWD;
 import static com.etcxc.android.net.FUNC.VIRIFY_CODE;
-import static com.etcxc.android.net.NetConfig.consistUrl;
+import static com.etcxc.android.net.NetConfig.HOST;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
 import static com.etcxc.android.utils.UIUtils.closeAnimator;
@@ -67,6 +61,7 @@ import static com.etcxc.android.utils.UIUtils.saveHistory;
  */
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
+    private static final String LOGIN = "login";
     //登录信息操作界面
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private AutoCompleteTextView mLoginPhonenumberEdt;
@@ -75,16 +70,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private ImageView mLoginEye; //可见与不可见
     private ImageView mLoginImageVerificode;//图形取验证码
     private ImageView mLoginFreshVerification;//刷新验证码
-    private TextView mLoginMessage;//短信验证码登录
-    private TextView mLoginFast;//快速注册
-    private TextView mForgetPassword;//忘记密码
     private RelativeLayout mPictureCodeLayout;
-    private String timeStr;
-
     private boolean isShowPictureCode = false;
-
     private Toolbar mToolbar1;
-    String s;
     private String mVerfiyToken;
 
     @Override
@@ -207,13 +195,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             if (veriFicodem.isEmpty()) {
                 data.put("tel", phoneNum)
                         .put("pwd", passWord)
-                        .put("f", 1);
+                        .put(Constants.ORIENTION_KEY, Constants.ORIENTION_VALUE);
             } else {
                 data.put("tel", phoneNum)
                         .put("pwd", passWord)
                         .put("code", veriFicodem)
                         .put("token", code_key)
-                        .put("f", 1);
+                        .put(Constants.ORIENTION_KEY, Constants.ORIENTION_VALUE);
             }
         } catch (Exception e) {
             LogUtil.e(TAG, "startUserLoging", e);
@@ -259,19 +247,25 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loginRun(JSONObject jsonObject) {
+
         Log.e(TAG, jsonObject.toString());
         showProgressDialog(getString(R.string.logining));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(consistUrl(FUNC.LOGIN_PWD), jsonObject);
-                e.onNext(result);
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .content(jsonObject.toString())
+                        .url(HOST + LOGIN_PWD)
+                        .tag(LOGIN)
+                        .mediaType(NetConfig.JSON)
+                        .build().execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
+                    public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                         closeProgressDialog();
                         try {
                             JSONObject jsonObject = new JSONObject(s);
@@ -281,6 +275,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                 successResult(jsonObject);
                             }
                             if (code.equals("error")) {
+
                                 errorResult(jsonObject);
                             }
                         } catch (JSONException e) {
@@ -289,7 +284,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     }
                 }, new Consumer<Throwable>() {
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
                         closeProgressDialog();
                         ToastUtils.showToast(R.string.login_failed);
                         Log.e(TAG, "++++++++++++++登录失败+2++++++++++++++", throwable);
@@ -299,7 +294,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
 
     private void successResult(JSONObject jsonObject) throws JSONException {
-        Log.e(TAG, "登录成功" + s);
+        Log.e(TAG, "登录成功" + jsonObject);
         JSONObject varJson = jsonObject.getJSONObject("var");
         String token = varJson.getString("token");
         JSONObject userJson = varJson.getJSONObject("user");
@@ -356,33 +351,26 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void requstVerfiyCode(String mVerfiytoken) {
-        Observable.create(new ObservableOnSubscribe<InputStream>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<InputStream> e) throws Exception {
-                OkHttpClient client = OkClient.rightClient(NetConfig.consistUrl(VIRIFY_CODE));
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("token", mVerfiytoken);
-                Request request = OkClient.initRequest(NetConfig.consistUrl(VIRIFY_CODE), null, jsonObject.toString());
-                Response response = client.newCall(request).execute();
-                e.onNext(response.body().byteStream());
-            }
-        }).compose(RxUtil.io())
-                .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<InputStream>() {
-            @Override
-            public void accept(@NonNull InputStream s) throws Exception {
-                Log.e(TAG, "验证码图片：" + s.toString());
-                Bitmap bitmap = BitmapFactory.decodeStream(s);
-                mLoginImageVerificode.setImageBitmap(bitmap);
-                stopRotateAnimation(mLoginFreshVerification);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-                LogUtil.e(TAG, "net", throwable);
-                stopRotateAnimation(mLoginFreshVerification);
-                ToastUtils.showToast(R.string.request_failed);
-            }
-        });
+        OkHttpUtils
+                .post()
+                .url(HOST + VIRIFY_CODE)
+                .addParams("token", mVerfiytoken)
+                .build()
+                .execute(new BitmapCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        LogUtil.e(TAG, "net", e);
+                        stopRotateAnimation(mLoginFreshVerification);
+                        ToastUtils.showToast(R.string.request_failed);
+                    }
+
+                    @Override
+                    public void onResponse(Bitmap response, int id) {
+                        Log.e(TAG, "验证码图片：" + response.toString());
+                        mLoginImageVerificode.setImageBitmap(response);
+                        stopRotateAnimation(mLoginFreshVerification);
+                    }
+                });
     }
 
     /**
@@ -414,8 +402,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         isShowPictureCode = false;
-        stopRotateAnimation(mLoginFreshVerification);
-        finish();
-        UIUtils.closeAnimator(LoginActivity.this);
+        OkHttpUtils.cancelTag(LOGIN);
     }
 }

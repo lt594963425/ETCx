@@ -7,16 +7,13 @@ import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -67,7 +64,14 @@ public class TestJsonApiActivity extends BaseActivity implements View.OnClickLis
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject(mJsonEdit.getText().toString());
 //                jsonObject.put("me", "xwpeng");
-                e.onNext(OkClient.get(mUrlEdit.getText().toString(), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(mUrlEdit.getText().toString())
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(NetConfig.JSON)
+                        .build()
+                        .execute()
+                        .body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {

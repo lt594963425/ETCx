@@ -10,27 +10,32 @@ import com.etcxc.android.base.App;
 import java.io.File;
 import java.util.Map;
 
+import okhttp3.MediaType;
+
 /**
  * 网络相关的一些配置
  * Created by xwpeng on 2017/5/28.
  */
 
 public class NetConfig {
+    public static final String HTTP_PREFIX = "http://";
+    public static final MediaType JSON
+            = MediaType.parse("text/x-json;charset=UTF-8");
     /**
      * 错误提示
      */
-    public static final String ERROR_ONE = "params error";//传参错误
-    public static final String ERROR_TWO = "db error";//数据库操作错误
-    public static final String ERROR_THREE = "sms_error";//短信验证失败
-    public static final String ERROR_FOUR = "auth failed";//凭证认证失败。修改密码，其他手机登录等会造成这个错误，需要手动输入密码
-    public static final String ERROR_FIVE = "auth token no active";    //凭证过期，需要执行重登
+    public static final String ERROR_PARAMS = "params error";//传参错误
+    public static final String ERROR_DB= "db error";//数据库操作错误
+    public static final String ERROR_SMS = "sms_error";//短信验证失败
+    public static final String ERROR_AUTH = "auth failed";//凭证认证失败。修改密码，其他手机登录等会造成这个错误，需要手动输入密码
+    public static final String ERROR_TOKEN = "auth token no active";    //凭证过期，需要执行重登
 
     public static final String CODE_FA_INVALID_SESSION = "FA_INVALID_SESSION";
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
     //    public final static String HOST = "http://192.168.6.58";
     //    public final static String HOST = "http://192.168.6.50:8080";
     //    public final static String HOST = "http://46080450.nat123.net";
-    public final static String HOST = "http://192.168.6.50";
+    public static final String HOST = "http://192.168.6.50";
 
     /**
      * @return 当前网络状态，详见{@link NetworkInfo}

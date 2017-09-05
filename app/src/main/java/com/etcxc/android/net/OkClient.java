@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.etcxc.MeManager;
+import com.etcxc.android.base.App;
+import com.etcxc.android.net.cookie.CookieJarImpl;
+import com.etcxc.android.net.cookie.store.SPCookieStore;
 import com.etcxc.android.utils.LogUtil;
 
 import org.json.JSONArray;
@@ -293,7 +296,7 @@ public class OkClient {
     }
 
     public static OkHttpClient rightClient(String url) {
-        OkHttpClient client = new OkHttpClient.Builder()
+        OkHttpClient client = new OkHttpClient.Builder().cookieJar(new CookieJarImpl(new SPCookieStore(App.get())))
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(180, TimeUnit.SECONDS)

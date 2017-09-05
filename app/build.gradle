@@ -79,10 +79,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    android {
-        useLibrary 'org.apache.http.legacy'
-    }
-
 }
 //平时打包的文件名包含的时间，只有年月日
 static def releaseTime() {

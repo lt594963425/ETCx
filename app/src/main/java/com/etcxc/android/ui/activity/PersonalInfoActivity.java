@@ -35,7 +35,7 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.utils.DialogPermission;
 import com.etcxc.android.utils.FileUtils;
@@ -57,7 +57,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -65,14 +66,11 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 import static com.etcxc.android.net.FUNC.HEAD_CHANGE;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
+import static com.etcxc.android.net.NetConfig.HOST;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 /**
@@ -90,8 +88,10 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private Button mExitLogin;
     private TextView mUserName, mUserPhone, mUserSex;
     private CircleImageView mUserHead;
-    private final static String IMAGE_HEAD = "head.jpg";
-    private String CROP_HEAD = "user_head.jpg";
+    private String IMAGE_HEAD = MeManager.getUid().substring(0, 8) + "_head.jpg";
+    private String CROP_HEAD =  MeManager.getUid().substring(0, 8) + "_crop.jpg" ;
+    private Bitmap upBitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +101,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     }
 
     private void initUserInfoView() {
-        Resources r =this.getResources();
+        Resources r = this.getResources();
         uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
                 + r.getResourcePackageName(R.drawable.vd_head) + "/"
                 + r.getResourceTypeName(R.drawable.vd_head) + "/"
@@ -132,7 +132,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 File file = new File(FileUtils.getCachePath(PersonalInfoActivity.this), CROP_HEAD);
                 if (file.exists())
                     uri = Uri.fromFile(file);
-                    FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
+                FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
                 return false;
             }
         });
@@ -197,6 +197,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         mUserHead.setImageDrawable(drawable);
         LoadImageHeapler headLoader = new LoadImageHeapler(this, CROP_HEAD);
         if (MeManager.getIsLogin()) {
+
             if (NetConfig.isAvailable()) {
                 mUserName.setText(MeManager.getName());
                 mUserPhone.setText(MeManager.getPhone());
@@ -405,17 +406,23 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("uid", MeManager.getUid());
-                jsonObject.put("token", MeManager.getToken());
+                jsonObject.put("uid", MeManager.getUid())
+                        .put("token", MeManager.getToken());
                 Log.e(TAG, jsonObject.toString());
-                e.onNext(OkClient.get(NetConfig.consistUrl(LOGIN_OUT), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + LOGIN_OUT)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        Log.e(TAG,s);
+                        Log.e(TAG, s);
                         JSONObject result = new JSONObject(s);
                         String code = result.getString("code");
                         if (code.equals("s_ok")) {
@@ -424,9 +431,15 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                             MeManager.setIsLgon(false);
                             ToastUtils.showToast(R.string.exitlogin);
                             finish();
-                        } else {
+                        }
+                        if (code.equals("error")) {
                             closeProgressDialog();
-                            ToastUtils.showToast(R.string.request_failed);
+                            String msg = result.getString("message");
+                            if (msg.equals(NetConfig.ERROR_TOKEN)) {
+                                MeManager.setIsLgon(false);
+                                openActivity(LoginActivity.class);
+                            } else
+                                ToastUtils.showToast(R.string.request_failed);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -451,27 +464,25 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
      * 提交头像之服务器
      */
     private void updateHeadToServer(Intent data) {
+        try {
+            upBitmap = loadBitmap(UCrop.getOutput(data));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
-                RequestBody fileBody = RequestBody.create(MediaType.parse("image"), new File(getCachePath(PersonalInfoActivity.this), CROP_HEAD));
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("image[]", CROP_HEAD, fileBody)
-                        .addFormDataPart("uid", MeManager.getUid())
-                        .addFormDataPart("token", MeManager.getToken())
-                        .build();
-                Request request = new Request.Builder()
-                        .url(NetConfig.HOST + HEAD_CHANGE)
-                        .post(requestBody)
-                        .build();
-                final okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
-                OkHttpClient client = httpBuilder
-                        .connectTimeout(10, TimeUnit.SECONDS)
-                        .writeTimeout(15, TimeUnit.SECONDS)
-                        .build();
-                e.onNext(client.newCall(request).execute().body().string());
+                File file = new File(getCachePath(PersonalInfoActivity.this), CROP_HEAD);
+                Map<String, String> params = new HashMap<>();
+                params.put("uid", MeManager.getUid());
+                params.put("token", MeManager.getToken());
+                e.onNext(OkHttpUtils
+                        .post()
+                        .addFile("image[]", CROP_HEAD, file)
+                        .url(HOST + HEAD_CHANGE)
+                        .params(params)
+                        .build().execute().body().string());
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
@@ -483,12 +494,20 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                         if (code.equals("s_ok")) {
                             closeProgressDialog();
                             ToastUtils.showToast(R.string.change_head_success);
-                            // mUserHead.setImageBitmap(bitmap);
-                            setImageFromUri(mUserHead, UCrop.getOutput(data));
+                            mUserHead.setImageBitmap(upBitmap);
 
-                        } else {
-                            closeProgressDialog();
-                            ToastUtils.showToast(R.string.request_failed);
+                        }
+                        if (code.equals("error")) {
+                            String msg = jsonObject.getString("message");
+                            if (msg.equals(NetConfig.ERROR_TOKEN)) {
+                                MeManager.setIsLgon(false);
+                                openActivity(LoginActivity.class);
+                                finish();
+                            } else {
+                                closeProgressDialog();
+                                ToastUtils.showToast(R.string.request_failed);
+                            }
+
                         }
                     }
                 }, new Consumer<Throwable>() {

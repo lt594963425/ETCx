@@ -9,11 +9,11 @@ import android.widget.EditText;
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
+import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.ToastUtils;
 
 import org.json.JSONObject;
-
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -22,13 +22,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 import static com.etcxc.android.net.FUNC.NICKNAME_CHANGE;
 import static com.etcxc.android.net.NetConfig.HOST;
+import static com.etcxc.android.net.NetConfig.JSON;
 
 /**
  * Created by LiuTao on 2017/8/19 0019.
@@ -70,31 +67,24 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
-                OkHttpClient client = httpBuilder
-                        .connectTimeout(30, TimeUnit.SECONDS)
-                        .writeTimeout(30, TimeUnit.SECONDS)
-                        .writeTimeout(180, TimeUnit.SECONDS)
-                        .build();
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("uid", MeManager.getUid());
-                jsonObject.put("token", MeManager.getToken());
-                jsonObject.put("nick_name", newNickName);
-                //body
-                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), String.valueOf(jsonObject));
-                //request
-                Request request = new Request.Builder()
+                jsonObject.put("uid", MeManager.getUid())
+                        .put("token", MeManager.getToken())
+                        .put("nick_name", newNickName);
+                e.onNext(OkHttpUtils
+                        .postString()
                         .url(HOST + NICKNAME_CHANGE)
-                        .post(body)
-                        .build();
-                e.onNext(client.newCall(request).execute().body().string());
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        Log.e(TAG,s);
+                        Log.e(TAG, s);
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
 
@@ -107,7 +97,16 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                             finish();
                         }
                         if (code.equals("error")) {
-                            ToastUtils.showToast(R.string.request_failed);
+                            String msg = jsonObject.getString("message");
+                            if (msg.equals("nickName exceed 16byte")) {
+                                ToastUtils.showToast(R.string.nick_name_is_long);
+                            }
+                            if (msg.equals(NetConfig.ERROR_TOKEN)) {
+                                MeManager.setIsLgon(false);
+                                openActivity(LoginActivity.class);
+                                finish();
+                            } else
+                                ToastUtils.showToast(msg);
 
                         }
                     }

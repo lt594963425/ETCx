@@ -226,7 +226,7 @@
     <string name="request_faileds">网络请求失败</string>
     <string name="netstores_address">详细地址:</string>
     <string name="person_charge">负责人: %1$s</string>
-    <string name="change_user">您确定退出登录吗？</string>
+    <string name="change_user">切换账号</string>
     <string name="dialog_exit">退出登录</string>
     <string name="to_CreditForLoad">去圈存</string>
     <string name="confirm">确定</string>
@@ -265,5 +265,7 @@
     <string name="phone_num">手机号：</string>
     <string name="can_use_money">可用余额:</string>
     <string name="car_number">车牌号:</string>
+    <string name="change_pwd_success">修改成功,请重新登录</string>
+    <string name="nick_name_is_long">昵称长度不能超过5个汉字</string>
 
 </resources>

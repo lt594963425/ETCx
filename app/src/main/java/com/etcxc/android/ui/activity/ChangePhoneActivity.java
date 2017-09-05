@@ -16,7 +16,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
@@ -35,6 +35,8 @@ import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.net.FUNC.TELCHANGE;
+import static com.etcxc.android.net.NetConfig.HOST;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
@@ -126,12 +128,18 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
      * @param url
      */
     public void getSmsCode(String url) {
+        JSONObject jsonObject = new JSONObject();
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("tel", mPhoneNum);
-                e.onNext(OkClient.get(NetConfig.consistUrl(url), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(url)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -151,7 +159,13 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                                 new TimeCount(mGetCaptcha, 60000, 1000).start();
                             }
                             if (code.equals("error")) {
-                                ToastUtils.showToast(R.string.unregist);
+                                String returnMsg = object.getString("message");//返回的信息
+                                if (returnMsg.equals(NetConfig.ERROR_TOKEN)) {
+                                    MeManager.setIsLgon(false);
+                                    openActivity(LoginActivity.class);
+                                    finish();
+                                } else
+                                    ToastUtils.showToast(R.string.unregist);
                                 return;
                             }
                         } catch (JSONException e) {
@@ -178,13 +192,19 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject params = new JSONObject();
-                params.put("uid", MeManager.getUid());
-                params.put("new_tel", mNewPhone);
-                params.put("sms_code", smsCode);
-                params.put("sms_id", mSMSID);
-                params.put("token", PublicSPUtil.getInstance().getString("token", ""));
+                params.put("uid", MeManager.getUid())
+                        .put("new_tel", mNewPhone)
+                        .put("sms_code", smsCode)
+                        .put("sms_id", mSMSID)
+                        .put("token", PublicSPUtil.getInstance().getString("token", ""));
                 Log.e(TAG, params.toString());
-                e.onNext(OkClient.get(NetConfig.consistUrl(TELCHANGE), params));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(HOST+TELCHANGE)
+                        .content(String.valueOf(params))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +25,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
@@ -59,6 +58,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.R.id.mine_user_head;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 
 
@@ -72,13 +72,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private CircleImageView mMineUserHead;
     private TextView mMineUserName;
     private TextView mExit;
-    private FrameLayout mMinewLauout;
     private Handler mHandler = new Handler();
     private ColorCircle mUpdateDot;
     /*头像名称*/
-    private File mFile;
-    private Uri uri;
-    private String CROP_HEAD = "user_head.jpg";
+    private String CROP_HEAD = "user_crop.jpg";//
     private Uri resultUri;
 
     @Override
@@ -98,7 +95,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 + r.getResourcePackageName(R.drawable.vd_head) + "/"
                 + r.getResourceTypeName(R.drawable.vd_head) + "/"
                 + r.getResourceEntryName(R.drawable.vd_head));
-
         find(R.id.mine_my_card_toright).setOnClickListener(this);
         find(R.id.mine_harvestaddress_toright).setOnClickListener(this);
         find(R.id.mine_recommendfriend_toright).setOnClickListener(this);
@@ -137,6 +133,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         @Override
         public void run() {
             if (MeManager.getIsLogin()) {
+
                 mExit.setVisibility(View.VISIBLE);
                 mMineUserName.setText(MeManager.getName());
                 initUserInfo();
@@ -211,6 +208,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     public void initUserInfo() {
+        CROP_HEAD =  MeManager.getUid().substring(0,8)+"_crop.jpg";
         if (NetConfig.isAvailable()) {
             LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), CROP_HEAD);
             headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
@@ -261,15 +259,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
 
     private void requestLoginOut() {
+        JSONObject jsonObject = new JSONObject();
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("uid", MeManager.getUid());
-                jsonObject.put("token", MeManager.getToken());
-                Log.e(TAG, String.valueOf(jsonObject));
-                e.onNext(OkClient.get(NetConfig.consistUrl(LOGIN_OUT), jsonObject));
+                jsonObject.put("uid", MeManager.getUid())
+                        .put("token", MeManager.getToken());
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + LOGIN_OUT)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
             @Override
@@ -278,14 +281,20 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 JSONObject result = new JSONObject(s);
                 String code = result.getString("code");
                 if (code.equals("s_ok")) {
+                    closeProgressDialog();
                     ToastUtils.showToast(R.string.exitlogin);
                     MeManager.clearAll();
                     MeManager.setIsLgon(false);
-                    closeProgressDialog();
                     mHandler.postDelayed(LOAD_DATA, 400);
-                } else {
+                }
+                if (code.equals("error")) {
                     closeProgressDialog();
-                    ToastUtils.showToast(R.string.request_failed);
+                    String msg = result.getString("message");
+                    if (msg.equals(NetConfig.ERROR_TOKEN)) {
+                        MeManager.setIsLgon(false);
+                        openActivityForResult(LoginActivity.class, REQUST_CODE);
+                    } else
+                        ToastUtils.showToast(R.string.request_failed);
                 }
 
             }
@@ -304,20 +313,18 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         if (!MeManager.getIsLogin()) {
             return;
         }
-        View longinDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.exit_login, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.exit_login, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        TextView dialogDismiss = (TextView) longinDialogView.findViewById(R.id.dialog_dismiss);
-        TextView dialogExit = (TextView) longinDialogView.findViewById(R.id.dialog_exit);
-        builder.setView(longinDialogView);
+        builder.setView(view);
         builder.setCancelable(false);
         final Dialog dialog = builder.show();
-        dialogDismiss.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.dialog_dismiss).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
             }
         });
-        dialogExit.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.dialog_exit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

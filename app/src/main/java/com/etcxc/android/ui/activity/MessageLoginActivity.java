@@ -20,9 +20,8 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.modle.sp.PublicSPUtil;
-import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
@@ -44,6 +43,8 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.LOGIN_SMS;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 import static com.etcxc.android.utils.UIUtils.saveHistory;
@@ -163,8 +164,14 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 jsonObject.put("tel", phonenum);
-                String result = OkClient.get(NetConfig.consistUrl(FUNC.SMSREPORT), jsonObject);
-                e.onNext(result);
+
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + SMSREPORT)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -202,8 +209,13 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(NetConfig.consistUrl(LOGIN_SMS), jsonObject);
-                e.onNext(result);
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + LOGIN_SMS)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         })
                 .compose(RxUtil.io()).compose(RxUtil.activityLifecycle(this))

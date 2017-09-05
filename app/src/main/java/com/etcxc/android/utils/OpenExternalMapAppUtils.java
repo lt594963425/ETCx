@@ -5,18 +5,10 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -142,5 +134,4 @@ public class OpenExternalMapAppUtils {
         }
         return distance;
     }
-
 }

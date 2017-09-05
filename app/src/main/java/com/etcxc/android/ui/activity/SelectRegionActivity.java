@@ -10,7 +10,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.AddressBean;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.adapter.SelectRegionAdapter;
 import com.etcxc.android.ui.view.XRecyclerView;
 import com.etcxc.android.utils.LogUtil;
@@ -90,10 +90,15 @@ public class SelectRegionActivity extends BaseActivity implements SelectRegionAd
             public void subscribe(@NonNull ObservableEmitter<List<AddressBean>> e) throws Exception {
                 JSONObject pamares = new JSONObject();
                 pamares.put("code", code);
-                List<AddressBean> temp;
-                String result = OkClient.get(NetConfig.consistUrl(url), code != null?pamares:null);
-                Log.e(TAG, "result:" + result);
-                temp = parseRegion(result);
+                String result = OkHttpUtils
+                        .postString()
+                        .url(url)
+                        .content(String.valueOf( code != null?pamares:null))
+                        .mediaType(NetConfig.JSON)
+                        .build()
+                        .execute()
+                        .body().string();
+                List<AddressBean> temp = parseRegion(result);
                 if (temp == null) e.onError(new Exception());
                 else e.onNext(temp);
             }

@@ -8,7 +8,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-import static com.etcxc.android.net.OkClient.HTTP_PREFIX;
+import static com.etcxc.android.net.NetConfig.HTTP_PREFIX;
+
 
 /**
  * 检测更新信息
@@ -37,7 +38,4 @@ public class VersionCheckInfo {
         }
         return info;
     }
-
-
-
 }

@@ -11,7 +11,7 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -32,6 +32,7 @@ import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.FIND_POSTADDRESS;
 import static com.etcxc.android.net.FUNC.RECEIPT_POSTADDRESS;
+import static com.etcxc.android.net.NetConfig.JSON;
 
 /**
  * 我的收货地址
@@ -67,7 +68,13 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("tel",MeManager.getUid());
-                e.onNext(OkClient.get(NetConfig.consistUrl(FIND_POSTADDRESS), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + FIND_POSTADDRESS)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -207,7 +214,13 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(RECEIPT_POSTADDRESS), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + RECEIPT_POSTADDRESS)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

@@ -13,9 +13,8 @@ import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
 import com.etcxc.android.bean.VersionCheckInfo;
 import com.etcxc.android.modle.sp.PublicSPUtil;
-import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.net.download.DownloadConfig1;
 import com.etcxc.android.net.download.DownloadManger;
 import com.etcxc.android.net.download.DownloadOptions;
@@ -37,6 +36,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.R.string.download;
+import static com.etcxc.android.net.FUNC.VERSION_FUNC;
 import static com.etcxc.android.utils.UIUtils.getString;
 
 /**
@@ -61,7 +61,14 @@ public class VersionUpdateHelper {
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("version_code", String.valueOf(BuildConfig.VERSION_CODE));
-                e.onNext(OkClient.get( NetConfig.consistUrl(FUNC.VERSION_FUNC, null), jsonObject));
+
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + VERSION_FUNC)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(NetConfig.JSON)
+                        .build()
+                        .execute().body().string());
                 e.onComplete();
             }
         }).compose(RxUtil.io())

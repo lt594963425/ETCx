@@ -16,7 +16,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -35,6 +35,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.CAN_ISSUE;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.openAnimator;
 
 /**
@@ -67,7 +68,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
         ls.add("蓝底白字");
         ls.add("黑底白字");
         ls.add("白底黑字");
-        ls.add("绿底白字");
+        //ls.add("绿底白字");
         ArrayAdapter<String> arr_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ls);
         arr_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mCardColorSpinner.setAdapter(arr_adapter);
@@ -90,10 +91,6 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.commit_button:
-                if (!MeManager.getIsLogin()){
-                    openActivity(LoginActivity.class);
-                    return;
-                }
                 String carCard = mCarCardEdit.getText().toString();
                 if (okCarCard(carCard)) {
                     JSONObject jsonObject = new JSONObject();
@@ -113,15 +110,19 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void net(JSONObject jsonObject) {
-        //OkHttpClient client = new OkHttpClient();
         Log.e(TAG, String.valueOf(jsonObject));
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(NetConfig.consistUrl(CAN_ISSUE), jsonObject);
-                Log.e(TAG,result);
-                e.onNext(result);
+
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + CAN_ISSUE)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -139,9 +140,14 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             intent.putExtra("isOrg", !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
                             openAnimator(ETCIssueActivity.this);
-                        } else {
-                            closeProgressDialog();
-                            ToastUtils.showToast(R.string.request_failed);
+                        } else if ("error".equals("error")){
+                            String message = jsonObject.getString("message");//
+                            if (message.equals("issuing or using")){
+                                ToastUtils.showToast("改车已经注册");
+                            }else {
+                                closeProgressDialog();
+                                ToastUtils.showToast(message);
+                            }
                         }
                     }
                 }, new Consumer<Throwable>() {

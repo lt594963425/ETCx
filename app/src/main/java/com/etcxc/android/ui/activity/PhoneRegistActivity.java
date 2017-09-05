@@ -12,9 +12,8 @@ import android.widget.ImageView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
-import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
@@ -31,7 +30,9 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.etcxc.android.net.OkClient.get;
+import static com.etcxc.android.net.FUNC.REGISTER;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
@@ -84,8 +85,8 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mPhoneNumberEdit.addTextChangedListener(new mTextWatcher(mPhoneNumberEdit, mPhonenumberDelete));
         mPswEdit.addTextChangedListener(new mTextWatcher(mPswEdit, mPwdDeleteBtn));
         initAutoComplete("history", mPhoneNumberEdit);
-        long timeDef =60000-(System.currentTimeMillis()-PublicSPUtil.getInstance().getLong("timeReGist",0));
-        if (timeDef>0) new TimeCount(mVerificodeButton,timeDef , 1000).start();
+        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeReGist", 0));
+        if (timeDef > 0) new TimeCount(mVerificodeButton, timeDef, 1000).start();
 
     }
 
@@ -122,7 +123,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
 
         UIUtils.saveHistory("history", phoneNum2);
 
-         getSmsCode(phoneNum2);
+        getSmsCode(phoneNum2);
     }
 
     @Override
@@ -139,7 +140,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         mPhoneNum = mPhoneNumberEdit.getText().toString();
         mPassWord = mPswEdit.getText().toString().trim();
         mSMSCode = mSmsCodeEdit.getText().toString().trim();
-        Log.e(TAG,"PhoneRegistActivity:"+toString());
+        Log.e(TAG, "PhoneRegistActivity:" + toString());
         if (checkInfo(mPhoneNum, mPassWord, mSMSCode)) return;
         saveHistory("history", mPhoneNum);
         //todo 接口调整
@@ -172,11 +173,17 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                jsonObject.put("tel", mPhoneNum);
-                jsonObject.put("pwd", mPassWord);
-                jsonObject.put("sms_code", mSMSCode);
-                jsonObject.put("sms_id", mSMSID);
-                e.onNext(get(NetConfig.consistUrl(FUNC.REGISTER), jsonObject));
+                jsonObject.put("tel", mPhoneNum)
+                        .put("pwd", mPassWord)
+                        .put("sms_code", mSMSCode)
+                        .put("sms_id", mSMSID);
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + REGISTER)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -225,7 +232,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 case "telphoner_has_been_registered":
                     ToastUtils.showToast(R.string.isregist);
                 default:
-                    ToastUtils.showToast(R.string.regist_error+returnMsg);
+                    ToastUtils.showToast(R.string.regist_error + returnMsg);
                     break;
             }
         }
@@ -235,9 +242,9 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
         if (code.equals("s_ok")) {
             closeProgressDialog();
             ToastUtils.showToast(R.string.registcomlete);
-            PublicSPUtil.getInstance().putBoolean("IS_REGIST",true);
-            PublicSPUtil.getInstance().putString("tel",mPhoneNum);
-            PublicSPUtil.getInstance().putString("pwd",mPassWord);
+            PublicSPUtil.getInstance().putBoolean("IS_REGIST", true);
+            PublicSPUtil.getInstance().putString("tel", mPhoneNum);
+            PublicSPUtil.getInstance().putString("pwd", mPassWord);
             openActivity(LoginActivity.class);
             finish();
         }
@@ -249,8 +256,13 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 jsonObject.put("tel", phonenum);
-                String result = OkClient.get(NetConfig.consistUrl(FUNC.SMSREPORT), jsonObject);
-                e.onNext(result);
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + SMSREPORT)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -262,9 +274,9 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                             JSONObject object = new JSONObject(s);
                             String code = object.getString("code");
                             if (code.equals("s_ok")) {
-                                mSMSID= object.getString("sms_id");
+                                mSMSID = object.getString("sms_id");
                                 PublicSPUtil.getInstance().putString("pr_sms_id", mSMSID);
-                                PublicSPUtil.getInstance().putLong("timeReGist",System.currentTimeMillis());
+                                PublicSPUtil.getInstance().putLong("timeReGist", System.currentTimeMillis());
                                 new TimeCount(mVerificodeButton, 60000, 1000).start();
                                 ToastUtils.showToast(R.string.send_success);
                             }

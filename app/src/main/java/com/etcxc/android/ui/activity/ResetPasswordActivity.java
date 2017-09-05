@@ -15,9 +15,8 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.modle.sp.PublicSPUtil;
-import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.TimeCount;
 import com.etcxc.android.utils.ToastUtils;
@@ -38,6 +37,8 @@ import io.reactivex.schedulers.Schedulers;
 import static com.etcxc.android.R.drawable.vd_close_eyes;
 import static com.etcxc.android.R.drawable.vd_open_eyes;
 import static com.etcxc.android.net.FUNC.RESET_PWD;
+import static com.etcxc.android.net.FUNC.SMSREPORT;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.closeAnimator;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isLook;
@@ -165,8 +166,14 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(NetConfig.consistUrl(RESET_PWD), jsonObject);
-                e.onNext(result);
+
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + RESET_PWD)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.activityLifecycle(this))
                 .compose(RxUtil.io())
@@ -196,7 +203,6 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             if (code.equals("s_ok")) {
                 MeManager.setPhone(mPhoneNum);
                 MeManager.setPWD(mPassWord);
-                MeManager.clearToken();
                 openActivity(LoginActivity.class);
                 ToastUtils.showToast(R.string.find_success);
                 finish();
@@ -227,9 +233,14 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 jsonObject.put("tel", phonenum);
-
-                String result = OkClient.get(NetConfig.consistUrl(FUNC.SMSREPORT), jsonObject);
-                e.onNext(result);
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + SMSREPORT)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute()
+                        .body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

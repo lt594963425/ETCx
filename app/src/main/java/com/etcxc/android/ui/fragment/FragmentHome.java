@@ -25,7 +25,6 @@ import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
-import com.etcxc.android.ui.activity.TestPostactivity;
 import com.etcxc.android.ui.adapter.BaseSelectAdapter;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.HomeRecyclerAdapter;
@@ -134,7 +133,6 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
                 openActivity(IssueFinishActivity.class);
                 break;
             case 4:
-                openActivity(TestPostactivity.class);
                 break;
             case 5:
                 openActivity(IssuePayActivity.class);

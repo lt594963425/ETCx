@@ -62,8 +62,8 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         setContentView(R.layout.activity_main);
         initView();
         initPage();
-        mHelper = new VersionUpdateHelper(this);
-        mHelper.checkVersion();
+        //mHelper = new VersionUpdateHelper(this);
+        //mHelper.checkVersion();
     }
 
     private void initView() {

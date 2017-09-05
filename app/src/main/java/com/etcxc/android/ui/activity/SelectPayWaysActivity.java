@@ -14,6 +14,7 @@ import com.etcxc.android.alipay.PayResult;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
@@ -25,20 +26,17 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import okhttp3.Call;
-import okhttp3.Callback;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import static com.etcxc.android.net.FUNC.WXORDER;
 
@@ -144,25 +142,31 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
     }
 
     private void wxPay(String url) {
-        Request requst = new Request.Builder().url(url).get().build();
-        client.newCall(requst).enqueue(new Callback() {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                e.onNext(OkHttpUtils
+                        .post()
+                        .url(url)
+                        .build()
+                        .execute().body().string());
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void run() {//mLoginVerificodeEdt
-                        ToastUtils.showToast(R.string.pay_failed);
+                    public void accept(@NonNull String s) throws Exception {
+                        Log.e(TAG, s);
+                        parseJsonResult(s);
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        ToastUtils.showToast(R.string.send_faid);
+                        return;
                     }
                 });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string();
-                Log.e(TAG, "" + s);
-                parseJsonResult(s);
-            }
-        });
     }
 
     private void parseJsonResult(String s) {

@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
-import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.utils.FileUtils;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -38,7 +38,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -47,13 +48,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 import static com.etcxc.android.net.FUNC.UPLOAD_FUNC;
+import static com.etcxc.android.net.NetConfig.HOST;
+import static com.etcxc.android.utils.FileUtils.getCachePath;
 import static com.etcxc.android.utils.FileUtils.getImageDegree;
 import static com.etcxc.android.utils.FileUtils.rotateBitmapByDegree;
 import static com.etcxc.android.utils.UIUtils.openAnimator;
@@ -92,7 +91,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_license);
-        mCachePath = FileUtils.getCachePath(this);
+        mCachePath = getCachePath(this);
         initData();
         initView();
         setListener();
@@ -159,66 +158,59 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                Request request = getRequest();
-                okhttp3.OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
-                OkHttpClient client = httpBuilder
-                        .connectTimeout(30, TimeUnit.SECONDS)
-                        .writeTimeout(30, TimeUnit.SECONDS)
-                        .writeTimeout(180, TimeUnit.SECONDS)
-                        .build();
-                e.onNext(client.newCall(request).execute().body().string());
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<String>() {
-            @Override
-            public void accept(@NonNull String s) throws Exception {
-                closeProgressDialog();
-                JSONObject jsonObject = new JSONObject(s);
-                String code = jsonObject.getString("code");
-                if (code.equals("s_ok")) {
-                    openActivity(ContactPhoneActivity.class);
+                File idCardFile = new File(mCachePath, CROP_IDCARD);
+                File drivenFile = new File(mCachePath, CROP_DRIVEN);
+                Map<String, String> params = new HashMap<>();
+                params.put("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""));
+                params.put("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""));
+                //构造request
+                MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                if (mIsOrg) {
+                    File orgFile = new File(mCachePath, CROP_ORG);
+                    e.onNext(OkHttpUtils
+                            .post()
+                            .addFile("image_id_card", CROP_IDCARD, idCardFile)
+                            .addFile("image_driven_license", CROP_DRIVEN, drivenFile)
+                            .addFile("image_org_license", CROP_ORG, orgFile)
+                            .url(HOST + UPLOAD_FUNC)
+                            .params(params)
+                            .build().execute().body().string());
                 } else {
-                    ToastUtils.showToast(R.string.request_failed);
+                    e.onNext(OkHttpUtils
+                            .post()
+                            .addFile("image_id_card", CROP_IDCARD, idCardFile)
+                            .addFile("image_driven_license", CROP_DRIVEN, drivenFile)
+                            .url(HOST + UPLOAD_FUNC)
+                            .params(params)
+                            .build().execute().body().string());
                 }
-
             }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-                closeProgressDialog();
-                ToastUtils.showToast(R.string.request_failed);
-            }
-        });
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        Log.e(TAG, s);
+                        closeProgressDialog();
+                        JSONObject jsonObject = new JSONObject(s);
+                        String code = jsonObject.getString("code");
+                        if (code.equals("s_ok")) {
+                            openActivity(ContactPhoneActivity.class);
+                        } else if (code.equals("error")) {
+                            String message = jsonObject.getString("message");
+                            ToastUtils.showToast(message);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        closeProgressDialog();
+                        ToastUtils.showToast(R.string.request_failed);
+                    }
+                });
 
     }
 
-    private Request getRequest() {
-        File fileIDCard = new File(mCachePath, CROP_IDCARD);
-        File fileDRiven = new File(mCachePath, CROP_DRIVEN);
-        MultipartBody.Builder multipartBodyBuilder  = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        if (mIsOrg) {
-            File fileORg = new File(mCachePath, CROP_ORG);
-            multipartBodyBuilder
-                    .addFormDataPart("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""))
-                    .addFormDataPart("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""))
-                    .addFormDataPart("image[]", fileIDCard.getName(), RequestBody.create(MediaType.parse("image"), fileIDCard))
-                    .addFormDataPart("image[]", fileDRiven.getName(), RequestBody.create(MediaType.parse("image"), fileDRiven))
-                    .addFormDataPart("image[]", fileORg.getName(), RequestBody.create(MediaType.parse("image"), fileORg))
-                    .build();
-        } else {
-            multipartBodyBuilder
-                    .addFormDataPart("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""))
-                    .addFormDataPart("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""))
-                    .addFormDataPart("image[]", fileIDCard.getName(), RequestBody.create(MediaType.parse("image"), fileIDCard))
-                    .addFormDataPart("image[]", fileDRiven.getName(), RequestBody.create(MediaType.parse("image"), fileDRiven))
-                    .build();
-        }
-        MultipartBody requestBody = multipartBodyBuilder .build();
-        return new Request.Builder()
-                .url(NetConfig.HOST+UPLOAD_FUNC)
-                .post(requestBody)
-                .build();
-    }
 
     @Override
     public void onClick(View v) {

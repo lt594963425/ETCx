@@ -3,10 +3,21 @@ package com.etcxc.android.base;
 import android.app.Application;
 
 import com.etcxc.android.crash.CrashHandler;
+import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.net.cookie.CookieJarImpl;
+import com.etcxc.android.net.cookie.store.SPCookieStore;
+import com.etcxc.android.net.log.LoggerInterceptor;
 import com.etcxc.android.utils.LogUtil;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
+
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
+import okhttp3.OkHttpClient;
 
 import static com.etcxc.android.base.Constants.WX_APP_ID;
 
@@ -26,6 +37,22 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+                .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                .addInterceptor(new LoggerInterceptor("TAG"))
+                .cookieJar(new CookieJarImpl(new SPCookieStore(this)))
+                .hostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                })
+//                .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //https
+                .build();
+        OkHttpUtils.initClient(okHttpClient);
         MobclickAgent.setDebugMode(true);//日志加密传输
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);

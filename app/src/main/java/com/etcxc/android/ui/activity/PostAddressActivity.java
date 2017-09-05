@@ -13,7 +13,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -32,6 +32,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.POST_INFO;
+import static com.etcxc.android.net.NetConfig.JSON;
 
 /**
  * 收货地址
@@ -200,7 +201,13 @@ public class PostAddressActivity extends BaseActivity implements View.OnClickLis
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(POST_INFO), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + POST_INFO)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

@@ -14,7 +14,7 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -29,6 +29,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.MODIFYPWD;
+import static com.etcxc.android.net.NetConfig.HOST;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.isLook;
 
 /**
@@ -102,12 +104,18 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
-                jsonObject.put("uid", MeManager.getUid());
-                jsonObject.put("pwd", mOldPassWord);
-                jsonObject.put("newPwd", mNewPassWord);
-                jsonObject.put("token", MeManager.getToken());
-                Log.e(TAG,jsonObject.toString());
-                e.onNext(OkClient.get(NetConfig.consistUrl(MODIFYPWD), jsonObject));
+                jsonObject.put("uid", MeManager.getUid())
+                        .put("pwd", mOldPassWord)
+                        .put("newPwd", mNewPassWord)
+                        .put("token", MeManager.getToken());
+                Log.e(TAG, jsonObject.toString());
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(HOST + MODIFYPWD)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -128,19 +136,28 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
     }
 
     private void parseResultJson(@NonNull String s) throws JSONException {
-        Log.e(TAG,s);
+        Log.e(TAG, s);
         JSONObject jsonObject = new JSONObject(s);
         if (jsonObject != null) {
             String code = jsonObject.getString("code");
             if (code.equals("s_ok")) {
                 //请求成功
                 closeProgressDialog();
-                ToastUtils.showToast(R.string.request_success);
+                MeManager.setPWD(mNewPassWord);
+                ToastUtils.showToast(R.string.change_pwd_success);
+                openActivity(LoginActivity.class);
                 finish();
             }
             if (code.equals("error")) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
+                if (returnMsg.equals(NetConfig.ERROR_TOKEN)) {
+                    MeManager.setIsLgon(false);
+                    openActivity(LoginActivity.class);
+                    finish();
+                }
+
                 closeProgressDialog();
+                Log.e(TAG, returnMsg);
                 ToastUtils.showToast(R.string.request_failed);
                 return;
             }

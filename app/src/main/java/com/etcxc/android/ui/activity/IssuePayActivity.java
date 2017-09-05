@@ -15,7 +15,7 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelpay.PayReq;
@@ -37,6 +37,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.WX_PAY_ISSUE;
+import static com.etcxc.android.net.NetConfig.JSON;
 
 /**
  * 发行支付
@@ -134,7 +135,13 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(WX_PAY_ISSUE), jsonObject));
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + WX_PAY_ISSUE)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

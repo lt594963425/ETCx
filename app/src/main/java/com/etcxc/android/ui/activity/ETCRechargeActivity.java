@@ -28,7 +28,7 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.OrderRechargeInfo;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.adapter.RechargeOrderFormAdapter;
 import com.etcxc.android.ui.adapter.SelectMoneyAdapter;
 import com.etcxc.android.utils.LogUtil;
@@ -52,6 +52,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.etcxc.android.net.FUNC.ADDCARD;
+import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.UIUtils.closeAnimator;
 import static com.etcxc.android.utils.UIUtils.delete;
 import static com.etcxc.android.utils.UIUtils.getInfoList;
@@ -318,8 +319,13 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                String result = OkClient.get(NetConfig.consistUrl(ADDCARD), jsonObject);
-                e.onNext(result);
+                e.onNext(OkHttpUtils
+                        .postString()
+                        .url(NetConfig.HOST + ADDCARD)
+                        .content(String.valueOf(jsonObject))
+                        .mediaType(JSON)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))

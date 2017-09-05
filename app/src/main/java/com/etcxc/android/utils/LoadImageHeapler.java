@@ -18,6 +18,8 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.net.callback.BitmapCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,15 +28,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import static com.etcxc.android.net.FUNC.GET_HEAD;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
@@ -50,7 +46,6 @@ public class LoadImageHeapler {
     private final String dirName;
     //文件操作类对象
     private Activity context;
-    private Bitmap mBitmap;
 
     /**
      * 构造方法，需要传入一个保存文件的名字
@@ -58,7 +53,7 @@ public class LoadImageHeapler {
      */
 
     public LoadImageHeapler(Activity context, String dirName) {
-        this.dirName= dirName;
+        this.dirName = dirName;
         this.context = context;
         //获取系统分配的最大内存
         int maxSize = (int) (Runtime.getRuntime().maxMemory() / 8);
@@ -75,22 +70,23 @@ public class LoadImageHeapler {
     }
 
     public void loadUserHead(ImageLoadListener listener) {
-        if(readFromCache(dirName) != null){
+        if (readFromCache(dirName) != null) {
             Log.e(TAG, "从内存中加载数据");
             listener.loadImage(readFromCache(dirName));
-        }else {
+        } else {
             Bitmap bitmap = readFromSDCard(dirName);
-            if (bitmap != null){
+            if (bitmap != null) {
                 Log.e(TAG, "从SD卡中加载数据");
                 saveToCache(dirName, bitmap);//把从SD卡中读取到的数据保存到缓存中，
                 //返回
                 listener.loadImage(readFromSDCard(dirName));//返回一个数据给调用者
-            }else {
+            } else {
                 Log.e(TAG, "从网络中下载数据");
                 requestHead(listener);
             }
         }
     }
+
     private void requestHead(ImageLoadListener listener) {
         OkHttpClient client = new OkHttpClient();
         JSONObject jsonObject = new JSONObject();
@@ -100,57 +96,36 @@ public class LoadImageHeapler {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, jsonObject.toString());
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), String.valueOf(jsonObject));
-        Request request = new Request.Builder()
+        OkHttpUtils
+                .postString()
                 .url(NetConfig.HOST + GET_HEAD)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                context.runOnUiThread(new Runnable() {
+                .content(String.valueOf(jsonObject))
+                .mediaType(NetConfig.JSON)
+                .build()
+                .execute(new BitmapCallback() {
                     @Override
-                    public void run() {
+                    public void onError(Call call, Exception e, int id) {
                         ToastUtils.showToast(R.string.request_failed);
+                        //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
                         Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
                         listener.loadImage(bmp);
                     }
+
+                    @Override
+                    public void onResponse(Bitmap response, int id) {
+                        if (response != null) {
+                            listener.loadImage(response);
+                            saveToCache(dirName, response);
+                            saveToSDCard(dirName, response);
+                        }else{
+                            Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
+                            listener.loadImage(bmp);
+                        }
+                    }
                 });
 
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(response.header("Content-Type").equals("text/html; charset=utf-8")){
-                    InputStream inputStream = response.body().byteStream();
-                    mBitmap = BitmapFactory.decodeStream(inputStream);
-                    if (mBitmap != null) {
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.loadImage(mBitmap);
-                                saveToCache(dirName, mBitmap);
-                                saveToSDCard(dirName,mBitmap);
-                            }
-                        });
-                    }
-                }
-//                else {
-//                    context.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ToastUtils.showToast(R.string.request_failed);
-//                            //Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.vd_head2);
-//                            Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
-//                            listener.loadImage(bmp);
-//
-//                        }
-//                    });
-//                }
-            }
-        });
     }
+
     /**
      * 定义一个接口，里面有一个方法，
      * 这里有一个Bitmap对象参数，作用是让调用这接收这个Bitmap对象，实际这bitmap对象就是缓存中的对象
@@ -158,12 +133,14 @@ public class LoadImageHeapler {
     public interface ImageLoadListener {
         void loadImage(Bitmap bmp);
     }
+
     /**
      * 使用缓存类存储Bitmap对象
      */
     private void saveToCache(String key, Bitmap bmp) {
         cache.put(key, bmp);
     }
+
     /**
      * 使用缓存类获取Bitmap对象
      */
@@ -179,8 +156,9 @@ public class LoadImageHeapler {
     public Bitmap readFromSDCard(String key) {
         return BitmapFactory.decodeFile(new File(getCachePath(context), key).getAbsolutePath());
     }
+
     /**
-     *保存bitmap
+     * 保存bitmap
      */
     public void saveToSDCard(String key, Bitmap bmp) {
         String path = getCachePath(context);

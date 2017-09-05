@@ -20,9 +20,8 @@ import android.util.Log;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.Networkstore;
-import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
-import com.etcxc.android.net.OkClient;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.adapter.NetworkQueryAdapter;
 import com.etcxc.android.ui.view.XRecyclerView;
 import com.etcxc.android.utils.DistanceLowToHighComparator;
@@ -35,7 +34,6 @@ import com.etcxc.android.utils.ToastUtils;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +46,8 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+
+import static com.etcxc.android.net.FUNC.NETWORK;
 
 
 /**
@@ -119,7 +119,11 @@ public class NetworkQueryActivity extends BaseActivity {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.consistUrl(FUNC.NETWORK), new JSONObject()));
+                e.onNext(OkHttpUtils
+                        .post()
+                        .url(NetConfig.HOST + NETWORK)
+                        .build()
+                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
