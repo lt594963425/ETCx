@@ -2,21 +2,39 @@ package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
+import com.etcxc.android.alipay.AliPay;
+import com.etcxc.android.alipay.PayResult;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.helper.VersionUpdateHelper;
 import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.OkClient;
 import com.etcxc.android.net.download.DownloadOptions;
 import com.etcxc.android.ui.view.ColorCircle;
+import com.etcxc.android.utils.RxUtil;
+import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
+
+import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * 关于我们
@@ -52,7 +70,7 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
-        mUpdateDot.setVisibility(View.VISIBLE);
+            mUpdateDot.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -62,7 +80,9 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
                 mHelper.checkVersion();
                 break;
             case R.id.about_us_test_json_api:
-                startActivity(new Intent(this, TestJsonApiActivity.class));
+//                startActivity(new Intent(this, TestJsonApiActivity.class));
+                String strURL = "http://192.168.6.50/xczx/common/testAction";
+                aliPay(strURL);
                 break;
         }
     }
@@ -82,5 +102,47 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DownloadOptions options) {
         mHelper.downloadPd(options);
+    }
+
+    /**
+     * 支付宝
+     * @param strURL
+     */
+    private void aliPay(String strURL) {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
+                String orderInfo = OkClient.get(strURL, new JSONObject());
+                orderInfo = orderInfo.replace("amp;", "");
+                PayTask payTask = new PayTask(AboutUsActivity.this);
+                Map<String, String> result = payTask.payV2(orderInfo, true);
+                e.onNext(result);
+            }
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(@NonNull Object o) throws Exception {
+                        closeProgressDialog();
+                        PayResult payResult = new PayResult((Map<String, String>) o);
+                        /**
+                         对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
+                         */
+                        String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+                        String resultStatus = payResult.getResultStatus();
+                        // 判断resultStatus 为9000则代表支付成功
+                        if (TextUtils.equals(resultStatus, AliPay.PAY_OK)) {//--------->支付成功
+                            finish();
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_FAIL)) {//--------->支付失败
+                            // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
+                            ToastUtils.showToast(payResult.getMemo());
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_CANCEL)) {//--------->交易取消
+                            ToastUtils.showToast(payResult.getMemo());
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_NET_ERROR)) {//---------->网络出现错误
+                            ToastUtils.showToast(payResult.getMemo());
+                        } else if (TextUtils.equals(resultStatus, AliPay.PAY_REPEAT)) {//------>交易重复
+                        }
+                    }
+                });
     }
 }
