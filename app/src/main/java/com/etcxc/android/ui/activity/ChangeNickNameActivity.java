@@ -98,16 +98,19 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                         }
                         if (code.equals("error")) {
                             String msg = jsonObject.getString("message");
-                            if (msg.equals("nickName exceed 16byte")) {
-                                ToastUtils.showToast(R.string.nick_name_is_long);
+                            switch (msg){
+                                case "nickName exceed 16byte":
+                                    ToastUtils.showToast(R.string.nick_name_is_long);
+                                    break;
+                                case NetConfig.ERROR_TOKEN:
+                                    MeManager.setIsLgon(false);
+                                    openActivity(LoginActivity.class);
+                                    finish();
+                                    break;
+                                default:
+                                    ToastUtils.showToast(msg);
+                                    break;
                             }
-                            if (msg.equals(NetConfig.ERROR_TOKEN)) {
-                                MeManager.setIsLgon(false);
-                                openActivity(LoginActivity.class);
-                                finish();
-                            } else
-                                ToastUtils.showToast(msg);
-
                         }
                     }
                 }, new Consumer<Throwable>() {
