@@ -24,8 +24,18 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class StandardPboc {
+/**
+ * 卡操作封装
+ */
+public class StandardPboc {
+    //卡MF目录，一级目录
+    private final static byte[] DFI_MF = {(byte) 0x3F, (byte) 0x00};
+    //卡DF目录，即EP钱包所在的目录，主应用目录
+    private final static byte[] DFI_EP = {(byte) 0x10, (byte) 0x01};
 
+    /**
+     *读卡
+     */
     public static Card readCard(IsoDep tech) throws InstantiationException,
             IllegalAccessException, IOException {
         final Iso7816.StdTag tag = new Iso7816.StdTag(tech);
@@ -35,60 +45,29 @@ public abstract class StandardPboc {
         return card;
     }
 
-    protected boolean resetTag(Iso7816.StdTag tag) throws IOException {
-        return tag.selectByID(DFI_MF).isOkey() || tag.selectByName(DFN_PSE).isOkey();
-    }
-
-    protected final static byte[] DFI_MF = {(byte) 0x3F, (byte) 0x00};
-    protected final static byte[] DFI_EP = {(byte) 0x10, (byte) 0x01};
-    protected final static byte[] DFN_PSE = {(byte) '1', (byte) 'P', (byte) 'A', (byte) 'Y',
-            (byte) '.', (byte) 'S', (byte) 'Y', (byte) 'S', (byte) '.', (byte) 'D', (byte) 'D',
-            (byte) 'F', (byte) '0', (byte) '1',};
-
-    protected final static byte[] DFN_PXX = {(byte) 'P'};
-    protected final static int SFI_EXTRA = 22;
-
-    protected static int MAX_LOG = 10;
-    protected static int SFI_LOG = 24;
-
-    protected final static byte TRANS_CSU = 6;
-    protected final static byte TRANS_CSU_CPX = 9;
-
-    protected abstract Object getApplicationId();
-
-    protected static byte[] getMainApplicationId() {
-        return DFI_EP;
-    }
-
-    protected static boolean havaMainApplication(Iso7816.StdTag tag) throws IOException {
-        final byte[] aid = getMainApplicationId();
-        return ((aid.length == 2) ? tag.selectByID(aid) : tag.selectByName(aid)).isOkey();
-    }
-
-    protected static Card readCard(Iso7816.StdTag tag) throws IOException {
+    /**
+     * 读卡，0016文件持卡人信息,0015文件卡基本信息，卡余额
+     */
+    private static Card readCard(Iso7816.StdTag tag) throws IOException {
         Card card = new Card();
         Iso7816.Response CARDINFO, PEOPLEINFO, BALANCE;
-        if (havaMainApplication(tag)) {
+        if (tag.selectByID(DFI_EP).isOkey()) {
             CARDINFO = tag.readBinary(21);
             parseCardInfo(card, CARDINFO);
             BALANCE = tag.getBalance(0, true);
             parseBalance(card, BALANCE);
         }
-        boolean dfi = tag.selectByID(DFI_MF).isOkey();
-        if (dfi) {
-            final byte[] cmd = {(byte) 0x00, // CLA Class
-                    (byte) 0xB0, // INS Instruction
-                    (byte) (0x00000096), // P1 Parameter 1//
-                    (byte) 0x00, // P2 Parameter 2
-                    (byte) 0x00, // Le
-            };
-            PEOPLEINFO = new Iso7816.Response(tag.transceive(cmd));
+        if (tag.selectByID(DFI_MF).isOkey()) {
+            PEOPLEINFO = tag.readBinary(22);
             parsePeopleInfo(card, PEOPLEINFO);
         }
         return card;
     }
 
-    protected static float parseBalance(Iso7816.Response data) {
+    /**
+     *解析卡余额数据
+     */
+    private static float parseBalance(Card card, Iso7816.Response data) {
         float ret = 0f;
         if (data.isOkey() && data.size() >= 4) {
             int n = Util.toInt(data.getBytes(), 0, 4);
@@ -96,17 +75,14 @@ public abstract class StandardPboc {
                 n -= 0x80000000;
             ret = n / 100.0f;
         }
+        card.blance = String.valueOf(ret);
         return ret;
     }
 
-    protected static void parseBalance(Card card, Iso7816.Response... data) {
-        float amount = 0f;
-        for (Iso7816.Response rsp : data)
-            amount += parseBalance(rsp);
-        card.blance = String.valueOf(amount);
-    }
-
-    protected static void parsePeopleInfo(Card card, Iso7816.Response data) {
+    /**
+     *解析持卡人数据
+     */
+    private static void parsePeopleInfo(Card card, Iso7816.Response data) {
         if (!data.isOkey() || data.size() < 50) return;
         final byte[] d = data.getBytes();
         byte[] newBytes = new byte[20];
@@ -118,7 +94,10 @@ public abstract class StandardPboc {
         }
     }
 
-    protected static void parseCardInfo(Card card, Iso7816.Response data) {
+    /**
+     * 解析卡基本信息
+     */
+    private static void parseCardInfo(Card card, Iso7816.Response data) {
         if (!data.isOkey() || data.size() < 40) return;
         final byte[] d = data.getBytes();
         byte[] newBytes = new byte[10];
@@ -133,6 +112,9 @@ public abstract class StandardPboc {
         }
     }
 
+    /**
+     * 去掉零
+     */
     private static byte[] effective(byte[] bs) {
         List<Byte> bytes = new ArrayList<>();
         for (byte b : bs) {
