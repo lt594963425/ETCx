@@ -16,6 +16,7 @@ Additional permission under GNU GPL version 3 section 7 */
 package com.etcxc.android.net.nfc;
 
 import android.nfc.tech.IsoDep;
+import android.support.annotation.Nullable;
 
 import com.etcxc.android.net.nfc.bean.Card;
 
@@ -38,7 +39,7 @@ public class StandardPboc {
      */
     public static Card readCard(IsoDep tech) throws InstantiationException,
             IllegalAccessException, IOException {
-        final Iso7816.StdTag tag = new Iso7816.StdTag(tech);
+        final StdTag tag = new StdTag(tech);
         tag.connect();
         Card card = readCard(tag);
         tag.close();
@@ -48,7 +49,7 @@ public class StandardPboc {
     /**
      * 读卡，0016文件持卡人信息,0015文件卡基本信息，卡余额
      */
-    private static Card readCard(Iso7816.StdTag tag) throws IOException {
+    private static Card readCard(StdTag tag) throws IOException {
         Card card = new Card();
         Iso7816.Response CARDINFO, PEOPLEINFO, BALANCE;
         if (tag.selectByID(DFI_EP).isOkey()) {
@@ -125,6 +126,23 @@ public class StandardPboc {
             bs[i] = bytes.get(i);
         }
         return bs;
+    }
+
+    /**
+     * 圈存初始化获得MAC1
+     */
+    @Nullable
+    public static byte[] storeInit(StdTag tag){
+        try {
+            if (tag.selectByID(DFI_EP).isOkey()) {
+                byte[] cmd = Util.HexStringToByteArray("805000020B01000003E8130000000001");
+                byte[] data = new Iso7816.Response(tag.transceive(cmd)).data;
+                return data;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
