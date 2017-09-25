@@ -12,9 +12,7 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-/**
- * Created by zhy on 15/12/14.
- */
+
 public class PostFileRequest extends OkHttpRequest
 {
     private static MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");

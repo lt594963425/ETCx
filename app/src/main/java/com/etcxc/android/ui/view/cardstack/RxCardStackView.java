@@ -16,8 +16,11 @@ import android.view.ViewParent;
 import android.widget.OverScroller;
 
 import com.etcxc.android.R;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.etcxc.android.utils.UIUtils.dip2Px;
 
 /**
  * 自定义卡片堆叠效果
@@ -88,11 +91,11 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RxCardStackView, defStyleAttr, defStyleRes);
-        setOverlapGaps(array.getDimensionPixelSize(R.styleable.RxCardStackView_stackOverlapGaps, dp2px(20)));
-        setOverlapGapsCollapse(array.getDimensionPixelSize(R.styleable.RxCardStackView_stackOverlapGapsCollapse, dp2px(20)));
+        setOverlapGaps(array.getDimensionPixelSize(R.styleable.RxCardStackView_stackOverlapGaps, dip2Px(20)));
+        setOverlapGapsCollapse(array.getDimensionPixelSize(R.styleable.RxCardStackView_stackOverlapGapsCollapse, dip2Px(20)));
         setDuration(array.getInt(R.styleable.RxCardStackView_stackDuration, RxAdapterAnimator.ANIMATION_DURATION));
         setAnimationType(array.getInt(R.styleable.RxCardStackView_stackAnimationType, UP_DOWN_STACK));
-        setNumBottomShow(array.getInt(R.styleable.RxCardStackView_stackNumBottomShow, 3));
+        setNumBottomShow(array.getInt(R.styleable.RxCardStackView_stackNumBottomShow, 5));
         array.recycle();
 
         mViewHolders = new ArrayList<>();
@@ -109,10 +112,7 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
     }
 
-    private int dp2px(int value) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        return (int) (value * scale + 0.5f);
-    }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -234,7 +234,7 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
         }
     }
 
-    private void refreshView() {
+    public void refreshView() {
         removeAllViews();
         mViewHolders.clear();
         for (int i = 0; i < mRxAdapterStack.getItemCount(); i++) {
@@ -804,7 +804,9 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
         return 0;
     }
 
-    public void setNumBottomShow(int numBottomShow) {
+    public void setNumBottomShow(int numBottomShow)
+
+    {
         mNumBottomShow = numBottomShow;
     }
 

@@ -2,11 +2,11 @@ package com.etcxc.android.base;
 
 /**
  * 常量配置
- * Created by 刘涛 on 2017/7/8 0008.
+ * Created by LiuTao on 2017/7/8 0008.
  */
 
 public class Constants {
-
+    //app
     public static String ORIENTION_KEY = "oriention";
     public static String ORIENTION_VALUE = "f";
 
@@ -20,8 +20,6 @@ public class Constants {
     public static final String WX_APP_KEY = "2e08ae5ae947e7bb99bfd32e24e1e7cd";
     //微信统一下单接口
     public static final String UNIFIED_ORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-
-
     /**
      * qq
      */
@@ -39,8 +37,7 @@ public class Constants {
     public static final String FLAG = "flag";
 
 
-    public static final String PACKAGE_NAME =
-            "com.etcxc.android";
+    public static final String PACKAGE_NAME = "com.etcxc.android";
     public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
     public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
     public static final String RESULT_ADDRESS = PACKAGE_NAME + ".RESULT_ADDRESS";

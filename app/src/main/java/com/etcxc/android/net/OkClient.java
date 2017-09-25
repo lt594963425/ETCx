@@ -318,7 +318,6 @@ public class OkClient {
         }
         return client;
     }
-
     private static X509TrustManager x509TrustManager = new X509TrustManager() {
         @Override
         public void checkClientTrusted(
@@ -338,7 +337,6 @@ public class OkClient {
             return x509Certificates;
         }
     };
-
     /**
      * @return true:https false:http
      */

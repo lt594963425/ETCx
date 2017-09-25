@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +17,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.view.ItemOffsetDecoration;
 import com.etcxc.android.ui.view.XRecyclerView;
+import com.etcxc.android.utils.LogUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
@@ -39,8 +39,6 @@ public class FragmentExpand extends BaseFragment {
         initData();
         View view = inflater.inflate(R.layout.fragment_expand, null);
         mRecyclerview = (XRecyclerView) view.findViewById(R.id.expand_recyclerView);
-
-
         setupRecyclerView();
         mHandler.postDelayed(LOAD_DATA, 500);
         return view;
@@ -63,15 +61,13 @@ public class FragmentExpand extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        final Context context = mRecyclerview.getContext();
         final int spacing = getResources().getDimensionPixelOffset(R.dimen.default_spacing_small);
         mAdapter = new MyRecylerAdapter(mDatas);
-        mRecyclerview.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerview.setAdapter(mAdapter);
         mRecyclerview.addItemDecoration(new ItemOffsetDecoration(spacing));
     }
     protected void initData() {
-        mDatas = new ArrayList<String>();
+        mDatas = new ArrayList<>();
         for (int i = 'A'; i < 'z'; i++) {
             mDatas.add("" + (char) i);
         }
@@ -93,7 +89,7 @@ public class FragmentExpand extends BaseFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.mTextView.setText("迅畅在想你" + ":" + datas.get(position));
+            holder.mTextView.setText("迅畅在线" + ":" + datas.get(position));
         }
 
 
@@ -122,6 +118,7 @@ public class FragmentExpand extends BaseFragment {
 
     @Override
     public void onResume() {
+        LogUtil.e(TAG,"onResume");
         mRecyclerview.smoothScrollToPosition(0);
         MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();

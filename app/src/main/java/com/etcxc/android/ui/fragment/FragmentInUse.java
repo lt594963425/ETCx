@@ -26,10 +26,6 @@ public class FragmentInUse extends BaseFragment implements RxCardStackView.ItemE
     private CardAdapterStack mCardStackAdapter;
     private List<String> mDatas;
 
-    public FragmentInUse(ArrayList<String> datas) {
-        mDatas= new ArrayList<>();
-        mDatas.addAll(datas);
-    }
 
     @Nullable
     @Override
@@ -38,7 +34,11 @@ public class FragmentInUse extends BaseFragment implements RxCardStackView.ItemE
         initView(view);
         return view;
     }
-
+    public FragmentInUse(){}
+    public FragmentInUse(List<String> datas) {
+        mDatas= new ArrayList<>();
+        mDatas.addAll(datas);
+    }
     private void initView(View view) {
         mStackView = (RxCardStackView) view.findViewById(R.id.card_stack_view);
         mStackView.setItemExpendListener(this);
@@ -49,6 +49,8 @@ public class FragmentInUse extends BaseFragment implements RxCardStackView.ItemE
                     @Override
                     public void run() {
                         mCardStackAdapter.updateData(mDatas);
+                        mCardStackAdapter.notifyDataSetChanged();
+
                     }
                 }
                 , 800

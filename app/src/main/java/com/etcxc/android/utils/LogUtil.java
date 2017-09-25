@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * 日志打印类
+ * 安全日志打印类
  * 注意无限循环的问题，如w()调了外部方法，外部方法又调了w()方法
  * Created by xwpeng on 2017/5/25.
  */

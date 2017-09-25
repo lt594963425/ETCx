@@ -105,9 +105,8 @@
             android:layout_below="@+id/verificode_layout"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="5dp"
             android:gravity="center_vertical">
-
             <EditText
                 android:id="@+id/password_edt"
                 android:layout_width="wrap_content"
@@ -124,7 +123,6 @@
                 android:paddingBottom="5dp"
                 android:textColorHint="@color/white"
                 android:textSize="14sp" />
-
             <ImageView
                 android:id="@+id/iv_regist_password_delete"
                 android:layout_width="wrap_content"
@@ -138,7 +136,6 @@
                 android:padding="10dp"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/vd_delete" />
-
             <ImageView
                 android:id="@+id/eye"
                 android:layout_width="wrap_content"

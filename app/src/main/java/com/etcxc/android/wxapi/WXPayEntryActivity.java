@@ -1,4 +1,4 @@
-package com.etcxc.android.pay.wxapi;
+package com.etcxc.android.wxapi;
 
 import android.app.Dialog;
 import android.content.Intent;

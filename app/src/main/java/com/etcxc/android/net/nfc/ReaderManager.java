@@ -50,7 +50,7 @@ public final class ReaderManager extends AsyncTask<Tag, Integer, Card> {
 	}
 
 	private Card readCard(Tag tag) {
-		 Card card = new Card();
+		Card card = new Card();
 		try {
 			publishProgress(SPEC.READING);
 			final IsoDep isodep = IsoDep.get(tag);

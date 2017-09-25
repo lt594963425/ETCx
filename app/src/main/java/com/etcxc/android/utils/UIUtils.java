@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -38,6 +39,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by 刘涛  on 2017/5/27 0027.
@@ -91,7 +94,8 @@ public class UIUtils {
         activity.overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
     }
 
-    public static void closeAnimator(Activity activity) {activity.overridePendingTransition(0,R.anim.zoom_exit);
+    public static void closeAnimator(Activity activity) {
+        activity.overridePendingTransition(0, R.anim.zoom_exit);
 
     }
 
@@ -384,6 +388,8 @@ public class UIUtils {
             String device_id = null;
             if (checkPermission(context, Manifest.permission.READ_PHONE_STATE)) {
                 device_id = tm.getDeviceId();
+
+                Log.e(TAG, "device_id1:" + device_id);
             }
             String mac = null;
             FileReader fstream = null;
@@ -417,12 +423,9 @@ public class UIUtils {
             }
             json.put("mac", mac);
             if (TextUtils.isEmpty(device_id)) {
-                device_id = mac;
-            }
-            if (TextUtils.isEmpty(device_id)) {
-                device_id = android.provider.Settings.Secure.getString(context.getContentResolver(),
-                        android.provider.Settings.Secure.ANDROID_ID);
-            } else {
+                device_id = android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+                LogUtil.e(TAG, "device_id2:" + device_id);
+            } else if(TextUtils.isEmpty(device_id)) {
                 device_id = getRandomString(15);
             }
             json.put("device_id", device_id);
@@ -432,7 +435,6 @@ public class UIUtils {
         }
         return null;
     }
-
     public static String getRandomString(int length) { //length表示生成字符串的长度
         String base = "abcdefghijklmnopqrstuvwxyz0123456789";
         Random random = new Random();

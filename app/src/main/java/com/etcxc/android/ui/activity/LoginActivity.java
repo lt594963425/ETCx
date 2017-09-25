@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -60,7 +61,7 @@ import static com.etcxc.android.utils.UIUtils.saveHistory;
  * Created by 刘涛 on 2017/6/17 0017.
  */
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity implements OnClickListener {
     private static final String LOGIN = "login";
     //登录信息操作界面
     protected final String TAG = ((Object) this).getClass().getSimpleName();
@@ -215,7 +216,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void setBarBack(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -247,19 +248,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loginRun(JSONObject jsonObject) {
-
         Log.e(TAG, jsonObject.toString());
         showProgressDialog(getString(R.string.logining));
-        Observable.create(new ObservableOnSubscribe<String>() {
+       Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkHttpUtils
-                        .postString()
-                        .content(jsonObject.toString())
-                        .url(HOST + LOGIN_PWD)
-                        .tag(LOGIN)
-                        .mediaType(NetConfig.JSON)
-                        .build().execute().body().string());
+                e.onNext(
+                        OkHttpUtils
+                                .postString()
+                                .content(jsonObject.toString())
+                                .url(HOST + LOGIN_PWD)
+                                .tag(LOGIN)
+                                .mediaType(NetConfig.JSON)
+                                .build().execute().body().string()
+                );
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -290,10 +292,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         Log.e(TAG, "++++++++++++++登录失败+2++++++++++++++", throwable);
                     }
                 });
+
     }
 
 
     private void successResult(JSONObject jsonObject) throws JSONException {
+        closeProgressDialog();
         Log.e(TAG, "登录成功" + jsonObject);
         JSONObject varJson = jsonObject.getJSONObject("var");
         String token = varJson.getString("token");
@@ -318,35 +322,37 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         MeManager.setPWD(pwd);
         ToastUtils.showToast(R.string.login_success);
         onProfileSignIn("mLoginPhone");//帐号登录统计
-        closeProgressDialog();
         openActivity(MainActivity.class);
     }
 
     private void errorResult(JSONObject jsonObject) throws JSONException {
-        Log.e(TAG, "++++++++++++++登录失败++3+++++++++++++");
+        closeProgressDialog();
         String returnMsg = jsonObject.getString("message");//返回的信息
-        if (returnMsg.equals("telphone_unregistered")) {
-            closeProgressDialog();
-            ToastUtils.showToast(R.string.telphoneunregistered);
-        } else if (returnMsg.equals("verifycode error")) {
-            mVerfiyToken = jsonObject.getString("token");
-            PublicSPUtil.getInstance().putString("verfiy_token", mVerfiyToken);
-            jsonObject.put("token", mVerfiyToken);
-            Log.e(TAG, "mVerfiyToken:" + mVerfiyToken);
-            requstVerfiyCode(mVerfiyToken);
-            mPictureCodeLayout.setVisibility(View.VISIBLE);
-            closeProgressDialog();
-            ToastUtils.showToast(R.string.input_pwd_ismore);
-            isShowPictureCode = true;
-        } else if (returnMsg.equals("err_password")) {
-            closeProgressDialog();
-            ToastUtils.showToast(R.string.passworderr);//
-        } else if (returnMsg.equals("err_captcha")) {
-            closeProgressDialog();
-            ToastUtils.showToast(R.string.err_captcha);
-        } else {
-            closeProgressDialog();
-            ToastUtils.showToast(R.string.tel_and_pwd_err);
+        switch (returnMsg) {
+            case "telphone_unregistered":
+                ToastUtils.showToast(R.string.telphoneunregistered);
+                break;
+            case "verifycode error":
+                mVerfiyToken = jsonObject.getString("token");
+                PublicSPUtil.getInstance().putString("verfiy_token", mVerfiyToken);
+                jsonObject.put("token", mVerfiyToken);
+                Log.e(TAG, "mVerfiyToken:" + mVerfiyToken);
+                requstVerfiyCode(mVerfiyToken);
+                mPictureCodeLayout.setVisibility(View.VISIBLE);
+
+                ToastUtils.showToast(R.string.input_pwd_ismore);
+                isShowPictureCode = true;
+                break;
+            case "err_password":
+                ToastUtils.showToast(R.string.passworderr);//
+
+                break;
+            case "err_captcha":
+                ToastUtils.showToast(R.string.err_captcha);
+                break;
+            default:
+                ToastUtils.showToast(R.string.tel_and_pwd_err);
+                break;
         }
     }
 
@@ -396,12 +402,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         v.clearAnimation();
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         isShowPictureCode = false;
-        OkHttpUtils.cancelTag(LOGIN);
+        OkHttpUtils.cancelTag(this);
+
     }
 }

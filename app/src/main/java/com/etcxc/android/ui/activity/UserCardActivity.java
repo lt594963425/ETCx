@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,16 +21,23 @@ import android.widget.LinearLayout;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.ui.adapter.UserTabAdapter;
-import com.etcxc.android.ui.fragment.FragmenTotal;
+import com.etcxc.android.ui.fragment.FragmentTotal;
 import com.etcxc.android.ui.fragment.FragmentActiva;
 import com.etcxc.android.ui.fragment.FragmentCanceled;
 import com.etcxc.android.ui.fragment.FragmentInUse;
 import com.etcxc.android.ui.fragment.FragmentReport;
 import com.etcxc.android.ui.view.MaterialSearchView;
-import com.etcxc.android.utils.Md5Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.utils.UIUtils.closeAnimator;
 
@@ -39,20 +47,21 @@ import static com.etcxc.android.utils.UIUtils.closeAnimator;
  * Created by LiuTao on 2017/8/26 0026.
  */
 
-public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSelectedListener{
+public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
     private static final String TAG = "UserCardActivity";
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private MaterialSearchView mSearchView;
     private List<Pair<String, Fragment>> mItems;
-    public  ArrayList<String> mDatas;
+    public ArrayList<String> mDatas;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_etc_card);
         initView();
-        initData();
         init();
     }
 
@@ -62,30 +71,41 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         setBarBack(mToolbar);
         mTabLayout = (TabLayout) findViewById(R.id.user_card_tab);
         mViewPager = (ViewPager) findViewById(R.id.user_card_viewpager);
-    }
 
-    private void initData() {
-        mDatas = new ArrayList<>();
-        for (int i = 1; i < 20; i++) {
-            mDatas.add(Md5Utils.encryptpwd(String.valueOf(i)));
-        }
 
     }
+
 
     private void init() {
-        mItems = new ArrayList<>();
-        mItems.add(new Pair<>(getString(R.string.card_total),   new FragmenTotal(mDatas)));
-        mItems.add(new Pair<>(getString(R.string.card_inUser), new FragmentInUse(mDatas)));
-        mItems.add(new Pair<>(getString(R.string.card_activa), new FragmentActiva(mDatas)));
-        mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport(mDatas)));
-        mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled(mDatas)));
-        mViewPager.setAdapter(new UserTabAdapter(getSupportFragmentManager(), mItems));
-        mViewPager.setOffscreenPageLimit(5);
-        setupTabLayout();
-        setupSearch();
 
+        Observable.create(new ObservableOnSubscribe<List<String>>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<List<String>> e) throws Exception {
+                mDatas = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    mDatas.add(i,String.valueOf(i));
+                    Log.e(TAG,mDatas.size()+"");
+                }
+                e.onNext(mDatas);
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<String>>() {
+            @Override
+            public void accept(@NonNull List<String> string) throws Exception {
+                mItems = new ArrayList<>();
+                mItems.add(new Pair<>(getString(R.string.card_total), new FragmentTotal(string)));
+                mItems.add(new Pair<>(getString(R.string.card_inUser), new FragmentInUse(string)));
+                mItems.add(new Pair<>(getString(R.string.card_activa), new FragmentActiva(string)));
+                mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport(string)));
+                mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled(string)));
+                mViewPager.setAdapter(new UserTabAdapter(getSupportFragmentManager(), mItems));
+                mViewPager.setOffscreenPageLimit(5);
+                setupTabLayout();
+                setupSearch();
+
+            }
+        });
     }
-
     private void setupTabLayout() {
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -93,7 +113,7 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         LinearLayout linearLayout = (LinearLayout) mTabLayout.getChildAt(0);
         linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         linearLayout.setDividerPadding(6);
-        linearLayout.setPadding(0,6,0,6);
+        linearLayout.setPadding(0, 6, 0, 6);
         linearLayout.setDividerDrawable(ContextCompat.getDrawable(this,
                 R.drawable.layout_divider_vertical));
     }
@@ -119,7 +139,7 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
             }
         });
 
-        mSearchView .setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+        mSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
                 //Do some magic
@@ -156,18 +176,21 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_user_card,menu);
+        getMenuInflater().inflate(R.menu.menu_user_card, menu);
         MenuItem search = menu.findItem(R.id.item_search);//搜索
         mSearchView.setMenuItem(search);
 
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onBackPressed() {
         if (mSearchView.isSearchOpen()) {
@@ -176,6 +199,7 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
             super.onBackPressed();
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == MaterialSearchView.REQUEST_VOICE && resultCode == RESULT_OK) {
@@ -192,4 +216,6 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
 }

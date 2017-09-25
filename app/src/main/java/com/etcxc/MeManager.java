@@ -9,7 +9,6 @@ import com.etcxc.android.modle.sp.PublicSPUtil;
  * 记录个人相关的数据，包括登录后的各种信息(init配置)
  */
 public class MeManager {
-    private static final String TAG = "MeManager";
     public static final String KEY_Sid = "me_sid";
     public static final String KEY_Uid = "me_uid";
     public static final String KEY_Name = "me_name";

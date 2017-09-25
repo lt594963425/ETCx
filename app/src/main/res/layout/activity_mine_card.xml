@@ -9,7 +9,7 @@
         android:id="@+id/onlian_apply_schedule_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview"
+        android:background="@drawable/bg_item_view"
         android:descendantFocusability="blocksDescendants">
         <TextView
             android:layout_width="wrap_content"
@@ -38,7 +38,7 @@
         android:id="@+id/etc_card_status_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview"
+        android:background="@drawable/bg_item_view"
         android:descendantFocusability="blocksDescendants">
         <TextView
             android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
         android:id="@+id/binding_card_toright"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview"
+        android:background="@drawable/bg_item_view"
         android:descendantFocusability="blocksDescendants">
         <TextView
             android:layout_width="wrap_content"

@@ -28,32 +28,32 @@
             app:tabSelectedTextColor="@color/colorOrange"
             app:tabTextAppearance="@style/TabLayoutTextStyle" />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/user_card_viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            <android.support.v4.view.ViewPager
+                android:id="@+id/user_card_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/toolbar_container"
+    <FrameLayout
+        android:id="@+id/toolbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/user_card_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:navigationIcon="@drawable/vd_return"
+            app:theme="@style/toolbar_theme"
+            app:titleTextColor="@color/colorOrange" />
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/user_card_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/white"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:navigationIcon="@drawable/vd_return"
-                app:theme="@style/toolbar_theme"
-                app:titleTextColor="@color/colorOrange" />
+        <com.etcxc.android.ui.view.MaterialSearchView
+            android:id="@+id/search_view"
 
-            <com.etcxc.android.ui.view.MaterialSearchView
-                android:id="@+id/search_view"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </FrameLayout>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 </FrameLayout>

@@ -25,18 +25,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 卡操作封装
- */
-public class StandardPboc {
+public abstract class StandardPboc {
     //卡MF目录，一级目录
+
     private final static byte[] DFI_MF = {(byte) 0x3F, (byte) 0x00};
     //卡DF目录，即EP钱包所在的目录，主应用目录
     private final static byte[] DFI_EP = {(byte) 0x10, (byte) 0x01};
 
-    /**
-     *读卡
-     */
     public static Card readCard(IsoDep tech) throws InstantiationException,
             IllegalAccessException, IOException {
         final StdTag tag = new StdTag(tech);
@@ -76,7 +71,6 @@ public class StandardPboc {
                 n -= 0x80000000;
             ret = n / 100.0f;
         }
-        card.blance = String.valueOf(ret);
         return ret;
     }
 

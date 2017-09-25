@@ -38,6 +38,7 @@ import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LoadImageHeapler;
+import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
@@ -75,7 +76,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private Handler mHandler = new Handler();
     private ColorCircle mUpdateDot;
     /*头像名称*/
-    private String CROP_HEAD = "user_crop.jpg";//
+    private String CROP_HEAD ;//
     private Uri resultUri;
 
     @Override
@@ -135,6 +136,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             if (MeManager.getIsLogin()) {
 
                 mExit.setVisibility(View.VISIBLE);
+                Log.e(TAG,MeManager.getName());
                 mMineUserName.setText(MeManager.getName());
                 initUserInfo();
             } else {
@@ -208,7 +210,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     public void initUserInfo() {
-        CROP_HEAD =  MeManager.getUid().substring(0,8)+"_crop.jpg";
+        CROP_HEAD =  MeManager.getToken()+"_crop.jpg";
         if (NetConfig.isAvailable()) {
             LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), CROP_HEAD);
             headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
@@ -274,7 +276,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                         .build()
                         .execute().body().string());
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
             @Override
             public void accept(@NonNull String s) throws Exception {
                 Log.e(TAG, s);
@@ -293,8 +296,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     if (msg.equals(NetConfig.ERROR_TOKEN)) {
                         MeManager.setIsLgon(false);
                         openActivityForResult(LoginActivity.class, REQUST_CODE);
-                    } else
-                        ToastUtils.showToast(R.string.request_failed);
+                    }if(msg.equals("auth failed")){
+                        MeManager.setIsLgon(false);
+                    }
+
                 }
 
             }
@@ -330,6 +335,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
                 requestLoginOut();
                 dialog.dismiss();
+
             }
         });
     }
@@ -354,6 +360,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onResume() {
+        LogUtil.e(TAG,"onResume");
         MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();
     }

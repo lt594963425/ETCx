@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 import okhttp3.Response;
 
 /**
- * * Created by 刘涛
+ * * Created by LiuTao
  */
 
 public abstract class BitmapCallback extends Callback<Bitmap> {

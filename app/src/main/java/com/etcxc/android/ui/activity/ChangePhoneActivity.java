@@ -15,6 +15,7 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.utils.LogUtil;
@@ -33,7 +34,6 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
-import static com.etcxc.android.net.FUNC.SMSREPORT;
 import static com.etcxc.android.net.FUNC.TELCHANGE;
 import static com.etcxc.android.net.NetConfig.HOST;
 import static com.etcxc.android.net.NetConfig.JSON;
@@ -41,6 +41,7 @@ import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 
 /**
+ * 改手机号码
  * Created by 刘涛 on 2017/7/4 0004.
  */
 
@@ -52,9 +53,10 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
     private ImageView mNewPhoneDle;
 
     private String smsCode;//验证码
-    private String mPhoneNum;//输入的验证码
+    private String mPhoneNum;
     private String mNewPhone;
     private String mSMSID;
+    private String CP_SMS_COUNT_DOWN = "timeChPh";
 
 
     @Override
@@ -79,8 +81,8 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
 
         mNewPhoneEdt.addTextChangedListener(new mTextWatcher(mNewPhoneEdt, mNewPhoneDle));
         initAutoComplete("history", mNewPhoneEdt);
-        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeChPh", 0));
-        if (timeDef > 0) new TimeCount(mNewCaptchaEdt, timeDef, 1000).start();
+        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong(CP_SMS_COUNT_DOWN, 0));
+        if (timeDef > 0) new TimeCount(mGetCaptcha, timeDef, 1000).start();
 
     }
 
@@ -100,7 +102,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                 } else if (mPhoneNum.equals(MeManager.getUid())) {
                     ToastUtils.showToast(R.string.phone_issame);
                 } else {
-                    getSmsCode(SMSREPORT);
+                    getSmsCode(FUNC.SMSREPORT);
                 }
                 break;
             case R.id.save_phone_button://保存
@@ -133,13 +135,15 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 jsonObject.put("tel", mPhoneNum);
-                e.onNext(OkHttpUtils
-                        .postString()
-                        .url(url)
-                        .content(String.valueOf(jsonObject))
-                        .mediaType(JSON)
-                        .build()
-                        .execute().body().string());
+                e.onNext(
+                        OkHttpUtils
+                                .postString()
+                                .url(NetConfig.HOST + url)
+                                .content(String.valueOf(jsonObject))
+                                .mediaType(JSON)
+                                .build()
+                                .execute().body().string());
+
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
@@ -149,13 +153,13 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                         try {
                             JSONObject object = new JSONObject(s);
                             String code = object.getString("code");
-                            Log.e(TAG, s);
+
                             if (code.equals("s_ok")) {
                                 mSMSID = object.getString("sms_id");
-                                PublicSPUtil.getInstance().putString("pr_sms_id", mSMSID);
+
                                 ToastUtils.showToast(R.string.send_success);
                                 UIUtils.saveHistory("history", mPhoneNum);
-                                PublicSPUtil.getInstance().putLong("timeChPh", System.currentTimeMillis());
+                                PublicSPUtil.getInstance().putLong(CP_SMS_COUNT_DOWN, System.currentTimeMillis());
                                 new TimeCount(mGetCaptcha, 60000, 1000).start();
                             }
                             if (code.equals("error")) {
@@ -166,12 +170,12 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                                     finish();
                                 } else
                                     ToastUtils.showToast(R.string.unregist);
-                                return;
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                             ToastUtils.showToast(R.string.request_failed);
-                            return;
+
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -200,7 +204,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                 Log.e(TAG, params.toString());
                 e.onNext(OkHttpUtils
                         .postString()
-                        .url(HOST+TELCHANGE)
+                        .url(HOST + TELCHANGE)
                         .content(String.valueOf(params))
                         .mediaType(JSON)
                         .build()

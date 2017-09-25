@@ -10,7 +10,7 @@ import com.etcxc.android.BuildConfig;
  */
 public class PrivateUriField {
     /**
-     * /provider权限，与AndroidManifest.xml中的provider中的配置一致
+     * /provider权限，与AndroidManifest.xml中的provider中的配置一致 authority
      */
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".private";
 

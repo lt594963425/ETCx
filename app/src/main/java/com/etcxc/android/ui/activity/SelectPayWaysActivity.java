@@ -237,6 +237,7 @@ public class SelectPayWaysActivity extends BaseActivity implements View.OnClickL
                         closeProgressDialog();
                         PayResult payResult = null;
                         try {
+
                             payResult = new PayResult((Map<String, String>) o);
                         } catch (Exception e) {
                             e.printStackTrace();

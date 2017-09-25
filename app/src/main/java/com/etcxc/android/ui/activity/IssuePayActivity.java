@@ -165,7 +165,8 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-
+                        ToastUtils.showToast(R.string.pay_faid);
+                        closeProgressDialog();
                     }
                 });
     }

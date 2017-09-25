@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +71,7 @@ import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.net.NetConfig.HOST;
 import static com.etcxc.android.net.NetConfig.JSON;
 import static com.etcxc.android.utils.FileUtils.getCachePath;
+import static com.etcxc.android.utils.UIUtils.closeAnimator;
 
 /**
  * 个人信息界面（通过登录界面拆分）
@@ -88,8 +88,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private Button mExitLogin;
     private TextView mUserName, mUserPhone, mUserSex;
     private CircleImageView mUserHead;
-    private String IMAGE_HEAD = MeManager.getUid().substring(0, 8) + "_head.jpg";
-    private String CROP_HEAD =  MeManager.getUid().substring(0, 8) + "_crop.jpg" ;
+    private String IMAGE_HEAD = MeManager.getToken() + "_head.jpg";
+    private String CROP_HEAD =  MeManager.getToken() + "_crop.jpg" ;
     private Bitmap upBitmap;
 
     @Override
@@ -98,6 +98,12 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         setContentView(R.layout.activity_personalinfo);
         EventBus.getDefault().register(this);
         initUserInfoView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setstatus();
     }
 
     private void initUserInfoView() {
@@ -119,23 +125,10 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         mUserName = find(R.id.user_name);
         mUserPhone = find(R.id.user_phone);
         mUserSex = find(R.id.user_sex);
-
         mExitLogin = find(R.id.exit_login_btn);
-
-
         mExitLogin.setOnClickListener(this);
         mToolbar2.setOnMenuItemClickListener(this);
         mUserHead.setOnClickListener(this);
-        mUserHead.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                File file = new File(FileUtils.getCachePath(PersonalInfoActivity.this), CROP_HEAD);
-                if (file.exists())
-                    uri = Uri.fromFile(file);
-                FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
-                return false;
-            }
-        });
         setstatus();
     }
 
@@ -143,7 +136,10 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_head:
-                show2Dialog();
+                File file = new File(FileUtils.getCachePath(PersonalInfoActivity.this), CROP_HEAD);
+                if (file.exists())
+                    uri = Uri.fromFile(file);
+                FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
                 break;
             case R.id.info_head_layout:
                 show2Dialog();
@@ -155,25 +151,29 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 openActivity(ChangePhoneActivity.class);
                 break;
             case R.id.info_sex_layout:
-                View view = LayoutInflater.from(this).inflate(R.layout.select_sex, null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setView(view);
-                Dialog dialog = builder.show();
-                view.findViewById(R.id.select_confirm).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (((RadioButton) view.findViewById(R.id.select_man)).isChecked()) {
-                            mUserSex.setText("男");
-                        } else mUserSex.setText("女");
-                        dialog.dismiss();
-                    }
-                });
-
+                modifySex();
                 break;
             case R.id.exit_login_btn://退出登录
                 requestLoginOut();
                 break;
         }
+    }
+
+
+    private void modifySex() {
+        View view = LayoutInflater.from(this).inflate(R.layout.select_sex, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        Dialog dialog = builder.show();
+        view.findViewById(R.id.select_confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((RadioButton) view.findViewById(R.id.select_man)).isChecked()) {
+                    mUserSex.setText("男");
+                } else mUserSex.setText("女");
+                dialog.dismiss();
+            }
+        });
     }
 
     private void setBarBack(Toolbar toolbar) {
@@ -183,6 +183,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             @Override
             public void onClick(View view) {
                 finish();
+                closeAnimator(PersonalInfoActivity.this);
             }
         });
     }
@@ -210,7 +211,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 });
             } else {
                 if (cropExists(CROP_HEAD)) {
-                    setImageFromUri(mUserHead, Uri.fromFile(new File(FileUtils.getCachePath(this) + File.separator + CROP_HEAD)));
+                    Bitmap bitmap = BitmapFactory.decodeFile(new File(getCachePath(this), CROP_HEAD).getAbsolutePath());
+                    mUserHead.setImageBitmap(bitmap);
                 }
                 mUserName.setText(MeManager.getName());
                 mUserPhone.setText(MeManager.getPhone());
@@ -269,7 +271,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         }
         if (requestCode == REQUEST_CODE_ALBUM && data != null) {//相册
             if (data == null) return;
-            File file1 = new File(FileUtils.getCachePath(this), CROP_HEAD);
+            File file1 = new File(FileUtils.getCachePath(this), IMAGE_HEAD);
             if (file1.exists()) file1.delete();
             try {
                 boolean success = file1.createNewFile();
@@ -280,7 +282,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             }
 
         } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {//相机
-            File file = new File(FileUtils.getCachePath(this), CROP_HEAD);
+            File file = new File(FileUtils.getCachePath(this), IMAGE_HEAD);
             if (file.exists())
                 file.delete();
             try {
@@ -293,16 +295,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             updateHeadToServer(data);
         }
     }
-
-    private void setImageFromUri(ImageView imageView, Uri uri) {
-        if (imageView == null || uri == null) return;
-        try {
-            imageView.setImageBitmap(loadBitmap(uri));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     //reduce
     private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
         BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -473,13 +465,14 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
-                File file = new File(getCachePath(PersonalInfoActivity.this), CROP_HEAD);
+                File file = new File(getCachePath(PersonalInfoActivity.this), IMAGE_HEAD);
+                Log.e(TAG, "file的大小："+String.valueOf(file.length()));
                 Map<String, String> params = new HashMap<>();
                 params.put("uid", MeManager.getUid());
                 params.put("token", MeManager.getToken());
                 e.onNext(OkHttpUtils
                         .post()
-                        .addFile("image[]", CROP_HEAD, file)
+                        .addFile("image[]", IMAGE_HEAD, file)
                         .url(HOST + HEAD_CHANGE)
                         .params(params)
                         .build().execute().body().string());
@@ -488,13 +481,13 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
-                        Log.e(TAG, "修改头像:" + s);
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
                         if (code.equals("s_ok")) {
                             closeProgressDialog();
                             ToastUtils.showToast(R.string.change_head_success);
                             mUserHead.setImageBitmap(upBitmap);
+                            FileUtils.saveToSDCard(CROP_HEAD,upBitmap); //比较小
 
                         }
                         if (code.equals("error")) {

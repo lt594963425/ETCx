@@ -85,7 +85,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     private Boolean isShowLeadPager = true;//是否显示过充值提示引导页面
     private Handler mHandler = null;
     public static final String RESP_CODE_INFO = "com.etcxc.android.ui.activity.ETCRechargeActivity.code";
-
+      private String SP_ADD＿CARD＿HISTORY ="cardhistory";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +107,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         mRechaergeAddDetailBtn = find(R.id.recharge_add_detail_btn); //添加
         mRechaergePrepaidRecyler = find(R.id.prepaid_recharge_recylerview); //待支付的订单列表
         setPricePoint(mRechaergeMoneyEdt);
-        initAutoCompleteCard("cardhistory", mRechaergeCardEdt);
+        initAutoCompleteCard(SP_ADD＿CARD＿HISTORY, mRechaergeCardEdt);
         init();
     }
 
@@ -370,7 +370,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
                 }
                 //总数
                 mRechaergeTotalMoney.setText(df.format(allMoney) + App.get().getString(R.string.yuan));
-                saveCardHistory("cardhistory", mRechargeCardNumber);
+                saveCardHistory(SP_ADD＿CARD＿HISTORY, mRechargeCardNumber);
 
             }
             if (code.equals("err")) {

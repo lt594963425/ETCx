@@ -142,7 +142,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     public void onBackPressed() {
         finish();
-        overridePendingTransition(0,R.anim.zoom_exit);
+        closeAnimator(this);
     }
 
     protected void initState() {
@@ -203,5 +203,9 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (mXToolbar != null) mXToolbar.setVisibility(View.GONE);
     }
 
-
+    @Override
+    public void finish() {
+        super.finish();
+        closeAnimator(this);
+    }
 }

@@ -10,9 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * * Created by 刘涛
- */
+
 public class GetBuilder extends OkHttpRequestBuilder<GetBuilder> implements HasParamsable
 {
     @Override

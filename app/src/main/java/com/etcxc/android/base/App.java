@@ -30,14 +30,13 @@ public class App extends Application {
     private static App sInstance = null;
     public static IWXAPI WXapi;
 
-    public App() {
+    private App() {
         sInstance = this;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         //HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10000L, TimeUnit.MILLISECONDS)

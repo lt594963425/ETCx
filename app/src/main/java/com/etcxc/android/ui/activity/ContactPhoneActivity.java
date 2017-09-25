@@ -47,7 +47,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
     private String mSmsId;
     private Button mGetVerifyCodeButton;
     private ImageView mDeleteImageView;
-
+    private String CONTACT_SMS_COUNT_DOWN = "timeContact";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +81,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 mDeleteImageView.setVisibility(TextUtils.isEmpty(s.toString()) ? View.GONE : View.VISIBLE);
             }
         });
-        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeContact", 0));
+        long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong(CONTACT_SMS_COUNT_DOWN, 0));
         if (timeDef > 0) new TimeCount(mGetVerifyCodeButton, timeDef, 1000).start();
 
     }
@@ -136,7 +136,7 @@ public class ContactPhoneActivity extends BaseActivity implements View.OnClickLi
                 if ("s_ok".equals(code)) {
                     mSmsId = jsonObject.getString("sms_id");
                     saveHistory("history", tel);
-                    PublicSPUtil.getInstance().putLong("timeContact", System.currentTimeMillis());
+                    PublicSPUtil.getInstance().putLong(CONTACT_SMS_COUNT_DOWN, System.currentTimeMillis());
                     new TimeCount(mGetVerifyCodeButton, 60000, 1000).start();
                 } else ToastUtils.showToast(R.string.request_failed);
             }

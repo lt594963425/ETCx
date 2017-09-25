@@ -50,7 +50,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private Spinner mCardColorSpinner;
 
     private String mCarColor;
-
+   private String IS_ORGAN ="isOrg";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,7 +137,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             Intent intent = new Intent(ETCIssueActivity.this, UploadLicenseActivity.class);
                             PublicSPUtil.getInstance().putString("carCard", mCarCardEdit.getText().toString());
                             PublicSPUtil.getInstance().putString("carCardColor", mCarColor);
-                            intent.putExtra("isOrg", !mPersonalRadiobutton.isChecked());
+                            intent.putExtra(IS_ORGAN, !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
                             openAnimator(ETCIssueActivity.this);
                         } else if ("error".equals("error")){

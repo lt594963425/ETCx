@@ -12,9 +12,11 @@ public class WxPayRecharge {
     private String packageValue;// 固定值Sign=WXPay，可以直接写死，服务器返回的也是这个固定值
     private String timeStamp;// 时间戳，app服务器鑫哥给出
     private String sign;  //// 签名，服务器鑫哥给出
+
     public String getAppid() {
         return appid;
     }
+
     public void setAppid(String appid) {
         this.appid = appid;
     }

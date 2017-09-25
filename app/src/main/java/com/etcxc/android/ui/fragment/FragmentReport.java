@@ -24,9 +24,7 @@ public class FragmentReport extends BaseFragment implements RxCardStackView.Item
     private RxCardStackView mStackView;
     private CardAdapterStack mCardStackAdapter;
     private List<String> mDatas ;
-    public FragmentReport(ArrayList<String> mDatas) {
-        this.mDatas = mDatas;
-    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -34,7 +32,11 @@ public class FragmentReport extends BaseFragment implements RxCardStackView.Item
         initView(view);
         return view;
     }
-
+    public FragmentReport(){}
+    public FragmentReport(List<String> datas) {
+        mDatas= new ArrayList<>();
+        mDatas.addAll(datas);
+    }
     private void initView(View view) {
         mStackView = (RxCardStackView) view.findViewById(R.id.card_stack_view);
         mStackView.setItemExpendListener(this);
@@ -45,6 +47,7 @@ public class FragmentReport extends BaseFragment implements RxCardStackView.Item
                     @Override
                     public void run() {
                         mCardStackAdapter.updateData(mDatas);
+                        mCardStackAdapter.notifyDataSetChanged();
                     }
                 }
                 , 200

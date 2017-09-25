@@ -8,8 +8,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TabHost;
@@ -115,7 +115,6 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
     }
-
     @Override
     public void onPageSelected(int position) {
         TabWidget widget = mTabHost.getTabWidget();
@@ -151,11 +150,19 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
     private void startRoationAnim(int position) {
-        ImageView iv = (ImageView) mTabHost.getTabWidget().getChildTabViewAt(position).findViewById(R.id.tab_imageview);
-        Animation anim = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        ImageView iv = (ImageView) mTabHost
+                .getTabWidget()
+                .getChildTabViewAt(position)
+                .findViewById(R.id.tab_imageview);
+        Animation anim = new RotateAnimation(
+                0f, 360f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
         anim.setFillAfter(true);
-        anim.setDuration(300);
-        anim.setInterpolator(new AccelerateInterpolator());
+        anim.setRepeatCount(1);
+        anim.setFillAfter(true);
+        anim.setDuration(250);
+        anim.setInterpolator(new LinearInterpolator());
         iv.startAnimation(anim);
     }
 

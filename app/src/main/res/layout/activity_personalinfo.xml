@@ -25,7 +25,7 @@
             android:id="@+id/info_head_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_listview"
+            android:background="@drawable/bg_item_view"
             android:clickable="true"
             android:descendantFocusability="blocksDescendants"
             android:gravity="center"
@@ -63,7 +63,7 @@
             android:id="@+id/info_name_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/bg_listview"
+            android:background="@drawable/bg_item_view"
             android:clickable="true"
             android:descendantFocusability="blocksDescendants"
             android:paddingTop="2dp">
@@ -99,7 +99,7 @@
             android:id="@+id/info_phone_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/bg_listview"
+            android:background="@drawable/bg_item_view"
             android:clickable="true"
             android:descendantFocusability="blocksDescendants"
             android:paddingTop="2dp">
@@ -136,7 +136,7 @@
             android:id="@+id/info_sex_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/bg_listview"
+            android:background="@drawable/bg_item_view"
             android:clickable="true"
             android:descendantFocusability="blocksDescendants"
             android:paddingTop="2dp">

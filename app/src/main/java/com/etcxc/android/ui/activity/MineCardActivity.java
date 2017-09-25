@@ -31,7 +31,6 @@ public class MineCardActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.onlian_apply_schedule_toright:
-
                 break;
             case R.id.etc_card_status_toright:
                 openActivity(UserCardActivity.class);

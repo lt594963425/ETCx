@@ -107,7 +107,6 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 Looper.loop();
             }
         }).start();
-
         saveCatchInfo2File(ex);
         return true;
     }
@@ -190,7 +189,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             FileOutputStream fos = new FileOutputStream(path + fileName);
             fos.write(sb.toString().getBytes());
             //发送给开发人员
-            sendCrashLog2PM(path+fileName);
+            sendCrashLog2PM(path + fileName);
             fos.close();
         }
         return fileName;
@@ -198,11 +197,11 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     /**
      * 将捕获的导致崩溃的错误信息发送给开发人员
-     *
+     * <p>
      * 目前只将log日志保存在sdcard 和输出到LogCat中，并未发送给后台。
      */
     private void sendCrashLog2PM(String fileName) {
-        if(!new File(fileName).exists()){
+        if (!new File(fileName).exists()) {
             Toast.makeText(mContext, "日志文件不存在！", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -212,17 +211,17 @@ public class CrashHandler implements UncaughtExceptionHandler {
         try {
             fis = new FileInputStream(fileName);
             reader = new BufferedReader(new InputStreamReader(fis, "GBK"));
-            while(true){
+            while (true) {
                 s = reader.readLine();
-                if(s == null) break;
+                if (s == null) break;
                 //由于尚未确定以何种方式发送，所以先打出log日志。
-                Log.e(TAG,"info:"+s.toString());
+                Log.e(TAG, "info:" + s.toString());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally{   // 关闭流
+        } finally {   // 关闭流
             try {
                 reader.close();
                 fis.close();

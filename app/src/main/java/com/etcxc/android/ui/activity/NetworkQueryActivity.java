@@ -1,8 +1,10 @@
 package com.etcxc.android.ui.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -85,12 +87,13 @@ public class NetworkQueryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network_query);
         initView();
+        initData();
 
     }
 
-    private void initView() {
-        getLocation(this);
+    private void initData() {
         showProgressDialog(getString(R.string.loading));
+        getLocation(this);
         if (NetConfig.isAvailable()) {//网络是否可用
             getNetwork();
         } else {
@@ -100,6 +103,10 @@ public class NetworkQueryActivity extends BaseActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void initView() {
+
         setTitle(getString(R.string.website_check));
         mXrecycler = (XRecyclerView) findViewById(R.id.xrecycler);
     }
@@ -186,11 +193,9 @@ public class NetworkQueryActivity extends BaseActivity {
             locationProvider = LocationManager.GPS_PROVIDER;
             dialog.dismiss();
         } else {
-            ToastUtils.showToast("请开启网络定位或者GPS定位...");
-            //返回开启GPS导航设置界面
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivityForResult(intent, 0);
             dialog.dismiss();
+            closeProgressDialog();
+            openGPSDlg();
             return;
         }
 
@@ -213,6 +218,39 @@ public class NetworkQueryActivity extends BaseActivity {
         } else {
             // 监视地理位置变化，第二个和第三个参数分别为更新的最短时间minTime和最短距离minDistace
             locationManager.requestLocationUpdates(locationProvider, 0, 0, mListener);
+        }
+    }
+
+    private void openGPSDlg() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("请开启网络定位或者GPS定位");
+        builder.setTitle("提示");
+        builder.setCancelable(false);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                //返回开启GPS导航设置界面
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivityForResult(intent, 0);
+
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                return;
+            }
+        });
+        builder.create().show();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 0:
+                initData();
+                break;
         }
     }
 

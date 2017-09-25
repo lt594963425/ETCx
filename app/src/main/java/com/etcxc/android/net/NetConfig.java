@@ -19,8 +19,7 @@ import okhttp3.MediaType;
 
 public class NetConfig {
     public static final String HTTP_PREFIX = "http://";
-    public static final MediaType JSON
-            = MediaType.parse("text/x-json;charset=UTF-8");
+    public static final MediaType JSON = MediaType.parse("text/x-json;charset=UTF-8");
     /**
      * 错误提示
      */
@@ -32,6 +31,7 @@ public class NetConfig {
 
     public static final String CODE_FA_INVALID_SESSION = "FA_INVALID_SESSION";
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
+
     //    public final static String HOST = "http://192.168.6.58";
     //    public final static String HOST = "http://192.168.6.50:8080";
     //    public final static String HOST = "http://46080450.nat123.net";

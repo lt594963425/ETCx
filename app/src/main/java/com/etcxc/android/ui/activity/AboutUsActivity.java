@@ -1,10 +1,7 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -73,7 +70,8 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
             mUpdateDot.setVisibility(View.VISIBLE);
     }
 
-    @Override
+
+
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.about_us_check_update:
@@ -106,17 +104,24 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
 
     /**
      * 支付宝
+     *
      * @param strURL
      */
     private void aliPay(String strURL) {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
-                String orderInfo = OkClient.get(strURL, new JSONObject());
-                orderInfo = orderInfo.replace("amp;", "");
-                PayTask payTask = new PayTask(AboutUsActivity.this);
-                Map<String, String> result = payTask.payV2(orderInfo, true);
-                e.onNext(result);
+                String orderInfo = null;
+                try {
+                    orderInfo = OkClient.get(strURL, new JSONObject());
+                    orderInfo = orderInfo.replace("amp;", "");
+                    PayTask payTask = new PayTask(AboutUsActivity.this);
+                    Map<String, String> result = payTask.payV2(orderInfo, true);
+                    e.onNext(result);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+
             }
         }).compose(RxUtil.activityLifecycle(this))
                 .compose(RxUtil.io())

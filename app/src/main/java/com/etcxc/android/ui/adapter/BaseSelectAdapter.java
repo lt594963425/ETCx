@@ -12,7 +12,6 @@ public abstract class BaseSelectAdapter extends RecyclerView.Adapter<BaseSelectA
 
     private OnItemClickListener mOnItemClickListener = null;
     private View mView;
-
     //获取数据的数量
     @Override
     public abstract int getItemCount();

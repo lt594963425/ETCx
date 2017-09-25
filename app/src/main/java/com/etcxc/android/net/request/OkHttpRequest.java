@@ -9,9 +9,6 @@ import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-/**
- * Created by zhy on 15/11/6.
- */
 public abstract class OkHttpRequest
 {
     protected String url;

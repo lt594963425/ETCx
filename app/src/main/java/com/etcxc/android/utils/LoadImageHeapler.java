@@ -2,12 +2,10 @@ package com.etcxc.android.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.LruCache;
@@ -16,7 +14,6 @@ import android.util.Log;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.net.callback.BitmapCallback;
@@ -25,9 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -110,13 +104,13 @@ public class LoadImageHeapler {
                         Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
                         listener.loadImage(bmp);
                     }
-
                     @Override
-                    public void onResponse(Bitmap response, int id) {
-                        if (response != null) {
-                            listener.loadImage(response);
-                            saveToCache(dirName, response);
-                            saveToSDCard(dirName, response);
+                    public void onResponse(Bitmap bitmap, int id) {
+                        if (bitmap != null) {
+                            Log.e(TAG,"当前线程："+Thread.currentThread().getName());
+                            listener.loadImage(bitmap);
+                            saveToCache(dirName, bitmap);
+                            FileUtils.saveToSDCard(dirName, bitmap);
                         }else{
                             Bitmap bmp = getBitmapFromVectorDrawable(context, R.drawable.vd_head);
                             listener.loadImage(bmp);
@@ -157,31 +151,7 @@ public class LoadImageHeapler {
         return BitmapFactory.decodeFile(new File(getCachePath(context), key).getAbsolutePath());
     }
 
-    /**
-     * 保存bitmap
-     */
-    public void saveToSDCard(String key, Bitmap bmp) {
-        String path = getCachePath(context);
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(new File(path, key));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        File file = new File(path);
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri uri = Uri.fromFile(file);
-        intent.setData(uri);
-        App.get().sendBroadcast(intent);
-        //保存图片的设置，压缩图片
-        bmp.compress(Bitmap.CompressFormat.PNG, 50, fos);
-        try {
 
-            fos.close();//关闭流
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     /**

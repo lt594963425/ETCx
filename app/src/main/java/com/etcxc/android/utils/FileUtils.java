@@ -99,6 +99,7 @@ public class FileUtils {
         }
         return cachePath;
     }
+
     /**
      * 显示大图
      *
@@ -117,11 +118,11 @@ public class FileUtils {
         ImageView imageView = (ImageView) view.findViewById(R.id.page_item);
 
         imageView.setImageURI(uri);
-
         rxDialog.setContentView(view);
         rxDialog.show();
         rxDialog.setFullScreen();
     }
+
     /**
      * 读取缓存 返回字符串（json）
      *
@@ -191,8 +192,8 @@ public class FileUtils {
         int width = options.outWidth;  //图片的原始宽度
         int inSampleSize = 1;          //压缩比例
         if (height > reqHeight || width > reqWidth) {  //
-            int heightRatio = Math.round((float) height/ (float)reqHeight);
-            int widthRatio = Math.round((float)width /(float) reqWidth);
+            int heightRatio = Math.round((float) height / (float) reqHeight);
+            int widthRatio = Math.round((float) width / (float) reqWidth);
             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
         return inSampleSize;
@@ -218,11 +219,10 @@ public class FileUtils {
     }
 
     /**
-     * 文件的写入
-     * 传入一个文件的名称和一个Bitmap对象
-     * 最后的结果是保存一个图片
+     * 保存bitmap
      */
-    public  static  void saveToFile(String path,String key, Bitmap bmp) {
+    public static void saveToSDCard(String key, Bitmap bmp) {
+        String path = getCachePath(App.get());
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(new File(path, key));
@@ -235,9 +235,8 @@ public class FileUtils {
         intent.setData(uri);
         App.get().sendBroadcast(intent);
         //保存图片的设置，压缩图片
-        bmp.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+        bmp.compress(Bitmap.CompressFormat.PNG, 50, fos);
         try {
-
             fos.close();//关闭流
         } catch (IOException e) {
             e.printStackTrace();
@@ -393,8 +392,7 @@ public class FileUtils {
      * @param recreate 如果文件存在，是否需要删除重建
      * @return 是否写入成功
      */
-    public static boolean writeFile(InputStream is, String path,
-                                    boolean recreate) {
+    public static boolean writeFile(InputStream is, String path, boolean recreate) {
         boolean res = false;
         File f = new File(path);
         FileOutputStream fos = null;

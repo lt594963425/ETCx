@@ -37,7 +37,6 @@ public final class NfcManager {
     private static String[][] TECHS;
     private static IntentFilter[] TAG_FILTERS;
     private int mStatus;
-
     static {
         TECHS = new String[][]{{IsoDep.class.getName()}, {NfcF.class.getName()},};
         try {
@@ -64,7 +63,8 @@ public final class NfcManager {
         PendingIntent pendingIntent = PendingIntent.getActivity(mActivity, 0, new Intent(
                 mActivity, mActivity.getClass())
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if (mNfcAdapter != null) mNfcAdapter.enableForegroundDispatch(mActivity, pendingIntent, TAG_FILTERS, TECHS);
+        if (mNfcAdapter != null)
+            mNfcAdapter.enableForegroundDispatch(mActivity, pendingIntent, TAG_FILTERS, TECHS);
     }
 
     public boolean updateStatus() {
@@ -75,7 +75,6 @@ public final class NfcManager {
         }
         return false;
     }
-
     public boolean readCard(Intent intent, ReaderListener listener) {
         final Tag tag = intent.getParcelableExtra(EXTRA_TAG);
         if (tag != null) {
@@ -84,6 +83,7 @@ public final class NfcManager {
         }
         return false;
     }
+
 
     private int getStatus() {
         return (mNfcAdapter == null) ? -1 : mNfcAdapter.isEnabled() ? 1 : 0;

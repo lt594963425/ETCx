@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/bg_listview"
+        android:background="@drawable/bg_item_view"
         android:descendantFocusability="blocksDescendants">
 
         <ImageView
@@ -59,7 +59,7 @@
         android:id="@+id/load_bluetooth_box"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/bg_listview"
+        android:background="@drawable/bg_item_view"
         android:descendantFocusability="blocksDescendants">
 
         <ImageView

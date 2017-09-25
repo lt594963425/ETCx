@@ -194,13 +194,13 @@
             android:theme="@style/BG_GRAY" />
         <!-- 微信配置 -->
         <activity
-            android:name=".pay.wxapi.WXEntryActivity"
+            android:name=".wxapi.WXEntryActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop" />
         <activity android:name=".ui.activity.ShareActivity" />
         <activity
-            android:name=".pay.wxapi.WXPayEntryActivity"
+            android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop" />
         <activity android:name=".ui.activity.StoreActivity" />

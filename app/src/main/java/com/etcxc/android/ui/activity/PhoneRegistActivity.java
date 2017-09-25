@@ -42,7 +42,6 @@ import static com.etcxc.android.utils.UIUtils.saveHistory;
  * 手机短信注册页面
  * Created by 刘涛 on 2017/6/9 0009.
  */
-
 public class PhoneRegistActivity extends BaseActivity implements View.OnClickListener {
     private AutoCompleteTextView mPhoneNumberEdit;
     private EditText mSmsCodeEdit, mPswEdit;
@@ -223,16 +222,17 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                 case "sms_code_error":
                     ToastUtils.showToast(R.string.smscodeerr);
                     break;
-                case "telphone_unregistered":
-                    ToastUtils.showToast(R.string.telphoneunregistered);
-                    break;
                 case "err_password":
                     ToastUtils.showToast(R.string.passworderr);
                     break;
-                case "telphoner_has_been_registered":
+                case "tel registered":
                     ToastUtils.showToast(R.string.isregist);
+                    break;
+                case "pwd too easy":
+                    ToastUtils.showToast(R.string.pwd_too_easy);
+                    break;
                 default:
-                    ToastUtils.showToast(R.string.regist_error + returnMsg);
+                    ToastUtils.showToast(returnMsg);
                     break;
             }
         }

@@ -22,11 +22,11 @@
     <string name="password_isempty">亲，请输入密码</string>
     <string name="please_input_verificodem">亲，请输入图形验证码</string>
     <string name="password_isshort">亲，您输入的密码太短了</string>
-    <string name="please_input_phonenumbers">请输入您的手机号码</string>
-    <string name="please_input_passwords">请您输入6～16位密码</string>
+    <string name="please_input_phonenumbers">输入您的手机号码</string>
+    <string name="please_input_passwords">输入6～16位含数字字母的密码</string>
     <string name="set_verifycodes">请输入短信验证码</string>
     <string name="set_ig_verifycodes">请输入验证码</string>
-    <string name="please_set_passwords">设置6~16位含数字和字母的密码</string>
+    <string name="please_set_passwords">设置6~16位含数字字母的密码</string>
     <string name="set_password_text">此手机号码没有注册，设置密码完成注册</string>
     <string name="set_accomplish">完成</string>
     <string name="setpassword">设置密码</string>
@@ -269,5 +269,8 @@
     <string name="change_pwd_success">修改成功,请重新登录</string>
     <string name="nick_name_is_long">昵称长度不能超过5个汉字</string>
     <string name="store_hint">请打开设备开关，并将卡放在设备的背面后，点击圈存</string>
+    <string name="pwd_too_easy">密码为数字加字母组合</string>
+
+
 
 </resources>
