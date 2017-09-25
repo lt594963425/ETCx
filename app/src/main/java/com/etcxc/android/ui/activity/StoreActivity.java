@@ -42,7 +42,7 @@ public class StoreActivity extends BaseActivity implements View.OnClickListener{
                 openAnimator(this);
             break;
             case R.id.load_bluetooth_box://蓝牙盒子圈存
-                openActivity(BluetoothStoreActivity.class);
+                openActivity(BleStoreActivity.class);
                 break;
         }
     }
