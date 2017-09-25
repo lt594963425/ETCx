@@ -1,4 +1,4 @@
-package com.etcxc.android.alipay;
+package com.etcxc.android.pay.alipay;
 
 import android.text.TextUtils;
 

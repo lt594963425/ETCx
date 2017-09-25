@@ -208,6 +208,7 @@
     <string name="nfc_text">在读卡过程中，请将卡紧贴手机背面</string>
     <string name="replace_device">更换设备</string>
     <string name="read_card">读卡</string>
+    <string name="store">圈存</string>
     <string name="name">姓名:</string>
     <string name="card_info">卡信息</string>
     <string name="store_success">圈存成功</string>
@@ -267,5 +268,6 @@
     <string name="car_number">车牌号:</string>
     <string name="change_pwd_success">修改成功,请重新登录</string>
     <string name="nick_name_is_long">昵称长度不能超过5个汉字</string>
+    <string name="store_hint">请打开设备开关，并将卡放在设备的背面后，点击圈存</string>
 
 </resources>

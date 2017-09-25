@@ -98,7 +98,7 @@ public class StandardPboc {
     /**
      * 解析卡基本信息
      */
-    private static void parseCardInfo(Card card, Iso7816.Response data) {
+    public static void parseCardInfo(Card card, Iso7816.Response data) {
         if (!data.isOkey() || data.size() < 40) return;
         final byte[] d = data.getBytes();
         byte[] newBytes = new byte[10];

@@ -1,4 +1,4 @@
-package com.etcxc.android.alipay;
+package com.etcxc.android.pay.alipay;
 
 /**
  * 支付宝回调code值

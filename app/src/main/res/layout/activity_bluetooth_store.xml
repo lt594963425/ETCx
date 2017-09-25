@@ -25,7 +25,7 @@
             android:textSize="16sp"
             android:textColor="@color/colorGray"
             android:layout_margin="35dp"
-            android:text="请打开设备开关，并将卡放在设备的背面后，点击读卡"
+            android:text="@string/store_hint"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -34,8 +34,8 @@
     <Button
         android:layout_marginBottom="6dp"
         style="?android:attr/borderlessButtonStyle"
-        android:id="@+id/btn_read_card"
-        android:text="@string/read_card"
+        android:id="@+id/btn_store"
+        android:text="@string/store"
         android:textSize="16sp"
         android:textColor="@color/white"
         android:layout_marginLeft="25dp"
