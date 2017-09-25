@@ -25,7 +25,6 @@ import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
-import com.etcxc.android.ui.activity.TestPostactivity;
 import com.etcxc.android.ui.adapter.BaseSelectAdapter;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.HomeRecyclerAdapter;
@@ -126,7 +125,6 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
                 ToastUtils.showToast("" + position);
                 break;
             case 1:
-                openActivity(TestPostactivity.class);
                 break;
             case 2://网点查询
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

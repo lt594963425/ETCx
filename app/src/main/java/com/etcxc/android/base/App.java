@@ -30,7 +30,7 @@ public class App extends Application {
     private static App sInstance = null;
     public static IWXAPI WXapi;
 
-    private App() {
+    public App() {
         sInstance = this;
     }
 

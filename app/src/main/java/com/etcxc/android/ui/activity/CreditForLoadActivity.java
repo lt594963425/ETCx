@@ -36,7 +36,7 @@ public class CreditForLoadActivity extends BaseActivity implements View.OnClickL
                 openActivity(NFCStoreActivity.class);
                 break;
             case R.id.load_bluetooth_box://蓝牙盒子圈存
-                openActivity(BluetoothStoreActivity.class);
+                openActivity(BleStoreActivity.class);
                 break;
         }
     }

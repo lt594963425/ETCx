@@ -9,12 +9,12 @@ import android.widget.RadioButton;
 
 import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.R;
-import com.etcxc.android.alipay.AliPay;
-import com.etcxc.android.alipay.PayResult;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.OrderRechargeInfo;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.pay.alipay.AliPay;
+import com.etcxc.android.pay.alipay.PayResult;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;

@@ -198,11 +198,11 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
         mRet = ret.startsWith("fe0100") ? ret : mRet + ret;
         switch (mCmdFlag) {
             case 0:  //接到某个值开始握手
-                if ("fe01001a271100010a0018808004200128023a0657022b82ec7e".equals(mRet)) {//indicate成功，设备请求握手
+//              if ("fe01001a271100010a0018808004200128023a0657022b82ec7e".equals(mRet)) {//indicate成功，设备请求握手
                     byte[] A2 = procotolEncode(bleEncode(hexStringToBytes("A2")));
                     mBleManager.writeDevice(serviceUUID, writeUUID, A2, null);
                     mCmdFlag = 1;
-                }
+//                }
                 break;
             case 1://握手成功，拿卡号
                 if ("fe010018271200020a00120a33098005b200026400581800".equals(mRet)) {
