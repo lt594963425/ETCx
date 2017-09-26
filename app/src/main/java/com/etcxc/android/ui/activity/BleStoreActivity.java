@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,8 +20,6 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.Ble.BleCmdParser;
 import com.etcxc.android.net.nfc.Iso7816;
-import com.etcxc.android.net.nfc.CmdHandler;
-import com.etcxc.android.net.nfc.bean.Card;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -36,6 +35,7 @@ import static com.etcxc.android.net.Ble.BleCmdPackager.bleEncode;
 import static com.etcxc.android.net.Ble.BleCmdPackager.formatTLV;
 import static com.etcxc.android.net.Ble.BleCmdPackager.piccCmd;
 import static com.etcxc.android.net.Ble.BleCmdPackager.procotolEncode;
+import static com.etcxc.android.net.nfc.CmdHandler.parseCardInfo;
 
 /**
  * 蓝牙圈存
@@ -217,10 +217,8 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
             case 2://拿到了卡号，网络请求是否能圈存,能圈存，拿mac1
                 if (mRet.endsWith("1800")) ret = BleCmdParser.parseRet(mRet);
                 else return;
-                Card card = new Card();
-                CmdHandler.parseCardInfo(card, new Iso7816.Response(hexStringToBytes(ret)));
-                if (TextUtils.isEmpty(card.cardId)) return;
-                LogUtil.e("xwpeng16", "卡号： " + card.cardId);
+                Pair<String, String> cardInfo = parseCardInfo(new Iso7816.Response(hexStringToBytes(ret)));
+                if (cardInfo == null || TextUtils.isEmpty(cardInfo.first)) return;
                 //能圈存，拿mac1
                 List<String> cmds = new ArrayList<String>();
                 cmds.add("0020000003123456");
@@ -242,7 +240,7 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    private String storeInitCmd(int money) {
+    public static String storeInitCmd(int money) {
         if (money < 0) return null;
         StringBuilder builder = new StringBuilder("805000020B01");
         String moneyHex = Integer.toHexString(money);
