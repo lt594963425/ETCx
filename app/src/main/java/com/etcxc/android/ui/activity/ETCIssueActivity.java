@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
@@ -17,9 +17,12 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.ui.view.keyboard.OnKeyActionListener;
+import com.etcxc.android.ui.view.keyboard.VehiclePlateKeyboard;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +49,7 @@ import static com.etcxc.android.utils.UIUtils.openAnimator;
 public class ETCIssueActivity extends BaseActivity implements View.OnClickListener {
     private final static String TAG = ETCIssueActivity.class.getSimpleName();
     private RadioButton mPersonalRadiobutton;
-    private EditText mCarCardEdit;
+    private Button mCarCardEdit;
     private Spinner mCardColorSpinner;
 
     private String mCarColor;
@@ -61,7 +64,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private void initView() {
         setTitle(R.string.ETC_online_issue);
         mCarCardEdit = find(R.id.car_card_number_edittext);
-        mCarCardEdit.setText("湘A12345");
+//        mCarCardEdit.setText("湘A12345");
         mCardColorSpinner = find(R.id.car_card_color_spinner);
         List<String> ls = new ArrayList<>();
         ls.add("黄底黑字");
@@ -84,6 +87,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
             }
         });
         mPersonalRadiobutton = find(R.id.personal_user_radiobutton);
+        mCarCardEdit.setOnClickListener(this);
         find(R.id.commit_button).setOnClickListener(this);
     }
 
@@ -105,6 +109,21 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                         e.printStackTrace();
                     }
                 } else ToastUtils.showToast(getString(R.string.please_input_correct));
+                break;
+            case R.id.car_card_number_edittext://车牌输入
+                VehiclePlateKeyboard keyboard = new VehiclePlateKeyboard(this, new OnKeyActionListener() {
+                    @Override
+                    public void onFinish(String input) {
+                        mCarCardEdit.setText(input);
+                    }
+
+                    @Override
+                    public void onProcess(String input) {
+                        mCarCardEdit.setText(input);
+                    }
+                });
+                keyboard.setDefaultPlateNumber("湘A12345");
+                keyboard.show(getWindow().getDecorView().getRootView());
                 break;
         }
     }
@@ -143,7 +162,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                         } else if ("error".equals("error")){
                             String message = jsonObject.getString("message");//
                             if (message.equals("issuing or using")){
-                                ToastUtils.showToast("改车已经注册");
+                                ToastUtils.showToast("该车已经注册");
                             }else {
                                 closeProgressDialog();
                                 ToastUtils.showToast(message);
