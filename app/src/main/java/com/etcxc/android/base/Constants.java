@@ -10,8 +10,9 @@ public class Constants {
     public static String ORIENTION_KEY = "oriention";
     public static String ORIENTION_VALUE = "f";
 
-    //在线发行支付 标识issue
+    //在线支付 标识
     public static boolean ETC_ISSUE = false;
+    public static boolean ETC_RECHARGE = false;
     //appid 微信分配的公众账号ID
     public static final String WX_APP_ID = "wx21d6d90cd6a3a206";
     //商户ID

@@ -2,12 +2,13 @@ package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
@@ -22,7 +23,6 @@ import com.etcxc.android.ui.view.keyboard.VehiclePlateKeyboard;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +49,7 @@ import static com.etcxc.android.utils.UIUtils.openAnimator;
 public class ETCIssueActivity extends BaseActivity implements View.OnClickListener {
     private final static String TAG = ETCIssueActivity.class.getSimpleName();
     private RadioButton mPersonalRadiobutton;
-    private Button mCarCardEdit;
+    private EditText mCarCardEdit;
     private Spinner mCardColorSpinner;
 
     private String mCarColor;
@@ -64,6 +64,7 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private void initView() {
         setTitle(R.string.ETC_online_issue);
         mCarCardEdit = find(R.id.car_card_number_edittext);
+        mCarCardEdit.setInputType(InputType.TYPE_NULL);
 //        mCarCardEdit.setText("湘A12345");
         mCardColorSpinner = find(R.id.car_card_color_spinner);
         List<String> ls = new ArrayList<>();

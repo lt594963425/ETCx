@@ -15,17 +15,16 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.ui.adapter.UserTabAdapter;
-import com.etcxc.android.ui.fragment.FragmentTotal;
 import com.etcxc.android.ui.fragment.FragmentActiva;
 import com.etcxc.android.ui.fragment.FragmentCanceled;
 import com.etcxc.android.ui.fragment.FragmentInUse;
 import com.etcxc.android.ui.fragment.FragmentReport;
+import com.etcxc.android.ui.fragment.FragmentTotal;
 import com.etcxc.android.ui.view.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -49,7 +48,6 @@ import static com.etcxc.android.utils.UIUtils.closeAnimator;
 
 public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
     private static final String TAG = "UserCardActivity";
-    private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private MaterialSearchView mSearchView;
@@ -66,7 +64,7 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
     }
 
     private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.user_card_toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.user_card_toolbar);
         mToolbar.setTitle(R.string.user_etc_card);
         setBarBack(mToolbar);
         mTabLayout = (TabLayout) findViewById(R.id.user_card_tab);
@@ -77,7 +75,6 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
 
 
     private void init() {
-
         Observable.create(new ObservableOnSubscribe<List<String>>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<List<String>> e) throws Exception {
@@ -168,12 +165,9 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
     private void setBarBack(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                closeAnimator(UserCardActivity.this);
-            }
+        toolbar.setNavigationOnClickListener(view -> {
+            finish();
+            closeAnimator(UserCardActivity.this);
         });
     }
 

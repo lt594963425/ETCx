@@ -7,9 +7,9 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.etcxc.android.base.Constants;
+import com.etcxc.android.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class GeocodeAddressIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.e(TAG, "onHandleIntent");
+        LogUtil.e(TAG, "onHandleIntent");
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         String errorMessage = "";
         List<Address> addresses = null;
@@ -42,14 +42,14 @@ public class GeocodeAddressIntentService extends IntentService {
             addresses = geocoder.getFromLocationName(name, 1);
         } catch (IOException e) {
             errorMessage = "Service not available";
-            Log.e(TAG, errorMessage, e);
+            LogUtil.e(TAG, errorMessage, e);
         }
 
         resultReceiver = intent.getParcelableExtra(Constants.RECEIVER);
         if (addresses == null || addresses.size() == 0) {
             if (errorMessage.isEmpty()) {
                 errorMessage = "Not Found";
-                Log.e(TAG, errorMessage);
+                LogUtil.e(TAG, errorMessage);
             }
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage, null);
         } else {
@@ -58,7 +58,7 @@ public class GeocodeAddressIntentService extends IntentService {
                 for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                     outputAddress += " --- " + address.getAddressLine(i);
                 }
-                Log.e(TAG, outputAddress);
+                LogUtil.e(TAG, outputAddress);
             }
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<>();
@@ -66,7 +66,8 @@ public class GeocodeAddressIntentService extends IntentService {
             for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                 addressFragments.add(address.getAddressLine(i));
             }
-            Log.i(TAG, "Address Found");
+            
+            LogUtil.i(TAG, "Address Found");
             if (Constants.LOCATION == intent.getIntExtra("flag", 0)) {
                 deliverResultToReceiver(Constants.LOCATION,
                         TextUtils.join(System.getProperty("line.separator"),

@@ -15,6 +15,7 @@ import com.etcxc.android.base.Constants;
 import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.MainActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
+import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -64,12 +65,13 @@ public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandl
                 if (Constants.ETC_ISSUE) {
                     Constants.ETC_ISSUE = false;
                     openActivity(IssueFinishActivity.class);
-                    Log.e(TAG, "完成在线申请");
-                } else {
-                    Log.e(TAG, "ETC充值成功");
+                    LogUtil.e(TAG, "完成在线申请");
+                } else if (Constants.ETC_RECHARGE){
+                    LogUtil.e(TAG, "ETC充值成功");
                     showInfoDialog();
                     clearDetialData(this);
                 }
+
                 break;
             case BaseResp.ErrCode.ERR_COMM:
                 ToastUtils.showToast(R.string.pay_failed);

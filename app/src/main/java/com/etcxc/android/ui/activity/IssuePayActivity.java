@@ -13,14 +13,11 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
-import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.pay.WXPay.WXPay;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.tencent.mm.opensdk.modelpay.PayReq;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
@@ -105,7 +102,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
         }
         int moneyInt = Integer.valueOf(editMoney);//元
 
-        Double moneyDb = Double.valueOf(df.format((200 + moneyInt)*100)); //分;
+        Double moneyDb = Double.valueOf(df.format((200 + moneyInt) * 100)); //分;
         JSONObject jsonObject = new JSONObject();
         try {
             //PublicSPUtil.getInstance().getString("carCard", "")
@@ -126,7 +123,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
             MobclickAgent.onEvent(this, "WXPay");
             showProgressDialog(getString(R.string.wx_pay_loading));
             wxPay(jsonObject);
-            //openActivity(IssueFinishActivity.class);
+
         }
     }
 
@@ -139,8 +136,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                         .postString()
                         .url(NetConfig.HOST + WX_PAY_ISSUE)
                         .content(String.valueOf(jsonObject))
-                        .mediaType(JSON)
-                        .build()
+                        .mediaType(JSON).build()
                         .execute().body().string());
             }
         }).subscribeOn(Schedulers.io())
@@ -148,17 +144,11 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        JSONObject js = new JSONObject(s);
-                        Log.e(TAG, "js:" + js);
-                        String code = js.getString("code");
-                        if (code.equals("s_ok")) {
-                            closeProgressDialog();
-                            JSONObject varObject = js.getJSONObject("val");
-                            TuneUpWxPay(varObject);
-                        } else {
-                            Log.e(TAG,"error");
-                            closeProgressDialog();
+                        boolean b = WXPay.TuneUpWxPay(s);
+                        if (!b) {
                             ToastUtils.showToast(R.string.request_failed);
+                        } else {
+                            Constants.ETC_ISSUE = b;
                         }
 
                     }
@@ -169,25 +159,5 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                         closeProgressDialog();
                     }
                 });
-    }
-
-    private void TuneUpWxPay(JSONObject varObject) throws JSONException {
-        Log.e(TAG, String.valueOf(varObject));
-        IWXAPI mWxApi = WXAPIFactory.createWXAPI(IssuePayActivity.this, Constants.WX_APP_ID, true);
-        mWxApi.registerApp(Constants.WX_APP_ID);
-        PayReq req = new PayReq();
-        req.appId = Constants.WX_APP_ID;
-        req.partnerId = Constants.MCH_ID;
-        req.sign = varObject.getString("sign");
-        req.prepayId = varObject.getString("prepayid");
-        req.nonceStr = varObject.getString("noncestr");
-        req.timeStamp = String.valueOf(varObject.getInt("timestamp"));
-        req.packageValue = "Sign=WXPay";
-        Boolean b = mWxApi.sendReq(req);
-        Constants.ETC_ISSUE = true;
-        Log.e(TAG, getString(R.string.pay_result_log) + b + "，appId=" + req.appId + ",partnerId=" + req.partnerId + ",prepayId=" + req.prepayId +
-                ",time_start=" + req.timeStamp + ",sign=" + req.sign + ",nonce_str=" + req.nonceStr);
-        PublicSPUtil.getInstance().putBoolean("ETC_ISSUE",b);
-        closeProgressDialog();
     }
 }

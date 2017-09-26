@@ -162,15 +162,14 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                 break;
             case R.id.login_message:  //短信验证码登录
                 openActivity(MessageLoginActivity.class);
-                finish();
+
                 break;
             case R.id.login_fast:
                 openActivity(PhoneRegistActivity.class);
-                finish();
                 break;
             case R.id.forget_password:
                 openActivity(ResetPasswordActivity.class);
-                finish();
+
                 break;
             case R.id.login_button:  // 登录
                 MobclickAgent.onEvent(this, "LoginClick");

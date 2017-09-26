@@ -9,6 +9,7 @@
         android:layout_height="50dp"
         android:layout_margin="10dp"
         android:padding="10dp"
+        android:gravity="center"
         android:text="@string/recharge_success"
         android:textSize="15sp" />
     <View

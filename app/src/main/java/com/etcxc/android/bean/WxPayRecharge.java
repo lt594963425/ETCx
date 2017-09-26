@@ -1,84 +1,132 @@
 package com.etcxc.android.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 刘涛 on 2017/7/8 0008.
  */
 
 public class WxPayRecharge {
-    private String appid;
-    private String nonceStr;// 随机字符串，不长于32位，服务器鑫哥生成
-    private String partnerId;// 微信支付分配的商户号
-    private String prepayId;// 预支付订单号，app服务器调用“统一下单”接口获取
-    private String packageValue;// 固定值Sign=WXPay，可以直接写死，服务器返回的也是这个固定值
-    private String timeStamp;// 时间戳，app服务器鑫哥给出
-    private String sign;  //// 签名，服务器鑫哥给出
 
-    public String getAppid() {
-        return appid;
+    /**
+     * code : s_ok
+     * "var": {
+     * "appid": "wx21d6d90cd6a3a206",
+     * "noncestr": "1c8b9be7bb9380430edb110177bdb659",
+     * "package": ""Sign=WXPay"",
+     * "partnerid": "1482001172",
+     * "prepayid": "wx201708241628243abae114370990218222",
+     * "sign": "753FD27EA3C86104EE1F0D9127F7FEAC",
+     * "timestamp": 1503563311
+     * }
+     */
+
+    private String code;
+    private VarBean var;
+
+    public String getCode() {
+        return code;
     }
 
-    public void setAppid(String appid) {
-        this.appid = appid;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getNonceStr() {
-        return nonceStr;
+    public VarBean getVar() {
+        return var;
     }
 
-    public void setNonceStr(String nonceStr) {
-        this.nonceStr = nonceStr;
+    public void setVar(VarBean var) {
+        this.var = var;
     }
 
-    public String getPartnerId() {
-        return partnerId;
+    public static class VarBean {
+        /**
+         * appid : wx21d6d90cd6a3a206
+         * partnerid : 1482001172
+         * noncestr : 1c8b9be7bb9380430edb110177bdb659
+         * prepayid : wx201708241628243abae114370990218222
+         * package : Sign=WXPay
+         * timestamp : 1503563311
+         * sign : 753FD27EA3C86104EE1F0D9127F7FEAC
+         */
+        private String appid;
+        private String partnerid;
+        private String noncestr;
+        private String prepayid;
+        @SerializedName("package")
+        private String packageX;
+        private int timestamp;
+        private String sign;
+
+        public String getAppid() {
+            return appid;
+        }
+
+        public void setAppid(String appid) {
+            this.appid = appid;
+        }
+
+        public String getPartnerid() {
+            return partnerid;
+        }
+
+        public void setPartnerid(String partnerid) {
+            this.partnerid = partnerid;
+        }
+
+        public String getNoncestr() {
+            return noncestr;
+        }
+
+        public void setNoncestr(String noncestr) {
+            this.noncestr = noncestr;
+        }
+
+        public String getPrepayid() {
+            return prepayid;
+        }
+
+        public void setPrepayid(String prepayid) {
+            this.prepayid = prepayid;
+        }
+
+        public String getPackageX() {
+            return packageX;
+        }
+
+        public void setPackageX(String packageX) {
+            this.packageX = packageX;
+        }
+
+        public int getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(int timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public String getSign() {
+            return sign;
+        }
+
+        public void setSign(String sign) {
+            this.sign = sign;
+        }
+
+        @Override
+        public String toString() {
+            return "VarBean{" +
+                    "appid='" + appid + '\'' +
+                    ", partnerid='" + partnerid + '\'' +
+                    ", noncestr='" + noncestr + '\'' +
+                    ", prepayid='" + prepayid + '\'' +
+                    ", packageX='" + packageX + '\'' +
+                    ", timestamp=" + timestamp +
+                    ", sign='" + sign + '\'' +
+                    '}';
+        }
     }
 
-    public void setPartnerId(String partnerId) {
-        this.partnerId = partnerId;
-    }
-
-    public String getPrepayId() {
-        return prepayId;
-    }
-
-    public void setPrepayId(String prepayId) {
-        this.prepayId = prepayId;
-    }
-
-    public String getPackageValue() {
-        return packageValue;
-    }
-
-    public void setPackageValue(String packageValue) {
-        this.packageValue = packageValue;
-    }
-
-    public String getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    @Override
-    public String toString() {
-        return "WxPayRecharge{" +
-                "appid='" + appid + '\'' +
-                ", nonceStr='" + nonceStr + '\'' +
-                ", partnerId='" + partnerId + '\'' +
-                ", prepayId='" + prepayId + '\'' +
-                ", packageValue='" + packageValue + '\'' +
-                ", timeStamp='" + timeStamp + '\'' +
-                ", sign='" + sign + '\'' +
-                '}';
-    }
 }

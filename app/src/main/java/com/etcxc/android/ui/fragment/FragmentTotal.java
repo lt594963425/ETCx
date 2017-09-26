@@ -58,8 +58,6 @@ public class FragmentTotal extends BaseFragment implements RxCardStackView.ItemE
                 new Runnable() {
                     @Override
                     public void run() {
-                        int x = mStackView.getNumBottomShow();
-                        Log.e(TAG, x + "");
                         mCardStackAdapter.updateData(mDatas);
                         mCardStackAdapter.notifyDataSetChanged();
 

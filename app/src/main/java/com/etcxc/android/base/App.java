@@ -37,7 +37,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        //HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
+        //封装okhttp的初始化配置
+        // HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10000L, TimeUnit.MILLISECONDS)
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)
@@ -52,9 +53,12 @@ public class App extends Application {
 //                .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //https
                 .build();
         OkHttpUtils.initClient(okHttpClient);
-        MobclickAgent.setDebugMode(true);//日志加密传输
+        //友盟日志加密传输
+        MobclickAgent.setDebugMode(true);
+        //微信
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);
+        //异常扑捉初始化
         CrashHandler catchHandler = CrashHandler.getInstance();
         catchHandler.init(getApplicationContext());
         LogUtil.d(TAG, "App Application onCreate");

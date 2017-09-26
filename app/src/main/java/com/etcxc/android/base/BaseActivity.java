@@ -55,7 +55,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) { //返回图标
             finish();
             closeAnimator(this);
             return true;
