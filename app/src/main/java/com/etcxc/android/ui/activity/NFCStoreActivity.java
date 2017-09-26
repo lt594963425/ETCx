@@ -1,19 +1,22 @@
 package com.etcxc.android.ui.activity;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.view.View;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.net.nfc.NfcManager;
-import com.etcxc.android.net.nfc.ReaderListener;
-import com.etcxc.android.net.nfc.SPEC;
-import com.etcxc.android.net.nfc.StandardPboc;
+import com.etcxc.android.net.nfc.CmdHandler;
 import com.etcxc.android.net.nfc.bean.Card;
+import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.ToastUtils;
 
 import io.reactivex.Observable;
@@ -32,10 +35,20 @@ import static com.etcxc.android.utils.UIUtils.openAnimator;
  * start此Activity，如果是本应用请传fromSelf=true
  * NFC 圈存
  */
-public class NFCStoreActivity extends BaseActivity implements View.OnClickListener, ReaderListener {
-    private NfcManager mNFCManger ;
-    private boolean mIsFromSelf;//是否是本应用启动的
-    private boolean readFlag = false;
+public class NFCStoreActivity extends BaseActivity implements View.OnClickListener{
+    private NfcManager mNFCManger;
+    private boolean mIsFromSelf;//是否是本应用启动的,判断回到更换设备的方式
+    private NfcAdapter mNfcAdapter;
+    private static String[][] TECHS;
+    private static IntentFilter[] TAG_FILTERS;
+    static {
+        TECHS = new String[][]{{IsoDep.class.getName()}, {NfcF.class.getName()},};
+        try {
+            TAG_FILTERS = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED, "*/*")};
+        } catch (IntentFilter.MalformedMimeTypeException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +59,9 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
             finish();
             return;
         }
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         initView();
-
-        mNFCManger = new NfcManager(this);
-        if (mNFCManger != null)
-            onNewIntent(getIntent());
+        onNewIntent(getIntent());
     }
 
     private void initView() {
@@ -61,10 +72,7 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onNewIntent(Intent intent) {
         mIsFromSelf = intent.getBooleanExtra("fromSelf", false);
-        //读卡
-        if (mIsFromSelf)
-            mNFCManger.readCard(intent, this);
-           //circleSave(intent);
+        circleSave(intent);
     }
 
     @Override
@@ -76,91 +84,66 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
                 break;
         }
     }
-    /**
-     *    圈存
-     */
 
-    public boolean circleSave(Intent intent) {
+    /**
+     * 圈存
+     */
+    public void circleSave(Intent intent) {
         showProgressDialog(getString(R.string.storing));
         final Tag tag = intent.getParcelableExtra(EXTRA_TAG);
-        if (tag != null) {
-            Observable.create(new ObservableOnSubscribe<Card>() {
-                @Override
-                public void subscribe(@NonNull ObservableEmitter<Card> e) throws Exception {
-                    Card card = new Card();
-                    final IsoDep isodep = IsoDep.get(tag);
-                    if (isodep != null) {
-                        card = StandardPboc.readCard(isodep);
+        if (tag == null) {
+            closeProgressDialog();
+            ToastUtils.showToast(getString(R.string.no_know_card));
+            return;
+        }
+        Observable.create(new ObservableOnSubscribe<Card>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Card> e) throws Exception {
+                Card card = new Card();
+                final IsoDep isodep = IsoDep.get(tag);
+                if (isodep != null) card = CmdHandler.readCard(isodep);
+                e.onNext(card);
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Card>() {
+                    @Override
+                    public void accept(@NonNull Card card) throws Exception {
+                        closeProgressDialog();
+                        if (!card.isAvailable()) {
+                            ToastUtils.showToast(getString(R.string.no_know_card));
+                            return;
+                        }
+                        Intent intent = new Intent(NFCStoreActivity.this, StoreSuccessActivity.class);
+                        intent.putExtra("card", card);
+                        startActivity(intent);
+                        openAnimator(NFCStoreActivity.this);
                     }
-                    Thread.sleep(2000);
-                    e.onNext(card);
-                }
-            }).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<Card>() {
-                        @Override
-                        public void accept(@NonNull Card card) throws Exception {
-                            readFlag = true;
-                            closeProgressDialog();
-                            if (card.isAvailable()) {
-                                Intent intent = new Intent(NFCStoreActivity.this, StoreSuccessActivity.class);
-                                intent.putExtra("card", card);
-                                startActivity(intent);
-                                openAnimator(NFCStoreActivity.this);
-                            } else {
-                                ToastUtils.showToast(getString(R.string.no_know_card));
-                            }
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(@NonNull Throwable throwable) throws Exception {
-                            readFlag = false;
-                            ToastUtils.showToast(getString(R.string.read_card_info_fault));
-                            closeProgressDialog();
-
-                        }
-                    });
-            return readFlag;
-        }
-        return readFlag;
-    }
-
-    @Override
-    public void onReadEvent(int status, Object... obj) {
-        switch (status) {
-            case SPEC.START:
-                showProgressDialog(getString(R.string.storing));
-                break;
-            case SPEC.READING:
-                break;
-            case SPEC.FINISHED:
-                Card card = (Card) obj[0];
-                closeProgressDialog();
-                if (card.isAvailable()) {
-                    Intent intent = new Intent(this, StoreSuccessActivity.class);
-                    intent.putExtra("card", card);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
-                } else {
-                    ToastUtils.showToast(getString(R.string.no_know_card));
-                }
-                break;
-            default:
-                ToastUtils.showToast(getString(R.string.read_card_info_fault));
-                closeProgressDialog();
-                break;
-        }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        closeProgressDialog();
+                        ToastUtils.showToast(getString(R.string.read_card_info_fault));
+                        LogUtil.e(TAG, "nfc store", throwable);
+                    }
+                });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mNFCManger.onPause();
+        if (mNfcAdapter != null) mNfcAdapter.disableForegroundDispatch(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mNFCManger.onResume();
+        if (!mNfcAdapter.isEnabled()) {
+            ToastUtils.showToast(getString(R.string.please_open_NFC_function));
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, this.getClass())
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        if (mNfcAdapter != null)
+            mNfcAdapter.enableForegroundDispatch(this, pendingIntent, TAG_FILTERS, TECHS);
     }
 }

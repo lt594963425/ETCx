@@ -19,7 +19,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.net.Ble.BleCmdParser;
 import com.etcxc.android.net.nfc.Iso7816;
-import com.etcxc.android.net.nfc.StandardPboc;
+import com.etcxc.android.net.nfc.CmdHandler;
 import com.etcxc.android.net.nfc.bean.Card;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
@@ -218,7 +218,7 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
                 if (mRet.endsWith("1800")) ret = BleCmdParser.parseRet(mRet);
                 else return;
                 Card card = new Card();
-                StandardPboc.parseCardInfo(card, new Iso7816.Response(hexStringToBytes(ret)));
+                CmdHandler.parseCardInfo(card, new Iso7816.Response(hexStringToBytes(ret)));
                 if (TextUtils.isEmpty(card.cardId)) return;
                 LogUtil.e("xwpeng16", "卡号： " + card.cardId);
                 //能圈存，拿mac1
