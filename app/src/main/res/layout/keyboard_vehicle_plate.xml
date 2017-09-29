@@ -16,17 +16,18 @@
             android:id="@id/keyboard_number_0"
             style="@style/KeyboardInputNumber"
             android:textSize="26sp"
-            android:hint="粤"
+            android:hint="湘"
             />
         <TextView
+
             android:id="@id/keyboard_number_1"
             style="@style/KeyboardInputNumber"
-            android:hint="S"
+            android:hint="A"
             />
         <TextView
             android:id="@id/keyboard_number_2"
             style="@style/KeyboardInputNumber"
-            android:hint="Z"
+            android:hint="0"
             />
         <TextView
             android:id="@id/keyboard_number_3"
@@ -37,6 +38,7 @@
             android:id="@id/keyboard_number_4"
             style="@style/KeyboardInputNumber"
             android:hint="0"
+
             />
         <TextView
             android:id="@id/keyboard_number_5"
@@ -52,7 +54,7 @@
             android:id="@+id/keyboard_commit"
             style="@style/KeyboardInputNumber"
             android:text="完成"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:layout_weight="1.5"
             />
     </LinearLayout>

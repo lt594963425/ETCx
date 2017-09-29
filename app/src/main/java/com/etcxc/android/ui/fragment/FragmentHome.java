@@ -48,7 +48,7 @@ import java.util.Arrays;
 
 public class FragmentHome extends BaseFragment implements View.OnClickListener, BaseSelectAdapter.OnItemClickListener {
     private final static String TAG = "FragmentHome";
-    String[] imagess = new String[]{
+    String[] mBannerImagess = new String[]{
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
@@ -70,7 +70,7 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
             , App.get().getString(R.string.website_check), App.get().getString(R.string.traffic_status)
             , App.get().getString(R.string.fare_calculate), App.get().getString(R.string.coming_soon)
     };
-    private Banner banner;
+    private Banner mBanner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,9 +79,9 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
         mETCRecharge = (RelativeLayout) view.findViewById(R.id.home_etc_recharge_rly);//ETC充值
         mETCSave = (RelativeLayout) view.findViewById(R.id.home_etc_circle_save_rly);//ETC圈存
         mHomeRecycler = (GridRecyclerView) view.findViewById(R.id.home_recylerview);
-        banner = (Banner) view.findViewById(R.id.home_banner);
-        banner.setImages(new ArrayList<>(Arrays.asList(imagess))).setImageLoader(new GlideImageLoader()).start();
-        banner.setBannerAnimation(Transformer.Accordion);
+        mBanner = (Banner) view.findViewById(R.id.home_banner);
+        mBanner.setImages(new ArrayList<>(Arrays.asList(mBannerImagess))).setImageLoader(new GlideImageLoader()).start();
+        mBanner.setBannerAnimation(Transformer.Accordion);
         initView();
         return view;
     }
@@ -127,13 +127,17 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
             case 1:
                 break;
             case 2://网点查询
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getActivity()
+                        , Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getActivity()
+                        , Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 openActivity(NetworkQueryActivity.class);
                 break;
             case 3:
-
                 openActivity(IssueFinishActivity.class);
                 break;
             case 4:
@@ -168,19 +172,19 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public void onStart() {
-        banner.startAutoPlay();
+        mBanner.startAutoPlay();
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        banner.stopAutoPlay();
+        mBanner.stopAutoPlay();
         super.onStop();
     }
 
     @Override
     public void onResume() {
-        LogUtil.e(TAG,"onResume");
+        LogUtil.e(TAG, "onResume");
         MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();
     }

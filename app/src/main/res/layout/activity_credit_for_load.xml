@@ -35,7 +35,7 @@
             android:layout_marginTop="10dp"
             android:layout_toRightOf="@id/mine_iv_networktelephone"
             android:gravity="center"
-            android:paddingRight="15dp"
+            android:paddingRight="16dp"
             android:text="@string/load_nfc"
             android:textSize="18sp" />
 
@@ -45,7 +45,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:contentDescription="@string/networktelephone"
             android:focusable="false"
             android:padding="15dp"
             app:srcCompat="@drawable/vd_mine_toright" />
@@ -65,10 +64,9 @@
         <ImageView
             android:id="@+id/mine_iv_aboutus"
             android:layout_width="50dp"
-            android:layout_marginLeft="25dp"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:contentDescription="@string/about_us"
+            android:layout_marginLeft="25dp"
             android:padding="10dp"
             app:srcCompat="@drawable/vd_bluetooth" />
 
@@ -88,7 +86,46 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
+            android:focusable="false"
+            android:padding="15dp"
+            app:srcCompat="@drawable/vd_mine_toright" />
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+    <RelativeLayout
+        android:id="@+id/load_usb"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_item_view"
+        android:descendantFocusability="blocksDescendants">
+
+        <ImageView
+            android:id="@+id/usb_save_img"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="25dp"
             android:contentDescription="@string/about_us"
+            android:padding="10dp"
+            app:srcCompat="@drawable/vd_usb" />
+
+        <TextView
+            android:id="@+id/usb_save_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/usb_save_img"
+            android:gravity="center"
+            android:paddingRight="15dp"
+            android:text="@string/load_usb"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
             android:focusable="false"
             android:padding="15dp"
             app:srcCompat="@drawable/vd_mine_toright" />

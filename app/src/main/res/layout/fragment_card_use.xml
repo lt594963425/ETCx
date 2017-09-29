@@ -3,17 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-
-
+    <!--<ProgressBar-->
+        <!--android:id="@+id/stack_progress"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
         <com.etcxc.android.ui.view.cardstack.RxCardStackView
-            android:id="@+id/card_stack_view"
             android:layout_width="match_parent"
+            android:id="@+id/card_stack_view"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:paddingTop="12dp" />
-
 
 </LinearLayout>

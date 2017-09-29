@@ -1,10 +1,8 @@
 package com.etcxc.android.ui.fragment;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +20,10 @@ import java.util.List;
  */
 
 public class FragmentTotal extends BaseFragment implements RxCardStackView.ItemExpendListener {
-    private ProgressDialog progressBar;
     private RxCardStackView mStackView;
     private CardAdapterStack mCardStackAdapter;
     private List<String> mDatas = new ArrayList<>();
+    //private ProgressBar mProgress;
 
     public FragmentTotal() {
     }
@@ -49,7 +47,9 @@ public class FragmentTotal extends BaseFragment implements RxCardStackView.ItemE
     private void initView(View view) {
 
         mStackView = (RxCardStackView) view.findViewById(R.id.card_stack_view);
+        //mProgress = (ProgressBar) view.findViewById(R.id.stack_progress);
         mStackView.setItemExpendListener(this);
+        //if (mStackView.reFresh()) mProgress.setVisibility(View.VISIBLE);
         mCardStackAdapter = new CardAdapterStack(getActivity());
         mStackView.setAdapter(mCardStackAdapter);
         //mSwipeRefresh.setRefreshing(true);
@@ -63,8 +63,6 @@ public class FragmentTotal extends BaseFragment implements RxCardStackView.ItemE
 
                     }
                 }, 100);
-        int x = mStackView.getNumBottomShow();
-        Log.e(TAG, x + "");
     }
 
 
@@ -73,5 +71,6 @@ public class FragmentTotal extends BaseFragment implements RxCardStackView.ItemE
         // do something
 
     }
+
 
 }

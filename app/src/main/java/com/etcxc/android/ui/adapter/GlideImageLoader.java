@@ -15,6 +15,11 @@ import com.youth.banner.loader.ImageLoader;
 public class GlideImageLoader extends ImageLoader {
     @Override
     public void displayImage(Context context, Object path, ImageView imageView) {
-        Glide.with(context).load(path).placeholder(R.mipmap.advinfo).error(R.mipmap.viewloading).into(imageView);
+        Glide.with(context)
+                .load(path)
+                .placeholder(R.mipmap.advinfo)
+                .error(R.mipmap.viewloading)
+                .crossFade()
+                .into(imageView);
     }
 }

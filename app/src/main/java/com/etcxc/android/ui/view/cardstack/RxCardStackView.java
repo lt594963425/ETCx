@@ -30,13 +30,13 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
 
     private static final int INVALID_POINTER = -1;
     public static final int INVALID_TYPE = -1;
-    public static final int ANIMATION_STATE_START = 0;
+    public static final int ANIMATION_STATE_START = 0;//animation
     public static final int ANIMATION_STATE_END = 1;
     public static final int ANIMATION_STATE_CANCEL = 2;
 
     private static final String TAG = "CardStackView";
 
-    public static final int ALL_DOWN = 0;
+    public static final int ALL_DOWN = 0; //
     public static final int UP_DOWN = 1;
     public static final int UP_DOWN_STACK = 2;
 
@@ -111,7 +111,6 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
         mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
     }
-
 
 
     @Override
@@ -277,10 +276,18 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
     }
 
     public void next() {
-        if (mSelectPosition == DEFAULT_SELECT_POSITION || mSelectPosition == mViewHolders.size() - 1) return;
+        if (mSelectPosition == DEFAULT_SELECT_POSITION || mSelectPosition == mViewHolders.size() - 1)
+            return;
         performItemClick(mViewHolders.get(mSelectPosition + 1));
     }
 
+  /*  public  boolean reFresh() {
+      if(mSelectPosition == mRxAdapterStack.getItemCount()) {
+          return true;
+      }
+        return false;
+    }
+*/
     public void pre() {
         if (mSelectPosition == DEFAULT_SELECT_POSITION || mSelectPosition == 0) return;
         performItemClick(mViewHolders.get(mSelectPosition - 1));
@@ -765,6 +772,7 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
     public void setSelectPosition(int selectPosition) {
         mSelectPosition = selectPosition;
         mItemExpendListener.onItemExpend(mSelectPosition != DEFAULT_SELECT_POSITION);
+
     }
 
     public int getOverlapGaps() {
@@ -826,7 +834,7 @@ public class RxCardStackView extends ViewGroup implements RxScrollDelegate {
         mItemExpendListener = itemExpendListener;
     }
 
-    public interface ItemExpendListener{
+    public interface ItemExpendListener {
         void onItemExpend(boolean expend);
     }
 }

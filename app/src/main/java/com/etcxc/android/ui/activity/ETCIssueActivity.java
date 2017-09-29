@@ -27,6 +27,7 @@ import com.etcxc.android.utils.ToastUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -53,7 +54,8 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private Spinner mCardColorSpinner;
 
     private String mCarColor;
-   private String IS_ORGAN ="isOrg";
+    private String IS_ORGAN = "isOrg";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,15 +66,14 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private void initView() {
         setTitle(R.string.ETC_online_issue);
         mCarCardEdit = find(R.id.car_card_number_edittext);
-        mCarCardEdit.setInputType(InputType.TYPE_NULL);
-//        mCarCardEdit.setText("湘A12345");
+        disableShowSoftInput(mCarCardEdit);
         mCardColorSpinner = find(R.id.car_card_color_spinner);
         List<String> ls = new ArrayList<>();
         ls.add("黄底黑字");
         ls.add("蓝底白字");
         ls.add("黑底白字");
         ls.add("白底黑字");
-        //ls.add("绿底白字");
+        ls.add("绿底白字");
         ArrayAdapter<String> arr_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ls);
         arr_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mCardColorSpinner.setAdapter(arr_adapter);
@@ -100,30 +101,38 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                 if (okCarCard(carCard)) {
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("licensePlate",carCard)
-                                .put("plateColor",mCarColor)
-                                .put("userType",mPersonalRadiobutton.isChecked()? 1 : 2)
+                        jsonObject.put("licensePlate", carCard)
+                                .put("plateColor", mCarColor)
+                                .put("userType", mPersonalRadiobutton.isChecked() ? 1 : 2)
                                 .put("uid", MeManager.getUid())
-                                .put("token",MeManager.getToken());
+                                .put("token", MeManager.getToken());
                         net(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                } else ToastUtils.showToast(getString(R.string.please_input_correct));
+                } else {
+                    if (carCard.contains("WJ武")){
+
+                    }else
+                    ToastUtils.showToast(getString(R.string.please_input_correct));
+                }
                 break;
             case R.id.car_card_number_edittext://车牌输入
+
                 VehiclePlateKeyboard keyboard = new VehiclePlateKeyboard(this, new OnKeyActionListener() {
                     @Override
                     public void onFinish(String input) {
                         mCarCardEdit.setText(input);
+                        mCarCardEdit.setSelection(input.length());
                     }
 
                     @Override
                     public void onProcess(String input) {
                         mCarCardEdit.setText(input);
+                        mCarCardEdit.setSelection(input.length());
+
                     }
                 });
-                keyboard.setDefaultPlateNumber("湘A12345");
                 keyboard.show(getWindow().getDecorView().getRootView());
                 break;
         }
@@ -160,11 +169,11 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             intent.putExtra(IS_ORGAN, !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
                             openAnimator(ETCIssueActivity.this);
-                        } else if ("error".equals("error")){
+                        } else if ("error".equals("error")) {
                             String message = jsonObject.getString("message");//
-                            if (message.equals("issuing or using")){
+                            if (message.equals("issuing or using")) {
                                 ToastUtils.showToast("该车已经注册");
-                            }else {
+                            } else {
                                 closeProgressDialog();
                                 ToastUtils.showToast(message);
                             }
@@ -178,6 +187,31 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                         ToastUtils.showToast(R.string.request_failed);
                     }
                 });
+    }
+
+    /**
+     * 禁止Edittext弹出软件盘，光标依然正常显示。
+     */
+    public void disableShowSoftInput(EditText editText) {
+        if (android.os.Build.VERSION.SDK_INT <= 10) {
+            editText.setInputType(InputType.TYPE_NULL);
+        } else {
+            Class<EditText> cls = EditText.class;
+            Method method;
+            try {
+                method = cls.getMethod("setShowSoftInputOnFocus", boolean.class);
+                method.setAccessible(true);
+                method.invoke(editText, false);
+            } catch (Exception e) {
+            }
+
+            try {
+                method = cls.getMethod("setSoftInputShownOnFocus", boolean.class);
+                method.setAccessible(true);
+                method.invoke(editText, false);
+            } catch (Exception e) {
+            }
+        }
     }
 
     private boolean okCarCard(String carCard) {

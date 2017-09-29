@@ -2,9 +2,11 @@ package com.etcxc.android.ui.fragment;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
@@ -32,13 +35,28 @@ public class FragmentExpand extends BaseFragment {
     private MyRecylerAdapter mAdapter;
     private ArrayList<String> mDatas;
     private Handler mHandler = new Handler();
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         initData();
         View view = inflater.inflate(R.layout.fragment_expand, null);
         mRecyclerview = (XRecyclerView) view.findViewById(R.id.expand_recyclerView);
+        final SwipeRefreshLayout mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mRefresh.setProgressBackgroundColorSchemeColor(Color.WHITE);
+        mRefresh.setColorSchemeColors(Color.BLUE, Color.GREEN, Color.RED);
+        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(getActivity(), "正在努力加载", Toast.LENGTH_SHORT).show();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //隐藏进度条
+                        mRefresh.setRefreshing(false);
+                    }
+                }, 5000);
+            }
+        });
         setupRecyclerView();
         mHandler.postDelayed(LOAD_DATA, 500);
         return view;

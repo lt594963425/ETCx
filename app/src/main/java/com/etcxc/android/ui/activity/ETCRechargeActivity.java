@@ -232,12 +232,11 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         context.getWindow().setAttributes(lp);
     }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_cardnum_img: //添加历史卡号
-                startActivityForResult(new Intent(this, HistoryRechargeCardActivity.class), SELECT_SUCCESS);
+                openActivityForResult(HistoryRechargeCardActivity.class,SELECT_SUCCESS);
                 break;
             case R.id.recharge_add_detail_btn: //增加充值定单
                 addRechargeDetail();
