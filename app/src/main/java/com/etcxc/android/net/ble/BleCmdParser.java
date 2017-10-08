@@ -57,7 +57,7 @@ public class BleCmdParser {
             dataList.remove(0);
         }
         int statusCode = dataList.get(1);
-        if (0 != statusCode) return null;
+        if (0 != statusCode) return null;//如果状态码不为0代表卡复位失败。一般会返回cf（207）
         switch (dataList.get(0)) {
             case 178:// 握手复位指令，回复指令B2
                 contentMeaning = parseB2(dataList, contentMeaning);
@@ -79,6 +79,7 @@ public class BleCmdParser {
 
     /**
      * B2回复类型解包
+     * 6400为正确
      */
     private static StringBuilder parseB2(List<Integer> dataList, StringBuilder contentMeaning) {
         int realDataLen = dataList.get(2);

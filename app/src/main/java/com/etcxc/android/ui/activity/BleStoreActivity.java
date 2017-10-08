@@ -199,33 +199,33 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
         switch (mCmdFlag) {
             case 0:  //接到某个值开始握手
 //              if ("fe01001a271100010a0018808004200128023a0657022b82ec7e".equals(mRet)) {//indicate成功，设备请求握手
-                    byte[] A2 = procotolEncode(bleEncode(hexStringToBytes("A2")));
-                    mBleManager.writeDevice(serviceUUID, writeUUID, A2, null);
-                    mCmdFlag = 1;
+                byte[] A2 = procotolEncode(bleEncode(hexStringToBytes("A2")));
+                mBleManager.writeDevice(serviceUUID, writeUUID, A2, null);
+                mCmdFlag = 1;
 //                }
                 break;
             case 1://握手成功，拿卡号
-                if ("fe010018271200020a00120a33098005b200026400581800".equals(mRet)) {
-                    List<String> cmds = new ArrayList<String>();
-                    cmds.add("00A40000023F00");
-                    cmds.add("00A40000021001");
-                    cmds.add("00B0950000");
-                    mCmdFlag = 2;
-                    writePiccCmd(cmds);
-                }
+                if (!mRet.endsWith("1800")) return;
+                if (!"6400".equals(BleCmdParser.parseRet(mRet))) return;
+                List<String> cmds = new ArrayList<String>();
+                cmds.add("00A40000023F00");
+                cmds.add("00A40000021001");
+                cmds.add("00B0950000");
+                mCmdFlag = 2;
+                writePiccCmd(cmds);
                 break;
             case 2://拿到了卡号，网络请求是否能圈存,能圈存，拿mac1
-                if (mRet.endsWith("1800")) ret = BleCmdParser.parseRet(mRet);
-                else return;
+                if (!mRet.endsWith("1800")) return;
+                ret = BleCmdParser.parseRet(mRet);
                 Pair<String, String> cardInfo = parseCardInfo(new Iso7816.Response(hexStringToBytes(ret)));
                 if (cardInfo == null || TextUtils.isEmpty(cardInfo.first)) return;
                 //能圈存，拿mac1
-                List<String> cmds = new ArrayList<String>();
-                cmds.add("0020000003123456");
+                List<String> cmds2 = new ArrayList<String>();
+                cmds2.add("0020000003123456");
                 int money = 10000;
-                cmds.add(storeInitCmd(money));
+                cmds2.add(storeInitCmd(money));
                 mCmdFlag = 3;
-                writePiccCmd(cmds);
+                writePiccCmd(cmds2);
                 break;
             case 3://拿到了mac1，请求后端给mac2,圈存，返回tak
                 if (mRet.endsWith("1800")) ret = BleCmdParser.parseRet(mRet);
