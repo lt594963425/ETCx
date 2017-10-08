@@ -18,7 +18,7 @@ import com.clj.fastble.exception.BleException;
 import com.clj.fastble.utils.HexUtil;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
-import com.etcxc.android.net.Ble.BleCmdParser;
+import com.etcxc.android.net.ble.BleCmdParser;
 import com.etcxc.android.net.nfc.Iso7816;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
@@ -31,10 +31,10 @@ import java.util.List;
 import static com.clj.fastble.utils.HexUtil.hexStringToBytes;
 import static com.etcxc.android.R.id.btn_replace_device;
 import static com.etcxc.android.R.id.btn_store;
-import static com.etcxc.android.net.Ble.BleCmdPackager.bleEncode;
-import static com.etcxc.android.net.Ble.BleCmdPackager.formatTLV;
-import static com.etcxc.android.net.Ble.BleCmdPackager.piccCmd;
-import static com.etcxc.android.net.Ble.BleCmdPackager.procotolEncode;
+import static com.etcxc.android.net.ble.BleCmdPackager.bleEncode;
+import static com.etcxc.android.net.ble.BleCmdPackager.formatTLV;
+import static com.etcxc.android.net.ble.BleCmdPackager.piccCmd;
+import static com.etcxc.android.net.ble.BleCmdPackager.procotolEncode;
 import static com.etcxc.android.net.nfc.CmdHandler.parseCardInfo;
 
 /**

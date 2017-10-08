@@ -1,8 +1,6 @@
-package com.etcxc.android.net.Ble;
+package com.etcxc.android.net.ble;
 
 import android.support.annotation.Nullable;
-
-import com.clj.fastble.utils.HexUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,31 +175,4 @@ public class BleCmdParser {
         return (String) res.get("contentMeaning");
     }
 
-/*    public static void main(String[] args) {
-//        parseRet("fe010022271200030a0012143308800fb300000a008108030600001f4090007d1800");
-//        String aa = parseRet("fe010035271200030a00122733098022b300001d00811b01196f15840e315041592e5359532e4444463031a5038801019000ae1800");
-//        String aa = parseRet("fe01001a271200050a00120c33098007b3000002008100be1800");
-//          String aa = parseRet("fe01001e271200070a0012103309800bb300000600810401026a82591800");
-        StringBuilder builder = new StringBuilder();
-        *//*builder.append("fe010049271200040a00123b33098036b3000031");
-        builder.append("00812f012dbafec4cf4301000116104301164322");
-        builder.append("95400055912017022120270221cfe64138543838");
-        builder.append("380000000000010090000c1800");*//*
-//        builder.append("fe010055271200030a00124733098042b300003d");
-//        builder.append("00813b0239000ab4f7d3d0000000000000000000");
-//        builder.append("0000000000000034333235303331393838303731");
-//        builder.append("3038303332000000000000000000000000000001");
-//        builder.append("90001b1800");
-//        builder.append("fe01002e271200030a0012203309801bb3000016008114021200001f4000030100315407f35ec03f0b9000441800");
-        builder.append("fe01001e271200030a0012103309800bb300000600810401026981591800");
-        String aa = parseRet(builder.toString());
-        System.out.println(aa);
-    }*/
-
-
-    public static void main(String[] args) {
-        String a = "fe01001a271100010a0018808004200128023a0657022b82ec7e";
-        byte [] aa = HexUtil.hexStringToBytes(a);
-        System.out.println(aa.length);
-    }
 }

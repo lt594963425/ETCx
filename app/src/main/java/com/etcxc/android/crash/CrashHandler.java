@@ -4,16 +4,18 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.etcxc.android.R;
+import com.etcxc.android.base.App;
+import com.etcxc.android.utils.ToastUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,7 +24,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 import static android.os.Process.killProcess;
 import static android.os.Process.myPid;
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * 程序异常处理扑捉
@@ -37,34 +39,15 @@ import static android.os.Process.myPid;
  */
 
 public class CrashHandler implements UncaughtExceptionHandler {
-    public static final String TAG = "CrashHandler";
-    private static  CrashHandler mInstance;
-    private Context mContext;
     private UncaughtExceptionHandler mDefaultHandler;
     //用来存储设备信息和异常信息
-    private Map<String, String> infos ;
-    //用于格式化日期,作为日志文件名的一部分
-    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+    private Map<String, String> mDeviceInfos;
 
     /**
      * 保证只有一个CrashHandler实例
      */
-    private CrashHandler() {
-    }
-
-    public static CrashHandler getInstance() {
-        if (mInstance == null)
-            mInstance = new CrashHandler();
-        return mInstance;
-    }
-
-    /**
-     * 初始化
-     */
-    public void init(Context context) {
-        mContext = context;
+    public CrashHandler() {
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
     /**
@@ -72,20 +55,18 @@ public class CrashHandler implements UncaughtExceptionHandler {
      */
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        infos = new HashMap<>();
+        mDeviceInfos = new HashMap<>();
         if (!handlerException(ex) && mDefaultHandler != null) {
-
             mDefaultHandler.uncaughtException(thread, ex);
-        } else {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "errer:" + e);
-            }
-            killProcess(myPid());
-            System.exit(1);
+            return;
         }
-
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();//防止再次崩溃，直接输出日志
+        }
+        killProcess(myPid());
+        System.exit(1);
     }
 
     /**
@@ -95,50 +76,52 @@ public class CrashHandler implements UncaughtExceptionHandler {
      * @return true:如果处理了该异常信息;否则返回false.
      */
     private boolean handlerException(Throwable ex) {
-        if (ex == null) {
-            return false;
-        }
-        collectDeviceInfo(mContext);
+        if (ex == null) return false;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Looper.prepare();
-                Toast.makeText(mContext, "很抱歉,程序出现异常,即将退出.", Toast.LENGTH_SHORT).show();
+                ToastUtils.showToast(R.string.hint_application_exit);
                 Looper.loop();
             }
         }).start();
-        saveCatchInfo2File(ex);
+        collectDeviceInfo();
+        try {
+            String filePath = saveLog2File(ex);
+            if (TextUtils.isEmpty(filePath)) return false;
+            //sendCrashLog2PM(filePath);
+            printfLog(filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
 
     /**
      * 收集设备信息
-     *
-     * @param context
      */
-    private void collectDeviceInfo(Context context) {
-
+    private void collectDeviceInfo() {
+        Context context = App.get();
         try {
             PackageManager pm = context.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null" : pi.versionName;
                 String versionCode = pi.versionCode + "";
-                infos.put("versionName", versionName);
-                infos.put("versionCode", versionCode);
+                mDeviceInfos.put("versionName", versionName);
+                mDeviceInfos.put("versionCode", versionCode);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "an error occured when collect package info", e);
+            e.printStackTrace();
         }
         Field[] files = Build.class.getDeclaredFields();
         for (Field field : files) {
             try {
                 field.setAccessible(true);
-                infos.put(field.getName(), field.get(null).toString());
-                Log.e(TAG, "field.getName(),field.get(null):" + field.getName() + "," + field.get(null));
+                mDeviceInfos.put(field.getName(), field.get(null).toString());
             } catch (IllegalAccessException e) {
-                Log.e(TAG, "an error occured when collect package info", e);
+                e.printStackTrace();
             }
         }
     }
@@ -148,14 +131,13 @@ public class CrashHandler implements UncaughtExceptionHandler {
      *
      * @param ex
      */
-    private String saveCatchInfo2File(Throwable ex) {
+    private String saveLog2File(Throwable ex) throws Exception {
         StringBuffer sb = new StringBuffer();
-        for (Map.Entry<String, String> entry : infos.entrySet()) {
+        for (Map.Entry<String, String> entry : mDeviceInfos.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             sb.append(key + "=" + value + "\n");
         }
-
         Writer writer = new StringWriter();
         PrintWriter printWriter = new PrintWriter(writer);
         ex.printStackTrace(printWriter);
@@ -167,67 +149,58 @@ public class CrashHandler implements UncaughtExceptionHandler {
         printWriter.close();
         String result = writer.toString();
         sb.append(result);
-        try {
-            return getFileName(sb);
-        } catch (Exception e) {
-            Log.e(TAG, "an error occured while writing file...", e);
-        }
-        return null;
+        return save2File(sb);
     }
+
 
     @NonNull
-    private String getFileName(StringBuffer sb) throws IOException {
-        long timestamp = System.currentTimeMillis();
-        String time = formatter.format(new Date());
-        String fileName = "crash-" + time + "-" + timestamp + ".log";
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String path = "/mnt/sdcard/crash/";//文件路径
-            File dir = new File(path);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            FileOutputStream fos = new FileOutputStream(path + fileName);
-            fos.write(sb.toString().getBytes());
-            //发送给开发人员
-            sendCrashLog2PM(path + fileName);
-            fos.close();
-        }
-        return fileName;
+    private String save2File(StringBuffer sb) throws IOException {
+        String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String fileName = "crash_" + time + ".txt";
+        String fileDir = App.get().getFilesDir().getAbsolutePath();
+        String filePath = fileDir + "/log/" + fileName;
+        File f = new File(filePath);
+        if (!f.getParentFile().exists()) f.getParentFile().mkdirs();
+        if (!f.exists()) f.createNewFile();
+        FileOutputStream fos = new FileOutputStream(f);
+        fos.write(sb.toString().getBytes());
+        fos.flush();
+        fos.close();
+        return filePath;
     }
 
+
     /**
-     * 将捕获的导致崩溃的错误信息发送给开发人员
-     * <p>
-     * 目前只将log日志保存在sdcard 和输出到LogCat中，并未发送给后台。
+     * 将捕获的导致崩溃的错误信息发送给后端
      */
-    private void sendCrashLog2PM(String fileName) {
-        if (!new File(fileName).exists()) {
-            Toast.makeText(mContext, "日志文件不存在！", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void sendCrashLog2PM(String filePath) {
+        if (TextUtils.isEmpty(filePath) || !new File(filePath).exists()) return;
+        // todo
+    }
+
+    private void printfLog(String filePath) {
+        if (TextUtils.isEmpty(filePath) || !new File(filePath).exists()) return;
         FileInputStream fis = null;
         BufferedReader reader = null;
-        String s = null;
+        String s;
         try {
-            fis = new FileInputStream(fileName);
+            fis = new FileInputStream(filePath);
             reader = new BufferedReader(new InputStreamReader(fis, "GBK"));
             while (true) {
                 s = reader.readLine();
                 if (s == null) break;
-                //由于尚未确定以何种方式发送，所以先打出log日志。
-                Log.e(TAG, "info:" + s.toString());
+                Log.d(TAG, "info:" + s.toString());
             }
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {   // 关闭流
+        } finally {
             try {
-                reader.close();
-                fis.close();
+                if (reader != null) reader.close();
+                if (fis != null) fis.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
 }

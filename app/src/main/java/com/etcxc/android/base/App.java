@@ -59,8 +59,7 @@ public class App extends Application {
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);
         //异常扑捉初始化
-        CrashHandler catchHandler = CrashHandler.getInstance();
-        catchHandler.init(getApplicationContext());
+        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
         LogUtil.d(TAG, "App Application onCreate");
     }
 

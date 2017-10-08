@@ -1,6 +1,5 @@
-package com.etcxc.android.net.Ble;
+package com.etcxc.android.net.ble;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -152,44 +151,6 @@ public class BleCmdPackager {
             ret[x++] = HEX[0x0F & v];
         }
         return new String(ret);
-    }
-
-
-    public static void main(String[] args) {
-        List<String> cmds = new ArrayList<>();
-        //读余额
-        cmds.add("00A40000023F00");
-        cmds.add("00A40000021001");
-//        cmds.add("805c000204");
-        //读卡信息
-    /*    final byte[] cmd = {(byte) 0x00, // CLA Class
-                (byte) 0xB0, // INS Instruction
-                (byte) (0x00000080 | (22 & 0x1F)), // P1 Parameter 1//
-                (byte) 0x00, // P2 Parameter 2
-                (byte) 0x00, // Le
-        };
-        cmds.add(toHexString(cmd, 0, cmd.length));
-        System.out.println(toHexString(cmd, 0, cmd.length));*/
-/*        cmds.add("0020000003123456");
-        cmds.add("805000020B010000271681868816815610");*/
-        cmds.add("0020000003123456");
-      /*  final byte[] cmd = {(byte) 0x00, // CLA Class
-                (byte) 0xB2, // INS Instruction
-                (byte) 0x01, // P1 Parameter 1
-                (byte) (0x00000080 | (18 & 0x1F)), // P2 Parameter 2
-                (byte) 0x00// Le
-        };*/
-        //   (byte) ((18 << 3) | 0x04), // P2 Parameter 2
-        /*System.out.println(toHexString(cmd, 0, cmd.length));
-        cmds.add(toHexString(cmd, 0, cmd.length))*/;
-        cmds.add("00b2019200");
-        String tvlCmd = formatTLV(cmds, true);
-        String piccCmd = piccCmd(tvlCmd);
-        byte[] bleCmd = bleEncode(HexStringToByteArray(piccCmd));
-        byte[] procotolCmd = procotolEncode(bleCmd);
-        System.out.println(toHexString(procotolCmd, 0, procotolCmd.length));
-//        ["0020000003123456", "805000020B010000271681868816815610"]
-
     }
 
 }

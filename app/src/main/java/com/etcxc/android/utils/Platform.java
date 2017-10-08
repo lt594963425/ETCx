@@ -22,15 +22,13 @@ import android.os.Looper;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static com.etcxc.android.crash.CrashHandler.TAG;
-
 public class Platform
 {
     private static final Platform PLATFORM = findPlatform();
 
     public static Platform get()
     {
-        LogUtil.e(TAG,PLATFORM.getClass().toString());
+//        LogUtil.e(TAG,PLATFORM.getClass().toString());
         return PLATFORM;
     }
 

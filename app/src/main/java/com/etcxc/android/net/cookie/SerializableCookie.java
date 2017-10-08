@@ -31,12 +31,13 @@ import java.util.Locale;
 
 import okhttp3.Cookie;
 
-import static com.etcxc.android.crash.CrashHandler.TAG;
+
 
 /**
  * *Created by LiuTao
  */
 public class SerializableCookie implements Serializable {
+    private static final String TAG = SerializableCookie.class.getSimpleName();
     private static final long serialVersionUID = 6374381323722046732L;
 
     public static final String HOST = "host";
