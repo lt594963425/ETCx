@@ -7,24 +7,24 @@
     android:orientation="vertical">
      <View
          android:layout_width="match_parent"
-         android:layout_height="18dp"/>
+         android:layout_height="5dip"/>
     <ImageView
         android:focusable="false"
         android:id="@+id/item_home_gv_iv"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:srcCompat="@drawable/vd_brief_description_of_business" />
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"/>
+        android:layout_height="5dip"/>
     <TextView
         android:focusable="false"
         android:id="@+id/item_home_gv_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/bill_check"
-        android:textSize="15sp" />
+        android:textSize="@dimen/font_middle" />
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"/>
+        android:layout_height="5dip"/>
 </LinearLayout>

@@ -25,7 +25,7 @@ public class WXPay {
     public static boolean TuneUpWxPay(String s) {
         Gson gson = new Gson();
         WxPayRecharge wxPayRecharge = gson.fromJson(s, WxPayRecharge.class);
-        if ( !wxPayRecharge.getCode().equals("s_ok")) return false;
+        if (! "s_ok".equals(wxPayRecharge.getCode())) return false;
         return wxpay(wxPayRecharge.getVar());
     }
 

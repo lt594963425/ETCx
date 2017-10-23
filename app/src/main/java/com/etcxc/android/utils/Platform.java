@@ -47,8 +47,7 @@ public class Platform
         return new Platform();
     }
 
-    public Executor defaultCallbackExecutor()
-    {
+    public Executor defaultCallbackExecutor() {
         return Executors.newCachedThreadPool();
     }
 

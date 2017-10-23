@@ -15,9 +15,7 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.etcxc.android.BuildConfig;
@@ -30,7 +28,6 @@ import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
 import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONObject;
@@ -112,11 +109,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         mDriveImageView = find(R.id.drive_license_imageview);
         mDriveCamera = find(R.id.drive_license_camera_image);
         if (mIsOrg) {
-            RelativeLayout fristLicenseLayout = find(R.id.first_license_layout);
-            ViewGroup.LayoutParams params = fristLicenseLayout.getLayoutParams();
-            params.width = UIUtils.dip2Px(152);
-            params.height = UIUtils.dip2Px(217);
-            fristLicenseLayout.setLayoutParams(params);
+            mFristImageView.setScaleType(ImageView.ScaleType.CENTER);
             mFristImageView.setImageResource(R.mipmap.ic_org_license);
             find(R.id.second_license_layout).setVisibility(View.VISIBLE);
         }
@@ -194,9 +187,9 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                         closeProgressDialog();
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
-                        if (code.equals("s_ok")) {
+                        if ("s_ok".equals(code)) {
                             openActivity(ContactPhoneActivity.class);
-                        } else if (code.equals("error")) {
+                        } else if ("error".equals(code)) {
                             String message = jsonObject.getString("message");
                             ToastUtils.showToast(message);
                         }

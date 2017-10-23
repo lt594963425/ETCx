@@ -1,17 +1,13 @@
 package com.etcxc.android.ui.activity;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,20 +22,13 @@ import com.etcxc.android.ui.fragment.FragmentInUse;
 import com.etcxc.android.ui.fragment.FragmentReport;
 import com.etcxc.android.ui.fragment.FragmentTotal;
 import com.etcxc.android.ui.view.MaterialSearchView;
+import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-
 import static com.etcxc.android.utils.UIUtils.closeAnimator;
-
 
 /**
  * 我的卡
@@ -54,13 +43,21 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
     private List<Pair<String, Fragment>> mItems;
     public ArrayList<String> mDatas;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_etc_card);
         initView();
+        initData();
         init();
+    }
+
+    private void initData() {
+        mDatas = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            mDatas.add(i, String.valueOf(i));
+            LogUtil.e(TAG, mDatas.size() + "");
+        }
     }
 
     private void initView() {
@@ -70,39 +67,21 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         mTabLayout = (TabLayout) findViewById(R.id.user_card_tab);
         mViewPager = (ViewPager) findViewById(R.id.user_card_viewpager);
 
-
     }
-
-
     private void init() {
-        Observable.create(new ObservableOnSubscribe<List<String>>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<List<String>> e) throws Exception {
-                mDatas = new ArrayList<>();
-                for (int i = 0; i < 10; i++) {
-                    mDatas.add(i,String.valueOf(i));
-                    Log.e(TAG,mDatas.size()+"");
-                }
-                e.onNext(mDatas);
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<String>>() {
-            @Override
-            public void accept(@NonNull List<String> string) throws Exception {
                 mItems = new ArrayList<>();
-                mItems.add(new Pair<>(getString(R.string.card_total), new FragmentTotal(string)));
-                mItems.add(new Pair<>(getString(R.string.card_inUser), new FragmentInUse(string)));
-                mItems.add(new Pair<>(getString(R.string.card_activa), new FragmentActiva(string)));
-                mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport(string)));
-                mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled(string)));
+                mItems.add(new Pair<>(getString(R.string.card_total), new FragmentTotal(mDatas)));
+                mItems.add(new Pair<>(getString(R.string.card_inUser), new FragmentInUse(mDatas)));
+                mItems.add(new Pair<>(getString(R.string.card_activa), new FragmentActiva(mDatas)));
+                mItems.add(new Pair<>(getString(R.string.card_report), new FragmentReport(mDatas)));
+                mItems.add(new Pair<>(getString(R.string.card_cancled), new FragmentCanceled(mDatas)));
                 mViewPager.setAdapter(new UserTabAdapter(getSupportFragmentManager(), mItems));
                 mViewPager.setOffscreenPageLimit(5);
                 setupTabLayout();
                 setupSearch();
 
-            }
-        });
     }
+
     private void setupTabLayout() {
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -120,18 +99,35 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         mSearchView.setVoiceSearch(false);
         mSearchView.setCursorDrawable(R.drawable.color_cursor_orange);
         mSearchView.setSuggestions(mDatas.toArray(new String[mDatas.size()]));
+        //监听搜索结果点击事件
+
+        mSearchView.setOnSuggestionClickListener(new MaterialSearchView.OnSuggestionClickListener() {
+            @Override
+            public void onSuggestionClick(final String name) {
+                mSearchView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSearchView.closeSearch();
+                        //数据库查询
+                        ToastUtils.showToast(name);
+                    }
+
+                }, 200);
+            }
+        });
         mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
                 Snackbar.make(findViewById(R.id.container), "Query: " + query, Snackbar.LENGTH_LONG)
                         .show();
+                ToastUtils.showToast("点击了");
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Do some magic
+                ToastUtils.showToast("改变了");
                 return false;
             }
         });
@@ -140,10 +136,12 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
             @Override
             public void onSearchViewShown() {
                 //Do some magic
+                ToastUtils.showToast("弹出");
             }
 
             @Override
             public void onSearchViewClosed() {
+                ToastUtils.showToast("关闭");
                 //Do some magic
             }
         });
@@ -176,7 +174,6 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         getMenuInflater().inflate(R.menu.menu_user_card, menu);
         MenuItem search = menu.findItem(R.id.item_search);//搜索
         mSearchView.setMenuItem(search);
-
         return true;
     }
 
@@ -194,22 +191,6 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == MaterialSearchView.REQUEST_VOICE && resultCode == RESULT_OK) {
-            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            if (matches != null && matches.size() > 0) {
-                String searchWrd = matches.get(0);
-
-                if (!TextUtils.isEmpty(searchWrd)) {
-                    mSearchView.setQuery(searchWrd, false);
-                }
-            }
-
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
 
 }

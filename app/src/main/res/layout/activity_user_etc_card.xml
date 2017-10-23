@@ -52,7 +52,6 @@
 
         <com.etcxc.android.ui.view.MaterialSearchView
             android:id="@+id/search_view"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </FrameLayout>

@@ -21,7 +21,6 @@ import com.etcxc.MeManager;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
-import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
@@ -32,7 +31,6 @@ import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.mTextWatcher;
 import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -275,7 +273,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                             if ("s_ok".equals(code)) {
                                 successResult(jsonObject);
                             }
-                            if (code.equals("error")) {
+                            if ("error".equals(code)) {
 
                                 errorResult(jsonObject);
                             }
@@ -311,7 +309,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         PublicSPUtil.getInstance().putString("pwd", pwd);
         PublicSPUtil.getInstance().putString("nickname", nickName);
         Log.e(TAG, uid + ":" + nickName + ":" + token + ":" + uid);
-        EventBus.getDefault().post(new MessageEvent(nickName));
         isShowPictureCode = false;
         MeManager.setUid(uid);   //todo
         MeManager.setPhone(tel);
@@ -344,7 +341,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                 break;
             case "err_password":
                 ToastUtils.showToast(R.string.passworderr);//
-
                 break;
             case "err_captcha":
                 ToastUtils.showToast(R.string.err_captcha);
@@ -404,7 +400,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+
         isShowPictureCode = false;
         OkHttpUtils.cancelTag(this);
 

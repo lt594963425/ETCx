@@ -16,6 +16,7 @@
             android:layout_height="45dp"
             android:layout_marginLeft="5dp"
             android:gravity="center"
+            android:textSize="@dimen/font_middle"
             android:text="@string/card_num" />
 
         <EditText
@@ -34,6 +35,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:textSize="@dimen/font_middle"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_marginLeft="5dp"
@@ -51,6 +53,7 @@
             android:layout_height="45dp"
             android:layout_marginLeft="5dp"
             android:gravity="center"
+            android:textSize="@dimen/font_middle"
             android:text="@string/phone_num" />
 
         <EditText

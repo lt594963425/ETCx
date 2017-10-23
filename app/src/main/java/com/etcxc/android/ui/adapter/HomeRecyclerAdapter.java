@@ -20,6 +20,7 @@ public class HomeRecyclerAdapter extends BaseSelectAdapter {
          this.mData =datas;
          this.mMages =image ;
      }
+    @Override
     public void getInitView(View view) {
         mImageView = (ImageView) view.findViewById(R.id.item_home_gv_iv);
         mTextView = (TextView) view.findViewById(R.id.item_home_gv_tv);

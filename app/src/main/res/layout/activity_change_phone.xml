@@ -116,6 +116,7 @@
             app:srcCompat="@drawable/vd_captcha_black" />
 
         <EditText
+
             android:layout_marginLeft="20dp"
             android:id="@+id/new_captcha_edt"
             android:layout_width="0dp"

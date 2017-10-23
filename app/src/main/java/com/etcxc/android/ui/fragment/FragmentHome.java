@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
@@ -25,6 +23,7 @@ import com.etcxc.android.ui.activity.IssueFinishActivity;
 import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
+import com.etcxc.android.ui.activity.UploadLicenseActivity;
 import com.etcxc.android.ui.adapter.BaseSelectAdapter;
 import com.etcxc.android.ui.adapter.GlideImageLoader;
 import com.etcxc.android.ui.adapter.HomeRecyclerAdapter;
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
+
 /**
  * 首页
  * Created by LiuTao on 2017/6/2 0002.
@@ -55,8 +55,6 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg",
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498558224830&di=b546d2811f9fa910decc55b981f8df8c&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F77%2F47%2F63bOOOPIC74_1024.jpg"};
     private GridRecyclerView mHomeRecycler;
-    private LinearLayout mETCOnline;
-    private RelativeLayout mETCRecharge, mETCSave;
     private static int[] mImage = {
             R.drawable.vd_brief_description_of_business,
             R.drawable.vd_recharge_record,
@@ -75,26 +73,20 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, null);
-        mETCOnline = (LinearLayout) view.findViewById(R.id.home_etc_online_lly);//ETC在线办理
-        mETCRecharge = (RelativeLayout) view.findViewById(R.id.home_etc_recharge_rly);//ETC充值
-        mETCSave = (RelativeLayout) view.findViewById(R.id.home_etc_circle_save_rly);//ETC圈存
+        initView(view);
+        return view;
+    }
+    private void initView(View view) {
+        view.findViewById(R.id.home_etc_online_lly).setOnClickListener(this);//ETC在线办理
+        view.findViewById(R.id.home_etc_recharge_rly).setOnClickListener(this);//ETC充值
+        view.findViewById(R.id.home_etc_circle_save_rly).setOnClickListener(this);//ETC圈存
         mHomeRecycler = (GridRecyclerView) view.findViewById(R.id.home_recylerview);
         mBanner = (Banner) view.findViewById(R.id.home_banner);
         mBanner.setImages(new ArrayList<>(Arrays.asList(mBannerImagess))).setImageLoader(new GlideImageLoader()).start();
         mBanner.setBannerAnimation(Transformer.Accordion);
-        initView();
-        return view;
-    }
-
-    private void initView() {
-        mETCOnline.setOnClickListener(this);
-        mETCRecharge.setOnClickListener(this);
-        mETCSave.setOnClickListener(this);
         setReCyclerView();
         runLayoutAnimation();
-
     }
-
     private void setReCyclerView() {
         GridLayoutManager gridLayManager = new GridLayoutManager(getActivity(), 3);
         gridLayManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -125,14 +117,10 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
                 ToastUtils.showToast("" + position);
                 break;
             case 1:
+                openActivity(UploadLicenseActivity.class);
                 break;
             case 2://网点查询
-                if (ActivityCompat.checkSelfPermission(getActivity()
-                        , Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getActivity()
-                        , Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
                 openActivity(NetworkQueryActivity.class);
@@ -189,6 +177,7 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
         super.onResume();
     }
 
+    @Override
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("FragmentExpand");

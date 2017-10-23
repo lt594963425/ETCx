@@ -13,6 +13,7 @@
     <!-- 设置字体大小 -->
     <dimen name="font_small">12sp</dimen>
     <dimen name="font_middle">16sp</dimen>
+    <dimen name="font_xmiddle">18sp</dimen>
     <dimen name="font_big">20sp</dimen>
 
     <!-- 设置按钮高度 -->

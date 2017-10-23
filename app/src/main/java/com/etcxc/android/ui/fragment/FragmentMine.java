@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.etcxc.MeManager;
@@ -46,8 +44,6 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -60,12 +56,12 @@ import io.reactivex.schedulers.Schedulers;
 import static com.etcxc.android.R.id.mine_user_head;
 import static com.etcxc.android.net.FUNC.LOGIN_OUT;
 import static com.etcxc.android.net.NetConfig.JSON;
-import static com.etcxc.android.utils.FileUtils.getImageDegree;
 
 
 /**
  * 我的
- * Created by 刘涛 on 2017/6/2 0002.
+ * @author Liutao
+ * @date 2017/6/2 0002
  */
 public class FragmentMine extends BaseFragment implements View.OnClickListener {
     protected final String TAG = "FragmentMine";
@@ -74,10 +70,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private TextView mMineUserName;
     private TextView mExit;
     private Handler mHandler = new Handler();
-    private ColorCircle mUpdateDot;
-    /*头像名称*/
-    private String CROP_HEAD ;//
+    private String CROP_HEAD;
     private Uri resultUri;
+    private LoadImageHeapler mHeadLoader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,6 +98,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         find(R.id.mine_changephone_toright).setOnClickListener(this);
         find(R.id.mine_aboutus_toright).setOnClickListener(this);
         find(R.id.mine_layout).setOnClickListener(this);
+
         mMineUserHead = find(mine_user_head);
         mMineUserName = find(R.id.mine_user_name);
         mExit = find(R.id.mine_exit_login);
@@ -110,19 +106,21 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         mMineUserName.setText(R.string.now_login);
         VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
         mMineUserHead.setImageDrawable(drawable);
-        mUpdateDot = find(R.id.update_dot);
+        ColorCircle mUpdateDot = find(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
-        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE)
+        if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE) {
             mUpdateDot.setVisibility(View.VISIBLE);
+        }
         mHandler.postDelayed(LOAD_DATA, 500);
         mMineUserHead.setOnClickListener(this);
         mMineUserHead.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 File file = new File(FileUtils.getCachePath(getActivity()), CROP_HEAD);
-                if (file.exists())
+                if (file.exists()) {
                     resultUri = Uri.fromFile(file);
+                }
                 FileUtils.showBigImageView(getActivity(), resultUri);
                 return false;
             }
@@ -134,9 +132,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         @Override
         public void run() {
             if (MeManager.getIsLogin()) {
-
                 mExit.setVisibility(View.VISIBLE);
-                Log.e(TAG,MeManager.getName());
+                LogUtil.e(TAG, MeManager.getName());
                 mMineUserName.setText(MeManager.getName());
                 initUserInfo();
             } else {
@@ -145,7 +142,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
                 mMineUserHead.setImageDrawable(drawable);
             }
-
         }
     };
 
@@ -156,11 +152,9 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 openActivity(MineCardActivity.class);
                 break;
             case R.id.mine_user_head:
-
-            case R.id.mine_layout:  //用户信息页面
+            case R.id.mine_layout:
                 if (MeManager.getIsLogin()) {
-                    //已登录
-                    openActivityForResult(PersonalInfoActivity.class, REQUST_CODE);
+                    openActivityForResult(PersonalInfoActivity.class,REQUST_CODE);
 
                 } else {
                     //未登录：点击修改密码跳入登录页面
@@ -168,7 +162,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                 }
 
                 break;
-            case R.id.mine_harvestaddress_toright:  // 我的收获地址
+            case R.id.mine_harvestaddress_toright:
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
                     openActivityForResult(LoginActivity.class, REQUST_CODE);
@@ -177,11 +171,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     openActivity(ReceiptAddressActivity.class);
                 }
                 break;
-            case R.id.mine_recommendfriend_toright: // 推荐好友
-                //showShareDialog();
+            case R.id.mine_recommendfriend_toright:
                 openActivity(ShareActivity.class);
                 break;
-            case R.id.mine_changepassword_toright:  //修改密码
+            case R.id.mine_changepassword_toright:
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
                     openActivityForResult(LoginActivity.class, REQUST_CODE);
@@ -190,7 +183,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     openActivityForResult(ChangePasswordActivity.class, REQUST_CODE);
                 }
                 break;
-            case R.id.mine_changephone_toright:     // 修改手机
+            case R.id.mine_changephone_toright:
                 if (!MeManager.getIsLogin()) {
                     //未登录：点击修改密码跳入登录页面
                     openActivityForResult(LoginActivity.class, REQUST_CODE);
@@ -199,7 +192,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                     openActivity(ChangePhoneActivity.class);
                 }
                 break;
-            case R.id.mine_aboutus_toright:         //关于我们
+            case R.id.mine_aboutus_toright:
                 openActivity(AboutUsActivity.class);
                 break;
             case R.id.mine_exit_login:
@@ -210,44 +203,16 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     }
 
     public void initUserInfo() {
-        CROP_HEAD =  MeManager.getToken()+"_crop.jpg";
-        if (NetConfig.isAvailable()) {
-            LoadImageHeapler headLoader = new LoadImageHeapler(getActivity(), CROP_HEAD);
-            headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
-                @Override
-                public void loadImage(Bitmap bmp) {
-                    mMineUserHead.setImageBitmap(bmp);
-                }
-            });
-        } else {
-            if (cropExists(CROP_HEAD)) {
-                setImageFromUri(mMineUserHead, Uri.fromFile(new File(FileUtils.getCachePath(getActivity()) + File.separator + CROP_HEAD)));
+        CROP_HEAD = MeManager.getToken() + "_crop.jpg";
+        if (mHeadLoader == null) {
+            mHeadLoader = new LoadImageHeapler(CROP_HEAD);
+        }
+        mHeadLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+            @Override
+            public void loadImage(Bitmap bmp) {
+                mMineUserHead.setImageBitmap(bmp);
             }
-
-        }
-    }
-
-    private void setImageFromUri(ImageView imageView, Uri uri) {
-        if (imageView == null || uri == null) return;
-        try {
-            String cropName = CROP_HEAD;
-            int degree = getImageDegree(FileUtils.getCachePath(getActivity()) + File.separator + cropName);
-            imageView.setImageBitmap(FileUtils.rotateBitmapByDegree(loadBitmap(uri), degree));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inPreferredConfig = Bitmap.Config.RGB_565;
-        opt.inSampleSize = 2;
-        return BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri), null, opt);
-    }
-
-    private boolean cropExists(String cropName) {
-        File file = new File(FileUtils.getCachePath(getActivity()), cropName);
-        return file.exists() && file.length() > 0;
+        });
     }
 
 
@@ -278,40 +243,41 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
-            @Override
-            public void accept(@NonNull String s) throws Exception {
-                Log.e(TAG, s);
-                JSONObject result = new JSONObject(s);
-                String code = result.getString("code");
-                if (code.equals("s_ok")) {
-                    closeProgressDialog();
-                    ToastUtils.showToast(R.string.exitlogin);
-                    MeManager.clearAll();
-                    MeManager.setIsLgon(false);
-                    mHandler.postDelayed(LOAD_DATA, 400);
-                }
-                if (code.equals("error")) {
-                    closeProgressDialog();
-                    String msg = result.getString("message");
-                    if (msg.equals(NetConfig.ERROR_TOKEN)) {
-                        MeManager.setIsLgon(false);
-                        openActivityForResult(LoginActivity.class, REQUST_CODE);
-                    }if(msg.equals("auth failed")){
-                        MeManager.setIsLgon(false);
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        Log.e(TAG, s);
+                        JSONObject result = new JSONObject(s);
+                        String code = result.getString("code");
+                        if ("s_ok".equals(code)) {
+                            closeProgressDialog();
+                            ToastUtils.showToast(R.string.exitlogin);
+                            MeManager.clearAll();
+                            MeManager.setIsLgon(false);
+                            mHandler.postDelayed(LOAD_DATA, 400);
+                        }
+                        if ("error".equals(code)) {
+                            closeProgressDialog();
+                            String msg = result.getString("message");
+                            if (NetConfig.ERROR_TOKEN.equals(msg)) {
+                                MeManager.setIsLgon(false);
+                                openActivityForResult(LoginActivity.class, REQUST_CODE);
+                            }
+                            if ("auth failed".equals(msg)) {
+                                MeManager.setIsLgon(false);
+                            }
+
+                        }
+
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        closeProgressDialog();
+                        Log.e(TAG, throwable.toString());
+                        ToastUtils.showToast(R.string.request_failed);
 
-                }
-
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-                closeProgressDialog();
-                Log.e(TAG, throwable.toString());
-                ToastUtils.showToast(R.string.request_failed);
-
-            }
-        });
+                    }
+                });
     }
 
     private void showExitDialog() {
@@ -344,13 +310,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUST_CODE:
-                if (MeManager.getIsLogin()) {
                     mHandler.postDelayed(LOAD_DATA, 300);
-                } else {
-                    VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
-                    mMineUserHead.setImageDrawable(drawable);
-                    mMineUserName.setText(R.string.now_login);
-                }
                 break;
             default:
                 break;
@@ -360,11 +320,12 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onResume() {
-        LogUtil.e(TAG,"onResume");
+        LogUtil.e(TAG, "onResume");
         MobclickAgent.onPageStart("FragmentExpand");
         super.onResume();
     }
 
+    @Override
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("FragmentExpand");
@@ -373,8 +334,10 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mHeadLoader != null) {
+            mHeadLoader = null;
+        }
         mHandler.removeCallbacks(LOAD_DATA);
-
     }
 
 

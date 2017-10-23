@@ -21,8 +21,8 @@
             android:id="@+id/login_phonenumber_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dip"
+            android:layout_marginRight="30dip"
             android:layout_marginTop="40dp"
             android:gravity="center_vertical">
 
@@ -39,7 +39,7 @@
                 android:maxLength="11"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
-                android:textSize="15sp" />
+                android:textSize="@dimen/font_middle" />
 
             <ImageView
                 android:id="@+id/login_phonenumber_delete"
@@ -76,12 +76,12 @@
                 android:layout_toLeftOf="@+id/login_eye"
                 android:background="@null"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
-                android:hint="@string/please_input_passwords"
+                android:hint="@string/input_passwords"
                 android:inputType="textPassword"
                 android:maxLength="16"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
-                android:textSize="15sp" />
+                android:textSize="@dimen/font_middle" />
 
             <ImageView
                 android:id="@+id/login_password_delete"
@@ -170,10 +170,11 @@
         <RelativeLayout
             android:id="@+id/login_more_type_layout"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/login_verificode_layout"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
+            android:padding="5dp"
             android:layout_marginTop="6dp"
             android:gravity="center_vertical">
 
@@ -182,9 +183,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
+                android:padding="3dp"
                 android:text="@string/login_message"
                 android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:textSize="@dimen/font_small" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -201,7 +203,7 @@
                     android:padding="3dp"
                     android:text="@string/login_fast_regist"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/font_small" />
 
                 <View
                     android:layout_width="1dp"
@@ -216,7 +218,7 @@
                     android:padding="3dp"
                     android:text="@string/forget_password"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/font_small" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -232,7 +234,7 @@
             android:background="@drawable/bg_button"
             android:text="@string/login"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="@dimen/font_middle" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -243,6 +245,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/regist_protocal"

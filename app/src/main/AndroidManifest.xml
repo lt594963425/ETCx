@@ -13,29 +13,26 @@
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.NFC" />
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REAL_GET_TASKS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
+        android:hardwareAccelerated="true"
         android:name=".base.App"
         android:allowBackup="true"
+        android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
@@ -63,6 +60,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -102,7 +100,6 @@
         <activity
             android:name=".ui.activity.PersonalInfoActivity"
             android:theme="@style/BG_GRAY" />
-
         <activity
             android:name=".ui.activity.OnlineSchedulActivity"
             android:theme="@style/BG_GRAY" />
@@ -166,6 +163,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.etcxc.android.action.DSERVICE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
@@ -216,11 +214,14 @@
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
-        <activity android:name=".ui.activity.BleStoreActivity"
+        <activity
+            android:name=".ui.activity.BleStoreActivity"
             android:theme="@style/BG_GRAY" />
-        <activity android:name=".ui.activity.StoreSuccessActivity"
+        <activity
+            android:name=".ui.activity.StoreSuccessActivity"
             android:theme="@style/BG_GRAY" />
-        <activity android:name=".ui.activity.USBStoreActivity"
+        <activity
+            android:name=".ui.activity.USBStoreActivity"
             android:theme="@style/BG_GRAY" />
         //友盟
         <meta-data
@@ -239,7 +240,6 @@
             android:configChanges="orientation|keyboardHidden|navigation"
             android:exported="false"
             android:screenOrientation="behind" />
-
         <service android:name=".ui.service.GeocodeAddressIntentService" />
     </application>
 

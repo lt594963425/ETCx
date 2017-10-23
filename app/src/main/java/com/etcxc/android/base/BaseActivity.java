@@ -18,8 +18,6 @@ import com.etcxc.android.utils.LogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.umeng.analytics.MobclickAgent;
 
-import okhttp3.OkHttpClient;
-
 import static com.etcxc.android.utils.UIUtils.closeAnimator;
 
 
@@ -28,7 +26,6 @@ import static com.etcxc.android.utils.UIUtils.closeAnimator;
  */
 @SuppressWarnings("ResourceType")
 public abstract class BaseActivity extends RxAppCompatActivity {
-    protected final OkHttpClient client = new OkHttpClient();
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
 
@@ -140,11 +137,11 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
     }
 
+    @Override
     public void onBackPressed() {
-        finish();
+        super.onBackPressed();
         closeAnimator(this);
     }
-
     protected void initState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -203,9 +200,4 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (mXToolbar != null) mXToolbar.setVisibility(View.GONE);
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        closeAnimator(this);
-    }
 }

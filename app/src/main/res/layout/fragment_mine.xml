@@ -10,328 +10,316 @@
         android:layout_height="match_parent"
         android:background="#f0f0f0"
         android:orientation="vertical">
-
         <RelativeLayout
+            android:minHeight="80dp"
             android:id="@+id/mine_layout"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:background="#ffffff"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_item_view"
             android:clickable="true"
             android:gravity="center_vertical">
-
             <com.etcxc.android.ui.view.CircleImageView
-
                 android:id="@+id/mine_user_head"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="30dp"
                 android:gravity="center"
                 android:padding="2dp"
                 app:civ_border_color="@color/colorOrange"
                 app:civ_border_width="1dp"
+                app:srcCompat="@drawable/vd_head"
                 lt:backgroundHeadColor="@color/yellow"
                 lt:circleBorderHeadWidth="5dp"
-                lt:ringHeadColor="@color/colorAccent" />
+                lt:ringHeadColor="@color/colorAccent"
+                lt:targetApi="lollipop" />
 
             <TextView
                 android:id="@+id/mine_user_name"
-                android:layout_width="120dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="25dp"
                 android:layout_toRightOf="@+id/mine_user_head"
                 android:focusable="false"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:maxEms="1"
-                android:elevation="1dp"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:singleLine="true"
+                android:paddingLeft="20dp"
                 android:text="@string/now_login"
                 android:textColor="@color/colorOrange"
                 android:textSize="18sp" />
-
-
         </RelativeLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="18dp" />
+            <RelativeLayout
+                android:id="@+id/mine_my_card_toright"
+                android:layout_width="match_parent"
+                android:layout_height="50dip"
+                android:background="@drawable/bg_item_view"
+                android:descendantFocusability="blocksDescendants">
 
-        <RelativeLayout
-            android:id="@+id/mine_my_card_toright"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_item_view"
-            android:descendantFocusability="blocksDescendants">
+                <ImageView
+                    android:id="@+id/mine_iv_my_card"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:padding="13dp"
+                    app:srcCompat="@drawable/vd_mine_my_card" />
 
-            <ImageView
-                android:id="@+id/mine_iv_my_card"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/harvestaddress"
-                android:padding="13dp"
-                app:srcCompat="@drawable/vd_mine_my_card" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/mine_iv_my_card"
+                    android:gravity="center"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="15dp"
+                    android:text="@string/my_card"
+                    android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/mine_iv_my_card"
-                android:gravity="center"
-                android:paddingLeft="2dp"
-                android:paddingRight="15dp"
-                android:text="@string/my_card"
-                android:textSize="15sp" />
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:contentDescription="@string/harvestaddress"
+                    android:focusable="false"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/vd_mine_toright" />
+            </RelativeLayout>
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:contentDescription="@string/harvestaddress"
-                android:focusable="false"
-                android:padding="15dp"
-                app:srcCompat="@drawable/vd_mine_toright" />
-        </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            <RelativeLayout
+                android:id="@+id/mine_harvestaddress_toright"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_item_view"
+                android:descendantFocusability="blocksDescendants">
 
-        <RelativeLayout
-            android:id="@+id/mine_harvestaddress_toright"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_item_view"
-            android:descendantFocusability="blocksDescendants">
+                <ImageView
+                    android:id="@+id/mine_iv_harvestaddress"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/harvestaddress"
+                    android:padding="13dp"
+                    app:srcCompat="@drawable/vd_mine_harvestaddress" />
 
-            <ImageView
-                android:id="@+id/mine_iv_harvestaddress"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/harvestaddress"
-                android:padding="13dp"
-                app:srcCompat="@drawable/vd_mine_harvestaddress" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/mine_iv_harvestaddress"
+                    android:gravity="center"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="15dp"
+                    android:text="@string/harvestaddress"
+                    android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/mine_iv_harvestaddress"
-                android:gravity="center"
-                android:paddingLeft="2dp"
-                android:paddingRight="15dp"
-                android:text="@string/harvestaddress"
-                android:textSize="15sp" />
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:contentDescription="@string/harvestaddress"
+                    android:focusable="false"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/vd_mine_toright" />
+            </RelativeLayout>
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:contentDescription="@string/harvestaddress"
-                android:focusable="false"
-                android:padding="15dp"
-                app:srcCompat="@drawable/vd_mine_toright" />
-        </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            <RelativeLayout
+                android:id="@+id/mine_recommendfriend_toright"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_item_view"
+                android:descendantFocusability="blocksDescendants">
 
-        <RelativeLayout
-            android:id="@+id/mine_recommendfriend_toright"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_item_view"
-            android:descendantFocusability="blocksDescendants">
+                <ImageView
+                    android:id="@+id/mine_iv_recommendfriend"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/share_app"
+                    android:padding="13dp"
+                    app:srcCompat="@drawable/vd_mine_recommendfriend" />
 
-            <ImageView
-                android:id="@+id/mine_iv_recommendfriend"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/share_app"
-                android:padding="13dp"
-                app:srcCompat="@drawable/vd_mine_recommendfriend" />
+                <TextView
+                    android:id="@+id/mine_tv_recommendfriend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/mine_iv_recommendfriend"
+                    android:gravity="center"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="15dp"
+                    android:text="@string/share_app"
+                    android:textSize="15sp" />
 
-            <TextView
-                android:id="@+id/mine_tv_recommendfriend"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/mine_iv_recommendfriend"
-                android:gravity="center"
-                android:paddingLeft="2dp"
-                android:paddingRight="15dp"
-                android:text="@string/share_app"
-                android:textSize="15sp" />
+                <ImageView
 
-            <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:contentDescription="@string/share_app"
+                    android:focusable="false"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/vd_mine_toright" />
+            </RelativeLayout>
 
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:contentDescription="@string/share_app"
-                android:focusable="false"
-                android:padding="15dp"
-                app:srcCompat="@drawable/vd_mine_toright" />
-        </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            <RelativeLayout
+                android:id="@+id/mine_changepassword_toright"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_item_view"
+                android:descendantFocusability="blocksDescendants">
 
-        <RelativeLayout
-            android:id="@+id/mine_changepassword_toright"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_item_view"
-            android:descendantFocusability="blocksDescendants">
+                <ImageView
+                    android:id="@+id/mine_iv_changepassword"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/changepassword"
+                    android:padding="13dp"
+                    app:srcCompat="@drawable/vd_mine_changepassword" />
 
-            <ImageView
-                android:id="@+id/mine_iv_changepassword"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/changepassword"
-                android:padding="13dp"
-                app:srcCompat="@drawable/vd_mine_changepassword" />
+                <TextView
+                    android:id="@+id/mine_tv_changepasswords"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/mine_iv_changepassword"
+                    android:gravity="center"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="15dp"
+                    android:text="@string/changepassword"
+                    android:textSize="15sp" />
 
-            <TextView
-                android:id="@+id/mine_tv_changepasswords"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/mine_iv_changepassword"
-                android:gravity="center"
-                android:paddingLeft="2dp"
-                android:paddingRight="15dp"
-                android:text="@string/changepassword"
-                android:textSize="15sp" />
+                <ImageView
 
-            <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:contentDescription="@string/changepassword"
+                    android:focusable="false"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/vd_mine_toright" />
+            </RelativeLayout>
 
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:contentDescription="@string/changepassword"
-                android:focusable="false"
-                android:padding="15dp"
-                app:srcCompat="@drawable/vd_mine_toright" />
-        </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            <RelativeLayout
+                android:id="@+id/mine_changephone_toright"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_item_view"
+                android:descendantFocusability="blocksDescendants">
 
-        <RelativeLayout
-            android:id="@+id/mine_changephone_toright"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_item_view"
-            android:descendantFocusability="blocksDescendants">
+                <ImageView
+                    android:id="@+id/mine_iv_changephone"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/changephone"
+                    android:padding="13dp"
+                    app:srcCompat="@drawable/vd_mine_changephone" />
 
-            <ImageView
-                android:id="@+id/mine_iv_changephone"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/changephone"
-                android:padding="13dp"
-                app:srcCompat="@drawable/vd_mine_changephone" />
+                <TextView
+                    android:id="@+id/mine_tv_changephone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/mine_iv_changephone"
+                    android:gravity="center"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="15dp"
+                    android:text="@string/changephone"
+                    android:textSize="15sp" />
 
-            <TextView
-                android:id="@+id/mine_tv_changephone"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/mine_iv_changephone"
-                android:gravity="center"
-                android:paddingLeft="2dp"
-                android:paddingRight="15dp"
-                android:text="@string/changephone"
-                android:textSize="15sp" />
+                <ImageView
 
-            <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:contentDescription="@string/changephone"
+                    android:focusable="false"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/vd_mine_toright" />
+            </RelativeLayout>
 
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:contentDescription="@string/changephone"
-                android:focusable="false"
-                android:padding="15dp"
-                app:srcCompat="@drawable/vd_mine_toright" />
-        </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            <RelativeLayout
+                android:id="@+id/mine_aboutus_toright"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_item_view"
+                android:descendantFocusability="blocksDescendants">
 
-        <RelativeLayout
-            android:id="@+id/mine_aboutus_toright"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_item_view"
-            android:descendantFocusability="blocksDescendants">
+                <ImageView
+                    android:id="@+id/mine_iv_aboutus"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/about_us"
+                    android:padding="13dp"
+                    app:srcCompat="@drawable/vd_mine_aboutus" />
 
-            <ImageView
-                android:id="@+id/mine_iv_aboutus"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:contentDescription="@string/about_us"
-                android:padding="13dp"
-                app:srcCompat="@drawable/vd_mine_aboutus" />
+                <TextView
+                    android:id="@+id/mine_tv_aboutus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/mine_iv_aboutus"
+                    android:gravity="center"
+                    android:paddingLeft="2dp"
+                    android:text="@string/about_us"
+                    android:textSize="15sp" />
 
-            <TextView
-                android:id="@+id/mine_tv_aboutus"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/mine_iv_aboutus"
-                android:gravity="center"
-                android:paddingLeft="2dp"
-                android:text="@string/about_us"
-                android:textSize="15sp" />
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:contentDescription="@string/about_us"
+                    android:focusable="false"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/vd_mine_toright" />
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
-                android:contentDescription="@string/about_us"
-                android:focusable="false"
-                android:padding="15dp"
-                app:srcCompat="@drawable/vd_mine_toright" />
-
-            <com.etcxc.android.ui.view.ColorCircle
-                android:id="@+id/update_dot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="10dp"
-                android:layout_toRightOf="@id/mine_tv_aboutus"
-                android:visibility="gone" />
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="30dp" />
-
+                <com.etcxc.android.ui.view.ColorCircle
+                    android:id="@+id/update_dot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/mine_tv_aboutus"
+                    android:visibility="gone" />
+            </RelativeLayout>
 
         <TextView
             android:id="@+id/mine_exit_login"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginTop="20dp"
             android:background="@color/white"
             android:clickable="true"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
             android:text="@string/exitlogin"
             android:textSize="15sp"
+            android:layout_marginBottom="10dp"
             android:visibility="invisible" />
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -1,7 +1,9 @@
 package com.etcxc.android.ui.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,33 +26,27 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.MeManager;
-import com.etcxc.android.BuildConfig;
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
-import com.etcxc.android.bean.MessageEvent;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.view.CircleImageView;
-import com.etcxc.android.utils.DialogPermission;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LoadImageHeapler;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
-import com.etcxc.android.utils.SharedPreferenceMark;
+import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.yalantis.ucrop.UCrop;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -79,33 +75,55 @@ import static com.etcxc.android.utils.UIUtils.closeAnimator;
  */
 public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, View.OnClickListener {
     protected final String TAG = "PersonalInfoActivity";
-    //保存头像的uri
     private Uri uri;
-    /* 请求码*/
     private static final int REQUEST_CODE_TAKE_PHOTO = 1;
     private static final int REQUEST_CODE_ALBUM = 2;
     private Toolbar mToolbar2;
     private Button mExitLogin;
     private TextView mUserName, mUserPhone, mUserSex;
-    private CircleImageView mUserHead;
+    public CircleImageView mUserHead;
     private String IMAGE_HEAD = MeManager.getToken() + "_head.jpg";
-    private String CROP_HEAD =  MeManager.getToken() + "_crop.jpg" ;
-    private Bitmap upBitmap;
+    private String CROP_HEAD = MeManager.getToken() + "_crop.jpg";
+    private LoadImageHeapler mHeadLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personalinfo);
-        EventBus.getDefault().register(this);
         initUserInfoView();
+
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setstatus();
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.user_head:
+                File file = new File(FileUtils.getCachePath(PersonalInfoActivity.this), CROP_HEAD);
+                if (file.exists()) {
+                    uri = Uri.fromFile(file);
+                }
+                FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
+                break;
+            case R.id.info_head_layout:
+                show2Dialog();
+                break;
+            case R.id.info_name_layout:
+                openActivity(ChangeNickNameActivity.class);
+                break;
+            case R.id.info_phone_layout:
+                openActivity(ChangePhoneActivity.class);
+                break;
+            case R.id.info_sex_layout:
+                modifySex();
+                break;
+            //退出登录
+            case R.id.exit_login_btn:
+                requestLoginOut();
+                break;
+            default:
+                break;
+        }
     }
-
     private void initUserInfoView() {
         Resources r = this.getResources();
         uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
@@ -129,35 +147,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         mExitLogin.setOnClickListener(this);
         mToolbar2.setOnMenuItemClickListener(this);
         mUserHead.setOnClickListener(this);
-        setstatus();
+        initData();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.user_head:
-                File file = new File(FileUtils.getCachePath(PersonalInfoActivity.this), CROP_HEAD);
-                if (file.exists())
-                    uri = Uri.fromFile(file);
-                FileUtils.showBigImageView(PersonalInfoActivity.this, uri);
-                break;
-            case R.id.info_head_layout:
-                show2Dialog();
-                break;
-            case R.id.info_name_layout:
-                openActivity(ChangeNickNameActivity.class);
-                break;
-            case R.id.info_phone_layout:
-                openActivity(ChangePhoneActivity.class);
-                break;
-            case R.id.info_sex_layout:
-                modifySex();
-                break;
-            case R.id.exit_login_btn://退出登录
-                requestLoginOut();
-                break;
-        }
-    }
 
 
     private void modifySex() {
@@ -170,7 +162,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             public void onClick(View v) {
                 if (((RadioButton) view.findViewById(R.id.select_man)).isChecked()) {
                     mUserSex.setText("男");
-                } else mUserSex.setText("女");
+                } else {
+                    mUserSex.setText("女");
+                }
                 dialog.dismiss();
             }
         });
@@ -188,34 +182,26 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         });
     }
 
-    private boolean cropExists(String cropName) {
-        File file = new File(FileUtils.getCachePath(this), cropName);
-        return file.exists() && file.length() > 0;
-    }
-
-    private void setstatus() {
+    private void initData() {
         VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
         mUserHead.setImageDrawable(drawable);
-        LoadImageHeapler headLoader = new LoadImageHeapler(this, CROP_HEAD);
         if (MeManager.getIsLogin()) {
-
-            if (NetConfig.isAvailable()) {
-                mUserName.setText(MeManager.getName());
-                mUserPhone.setText(MeManager.getPhone());
-
-                headLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
+            mUserName.setText(MeManager.getName());
+            mUserPhone.setText(MeManager.getPhone());
+            File file = new File(getCachePath(this), CROP_HEAD);
+            if (file.exists()) {
+                LogUtil.e(TAG,"本地加载头像");
+                Glide.with(this).load(file).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mUserHead);
+            } else {
+                if (mHeadLoader == null) {
+                    mHeadLoader = new LoadImageHeapler(CROP_HEAD);
+                }
+                mHeadLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
                     @Override
                     public void loadImage(Bitmap bmp) {
                         mUserHead.setImageBitmap(bmp);
                     }
                 });
-            } else {
-                if (cropExists(CROP_HEAD)) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(new File(getCachePath(this), CROP_HEAD).getAbsolutePath());
-                    mUserHead.setImageBitmap(bitmap);
-                }
-                mUserName.setText(MeManager.getName());
-                mUserPhone.setText(MeManager.getPhone());
             }
         }
 
@@ -225,22 +211,15 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         View view = LayoutInflater.from(this).inflate(R.layout.cameral_album, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view);
-        Dialog dialog = builder.show();
+        AlertDialog dialog = builder.show();
         /*
         相机
          */
         view.findViewById(R.id.take_picture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //申请相机权限
-                if (!NetConfig.isAvailable()) {
-                    ToastUtils.showToast(R.string.network_isdown);
-                    return;
-                }
-                if (PermissionUtil.hasCameraPermission(PersonalInfoActivity.this)) {
-                    uploadAvatarFromPhotoRequest();
-                    dialog.dismiss();
-                }
-
+                startCamera();
+                dialog.dismiss();
             }
         });
         view.findViewById(R.id.select_photo).setOnClickListener(new View.OnClickListener() {
@@ -250,6 +229,57 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 dialog.dismiss();
             }
         });
+    }
+
+    private void startCamera() {
+        if (!SystemUtil.hasCamera()) {
+            ToastUtils.showToast(getString(R.string.camera_not_found));
+            return;
+        }
+        PermissionUtil.requestPermissions(this, Manifest.permission.CAMERA, new PermissionUtil.OnRequestPermissionsResultCallback() {
+            @Override
+            public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    camera();
+                }
+            }
+        });
+    }
+
+    /**
+     * 拍照
+     */
+    private void camera() {
+        File file = new File(getCachePath(this), System.currentTimeMillis() + ".jpg");
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Android7.0以上URI
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //通过FileProvider创建一个content类型的Uri
+            uri = FileProvider.getUriForFile(this, "com.etcxc.android.fileprovider", file);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(file);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+        try {
+            startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
+        } catch (ActivityNotFoundException anf) {
+            ToastUtils.showToast("摄像头未准备好！");
+        }
+    }
+
+    /**
+     * album,相册
+     */
+    private void uploadAvatarFromAlbumRequest() {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);//ACTION_PICK
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, REQUEST_CODE_ALBUM);
     }
 
     /**
@@ -270,87 +300,60 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             return;
         }
         if (requestCode == REQUEST_CODE_ALBUM && data != null) {//相册
-            if (data == null) return;
+            if (data == null) {
+                return;
+            }
             File file1 = new File(FileUtils.getCachePath(this), IMAGE_HEAD);
-            if (file1.exists()) file1.delete();
+            if (file1.exists()) {
+                file1.delete();
+            }
             try {
                 boolean success = file1.createNewFile();
-                if (success)
-                    UCrop.of(data.getData(), Uri.fromFile(file1)).withAspectRatio(1, 1).start(this);
+                if (success) {
+                    UCrop.of(data.getData(), Uri.fromFile(file1))
+                            .withAspectRatio(1, 1)
+                            .withMaxResultSize(400, 800)
+                            .start(this);
+                }
             } catch (IOException e) {
                 LogUtil.e(TAG, "result_album", e);
             }
 
         } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {//相机
             File file = new File(FileUtils.getCachePath(this), IMAGE_HEAD);
-            if (file.exists())
+            if (file.exists()) {
                 file.delete();
+            }
             try {
                 boolean success = file.createNewFile();
-                if (success) UCrop.of(uri, Uri.fromFile(file)).withAspectRatio(1, 1).start(this);
+                if (success) {
+                    UCrop.of(uri, Uri.fromFile(file))
+                            .withAspectRatio(1, 1)
+                            .withMaxResultSize(400, 800)
+                            .start(this);
+                }
             } catch (IOException e) {
                 LogUtil.e(TAG, "result_camera", e);
             }
-        } else if (requestCode == UCrop.REQUEST_CROP) {
-            updateHeadToServer(data);
+        } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            Log.i(TAG, "onActivityResult: " + UCrop.getOutput(data));
+            try {
+                Bitmap bitmap = loadBitmap(UCrop.getOutput(data));
+                updateHeadToServer(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
         }
     }
+
     //reduce
     private Bitmap loadBitmap(Uri uri) throws FileNotFoundException {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
-        opt.inSampleSize = FileUtils.calculateInSampleSize(opt, 200, 300);
+        opt.inSampleSize = FileUtils.calculateInSampleSize(opt, 200, 400);
         return BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, opt);
     }
-
-    /**
-     * camera,相机
-     */
-    private void uploadAvatarFromPhotoRequest() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File imageFile = new File(FileUtils.getCachePath(this), IMAGE_HEAD);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(App.get(), BuildConfig.APPLICATION_ID + ".fileprovider", imageFile);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);//这个权限要添加
-        } else uri = Uri.fromFile(imageFile);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-        startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
-    }
-
-    /**
-     * album,相册
-     */
-    private void uploadAvatarFromAlbumRequest() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);//ACTION_PICK
-        photoPickerIntent.setType("image/*");
-        startActivityForResult(photoPickerIntent, REQUEST_CODE_ALBUM);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PermissionUtil.REQUEST_SHOWCAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    uploadAvatarFromPhotoRequest();
-
-                } else {
-                    if (!SharedPreferenceMark.getHasShowCamera()) {
-                        SharedPreferenceMark.setHasShowCamera(true);
-                        new DialogPermission(this, "关闭摄像头权限影响扫描功能");
-
-                    } else {
-                        Toast.makeText(this, "未获取摄像头权限", Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -387,8 +390,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             WXapi.sendReq(req);
             Log.i(TAG, "。。。。。。。。。。。。WxLogin()，微信登录。。。。。。。");
             ToastUtils.showToast("请稍后");
-        } else
+        } else {
             ToastUtils.showToast("用户未安装微信");
+        }
     }
 
 
@@ -417,21 +421,23 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                         Log.e(TAG, s);
                         JSONObject result = new JSONObject(s);
                         String code = result.getString("code");
-                        if (code.equals("s_ok")) {
+                        if ("s_ok".equals(code)) {
                             closeProgressDialog();
                             MeManager.clearAll();
                             MeManager.setIsLgon(false);
                             ToastUtils.showToast(R.string.exitlogin);
+                            openActivity(LoginActivity.class);
                             finish();
                         }
-                        if (code.equals("error")) {
+                        if ("error".equals(code)) {
                             closeProgressDialog();
                             String msg = result.getString("message");
-                            if (msg.equals(NetConfig.ERROR_TOKEN)) {
+                            if (NetConfig.ERROR_TOKEN.equals(msg)) {
                                 MeManager.setIsLgon(false);
                                 openActivity(LoginActivity.class);
-                            } else
-                                ToastUtils.showToast(R.string.request_failed);
+                            } else {
+                                ToastUtils.showToast(msg);
+                            }
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -443,30 +449,17 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent messageEvent) {
-        mUserName.setText(messageEvent.message);
-        if (!MeManager.getIsLogin()) {
-            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
-            mUserHead.setImageDrawable(drawable);
-        }
-    }
 
     /**
      * 提交头像之服务器
      */
-    private void updateHeadToServer(Intent data) {
-        try {
-            upBitmap = loadBitmap(UCrop.getOutput(data));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void updateHeadToServer(Bitmap bitmap) {
         showProgressDialog(R.string.loading);
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<String> e) throws Exception {
                 File file = new File(getCachePath(PersonalInfoActivity.this), IMAGE_HEAD);
-                Log.e(TAG, "file的大小："+String.valueOf(file.length()));
+                LogUtil.e(TAG, "file的大小：" + String.valueOf(file.length()) + "字节");
                 Map<String, String> params = new HashMap<>();
                 params.put("uid", MeManager.getUid());
                 params.put("token", MeManager.getToken());
@@ -483,22 +476,21 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                     public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                         JSONObject jsonObject = new JSONObject(s);
                         String code = jsonObject.getString("code");
-                        if (code.equals("s_ok")) {
+                        if ("s_ok".equals(code)) {
                             closeProgressDialog();
                             ToastUtils.showToast(R.string.change_head_success);
-                            mUserHead.setImageBitmap(upBitmap);
-                            FileUtils.saveToSDCard(CROP_HEAD,upBitmap); //比较小
-
+                            mUserHead.setImageBitmap(bitmap);
+                            FileUtils.saveToSDCard(CROP_HEAD, bitmap);
                         }
-                        if (code.equals("error")) {
+                        if ("error".equals(code)) {
                             String msg = jsonObject.getString("message");
-                            if (msg.equals(NetConfig.ERROR_TOKEN)) {
+                            if (NetConfig.ERROR_TOKEN.equals(msg)) {
                                 MeManager.setIsLgon(false);
                                 openActivity(LoginActivity.class);
                                 finish();
                             } else {
                                 closeProgressDialog();
-                                ToastUtils.showToast(R.string.request_failed);
+                                ToastUtils.showToast(msg);
                             }
 
                         }
@@ -512,4 +504,15 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                     }
                 });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mHeadLoader != null) {
+            mHeadLoader = null;
+        }
+        finish();
+    }
+
+
 }

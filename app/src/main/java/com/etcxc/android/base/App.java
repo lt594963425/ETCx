@@ -2,21 +2,26 @@ package com.etcxc.android.base;
 
 import android.app.Application;
 
+import com.bumptech.glide.Glide;
 import com.etcxc.android.crash.CrashHandler;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.net.cookie.CookieJarImpl;
 import com.etcxc.android.net.cookie.store.SPCookieStore;
 import com.etcxc.android.net.log.LoggerInterceptor;
+import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
+import com.squareup.leakcanary.LeakCanary;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
 import static com.etcxc.android.base.Constants.WX_APP_ID;
@@ -44,6 +49,9 @@ public class App extends Application {
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)
                 .addInterceptor(new LoggerInterceptor("TAG"))
                 .cookieJar(new CookieJarImpl(new SPCookieStore(this)))
+                //缓存大小20M
+                //.cache(new Cache(App.get().getCacheDir(),20*1024*1024))
+                .cache(new Cache(new File(FileUtils.getCachePath(this),"okhttpCache"),10*1024*1024))
                 .hostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
@@ -61,6 +69,11 @@ public class App extends Application {
         //异常扑捉初始化
         Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
         LogUtil.d(TAG, "App Application onCreate");
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     public synchronized static App get() {
@@ -72,5 +85,20 @@ public class App extends Application {
 
     public static void onProfileSignIn(String ID) {
         MobclickAgent.onProfileSignIn(ID);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level == TRIM_MEMORY_UI_HIDDEN) {
+            Glide.get(this).trimMemory(level);
+        }
+        Glide.get(this).clearMemory();
     }
 }

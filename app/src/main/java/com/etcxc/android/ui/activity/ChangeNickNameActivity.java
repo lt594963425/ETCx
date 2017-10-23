@@ -90,16 +90,14 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                         JSONObject jsonObject = new JSONObject(s);
 
                         String code = jsonObject.getString("code");
-                        if (code.equals("s_ok")) {
+                        if ("s_ok".equals(code)) {
                             MeManager.clearName();
                             MeManager.setName(str);
                             ToastUtils.showToast(R.string.save_success);
                             finish();
                         }
-                        if (code.equals("error")) {
+                        if ("error".equals(code)) {
                             String msg = jsonObject.getString("message");
-                            if (msg.equals("nickName exceed 16byte")) {
-                                ToastUtils.showToast(R.string.nick_name_is_long);
                                 switch (msg){
                                     case "nickName exceed 16byte":
                                         ToastUtils.showToast(R.string.nick_name_is_long);
@@ -113,7 +111,6 @@ public class ChangeNickNameActivity extends BaseActivity implements View.OnClick
                                         ToastUtils.showToast(msg);
                                         break;
                                 }
-                            }
                         }
                     }
 

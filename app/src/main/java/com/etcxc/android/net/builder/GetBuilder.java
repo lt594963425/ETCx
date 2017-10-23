@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class GetBuilder extends OkHttpRequestBuilder<GetBuilder> implements HasParamsable
 {
+
     @Override
     public RequestCall build()
     {

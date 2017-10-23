@@ -1,55 +1,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
-    <LinearLayout
-        android:padding="5dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
+    <Button
+        android:id="@+id/btnOpenReader"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/btn_height"
+        android:background="@drawable/bg_white_line"
+        android:text="@string/open_device"
+        android:textSize="@dimen/font_middle" />
 
-        <Button
-            android:background="@drawable/bg_white_line"
-            android:id="@+id/btnOpenReader"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/btn_height"
-            android:layout_weight="1"
-            android:text="@string/open_device"
-            android:textSize="@dimen/font_middle" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
 
-        <View
-            android:layout_width="2dp"
-            android:layout_height="match_parent" />
-
-        <Button
-            android:id="@+id/btnCloseReader"
-            android:background="@drawable/bg_white_line"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/btn_height"
-            android:layout_weight="1"
-            android:text="@string/close_device"
-            android:textSize="@dimen/font_middle" />
-    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ProgressBar
-            android:elevation="1dp"
             android:id="@+id/usb_progressbar"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="5dp" />
+            android:elevation="1dp"
+            android:padding="5dp"
+            android:textAlignment="center"
+            android:visibility="gone"
+            tools:targetApi="lollipop" />
 
         <EditText
-            android:padding="5dp"
             android:id="@+id/result"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -60,6 +45,7 @@
             android:gravity="top|left"
             android:hint="@string/hint_opera_info"
             android:inputType="textMultiLine"
+            android:padding="5dp"
             android:scrollbars="vertical"
             android:textSize="@dimen/font_middle" />
     </FrameLayout>

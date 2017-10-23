@@ -216,7 +216,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void requestError(JSONObject jsonObject, String code) throws JSONException {
-        if (code.equals("error")) {
+        if ("error".equals(code)) {
             String returnMsg = jsonObject.getString("message");//返回的信息
             switch (returnMsg) {
                 case "sms_code_error":
@@ -239,7 +239,7 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void requestSuccess(JSONObject jsonObject, String code) throws JSONException {
-        if (code.equals("s_ok")) {
+        if ("s_ok".equals(code)) {
             closeProgressDialog();
             ToastUtils.showToast(R.string.registcomlete);
             PublicSPUtil.getInstance().putBoolean("IS_REGIST", true);
@@ -273,14 +273,14 @@ public class PhoneRegistActivity extends BaseActivity implements View.OnClickLis
                             Log.e(TAG, s);
                             JSONObject object = new JSONObject(s);
                             String code = object.getString("code");
-                            if (code.equals("s_ok")) {
+                            if ("s_ok".equals(code)) {
                                 mSMSID = object.getString("sms_id");
                                 PublicSPUtil.getInstance().putString("pr_sms_id", mSMSID);
                                 PublicSPUtil.getInstance().putLong("timeReGist", System.currentTimeMillis());
                                 new TimeCount(mVerificodeButton, 60000, 1000).start();
                                 ToastUtils.showToast(R.string.send_success);
                             }
-                            if (code.equals("error")) {
+                            if ("error".equals(code)) {
                                 ToastUtils.showToast(R.string.request_failed);
 
                                 return;

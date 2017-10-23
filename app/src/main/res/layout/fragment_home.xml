@@ -9,7 +9,8 @@
     <com.youth.banner.Banner xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/home_banner"
         android:layout_width="match_parent"
-        android:layout_height="168dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:indicator_drawable_selected="@drawable/point_focus"
         app:indicator_height="7dp"
         app:indicator_margin="5dp"
@@ -23,13 +24,14 @@
         android:background="@color/white"
         android:padding="5dp"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
+        android:paddingBottom="10dip"
         android:scrollbars="none"
         tools:listitem="@layout/item_home_gridview" />
     <LinearLayout
         android:id="@+id/home_etcmore_llayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_below="@id/home_recylerview"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
@@ -39,7 +41,7 @@
             android:id="@+id/home_etc_online_lly"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.8"
+            android:layout_weight="1"
             android:background="@color/white"
             android:orientation="vertical">
 
@@ -83,8 +85,8 @@
                     android:id="@+id/home_etcrecharge_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="15dip"
+                    android:layout_marginRight="10dip"
                     android:layout_marginTop="15dp"
                     android:text="@string/home_etcrecharge"
                     android:textColor="@color/colorrechargegreen"
@@ -95,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_below="@+id/home_etcrecharge_tv"
-                    android:layout_marginTop="6dp"
+
                     android:layout_toStartOf="@+id/imageView"
                     android:gravity="center_horizontal"
                     android:text="@string/save_time_and_effort"
@@ -107,7 +109,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="11dp"
-                    android:layout_marginTop="13dp"
+                    android:layout_marginTop="13dip"
                     android:layout_toRightOf="@+id/home_etcrecharge_tv"
                     android:src="@mipmap/home_etc_recharge" />
             </RelativeLayout>

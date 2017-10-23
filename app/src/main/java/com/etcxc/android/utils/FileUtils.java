@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.ui.view.RxDialog;
@@ -40,7 +42,6 @@ import java.util.Properties;
  */
 public class FileUtils {
     private static String TAG = "FileUtils";
-
     public static final String ROOT_DIR = "Android/data/" + UIUtils.getPackageName();
     public static final String DOWNLOAD_DIR = "download";
     public static final String CACHE_DIR = "cache";
@@ -116,8 +117,9 @@ public class FileUtils {
             }
         });
         ImageView imageView = (ImageView) view.findViewById(R.id.page_item);
-
-        imageView.setImageURI(uri);
+        Glide.with(App.get()).load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .thumbnail(0.1f).into(imageView);
         rxDialog.setContentView(view);
         rxDialog.show();
         rxDialog.setFullScreen();
@@ -132,7 +134,7 @@ public class FileUtils {
      */
     public static String getCache(Context context, String cacheFileName) {
         FileInputStream fis = null;
-        StringBuffer sBuf = new StringBuffer();
+        StringBuilder sBuf = new StringBuilder();
         try {
             fis = context.openFileInput(cacheFileName);
             int len = 0;
@@ -140,8 +142,6 @@ public class FileUtils {
             while ((len = fis.read(buf)) != -1) {
                 sBuf.append(new String(buf, 0, len));
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -223,24 +223,24 @@ public class FileUtils {
      */
     public static void saveToSDCard(String key, Bitmap bmp) {
         String path = getCachePath(App.get());
-        FileOutputStream fos = null;
+        File f = new File(path, key);
+        if (f.exists()) f.delete();
         try {
-            fos = new FileOutputStream(new File(path, key));
+            FileOutputStream out = new FileOutputStream(f);
+            //保存图片的设置，压缩图片
+            bmp.compress(Bitmap.CompressFormat.PNG, 50, out);
+            out.flush();
+            out.close();
+
+            //保存图片后发送广播通知更新数据库
+            Uri uri = Uri.fromFile(f);
+            App.get().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        File file = new File(path);
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri uri = Uri.fromFile(file);
-        intent.setData(uri);
-        App.get().sendBroadcast(intent);
-        //保存图片的设置，压缩图片
-        bmp.compress(Bitmap.CompressFormat.PNG, 50, fos);
-        try {
-            fos.close();//关闭流
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     // 根据路径获得图片并压缩，返回bitmap用于显示
@@ -307,10 +307,7 @@ public class FileUtils {
      */
     public static boolean createDirs(String dirPath) {
         File file = new File(dirPath);
-        if (!file.exists() || !file.isDirectory()) {
-            return file.mkdirs();
-        }
-        return true;
+        return !(!file.exists() || !file.isDirectory()) || file.mkdirs();
     }
 
     /**

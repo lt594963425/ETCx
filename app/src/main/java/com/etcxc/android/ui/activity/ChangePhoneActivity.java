@@ -154,7 +154,7 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                             JSONObject object = new JSONObject(s);
                             String code = object.getString("code");
 
-                            if (code.equals("s_ok")) {
+                            if ("s_ok".equals(code)) {
                                 mSMSID = object.getString("sms_id");
 
                                 ToastUtils.showToast(R.string.send_success);
@@ -162,9 +162,9 @@ public class ChangePhoneActivity extends BaseActivity implements View.OnClickLis
                                 PublicSPUtil.getInstance().putLong(CP_SMS_COUNT_DOWN, System.currentTimeMillis());
                                 new TimeCount(mGetCaptcha, 60000, 1000).start();
                             }
-                            if (code.equals("error")) {
+                            if ("error".equals(code)) {
                                 String returnMsg = object.getString("message");//返回的信息
-                                if (returnMsg.equals(NetConfig.ERROR_TOKEN)) {
+                                if (NetConfig.ERROR_TOKEN.equals(returnMsg)) {
                                     MeManager.setIsLgon(false);
                                     openActivity(LoginActivity.class);
                                     finish();

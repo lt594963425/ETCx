@@ -37,17 +37,17 @@ android {
             versionNameSuffix ".${releaseTime()}.debug"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.pro'
             signingConfig signingConfigs.config
-            applicationIdSuffix '.debug'
+            //applicationIdSuffix '.debug'
         }
         release {
-            zipAlignEnabled true
+            zipAlignEnabled false
             shrinkResources false
             minifyEnabled false
             buildConfigField "boolean", "DEBUG_MODE", "false"
             versionNameSuffix ".${releaseTime()}.release"
             signingConfig signingConfigs.config
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            applicationIdSuffix '.release'
+            //applicationIdSuffix '.release'
         }
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
@@ -56,7 +56,6 @@ android {
                     def fileName = "ETCXc_v${defaultConfig.versionName}" +
                             "_${releaseTime()}" +
                             "_${variant.buildType.name}" +
-                            "_${variant.productFlavors.name}" +
                             ".apk"
                     output.outputFile = new File(outputFile.parent, fileName)
                 }
@@ -65,11 +64,11 @@ android {
     }
 
     productFlavors {
-        default_channel {}
-        wandoujia {}
-//        xiaomi {}
-//        tencent {}
-//        taobao {}
+        // default_channel {}
+        //  wandoujia {}
+        // xiaomi {}
+        // tencent {}
+        // taobao {}
     }
 
     productFlavors.all {
@@ -94,8 +93,9 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:appcompat-v7:23.2.1'
+
     testCompile 'junit:junit:4.12'
     //okhttp与日志拦截器
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
@@ -128,4 +128,9 @@ dependencies {
     compile 'com.clj.fastble:FastBleLib:1.2.1'
     //明华
     compile files('libs/mwcard-6.0.0.4.jar')
+
+    //内存泄漏检测
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }

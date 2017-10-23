@@ -83,7 +83,9 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
     }
 
     private int strToInt(String s) {
-        if (TextUtils.isEmpty(s)) return 0;
+        if (TextUtils.isEmpty(s)) {
+            return 0;
+        }
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {

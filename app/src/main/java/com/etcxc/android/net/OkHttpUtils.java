@@ -21,6 +21,7 @@ import okhttp3.Response;
  * Created by Liutao
  */
 public class OkHttpUtils {
+    public static final String CacheControl = "Cache-Control";
     public static final long DEFAULT_MILLISECONDS = 10_000L;
     private volatile static OkHttpUtils mInstance;
     private static OkHttpClient mOkHttpClient;

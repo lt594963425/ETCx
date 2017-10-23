@@ -55,7 +55,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         setContentView(R.layout.activity_receipt_address);
         setTitle(getString(R.string.my_receipt_address));
         initView();
-        findAddress();
+        //findAddress();
     }
 
     /**

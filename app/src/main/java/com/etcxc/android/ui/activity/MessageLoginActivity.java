@@ -181,14 +181,14 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                         Log.e(TAG, s);
                         JSONObject object = new JSONObject(s);
                         String code = object.getString("code");
-                        if (code.equals("s_ok")) {
+                        if ("s_ok".equals(code)) {
                             mSMSID = object.getString("sms_id");
                             PublicSPUtil.getInstance().putString("sms_id", mSMSID);
                             ToastUtils.showToast(R.string.send_success);
                             PublicSPUtil.getInstance().putLong("timeMsgLog", System.currentTimeMillis());
                             new TimeCount(mGetMsgVeriFicodeButton, 60000, 1000).start();
                         }
-                        if (code.equals("error")) {
+                        if ("error".equals(code)) {
                             ToastUtils.showToast(R.string.request_failed);
                             return;
                         }
@@ -238,7 +238,7 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
             JSONObject jsonObject = new JSONObject(s);
             String code = jsonObject.getString("code");
             Log.e(TAG, s);
-            if (code.equals("s_ok")) {
+            if ("s_ok".equals(code)) {
                 Log.e(TAG, "登录成功" + s);
                 JSONObject varJson = jsonObject.getJSONObject("var");
                 String token = varJson.getString("token");
@@ -265,10 +265,10 @@ public class MessageLoginActivity extends BaseActivity implements View.OnClickLi
                 openActivity(MainActivity.class);
                 finish();
             }
-            if (code.equals("error")) {
+            if ("error".equals(code)) {
                 String returnMsg = jsonObject.getString("message");
-                if (returnMsg.equals("telphone_unregistered")) {
-                    closeProgressDialog();
+                if ("telphone_unregistered".equals(returnMsg)) {
+                        closeProgressDialog();
                     ToastUtils.showToast(R.string.telphoneunregistered);
                     finish();
                 } else {

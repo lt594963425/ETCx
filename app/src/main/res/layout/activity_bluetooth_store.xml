@@ -7,53 +7,56 @@
     android:orientation="vertical"
     tools:context="com.etcxc.android.ui.activity.NFCStoreActivity">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <LinearLayout
-        android:layout_weight="1"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
         <ImageView
-            android:layout_marginTop="90dp"
-            android:layout_gravity="center"
-            android:src="@mipmap/bluetooth_box"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginTop="90dp"
+            android:background="@mipmap/bluetooth_box" />
 
         <TextView
-            android:textSize="16sp"
-            android:textColor="@color/colorGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="35dp"
             android:text="@string/store_hint"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textColor="@color/colorGray"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <Button
-        android:layout_marginBottom="6dp"
-        style="?android:attr/borderlessButtonStyle"
         android:id="@+id/btn_store"
-        android:text="@string/store"
-        android:textSize="16sp"
-        android:textColor="@color/white"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="6dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:background="@drawable/bg_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
+        android:text="@string/store"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
     <Button
-        android:layout_marginBottom="34dp"
-        style="?android:attr/borderlessButtonStyle"
         android:id="@+id/btn_replace_device"
-        android:elevation="@null"
-        android:text="@string/replace_device"
-        android:textSize="16sp"
-        android:textColor="@color/colorGray"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="34dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:background="@drawable/bg_white_line"
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
+        android:elevation="@null"
+        android:text="@string/replace_device"
+        android:textColor="@color/colorGray"
+        android:textSize="16sp" />
 </LinearLayout>

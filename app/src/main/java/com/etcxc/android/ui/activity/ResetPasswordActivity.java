@@ -56,6 +56,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
     private ImageView mPhonenumberDelete, mEye, mResetPwdDelete;
     private String mPhoneNum, mPassWord;
     private String mSMSID;
+    private TimeCount mTimeCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +96,10 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
         UIUtils.addIcon(mVerifiCodeEdit, R.drawable.vd_regist_captcha, UIUtils.LEFT);
         initAutoComplete("history", mPhoneNumberEdit);
         long timeDef = 60000 - (System.currentTimeMillis() - PublicSPUtil.getInstance().getLong("timeReset", 0));
-        if (timeDef > 0) new TimeCount(mVerificodeButton, timeDef, 1000).start();
+        if (timeDef > 0) {
+            mTimeCount = new TimeCount(mVerificodeButton, timeDef, 1000);
+            mTimeCount.start();
+        }
     }
 
 
@@ -161,7 +165,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
     }
 
     public void ResetPwdNet(JSONObject jsonObject) {
-        Log.e(TAG,jsonObject.toString());
+        Log.e(TAG, jsonObject.toString());
         showProgressDialog(getString(R.string.loading));
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
@@ -181,7 +185,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
 
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        Log.e(TAG,s);
+                        Log.e(TAG, s);
                         closeProgressDialog();
                         parseJson(s);
                     }
@@ -200,20 +204,20 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
             JSONObject jsonObject = new JSONObject(s);
             if (jsonObject == null) return;
             String code = jsonObject.getString("code");
-            if (code.equals("s_ok")) {
+            if ("s_ok".equals(code)) {
                 MeManager.setPhone(mPhoneNum);
                 MeManager.setPWD(mPassWord);
                 openActivity(LoginActivity.class);
                 ToastUtils.showToast(R.string.find_success);
                 finish();
             }
-            if (code.equals("err")) {
+            if ("error".equals(code)) {
                 String returnMsg = jsonObject.getString("message");
-                if (returnMsg.equals("telphone_unregistered")) {
+                if ("telphone_unregistered".equals(returnMsg)) {
                     ToastUtils.showToast(R.string.telphoneunregistered);
-                } else if (returnMsg.equals("sms_code_error")) {
+                } else if ("sms_code_error".equals(returnMsg)) {
                     ToastUtils.showToast(R.string.smscodeerr);
-                } else if (returnMsg.equals("err_password")) {
+                } else if ("err_password".equals(returnMsg)) {
                     ToastUtils.showToast(R.string.passworderr);//
                 } else {
                     ToastUtils.showToast(returnMsg);
@@ -250,13 +254,16 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                         Log.e(TAG, s);
                         JSONObject object = new JSONObject(s);
                         String code = object.getString("code");
-                        if (code.equals("s_ok")) {
+                        if ("s_ok".equals(code)) {
                             mSMSID = object.getString("sms_id");
                             ToastUtils.showToast(R.string.send_success);
                             PublicSPUtil.getInstance().putLong("timeReset", System.currentTimeMillis());
-                            new TimeCount(mVerificodeButton, 60000, 1000).start();
+                            mTimeCount = new TimeCount(mVerificodeButton, 60000, 1000);
+                            mTimeCount.start();
+
+
                         }
-                        if (code.equals("error")) {
+                        if ("error".equals(code)) {
                             ToastUtils.showToast(R.string.request_failed);
                             return;
                         }
@@ -274,6 +281,7 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mTimeCount = null;
     }
 }
 

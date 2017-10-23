@@ -127,7 +127,7 @@ public class NetworkQueryActivity extends BaseActivity {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 e.onNext(OkHttpUtils
-                        .post()
+                        .get()
                         .url(NetConfig.HOST + NETWORK)
                         .build()
                         .execute().body().string());
@@ -246,6 +246,7 @@ public class NetworkQueryActivity extends BaseActivity {
         builder.create().show();
     }
 
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case 0:
@@ -333,6 +334,9 @@ public class NetworkQueryActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
+        if (mListener!=null) {
+            mListener = null;
+        }
     }
 
 }

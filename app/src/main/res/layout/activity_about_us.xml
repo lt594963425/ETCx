@@ -24,7 +24,7 @@
             android:layout_marginTop="6dp"
             android:text="@string/app_name"
             android:textColor="@color/textcolor"
-            android:textSize="16sp" />
+            android:textSize="@dimen/font_middle" />
 
         <TextView
             android:id="@+id/about_us_versioncode"
@@ -33,7 +33,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="7dp"
             android:textColor="@color/textcolor"
-            android:textSize="16sp" />
+            android:textSize="@dimen/font_middle" />
 
         <RelativeLayout
             android:id="@+id/about_us_check_update"

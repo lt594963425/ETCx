@@ -15,7 +15,7 @@
 
         <include
             android:id="@+id/person_toolbar"
-            layout="@layout/toolbar"></include>
+            layout="@layout/toolbar"/>
 
         <View
             android:layout_width="match_parent"
@@ -48,10 +48,12 @@
                 android:layout_marginRight="15dp"
                 android:focusable="false"
                 android:gravity="center"
+                app:civ_border_color="@color/colorOrange"
                 app:civ_border_width="1dp"
                 lt:backgroundHeadColor="@color/yellow"
                 lt:circleBorderHeadWidth="5dp"
-                lt:ringHeadColor="@color/colorAccent" />
+                lt:ringHeadColor="@color/colorAccent"
+                lt:targetApi="lollipop" />
 
         </RelativeLayout>
 
@@ -59,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="18dp" />
 
-        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        <RelativeLayout
             android:id="@+id/info_name_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -95,7 +97,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
 
-        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        <RelativeLayout
             android:id="@+id/info_phone_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -132,7 +134,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
 
-        <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        <RelativeLayout
             android:id="@+id/info_sex_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"

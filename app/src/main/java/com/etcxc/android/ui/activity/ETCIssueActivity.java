@@ -169,9 +169,9 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
                             intent.putExtra(IS_ORGAN, !mPersonalRadiobutton.isChecked());
                             startActivity(intent);
                             openAnimator(ETCIssueActivity.this);
-                        } else if ("error".equals("error")) {
+                        } else if ("error".equals(code)) {
                             String message = jsonObject.getString("message");//
-                            if (message.equals("issuing or using")) {
+                            if ("issuing or using".equals(message)) {
                                 ToastUtils.showToast("该车已经注册");
                             } else {
                                 closeProgressDialog();

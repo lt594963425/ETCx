@@ -140,7 +140,7 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
         JSONObject jsonObject = new JSONObject(s);
         if (jsonObject != null) {
             String code = jsonObject.getString("code");
-            if (code.equals("s_ok")) {
+            if ("s_ok".equals(code)) {
                 //请求成功
                 closeProgressDialog();
                 MeManager.setPWD(mNewPassWord);
@@ -148,9 +148,9 @@ public class ChangePasswordActivity extends BaseActivity implements View.OnClick
                 openActivity(LoginActivity.class);
                 finish();
             }
-            if (code.equals("error")) {
+            if ("error".equals(code)) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
-                if (returnMsg.equals(NetConfig.ERROR_TOKEN)) {
+                if (NetConfig.ERROR_TOKEN.equals(returnMsg)) {
                     MeManager.setIsLgon(false);
                     openActivity(LoginActivity.class);
                     finish();

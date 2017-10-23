@@ -105,6 +105,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
         mCardNumDelete = find(R.id.card_num_delete);
         mRechaergeTotalMoney = find(R.id.recharge_total_money); //合计
         mRechaergeAddDetailBtn = find(R.id.recharge_add_detail_btn); //添加
+        UIUtils.addIcon(mRechaergeAddDetailBtn,R.drawable.vd_add,UIUtils.LEFT);
         mRechaergePrepaidRecyler = find(R.id.prepaid_recharge_recylerview); //待支付的订单列表
         setPricePoint(mRechaergeMoneyEdt);
         initAutoCompleteCard(SP_ADD＿CARD＿HISTORY, mRechaergeCardEdt);
@@ -170,10 +171,9 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     @Override
     public void onItemRechargeClick(ImageView view, int position) {
         mDatas.remove(position);
-        mOrderFormAdapter.notifyDataSetChanged();
         //mOrderFormAdapter.removeData(position);
         delete(ETCRechargeActivity.this, position);
-        initData();
+        mOrderFormAdapter.notifyDataSetChanged();
         ToastUtils.showToast("删除");
     }
 
@@ -348,7 +348,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
             JSONObject jsonObject = new JSONObject(s);
             if (jsonObject == null) return;
             String code = jsonObject.getString("code");
-            if (code.equals("s_ok")) {
+            if ("s_ok".equals(code)) {
                 closeProgressDialog();
                 OrderRechargeInfo info = new OrderRechargeInfo();
                 JSONObject jsonVar = jsonObject.getJSONObject("var");
@@ -372,7 +372,7 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
                 saveCardHistory(SP_ADD＿CARD＿HISTORY, mRechargeCardNumber);
 
             }
-            if (code.equals("err")) {
+            if ("err".equals(code)) {
                 String returnMsg = jsonObject.getString("message");//返回的信息
                 closeProgressDialog();
                 ToastUtils.showToast(returnMsg);
