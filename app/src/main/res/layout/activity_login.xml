@@ -76,7 +76,7 @@
                 android:layout_toLeftOf="@+id/login_eye"
                 android:background="@null"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@."
-                android:hint="@string/input_passwords"
+                android:hint="@string/please_input_passwords"
                 android:inputType="textPassword"
                 android:maxLength="16"
                 android:textColor="@color/white"

@@ -133,7 +133,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         public void run() {
             if (MeManager.getIsLogin()) {
                 mExit.setVisibility(View.VISIBLE);
-                LogUtil.e(TAG, MeManager.getName());
                 mMineUserName.setText(MeManager.getName());
                 initUserInfo();
             } else {

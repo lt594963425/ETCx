@@ -283,6 +283,7 @@
     <string name="reader_connect_success">读写器连接成功</string>
     <string name="usb_store">USB圈存</string>
     <string name="take_care_info">注意!请把湘通卡放在读卡器的卡座上!</string>
+    <string name="hint_application_exit">非常抱歉，程序出现异常即将退出</string>
 
 
 </resources>

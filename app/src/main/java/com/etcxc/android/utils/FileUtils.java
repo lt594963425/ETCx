@@ -9,7 +9,6 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -159,25 +158,6 @@ public class FileUtils {
         return null;
     }
 
-    /**
-     * 压缩图片方法，为了上传到服务器，保证图片大小在100k一下
-     *
-     * @param fileSrc
-     * @return
-     */
-    public static File getSmallBitmap(String fileSrc) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inSampleSize = calculateInSampleSize(options, 200, 700);//设置压缩比例
-        Log.i(TAG, "options.inSampleSize-->" + options.inSampleSize);
-        options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(fileSrc, options);
-        // Log.i(TAG, "file size after compress-->" + img.getByteCount() / 256);
-        String filename = "user-avatar" + ".jpg";
-        saveBitmap2File(bitmap, fileSrc);
-        Log.e("TAG", "filename" + filename + ",fileSrc" + fileSrc);
-        return new File(fileSrc);
-    }
 
     /**
      * 设置压缩的图片的大小设置的参数

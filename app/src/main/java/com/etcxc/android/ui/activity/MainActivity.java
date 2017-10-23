@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,8 @@ import java.util.ArrayList;
 
 /**
  * 主界面Activity
- * Created by LiuTao on 2017/6/3 0003.
+ * @author LiuTao
+ * @date 2017/6/3 0003
  */
 
 public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
@@ -55,7 +57,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     private VersionUpdateHelper mHelper;
     private MyFragmentAdapter mAdapter;
     private FragmentMine mFragmentMine;
-
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
