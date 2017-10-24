@@ -1,11 +1,16 @@
 package com.etcxc.android.ui.activity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -43,8 +49,15 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
     private Toolbar share_toolbar;
 
     private static String SHARE_URL = "http://www.xckjetc.com/";
-    Dialog dialog;
+
     public static Tencent mTencent;// 新建Tencent实例用于调用分享方法
+
+    Dialog dialog;
+
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,14 +119,9 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void showShareDialog() {
-        dialog = new Dialog(this, R.style.BottomDialog);
-        //填充对话框的布局
-        View inflate = LayoutInflater.from(this).inflate(R.layout.dialog_share, null);
-        //初始化控件
-        initDialogView(inflate);
-        //将布局设置给Dialog
-        dialog.setContentView(inflate);
-        dialog.setCancelable(true);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_share, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view);
         //获取当前Activity所在的窗体
         Window dialogWindow = dialog.getWindow();
         //设置Dialog从窗体底部弹出
@@ -121,9 +129,10 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
         int mWindowWidth;
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         mWindowWidth = displayMetrics.widthPixels;
-        dialog.setContentView(inflate, new ViewGroup.MarginLayoutParams(mWindowWidth,
+        dialog.setContentView(view, new ViewGroup.MarginLayoutParams(mWindowWidth,
                 ViewGroup.MarginLayoutParams.MATCH_PARENT));
-        dialog.show();//显示对话框
+        dialog = builder.show();
+        initDialogView(view);
     }
 
     private void initDialogView(View v) {
@@ -131,6 +140,32 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
         tv_wechat_timeline = (TextView) v.findViewById(R.id.tv_wechat_timeline);
         tv_qq = (TextView) v.findViewById(R.id.tv_qq);
         tv_sms = (TextView) v.findViewById(R.id.tv_sms);
+
+        Drawable drawableWechat = getResources().getDrawable(
+                R.drawable.vd_wechat);
+        tv_wechat.setCompoundDrawablesWithIntrinsicBounds(null,
+                drawableWechat, null, null);
+        tv_wechat.setCompoundDrawablePadding(5);
+
+        Drawable drawableTimeline = getResources().getDrawable(
+                R.drawable.vd_circle_friends);
+        tv_wechat_timeline.setCompoundDrawablesWithIntrinsicBounds(null,
+                drawableTimeline, null, null);
+        tv_wechat_timeline.setCompoundDrawablePadding(5);
+
+
+        Drawable drawableQQ = getResources().getDrawable(
+                R.drawable.vd_qq);
+        tv_qq.setCompoundDrawablesWithIntrinsicBounds(null,
+                drawableQQ, null, null);
+        tv_qq.setCompoundDrawablePadding(5);
+
+        Drawable drawableSMS = getResources().getDrawable(
+                R.drawable.vd_message);
+        tv_sms.setCompoundDrawablesWithIntrinsicBounds(null,
+                drawableSMS, null, null);
+        tv_sms.setCompoundDrawablePadding(5);
+
 
         tv_wechat.setOnClickListener(this);
         tv_wechat_timeline.setOnClickListener(this);
