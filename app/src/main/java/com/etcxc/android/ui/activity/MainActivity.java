@@ -1,6 +1,7 @@
 package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
@@ -57,9 +58,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     private VersionUpdateHelper mHelper;
     private MyFragmentAdapter mAdapter;
     private FragmentMine mFragmentMine;
-    static {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-    }
+//    static {
+//        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+//    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,7 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         //mHelper = new VersionUpdateHelper(this);
         //mHelper.checkVersion();
     }
+
 
     private void initView() {
         setToolbarBack(false);
@@ -97,7 +99,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
         ImageView mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
         TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
-        mImageView.setBackgroundResource(mImageViewArray[i]);
+        Drawable drawableWechat = getResources().getDrawable(
+                mImageViewArray[i]);
+        mImageView.setBackground(drawableWechat);
         mTextView.setText(mTextViewArray[i]);
         return view;
     }
