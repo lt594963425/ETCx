@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
@@ -24,6 +25,9 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.ui.view.xccamera.CameraConfig;
+import com.etcxc.android.ui.view.xccamera.CropActivity;
+import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -75,7 +79,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
     private final static String IMAGE_ORG = "org_license.png";
     private final static String IMAGE_DRIVEN = "driven_license.png";
 
-    private final static String CROP_IDCARD = "crop_idcard.png";
+    public final static String CROP_IDCARD = "crop_idcard.png";
     private final static String CROP_ORG = "crop_org_license.png";
     private final static String CROP_DRIVEN = "crop_driven_license.png";
     private String mCachePath;
@@ -299,7 +303,9 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         PermissionUtil.requestPermissions(this, Manifest.permission.CAMERA, new PermissionUtil.OnRequestPermissionsResultCallback() {
             @Override
             public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) startCamera2();
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    takePhoto();
+//                    startCamera2();
             }
         });
     }
@@ -313,6 +319,19 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         } else uri = Uri.fromFile(imageFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
+        startActivityForResult(intent, REQUEST_CAMERA);
+    }
+
+    public void takePhoto() {
+        Intent intent = new Intent(UploadLicenseActivity.this, CropActivity.class);
+        intent.putExtra(CameraConfig.RATIO_WIDTH, 855);
+        intent.putExtra(CameraConfig.RATIO_HEIGHT, 541);
+        intent.putExtra(CameraConfig.PERCENT_WIDTH, 0.6f);
+        intent.putExtra(CameraConfig.MASK_COLOR, 0x2f000000);
+        intent.putExtra(CameraConfig.RECT_CORNER_COLOR, 0xff00ff00);
+        intent.putExtra(CameraConfig.TEXT_COLOR, 0xffffffff);
+        intent.putExtra(CameraConfig.HINT_TEXT, "请将方框对准证件拍照");
+        intent.putExtra(CameraConfig.IMAGE_PATH, Environment.getExternalStorageDirectory().getAbsolutePath() + "/CameraCardCrop/" + System.currentTimeMillis() + ".jpg");
         startActivityForResult(intent, REQUEST_CAMERA);
     }
 
@@ -330,14 +349,17 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 setImageFromUri(imageView, UCrop.getOutput(data));
                 break;
             case REQUEST_CAMERA:
-                File file = new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROP_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROP_ORG : CROP_DRIVEN);
-                if (file.exists()) file.delete();
-                try {
-                    boolean success = file.createNewFile();
-                    if (success) UCrop.of(uri, Uri.fromFile(file)).start(this);
-                } catch (IOException e) {
-                    LogUtil.e(TAG, "result_camera", e);
+                String path = data.getStringExtra(CameraConfig.IMAGE_PATH);
+                if (mClickFlag == CLICK_DRIVEN) {
+                    mDriveImageView.setImageURI(Uri.parse(path));
+                } else {
+                    mFristImageView.setImageURI(Uri.parse(path));
                 }
+//                File file =FileUtils.getFileByUri(this,Uri.parse(path));
+//                        new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROP_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROP_ORG : CROP_DRIVEN);
+//                if (file.exists()) file.delete();
+//                boolean isFile = file.isFile();
+//                if (isFile) UCrop.of(uri, Uri.fromFile(file)).start(this);
                 break;
             case REQUEST_ALBUM:
                 if (data == null) return;
@@ -349,7 +371,6 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 } catch (IOException e) {
                     LogUtil.e(TAG, "result_album", e);
                 }
-
                 break;
         }
     }
