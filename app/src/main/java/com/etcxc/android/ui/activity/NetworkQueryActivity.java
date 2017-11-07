@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,6 +21,7 @@ import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.Networkstore;
 import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.net.OkClient;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.adapter.NetworkQueryAdapter;
 import com.etcxc.android.ui.view.XRecyclerView;
@@ -35,19 +34,21 @@ import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.etcxc.android.net.FUNC.NETWORK;
 
@@ -68,27 +69,12 @@ public class NetworkQueryActivity extends BaseActivity {
     private Location mLocation;
     private ProgressDialog dialog;
 
-    private Handler mHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-
-            super.handleMessage(msg);
-            mXrecycler.setDefaultLayoutManager();
-            mXrecycler.setDivider(R.color.bg_gray, 10);
-            mAdapter = new NetworkQueryAdapter(mData, NetworkQueryActivity.this, mLocation);
-            mXrecycler.setAdapter(mAdapter);
-            closeProgressDialog();
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network_query);
         initView();
         initData();
-
     }
 
     private void initData() {
@@ -106,11 +92,9 @@ public class NetworkQueryActivity extends BaseActivity {
     }
 
     private void initView() {
-
         setTitle(getString(R.string.website_check));
         mXrecycler = (XRecyclerView) findViewById(R.id.xrecycler);
     }
-
 
     //初始化数据
     private void initData(List<Networkstore.VarBean> jsonArray) {
@@ -126,16 +110,18 @@ public class NetworkQueryActivity extends BaseActivity {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkHttpUtils
-                        .get()
-                        .url(NetConfig.HOST + NETWORK)
-                        .build()
-                        .execute().body().string());
+                e.onNext(OkClient.get(NetConfig.HOST + NETWORK,new JSONArray()));
+//                e.onNext(OkHttpUtils
+//                        .get()
+//                        .url(NetConfig.HOST + NETWORK)
+//                        .build()
+//                        .execute().body().string());
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this)).subscribe(new Consumer<String>() {
             @Override
             public void accept(@NonNull String s) throws Exception {
+                closeProgressDialog();
                 parseResultJson(s);
             }
         }, new Consumer<Throwable>() {
@@ -154,6 +140,7 @@ public class NetworkQueryActivity extends BaseActivity {
      * @param s
      */
     private void parseResultJson(String s) throws JSONException {
+        Log.d(TAG, "parseResultJson: "+s);
         Gson gson = new Gson();
         Networkstore networkstore = gson.fromJson(s, Networkstore.class);
         if ("s_ok".equals(networkstore.getCode())) {
@@ -201,13 +188,6 @@ public class NetworkQueryActivity extends BaseActivity {
 
         //3.获取上次的位置，一般第一次运行，此值为null
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             dialog.dismiss();
             return;
         }
@@ -278,65 +258,51 @@ public class NetworkQueryActivity extends BaseActivity {
         }
     };
 
+    private List<Networkstore.VarBean> getList(){
+        for (int i = 0; i < mData.size(); i++) {
+            Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
+                    mLocation.getLatitude(),
+                    mLocation.getLongitude(),
+                    mData.get(i).getLatitude(),
+                    mData.get(i).getLongitude());
+            Log.d(TAG, "run: " + d);
+            mData.get(i).setDistance(d);
+        }
+
+        DistanceLowToHighComparator comparator = new DistanceLowToHighComparator();
+        Collections.sort(mData, comparator);
+        return mData;
+    }
 
     private void initDistance(List<Networkstore.VarBean> mData) {
         if (mData != null && mData.size() > 0 && mLocation != null) {
-            //执行一些其他操作
-            new Thread(new Runnable() {
+            Observable.create(new ObservableOnSubscribe<Object>() {
                 @Override
-                public void run() {
-                    for (int i = 0; i < mData.size(); i++) {
-                        Geocoder geocoder = new Geocoder(NetworkQueryActivity.this, Locale.getDefault());
-                        String errorMessage = "";
-                        List<Address> addresses = null;
-                        Address mAddress = null;
-                        try {
-                            addresses = geocoder.getFromLocationName(mData.get(i).getNetstores_address(), 1);
-                        } catch (IOException ioe) {
-                            errorMessage = "Service not available";
-                            Log.e(TAG, errorMessage, ioe);
-                        }
-                        if (addresses == null || addresses.size() == 0) {
-                            mData.get(i).setDistance(100000.0 * 1000000);
-                            if (errorMessage.isEmpty()) {
-                                errorMessage = "Not Found";
-                                Log.e(TAG, errorMessage);
-                            }
-                        } else {
-                            for (Address address : addresses) {
-                                String outputAddress = "";
-                                for (int j = 0; j < address.getMaxAddressLineIndex(); j++) {
-                                    outputAddress += " --- " + address.getAddressLine(j);
-                                }
-                                Log.e(TAG, outputAddress);
-                            }
-                            mAddress = addresses.get(0);
-                            Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
-                                    mLocation.getLatitude(),
-                                    mLocation.getLongitude(),
-                                    mAddress.getLatitude(),
-                                    mAddress.getLongitude());
-                            Log.d(TAG, "run: " + d);
-                            mData.get(i).setDistance(d);
-                        }
-                    }
-                    DistanceLowToHighComparator comparator = new DistanceLowToHighComparator();
-                    Collections.sort(mData, comparator);
-                    mHandler.sendEmptyMessage(0);
+                public void subscribe(ObservableEmitter<Object> e) throws Exception {
+                    e.onNext(getList());
                 }
-            }).start();
+            }).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object o) throws Exception {
+                            closeProgressDialog();
+                            mXrecycler.setDefaultLayoutManager();
+                            mXrecycler.setDivider(R.color.bg_gray, 10);
+                            mAdapter = new NetworkQueryAdapter(mData, NetworkQueryActivity.this, mLocation);
+                            mXrecycler.setAdapter(mAdapter);
+                        }
+                    });
         } else {
-            closeProgressDialog();
+            closeProgressDialog(   );
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mHandler.removeCallbacksAndMessages(null);
-        if (mListener!=null) {
+        if (mListener != null) {
             mListener = null;
         }
     }
-
 }
