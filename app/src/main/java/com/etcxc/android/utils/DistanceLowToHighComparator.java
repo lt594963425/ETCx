@@ -15,21 +15,19 @@ public class DistanceLowToHighComparator implements Comparator<Networkstore.VarB
         double price1 = 0;
         double price2 = 0;
 
-        if(o1.getDistance() != null){
+        if (o1.getDistance() > 0) {
             price1 = o1.getDistance();
         }
 
-        if(o2.getDistance() != null){
+        if (o2.getDistance() > 0) {
             price2 = o2.getDistance();
         }
 
-        if(price1 < price2){//price1排在price2前面
+        if (price1 < price2) {//price1排在price2前面
             return -1;
-        }
-        else if(price1 > price2){//
+        } else if (price1 > price2) {//
             return 1;
-        }
-        else{
+        } else {
             return 0;
         }
     }

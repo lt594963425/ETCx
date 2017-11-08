@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/bg_gray"
+    android:id="@+id/share"
     tools:context="com.etcxc.android.ui.activity.ShareActivity">
 
     <include

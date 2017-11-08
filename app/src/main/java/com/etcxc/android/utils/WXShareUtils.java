@@ -39,29 +39,34 @@ public class WXShareUtils extends Activity {
      * @param tag         0:好友 1:朋友圈
      */
     public void doTextSend(Context mContext, String text, String description, int tag) {
-        //初始化一个微信WXWebpageObject对象，填写url
-        WXTextObject textObject = new WXTextObject();
-        textObject.text = text;
+        if (SystemUtil.isWeixinAvilible(mContext)) {
+            //初始化一个微信WXWebpageObject对象，填写url
+            WXTextObject textObject = new WXTextObject();
+            textObject.text = text;
 
-        //用WXWebpageObject对象初始化一个WXMediaMessage对象，填写标题，描述
-        WXMediaMessage msg = new WXMediaMessage(textObject);
-        //此处填写消息标题
-        msg.mediaObject = textObject;
-        //此处填写消息描述
-        msg.description = buildTransaction(description);
+            //用WXWebpageObject对象初始化一个WXMediaMessage对象，填写标题，描述
+            WXMediaMessage msg = new WXMediaMessage(textObject);
+            //此处填写消息标题
+            msg.mediaObject = textObject;
+            //此处填写消息描述
+            msg.description = buildTransaction(description);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-        msg.setThumbImage(bitmap);
-        //构造一个Req
-        req = new SendMessageToWX.Req();
-        req.transaction = buildTransaction("text");
-        req.message = msg;
-        if (tag == 0) {
-            req.scene = SendMessageToWX.Req.WXSceneSession;
-        } else if (tag == 1) {
-            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+            Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+            msg.setThumbImage(bitmap);
+            //构造一个Req
+            req = new SendMessageToWX.Req();
+            req.transaction = buildTransaction("text");
+            req.message = msg;
+            if (tag == 0) {
+                req.scene = SendMessageToWX.Req.WXSceneSession;
+            } else if (tag == 1) {
+                req.scene = SendMessageToWX.Req.WXSceneTimeline;
+            }
+            App.WXapi.sendReq(req);
+        } else {
+            ToastUtils.showToast("未安装微信");
         }
-        App.WXapi.sendReq(req);
+
     }
 
     /**
