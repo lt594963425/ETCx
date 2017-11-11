@@ -11,10 +11,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.etcxc.android.R;
@@ -22,7 +21,6 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.bean.Networkstore;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
-import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.adapter.NetworkQueryAdapter;
 import com.etcxc.android.ui.view.XRecyclerView;
 import com.etcxc.android.utils.DistanceLowToHighComparator;
@@ -44,7 +42,6 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -68,6 +65,7 @@ public class NetworkQueryActivity extends BaseActivity {
     private String locationProvider;//位置提供器
     private Location mLocation;
     private ProgressDialog dialog;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +86,22 @@ public class NetworkQueryActivity extends BaseActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
     private void initView() {
         setTitle(getString(R.string.website_check));
         mXrecycler = (XRecyclerView) findViewById(R.id.xrecycler);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorMore));
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initData();
+            }
+        });
     }
 
     //初始化数据
@@ -110,7 +118,7 @@ public class NetworkQueryActivity extends BaseActivity {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkClient.get(NetConfig.HOST + NETWORK,new JSONArray()));
+                e.onNext(OkClient.get(NetConfig.HOST + NETWORK, new JSONArray()));
 //                e.onNext(OkHttpUtils
 //                        .get()
 //                        .url(NetConfig.HOST + NETWORK)
@@ -140,10 +148,11 @@ public class NetworkQueryActivity extends BaseActivity {
      * @param s
      */
     private void parseResultJson(String s) throws JSONException {
-        Log.d(TAG, "parseResultJson: "+s);
+        Log.d(TAG, "parseResultJson: " + s);
         Gson gson = new Gson();
         Networkstore networkstore = gson.fromJson(s, Networkstore.class);
         if ("s_ok".equals(networkstore.getCode())) {
+            swipeRefreshLayout.setRefreshing(false);
             if (networkstore.getVar() != null && networkstore.getVar().size() > 0) {
                 initData(networkstore.getVar());
                 //判断外部SD卡是否存在，true是存在
@@ -157,6 +166,7 @@ public class NetworkQueryActivity extends BaseActivity {
                 ToastUtils.showToast("没有网点信息");
             }
         } else {
+            swipeRefreshLayout.setRefreshing(false);
             closeProgressDialog();
         }
     }
@@ -213,7 +223,6 @@ public class NetworkQueryActivity extends BaseActivity {
                 //返回开启GPS导航设置界面
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivityForResult(intent, 0);
-
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -258,24 +267,25 @@ public class NetworkQueryActivity extends BaseActivity {
         }
     };
 
-    private List<Networkstore.VarBean> getList(){
-        for (int i = 0; i < mData.size(); i++) {
-            Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
-                    mLocation.getLatitude(),
-                    mLocation.getLongitude(),
-                    mData.get(i).getLatitude(),
-                    mData.get(i).getLongitude());
-            Log.d(TAG, "run: " + d);
-            mData.get(i).setDistance(d);
+    private List<Networkstore.VarBean> getList() {
+        if (mLocation != null){
+            for (int i = 0; i < mData.size(); i++) {
+                Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
+                        mLocation.getLatitude(),
+                        mLocation.getLongitude(),
+                        mData.get(i).getLatitude(),
+                        mData.get(i).getLongitude());
+                Log.d(TAG, "run: " + d);
+                mData.get(i).setDistance(d);
+            }
+            DistanceLowToHighComparator comparator = new DistanceLowToHighComparator();
+            Collections.sort(mData, comparator);
         }
-
-        DistanceLowToHighComparator comparator = new DistanceLowToHighComparator();
-        Collections.sort(mData, comparator);
         return mData;
     }
 
     private void initDistance(List<Networkstore.VarBean> mData) {
-        if (mData != null && mData.size() > 0 && mLocation != null) {
+        if (mData != null && mData.size() > 0 ) {
             Observable.create(new ObservableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(ObservableEmitter<Object> e) throws Exception {
@@ -294,7 +304,7 @@ public class NetworkQueryActivity extends BaseActivity {
                         }
                     });
         } else {
-            closeProgressDialog(   );
+            closeProgressDialog();
         }
     }
 
