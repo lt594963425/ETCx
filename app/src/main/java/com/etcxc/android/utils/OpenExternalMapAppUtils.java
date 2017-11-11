@@ -18,7 +18,6 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
  */
 
 public class OpenExternalMapAppUtils {
-    private static double x_pi = 3.14159265358979324 * 3000.0 / 180.0;
     private static final double EARTH_RADIUS = 6378.137;
 
     /**
@@ -31,24 +30,6 @@ public class OpenExternalMapAppUtils {
     public static void openBaiduMarkerMap(Context activity, String content) {
         Intent intent = new Intent();
         intent.setData(Uri.parse("baidumap://map/direction?region=&origin=&destination=" + content + "&mode=driving"));
-        activity.startActivity(intent);
-    }
-
-    /**
-     * 调起百度客户端 路径规划
-     * lat,lng (先纬度，后经度)
-     * 40.057406655722,116.2964407172
-     * lat,lng,lat,lng (先纬度，后经度, 先左下,后右上)
-     *
-     * @param activity
-     */
-    public static void openBaiduiDrectionMap(Context activity, String sLongitude, String sLatitude, String sName,
-                                             String dLongitude, String dLatitude, String dName) {
-        Intent intent = new Intent("android.intent.action.VIEW",
-                android.net.Uri.parse("baidumap://map/direction?origin=name:" +
-                        sName + "|latlng:" + sLatitude + "," + sLongitude + "&destination=name:" +
-                        dName + "|latlng:" + dLatitude + "," + dLongitude + "&" +
-                        "mode=transit&sy=0&index=0&target=0"));
         activity.startActivity(intent);
     }
 
@@ -77,9 +58,16 @@ public class OpenExternalMapAppUtils {
      */
     public static void openBrosserNaviMap(Context activity, Location sLocation,
                                           String sName, String dName) {
-        Uri mapUri = Uri.parse("http://api.map.baidu.com/direction?origin=latlng:" +
-                sLocation.getLatitude() + "," + sLocation.getLongitude() + "|name:" + sName + "&destination=latlng:" + "|name:" + dName + "&mode=driving&region=长沙" +
-                "&output=html&src=迅畅在线");
+        Uri mapUri;
+        if (sLocation != null) {
+            mapUri = Uri.parse("http://api.map.baidu.com/direction?origin=latlng:" +
+                    sLocation.getLatitude() + "," + sLocation.getLongitude() + "|name:" + sName + "&destination=latlng:" + "|name:" + dName + "&mode=driving&region=" +
+                    "&output=html&src=迅畅在线");
+        } else {
+            mapUri = Uri.parse("http://api.map.baidu.com/direction?origin=" + sName + "&destination=" + dName + "&mode=driving&region=" +
+                    "&output=html&src=迅畅在线");
+        }
+
         Intent loction = new Intent(Intent.ACTION_VIEW, mapUri);
         activity.startActivity(loction);
     }
@@ -120,6 +108,7 @@ public class OpenExternalMapAppUtils {
 
     /**
      * 单位换算
+     *
      * @param s 米
      * @return
      */
@@ -131,38 +120,5 @@ public class OpenExternalMapAppUtils {
             distance = s / 1000 + "公里";
         }
         return distance;
-    }
-
-
-    /**
-     * 中国正常坐标系GCJ02协议的坐标，转到 百度地图对应的 BD09 协议坐标
-     *
-     * @param lat
-     * @param lng
-     */
-    public static void Convert_GCJ02_To_BD09(double lat, double lng) {
-        double x = lng, y = lat;
-        double z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
-        double theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
-        lng = z * Math.cos(theta) + 0.0065;
-        lat = z * Math.sin(theta) + 0.006;
-    }
-
-    public static double Convert_GCJ02_To_BD09_Lat(double lat, double lng) {
-        double x = lng, y = lat;
-        double z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
-        double theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
-        lng = z * Math.cos(theta) + 0.0065;
-        lat = z * Math.sin(theta) + 0.006;
-        return lat;
-    }
-
-    public static double Convert_GCJ02_To_BD09_Lng(double lat, double lng) {
-        double x = lng, y = lat;
-        double z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
-        double theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
-        lng = z * Math.cos(theta) + 0.0065;
-        lat = z * Math.sin(theta) + 0.006;
-        return lng;
     }
 }
