@@ -34,7 +34,7 @@ public class BleCmdPackager {
         byte[] bleCommond = new byte[position];
         bleCommond[0] = temp[0];
         bleCommond[position - 1] = 0;
-        for (int i = 1; i < position - 1; i++) {
+        for (int i = 1; i < position - 1; i++) {        
             bleCommond[i] = temp[i];
             bleCommond[position - 1] ^= bleCommond[i];
         }

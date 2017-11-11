@@ -56,7 +56,7 @@ public class FUNC {
     //上传邮寄地址
     public final static String POST_INFO = "/xczx/issue/postInfo";
     //支付obu与预存金
-    public final static String WX_PAY_ISSUE = "/xczx/issue/wxPay";
+    public final static String WX_PAY_ISSUE = "/xczx/issue/pay";
     /**
      * 用户地址管理模块
      */

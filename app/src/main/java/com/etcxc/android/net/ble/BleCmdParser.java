@@ -2,6 +2,8 @@ package com.etcxc.android.net.ble;
 
 import android.support.annotation.Nullable;
 
+import com.etcxc.android.utils.LogUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -160,6 +162,7 @@ public class BleCmdParser {
      */
     @Nullable
     public static String  parseRet(String hexString) {
+        LogUtil.e("xwpeng16", "parse : " + hexString);
         if (hexString == null) return null;
         hexString = hexString.toLowerCase();
         if (!hexString.startsWith("fe0100") || !hexString.endsWith("1800")) return null;

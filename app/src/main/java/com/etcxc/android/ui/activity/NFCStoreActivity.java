@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.NfcF;
@@ -32,11 +31,10 @@ import static com.etcxc.android.R.id.btn_replace_device;
 import static com.etcxc.android.utils.UIUtils.openAnimator;
 
 /**
- * start此Activity，如果是本应用请传fromSelf=true
+ * start此Activity，如果是本App其他页面跳转的请传fromSelf=true
  * NFC 圈存
  */
 public class NFCStoreActivity extends BaseActivity implements View.OnClickListener {
-    private NfcManager mNFCManger;
     private boolean mIsFromSelf;//是否是本应用启动的,判断回到更换设备的方式
     private NfcAdapter mNfcAdapter;
     private static String[][] TECHS;
@@ -73,7 +71,9 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onNewIntent(Intent intent) {
         mIsFromSelf = intent.getBooleanExtra("fromSelf", false);
+        showProgressDialog(getString(R.string.storing));
         circleSave(intent);
+        closeProgressDialog();
     }
 
     @Override
@@ -90,10 +90,8 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
      * 圈存
      */
     public void circleSave(Intent intent) {
-        showProgressDialog(getString(R.string.storing));
         final Tag tag = intent.getParcelableExtra(EXTRA_TAG);
         if (tag == null) {
-            closeProgressDialog();
             ToastUtils.showToast(getString(R.string.no_know_card));
             return;
         }
@@ -118,7 +116,6 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
                 .subscribe(new Consumer<Card>() {
                     @Override
                     public void accept(@NonNull Card card) throws Exception {
-                        closeProgressDialog();
                         if (!card.isAvailable()) {
                             ToastUtils.showToast(R.string.no_know_card);
                             return;
@@ -131,7 +128,6 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-                        closeProgressDialog();
                         ToastUtils.showToast(R.string.no_know_card);
                         LogUtil.e(TAG, "nfc store", throwable);
                     }
@@ -147,9 +143,7 @@ public class NFCStoreActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        if (!mNfcAdapter.isEnabled()) {
-            ToastUtils.showToast(getString(R.string.please_open_NFC_function));
-        }
+        if (!mNfcAdapter.isEnabled()) ToastUtils.showToast(getString(R.string.please_open_NFC_function));
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, this.getClass())
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         if (mNfcAdapter != null)

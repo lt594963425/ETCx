@@ -216,6 +216,7 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
                 break;
             case 2://拿到了卡号，网络请求是否能圈存,能圈存，拿mac1
                 if (!mRet.endsWith("1800")) return;
+                LogUtil.e("xwpeng", mRet);
                 ret = BleCmdParser.parseRet(mRet);
                 Pair<String, String> cardInfo = parseCardInfo(new Iso7816.Response(hexStringToBytes(ret)));
                 if (cardInfo == null || TextUtils.isEmpty(cardInfo.first)) return;

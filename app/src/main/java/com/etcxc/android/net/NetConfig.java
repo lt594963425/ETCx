@@ -32,10 +32,8 @@ public class NetConfig {
     public static final String CODE_FA_INVALID_SESSION = "FA_INVALID_SESSION";
     public static final String CODE_FA_SECURITY = "FA_SECURITY";
 
-    //    public final static String HOST = "http://192.168.6.58";
-    //    public final static String HOST = "http://192.168.6.50:8080";
-    //    public final static String HOST = "http://46080450.nat123.net";
-    public static final String HOST = "http://192.168.6.50";
+//    public static final String HOST = "http://192.168.6.50";
+    public static final String HOST = "https://xwpeng.top";
 
     /**
      * @return 当前网络状态，详见{@link NetworkInfo}
