@@ -120,7 +120,7 @@ dependencies {
     compile 'com.clj.fastble:FastBleLib:1.2.1'
     //明华
     compile files('libs/mwcard-6.0.0.4.jar')
-
+    compile 'com.airbnb.android:lottie:1.0.1'
    /* compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'*/
 }
