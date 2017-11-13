@@ -1,6 +1,7 @@
 package com.etcxc.android.ui.activity;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -10,31 +11,35 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
-import com.etcxc.android.net.NetConfig;
+import com.etcxc.android.modle.sp.PublicSPUtil;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.net.callback.StringCallback;
 import com.etcxc.android.pay.WXPay.WXPay;
+import com.etcxc.android.pay.alipay.AliPay;
+import com.etcxc.android.pay.alipay.PayResult;
 import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import okhttp3.Call;
 
-import static com.etcxc.android.net.FUNC.WX_PAY_ISSUE;
-import static com.etcxc.android.net.NetConfig.JSON;
+import static com.etcxc.android.net.NetConfig.HOST;
 
 /**
  * 发行支付
@@ -46,6 +51,33 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
     private EditText mRechargeEdittext;
     private RadioButton mPayAlipay;
     private RadioButton mPayWechat;
+
+    private class RechargeStringCallBack extends StringCallback {
+        @Override
+        public void onError(Call call, Exception e, int id) {
+            ToastUtils.showToast(R.string.request_failed);
+            LogUtil.e(TAG, "请求失败");
+            closeProgressDialog();
+        }
+
+        @Override
+        public void onResponse(String response, int id) {
+            closeProgressDialog();
+            switch (id) {
+                case 1:
+                    boolean b = WXPay.TuneUpWxPay(response);
+                    if (!b) {
+                        ToastUtils.showToast(R.string.request_failed);
+                    } else {
+                        PublicSPUtil.getInstance().putString("ETC_FLAGE", Constants.ETC_ISSUE);
+                    }
+                    break;
+                case 2:
+                    payToOrderService(response);
+                    break;
+            }
+        }
+    }
 
     //    private boolean mIsTruck = true;
     @Override
@@ -95,71 +127,119 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void onClick(View v) {
-        String editMoney = mRechargeEdittext.getText().toString().trim();
-        DecimalFormat df = new DecimalFormat("0.00");
-        if (editMoney.isEmpty()) {
-            ToastUtils.showToast(R.string.money_isempty);
-            return;
-        }
-        int moneyInt = Integer.valueOf(editMoney);//元
-
-        Double moneyDb = Double.valueOf(df.format((200 + moneyInt) * 100)); //分;
-        JSONObject jsonObject = new JSONObject();
+    public void onClick(View v) {   //PAY_ISSUE
         try {
-            //PublicSPUtil.getInstance().getString("carCard", "")
-            //PublicSPUtil.getInstance().getString("carCardColor", "")
-            jsonObject.put("licensePlate", "湘A12345")
-                    .put("plateColor", "黄底黑字")
-                    .put("total_fee", "1");
-            Log.e(TAG, jsonObject.toString());
+            showProgressDialog(getString(R.string.loading));
+            JSONObject jsonObject = getIssuePayParams();
+            if (mPayAlipay.isChecked()) {   //支付宝
+                MobclickAgent.onEvent(this, "AliPay");
+                jsonObject.put("way", "ali");
+                aliPay(jsonObject);
+
+            }
+            if (mPayWechat.isChecked()) {  //微信支付
+                jsonObject.put("way", "wx");
+                MobclickAgent.onEvent(this, "WXPay");
+                showProgressDialog(getString(R.string.loading));
+                wxPay(jsonObject);
+
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if (mPayAlipay.isChecked()) {   //支付宝
-            MobclickAgent.onEvent(this, "AliPay");
-            ToastUtils.showToast(R.string.alipay);
-        }
-        if (mPayWechat.isChecked()) {  //微信支付
-            MobclickAgent.onEvent(this, "WXPay");
-            showProgressDialog(getString(R.string.wx_pay_loading));
-            wxPay(jsonObject);
 
+    }
+
+    @Nullable
+    private JSONObject getIssuePayParams() throws JSONException {
+        String editMoney = mRechargeEdittext.getText().toString().trim();
+        if (editMoney.isEmpty()) {
+            ToastUtils.showToast(R.string.money_isempty);
+            return null;
         }
+
+        int moneyDb = (200 + Integer.valueOf(editMoney)) * 100;
+        JSONObject jsonObject = new JSONObject();
+        String plateLicense = PublicSPUtil.getInstance().getString("carCard", "");
+        String plateColor = PublicSPUtil.getInstance().getString("carCardColor", "");
+        jsonObject.put("licensePlate", plateLicense)
+                .put("plateColor", plateColor)
+                .put("total_fee", moneyDb)
+                .put("client_type", "Android");
+        Log.e(TAG, jsonObject.toString());
+        return jsonObject;
     }
 
     private void wxPay(JSONObject jsonObject) {
-        showProgressDialog(R.string.loading);
-        Observable.create(new ObservableOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                e.onNext(OkHttpUtils
-                        .postString()
-                        .url(NetConfig.HOST + WX_PAY_ISSUE)
-                        .content(String.valueOf(jsonObject))
-                        .mediaType(JSON).build()
-                        .execute().body().string());
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        boolean b = WXPay.TuneUpWxPay(s);
-                        if (!b) {
-                            ToastUtils.showToast(R.string.request_failed);
-                        } else {
-                            Constants.ETC_ISSUE = b;
-                        }
+        OkHttpUtils.postString()
+                .url(HOST + FUNC.PAY_ISSUE)
+                .content(String.valueOf(jsonObject))
+                .tag(this)
+                .id(1)
+                .mediaType(OkHttpUtils.JSON).build()
+                .execute(new RechargeStringCallBack());
+    }
 
-                    }
-                }, new Consumer<Throwable>() {
+    private void aliPay(JSONObject jsonObject) {
+        OkHttpUtils.postString()
+                .url(HOST + FUNC.PAY_ISSUE)
+                .content(String.valueOf(jsonObject))
+                .tag(this)
+                .id(2)
+                .mediaType(OkHttpUtils.JSON).build()
+                .execute(new RechargeStringCallBack());
+    }
+
+    /**
+     * 支付宝进行请求
+     */
+    private void payToOrderService(String payString) {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
+                String orderInfo = payString.replace("amp;", "");
+                PayTask payTask = new PayTask(IssuePayActivity.this);
+                Map<String, String> result = payTask.payV2(orderInfo, true);
+                e.onNext(result);
+            }
+        }).compose(RxUtil.activityLifecycle(this))
+                .compose(RxUtil.io())
+                .subscribe(new Consumer<Object>() {
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        ToastUtils.showToast(R.string.pay_faid);
+                    public void accept(@NonNull Object o) throws Exception {
                         closeProgressDialog();
+                        PayResult payResult = new PayResult((Map<String, String>) o);
+                        /**
+                         对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
+                         */
+                        String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+                        String resultStatus = payResult.getResultStatus();
+                        switch (resultStatus) {
+                            case AliPay.PAY_OK:
+                                openActivity(IssueFinishActivity.class);
+                                finish();
+                                break;
+                            case AliPay.PAY_FAIL:
+                                ToastUtils.showToast("支付失败");
+                                break;
+                            case AliPay.PAY_CANCEL:
+                                ToastUtils.showToast(payResult.getMemo());
+                                break;
+                            case AliPay.PAY_NET_ERROR:
+                                ToastUtils.showToast(payResult.getMemo());
+                                break;
+                            case AliPay.PAY_REPEAT:
+                                ToastUtils.showToast(payResult.getMemo());
+                                break;
+                        }
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        OkHttpUtils.cancelTag(this);
     }
 }

@@ -35,7 +35,10 @@ public class NetConfig {
     //    public final static String HOST = "http://192.168.6.58";
     //    public final static String HOST = "http://192.168.6.50:8080";
     //    public final static String HOST = "http://46080450.nat123.net";
-    public static final String HOST = "http://192.168.6.50";
+    //    public static final String HOST = "http://192.168.6.50";
+
+    //public static final String HOST = "http://192.168.6.46";
+    public static final String HOST = "http://192.168.6.46";
 
     /**
      * @return 当前网络状态，详见{@link NetworkInfo}
@@ -48,7 +51,6 @@ public class NetConfig {
         }
         return null;
     }
-
     /**
      * @return true，如果当前所处是wifi环境
      */

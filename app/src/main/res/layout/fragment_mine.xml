@@ -14,8 +14,7 @@
             android:minHeight="80dp"
             android:id="@+id/mine_layout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="130dp"
             android:background="@drawable/bg_item_view"
             android:clickable="true"
             android:gravity="center_vertical">
@@ -51,7 +50,7 @@
         </RelativeLayout>
         <View
             android:layout_width="match_parent"
-            android:layout_height="18dp" />
+            android:layout_height="10dp" />
             <RelativeLayout
                 android:id="@+id/mine_my_card_toright"
                 android:layout_width="match_parent"

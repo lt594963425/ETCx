@@ -85,7 +85,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private String IMAGE_HEAD = MeManager.getToken() + "_head.jpg";
     private String CROP_HEAD = MeManager.getToken() + "_crop.jpg";
     private LoadImageHeapler mHeadLoader;
-
+    protected  String IMAGE_TAG = "PE_LOAD_IMAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,7 +194,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 Glide.with(this).load(file).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mUserHead);
             } else {
                 if (mHeadLoader == null) {
-                    mHeadLoader = new LoadImageHeapler(CROP_HEAD);
+                    mHeadLoader = new LoadImageHeapler(CROP_HEAD,IMAGE_TAG);
                 }
                 mHeadLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
                     @Override
@@ -509,7 +509,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     protected void onDestroy() {
         super.onDestroy();
         if (mHeadLoader != null) {
+            mHeadLoader.CancleNet(IMAGE_TAG);
             mHeadLoader = null;
+
         }
         finish();
     }

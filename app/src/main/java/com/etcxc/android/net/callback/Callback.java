@@ -1,5 +1,8 @@
 package com.etcxc.android.net.callback;
 
+import com.etcxc.android.R;
+import com.etcxc.android.utils.ToastUtils;
+
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -66,7 +69,11 @@ public abstract class Callback<T> {
 
         @Override
         public void onError(Call call, Exception e, int id) {
-
+            if(e.toString().contains("closed")){
+                ToastUtils.showToast(R.string.cancel_request);
+            }else {
+                ToastUtils.showToast(R.string.request_failed);
+            }
         }
 
         @Override

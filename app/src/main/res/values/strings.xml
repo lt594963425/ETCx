@@ -69,7 +69,7 @@
     <string name="region">所在地区</string>
     <string name="street">街道</string>
     <string name="detailedly_address">详细地址(5到60个字)</string>
-    <string name="advance_money">预收金额200元</string>
+    <string name="advance_money">预收金额：200元</string>
     <string name="sum_pay">合计:&#160;&#160;%1$d&#160;&#160;元</string>
     <string name="wechat_pay">微信支付</string>
     <string name="alipay">支付宝</string>
@@ -159,7 +159,7 @@
     <string name="hint_input_cardnum">请输入20位湘通卡卡号</string>
     <string name="recharge_amount">充值金额：</string>
     <string name="add">\t添加</string>
-    <string name="recharge_detial">待充值明细：</string>
+    <string name="recharge_detial">待充值单数量：</string>
     <string name="recharge_total">合计：</string>
     <string name="please_select">选择支付方式</string>
     <string name="please_select_pay_methods">选择支付方式：</string>
@@ -193,7 +193,7 @@
     <string name="wechat_timeline">朋友圈</string>
     <string name="qq">QQ</string>
     <string name="sms">短信</string>
-    <string name="wx_pay_loading">加载中...</string>
+    <string name="pay_loading">加载中...</string>
     <string name="pay_failed">支付失败</string>
     <string name="pay_result_log">支付结果</string>
     <string name="share_error">分享失败</string>
@@ -284,6 +284,7 @@
     <string name="usb_store">USB圈存</string>
     <string name="take_care_info">注意!请把湘通卡放在读卡器的卡座上!</string>
     <string name="hint_application_exit">非常抱歉，程序出现异常即将退出</string>
+    <string name="cancel_request">取消请求</string>
 
 
 </resources>

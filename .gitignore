@@ -6,5 +6,4 @@
 .DS_Store
 /build
 /captures
-.deal/.name
-.deal/
+.deal/*

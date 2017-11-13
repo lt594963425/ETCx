@@ -46,5 +46,9 @@ public class StoreActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        openActivity(MainActivity.class);
+    }
 }

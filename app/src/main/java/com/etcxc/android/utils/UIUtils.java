@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -260,28 +261,23 @@ public class UIUtils {
     }
 
     //存
-    public static void saveInfoList(Context con, List<OrderRechargeInfo> list) {
-        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String jsonStr = gson.toJson(list); //将List转换成Json
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("KEY_INFO_list", jsonStr); //存入json串
-        editor.apply();  //提交
+    public static void saveInfoList(List<OrderRechargeInfo> list) {
+        PublicSPUtil.getInstance().putString("ETCCARD",new Gson().toJson(list));
     }
 
     //取或查
     @NonNull
-    public static List<OrderRechargeInfo> getInfoList(Context con) {
-        List<OrderRechargeInfo> infoList = new ArrayList<>();
-        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String infoListString = sp.getString("KEY_INFO_list", "");
+    public static List<OrderRechargeInfo> getInfoList(Context context) {
+        List<OrderRechargeInfo> dataList = new ArrayList<>();
+        String infoListString = PublicSPUtil.getInstance().getString("ETCCARD","");
         if (!TextUtils.isEmpty(infoListString)) {
-            List<OrderRechargeInfo> temp = gson.fromJson(infoListString, new TypeToken<List<OrderRechargeInfo>>() {
+            List<OrderRechargeInfo> temp = new Gson().fromJson(infoListString, new TypeToken<List<OrderRechargeInfo>>() {
             }.getType());
-            if (temp != null) infoList.addAll(temp);
+            if (temp != null) {
+                dataList.addAll(temp);
+            }
         }
-        return infoList;
+        return dataList;
     }
 
     public static void clearDetialData(Context con) {

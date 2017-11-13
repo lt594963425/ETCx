@@ -18,10 +18,10 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.net.callback.StringCallback;
 import com.etcxc.android.ui.view.keyboard.OnKeyActionListener;
 import com.etcxc.android.ui.view.keyboard.VehiclePlateKeyboard;
 import com.etcxc.android.utils.LogUtil;
-import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
 
 import org.json.JSONException;
@@ -32,11 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+import okhttp3.Call;
 
 import static com.etcxc.android.net.FUNC.CAN_ISSUE;
 import static com.etcxc.android.net.NetConfig.JSON;
@@ -141,50 +137,52 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
     private void net(JSONObject jsonObject) {
         Log.e(TAG, String.valueOf(jsonObject));
         showProgressDialog(R.string.loading);
-        Observable.create(new ObservableOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
 
-                e.onNext(OkHttpUtils
-                        .postString()
-                        .url(NetConfig.HOST + CAN_ISSUE)
-                        .content(String.valueOf(jsonObject))
-                        .mediaType(JSON)
-                        .build()
-                        .execute().body().string());
-            }
-        }).compose(RxUtil.io())
-                .compose(RxUtil.activityLifecycle(this))
-                .subscribe(new Consumer<String>() {
+        OkHttpUtils
+                .postString()
+                .url(NetConfig.HOST + CAN_ISSUE)
+                .content(String.valueOf(jsonObject))
+                .mediaType(JSON)
+                .tag(this)
+                .build()
+                .execute(new StringCallback() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        closeProgressDialog();
-                        JSONObject jsonObject = new JSONObject(s);
-                        Log.e(TAG, String.valueOf(jsonObject));
-                        String code = jsonObject.getString("code");
-                        if ("s_ok".equals(code)) {
-                            Intent intent = new Intent(ETCIssueActivity.this, UploadLicenseActivity.class);
-                            PublicSPUtil.getInstance().putString("carCard", mCarCardEdit.getText().toString());
-                            PublicSPUtil.getInstance().putString("carCardColor", mCarColor);
-                            intent.putExtra(IS_ORGAN, !mPersonalRadiobutton.isChecked());
-                            startActivity(intent);
-                            openAnimator(ETCIssueActivity.this);
-                        } else if ("error".equals(code)) {
-                            String message = jsonObject.getString("message");//
-                            if ("issuing or using".equals(message)) {
-                                ToastUtils.showToast("该车已经注册");
-                            } else {
-                                closeProgressDialog();
-                                ToastUtils.showToast(message);
+                    public void onError(Call call, Exception e, int id) {
+                            closeProgressDialog();
+                            if(e.toString().contains("closed")) {
+                                LogUtil.e(TAG, "取消请求");
+                            }else{
+                                ToastUtils.showToast(R.string.request_failed);
                             }
-                        }
+
+
                     }
-                }, new Consumer<Throwable>() {
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    public void onResponse(String response, int id) {
                         closeProgressDialog();
-                        LogUtil.e(TAG, "net", throwable);
-                        ToastUtils.showToast(R.string.request_failed);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            Log.e(TAG, String.valueOf(jsonObject));
+                            String code = jsonObject.getString("code");
+                            if ("s_ok".equals(code)) {
+                                Intent intent = new Intent(ETCIssueActivity.this, UploadLicenseActivity.class);
+                                PublicSPUtil.getInstance().putString("carCard", mCarCardEdit.getText().toString());
+                                PublicSPUtil.getInstance().putString("carCardColor", mCarColor);
+                                intent.putExtra(IS_ORGAN, !mPersonalRadiobutton.isChecked());
+                                startActivity(intent);
+                                openAnimator(ETCIssueActivity.this);
+                            } else if ("error".equals(code)) {
+                                String message = jsonObject.getString("message");//
+                                if ("issuing or using".equals(message)) {
+                                    ToastUtils.showToast("该车已经注册");
+                                } else {
+                                    closeProgressDialog();
+                                    ToastUtils.showToast(message);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
     }
@@ -219,5 +217,11 @@ public class ETCIssueActivity extends BaseActivity implements View.OnClickListen
         String rex = "^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$";
         Pattern p = Pattern.compile(rex);
         return p.matcher(carCard).matches();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        OkHttpUtils.cancelTag(this);
     }
 }

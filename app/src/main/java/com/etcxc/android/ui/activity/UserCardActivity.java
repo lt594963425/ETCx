@@ -61,7 +61,7 @@ public class UserCardActivity extends BaseActivity implements TabLayout.OnTabSel
     }
 
     private void initView() {
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.user_card_toolbar);
+        Toolbar mToolbar = findViewById(R.id.user_card_toolbar);
         mToolbar.setTitle(R.string.user_etc_card);
         setBarBack(mToolbar);
         mTabLayout = (TabLayout) findViewById(R.id.user_card_tab);

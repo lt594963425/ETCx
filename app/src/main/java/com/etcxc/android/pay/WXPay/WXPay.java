@@ -14,6 +14,7 @@ import static com.etcxc.android.base.Constants.WX_APP_ID;
  * Created by ${LiuTao} on 2017/9/26/026.
  */
 public class WXPay {
+
     private static IWXAPI mWxApi = WXAPIFactory.createWXAPI(App.get(), WX_APP_ID, true);
 
     /**
@@ -25,8 +26,7 @@ public class WXPay {
     public static boolean TuneUpWxPay(String s) {
         Gson gson = new Gson();
         WxPayRecharge wxPayRecharge = gson.fromJson(s, WxPayRecharge.class);
-        if (! "s_ok".equals(wxPayRecharge.getCode())) return false;
-        return wxpay(wxPayRecharge.getVar());
+        return "s_ok".equals(wxPayRecharge.getCode()) && wxpay(wxPayRecharge.getVar());
     }
 
     private static boolean wxpay(WxPayRecharge.VarBean varBean) {

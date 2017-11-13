@@ -19,8 +19,6 @@ import com.etcxc.android.base.App;
 import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.ui.activity.ETCIssueActivity;
 import com.etcxc.android.ui.activity.ETCRechargeActivity;
-import com.etcxc.android.ui.activity.IssueFinishActivity;
-import com.etcxc.android.ui.activity.IssuePayActivity;
 import com.etcxc.android.ui.activity.NetworkQueryActivity;
 import com.etcxc.android.ui.activity.StoreActivity;
 import com.etcxc.android.ui.activity.UploadLicenseActivity;
@@ -38,7 +36,6 @@ import com.youth.banner.Transformer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 
 
 /**
@@ -76,17 +73,19 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
         initView(view);
         return view;
     }
+
     private void initView(View view) {
         view.findViewById(R.id.home_etc_online_lly).setOnClickListener(this);//ETC在线办理
         view.findViewById(R.id.home_etc_recharge_rly).setOnClickListener(this);//ETC充值
         view.findViewById(R.id.home_etc_circle_save_rly).setOnClickListener(this);//ETC圈存
-        mHomeRecycler = (GridRecyclerView) view.findViewById(R.id.home_recylerview);
-        mBanner = (Banner) view.findViewById(R.id.home_banner);
+        mHomeRecycler = view.findViewById(R.id.home_recylerview);
+        mBanner = view.findViewById(R.id.home_banner);
         mBanner.setImages(new ArrayList<>(Arrays.asList(mBannerImagess))).setImageLoader(new GlideImageLoader()).start();
         mBanner.setBannerAnimation(Transformer.Accordion);
         setReCyclerView();
         runLayoutAnimation();
     }
+
     private void setReCyclerView() {
         GridLayoutManager gridLayManager = new GridLayoutManager(getActivity(), 3);
         gridLayManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -126,15 +125,19 @@ public class FragmentHome extends BaseFragment implements View.OnClickListener, 
                 openActivity(NetworkQueryActivity.class);
                 break;
             case 3:
-                openActivity(IssueFinishActivity.class);
+
                 break;
             case 4:
+
                 break;
             case 5:
-                openActivity(IssuePayActivity.class);
                 break;
         }
     }
+
+
+
+
 
     @Override
     public void onClick(View v) {

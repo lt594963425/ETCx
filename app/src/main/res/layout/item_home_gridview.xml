@@ -5,26 +5,22 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical">
-     <View
-         android:layout_width="match_parent"
-         android:layout_height="5dip"/>
+
     <ImageView
+        android:layout_marginTop="5dp"
         android:focusable="false"
         android:id="@+id/item_home_gv_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/vd_brief_description_of_business" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="5dip"/>
     <TextView
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="5dp"
         android:focusable="false"
         android:id="@+id/item_home_gv_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/bill_check"
         android:textSize="@dimen/font_middle" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="5dip"/>
+
 </LinearLayout>

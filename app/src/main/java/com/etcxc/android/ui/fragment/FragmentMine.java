@@ -69,16 +69,16 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private CircleImageView mMineUserHead;
     private TextView mMineUserName;
     private TextView mExit;
-    private Handler mHandler = new Handler();
+    private Handler mHandler ;
     private String CROP_HEAD;
     private Uri resultUri;
     private LoadImageHeapler mHeadLoader;
-
+    protected  String IMAGE_TAG = "MINE_LOAD_IMAGE";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_mine, null);
-    }
 
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -112,6 +112,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE) {
             mUpdateDot.setVisibility(View.VISIBLE);
         }
+        mHandler = new Handler();
         mHandler.postDelayed(LOAD_DATA, 500);
         mMineUserHead.setOnClickListener(this);
         mMineUserHead.setOnLongClickListener(new View.OnLongClickListener() {
@@ -204,7 +205,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void initUserInfo() {
         CROP_HEAD = MeManager.getToken() + "_crop.jpg";
         if (mHeadLoader == null) {
-            mHeadLoader = new LoadImageHeapler(CROP_HEAD);
+            mHeadLoader = new LoadImageHeapler(CROP_HEAD,IMAGE_TAG);
         }
         mHeadLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
             @Override
@@ -218,6 +219,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+
         if (!isVisibleToUser && mHandler != null) {
             mHandler.removeCallbacks(LOAD_DATA);
         }
@@ -334,6 +336,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         if (mHeadLoader != null) {
+            mHeadLoader.CancleNet(IMAGE_TAG);
             mHeadLoader = null;
         }
         mHandler.removeCallbacks(LOAD_DATA);

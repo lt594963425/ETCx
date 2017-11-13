@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.etcxc.android.R;
+import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.view.XToolbar;
 import com.etcxc.android.utils.LogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
@@ -141,6 +142,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         closeAnimator(this);
+        OkHttpUtils.cancelTag(this);
     }
     protected void initState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

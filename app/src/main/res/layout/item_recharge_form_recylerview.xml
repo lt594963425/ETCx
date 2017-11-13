@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="55dp"
-    android:orientation="vertical">
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="55dp"
+                                    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,9 +13,9 @@
 
         <RelativeLayout
             android:layout_width="0dp"
-            android:layout_weight="2"
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
+            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
@@ -24,7 +24,7 @@
                 android:layout_height="27dp"
                 android:gravity="center_vertical"
                 android:text="李小姐"
-                android:textSize="15sp" />
+                android:textSize="15sp"/>
 
             <TextView
                 android:id="@+id/item_car_number"
@@ -34,7 +34,7 @@
                 android:layout_toRightOf="@+id/item_card_name"
                 android:gravity="center_vertical"
                 android:text="湘A123456252"
-                android:textSize="15sp" />
+                android:textSize="15sp"/>
 
             <TextView
                 android:id="@+id/item_recharge_card_number"
@@ -43,7 +43,7 @@
                 android:layout_below="@+id/item_card_name"
                 android:gravity="center_vertical"
                 android:text="41234567891234567890"
-                android:textSize="15sp" />
+                android:textSize="15sp"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -54,11 +54,12 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/vd_coin_recharge" />
+                android:layout_marginLeft="5dp"
+                app:srcCompat="@drawable/vd_coin_recharge"/>
+
             <TextView
                 android:id="@+id/item_money_number"
                 android:layout_width="wrap_content"
@@ -67,20 +68,23 @@
                 android:layout_marginLeft="4dp"
                 android:text="50.00"
                 android:textColor="@color/colorOrange"
-                android:textSize="20sp" />
+                android:textSize="20sp"/>
         </LinearLayout>
 
         <ImageView
-            android:layout_marginRight="5dp"
             android:id="@+id/item_etc_delete_img"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/selector_delete_btn"
-            android:clickable="true" />
+            android:layout_marginRight="5dp"
+            android:clickable="true"
+            android:background="@drawable/selector_delete_btn"/>
+        <!--  //-->
+
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorbg" />
+        android:background="@color/colorbg"/>
 </android.support.v7.widget.CardView>

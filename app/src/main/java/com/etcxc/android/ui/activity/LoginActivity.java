@@ -71,7 +71,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     private ImageView mLoginFreshVerification;//刷新验证码
     private RelativeLayout mPictureCodeLayout;
     private boolean isShowPictureCode = false;
-    private Toolbar mToolbar1;
+    private Toolbar mToolbar;
     private String mVerfiyToken;
 
     @Override
@@ -88,9 +88,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     }
 
     private void initLoginView() {
-        mToolbar1 = find(R.id.login_toolbar);
+        mToolbar = find(R.id.login_toolbar);
         setTitle(R.string.login);
-        setBarBack(mToolbar1);
+        setBarBack(mToolbar);
         mLoginPhonenumberEdt = find(R.id.login_phonenumber_edt);//
         mLoginPhonenumberDelete = find(login_phonenumber_delete);
         mLoginPasswordEdt = find(R.id.login_password_edt);
@@ -400,7 +400,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         isShowPictureCode = false;
         OkHttpUtils.cancelTag(this);
 

@@ -6,12 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.etcxc.android.R;
-import com.etcxc.android.base.App;
 import com.etcxc.android.utils.ToastUtils;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
+
+import static com.etcxc.android.base.Constants.WX_APP_ID;
 
 
 /**
@@ -21,18 +24,21 @@ import com.umeng.analytics.MobclickAgent;
 
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
     private static final String TAG = "WXEntryActivity";
+    private IWXAPI WXapi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
+        WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
+        WXapi.registerApp(WX_APP_ID);
         setContentView(R.layout.activity_wxentry);
-        App.WXapi.handleIntent(getIntent(),this);
+        WXapi.handleIntent(getIntent(),this);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        App.WXapi.handleIntent(intent,this);
+     WXapi.handleIntent(intent,this);
     }
 
     @Override

@@ -18,12 +18,12 @@
         android:text="此处可添加多张卡一起充值"
         android:textColor="@color/black"
         android:textSize="18sp" />
-    <ImageView
+    <TextView
         android:layout_alignParentEnd="true"
         android:layout_width="130dp"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
         android:elevation="@null"
-        android:src="@mipmap/guidance_add_highlight" />
+        android:background="@mipmap/guidance_add_highlight" />
 </RelativeLayout>
 

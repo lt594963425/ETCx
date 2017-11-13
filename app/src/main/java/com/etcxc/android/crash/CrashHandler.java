@@ -9,8 +9,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.etcxc.android.R;
 import com.etcxc.android.base.App;
+import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.ToastUtils;
 
 import java.io.BufferedReader;
@@ -43,9 +43,6 @@ public class CrashHandler implements UncaughtExceptionHandler {
     //用来存储设备信息和异常信息
     private Map<String, String> mDeviceInfos;
 
-    /**
-     * 保证只有一个CrashHandler实例
-     */
     public CrashHandler() {
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
     }
@@ -81,10 +78,11 @@ public class CrashHandler implements UncaughtExceptionHandler {
             @Override
             public void run() {
                 Looper.prepare();
-                ToastUtils.showToast(R.string.hint_application_exit);
+                ToastUtils.showToast("程序出现异常，即将退出！");
                 Looper.loop();
             }
         }).start();
+        LogUtil.e(TAG,ex.toString());
         collectDeviceInfo();
         try {
             String filePath = saveLog2File(ex);

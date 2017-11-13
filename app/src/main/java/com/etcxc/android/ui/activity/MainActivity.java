@@ -1,7 +1,6 @@
 package com.etcxc.android.ui.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
@@ -34,6 +33,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
+
 /**
  * 主界面Activity
  * @author LiuTao
@@ -58,9 +58,9 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
     private VersionUpdateHelper mHelper;
     private MyFragmentAdapter mAdapter;
     private FragmentMine mFragmentMine;
-//    static {
-//        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-//    }
+   static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,15 +71,14 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         //mHelper.checkVersion();
     }
 
-
     private void initView() {
         setToolbarBack(false);
-        mViewPager = find(R.id.pager);
+        mViewPager = find(R.id.main_viewpager);
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(0, false);
         mViewPager.setOffscreenPageLimit(3);
         mTabHost = find(android.R.id.tabhost);
-        mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
+        mTabHost.setup(this, getSupportFragmentManager(), R.id.main_viewpager);
         mTabHost.setOnTabChangedListener(this);
         initTabs();
     }
@@ -94,14 +93,11 @@ public class MainActivity extends BaseActivity implements ViewPager.OnPageChange
         }
     }
 
-
     public View getTabItemView(int i) {
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
         ImageView mImageView = (ImageView) view.findViewById(R.id.tab_imageview);
         TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
-        Drawable drawableWechat = getResources().getDrawable(
-                mImageViewArray[i]);
-        mImageView.setBackground(drawableWechat);
+        mImageView.setBackgroundResource(mImageViewArray[i]);
         mTextView.setText(mTextViewArray[i]);
         return view;
     }

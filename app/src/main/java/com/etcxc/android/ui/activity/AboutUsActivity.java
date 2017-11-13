@@ -71,15 +71,15 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
     }
 
 
-
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.about_us_check_update:
                 mHelper.checkVersion();
                 break;
             case R.id.about_us_test_json_api:
-//                startActivity(new Intent(this, TestJsonApiActivity.class));
-                String strURL = "http://192.168.6.50/xczx/common/testAction";
+//
+                String strURL = "http://192.168.6.46/xczx/issue/pay";
                 aliPay(strURL);
                 break;
         }
@@ -113,7 +113,13 @@ public class AboutUsActivity extends BaseActivity implements View.OnClickListene
             public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
                 String orderInfo = null;
                 try {
-                    orderInfo = OkClient.get(strURL, new JSONObject());
+                    JSONObject js = new JSONObject();
+                    js.put("licensePlate","冀D56565");
+                    js.put("plateColor","蓝底白字");
+                    js.put("total_fee","1");
+                    js.put("way","ali");
+                    js.put("client_type","Android");
+                    orderInfo = OkClient.get(strURL, js);
                     orderInfo = orderInfo.replace("amp;", "");
                     PayTask payTask = new PayTask(AboutUsActivity.this);
                     Map<String, String> result = payTask.payV2(orderInfo, true);

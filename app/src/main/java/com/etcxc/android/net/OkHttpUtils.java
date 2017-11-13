@@ -6,13 +6,14 @@ import com.etcxc.android.net.builder.PostFileBuilder;
 import com.etcxc.android.net.builder.PostFormBuilder;
 import com.etcxc.android.net.builder.PostStringBuilder;
 import com.etcxc.android.net.callback.Callback;
+import com.etcxc.android.net.request.Platform;
 import com.etcxc.android.net.request.RequestCall;
-import com.etcxc.android.utils.Platform;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
 
 import okhttp3.Call;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
@@ -21,13 +22,12 @@ import okhttp3.Response;
  * Created by Liutao
  */
 public class OkHttpUtils {
+    public static final MediaType JSON = MediaType.parse("text/x-json;charset=UTF-8");
     public static final String CacheControl = "Cache-Control";
     public static final long DEFAULT_MILLISECONDS = 10_000L;
     private volatile static OkHttpUtils mInstance;
     private static OkHttpClient mOkHttpClient;
     private Platform mPlatform;
-
-
    private OkHttpUtils(OkHttpClient okHttpClient){
        if (okHttpClient ==null){
            mOkHttpClient =new OkHttpClient();
@@ -107,8 +107,10 @@ public class OkHttpUtils {
                 } catch (Exception e) {
                     sendFailResultCallback(call, e, finalCallback, id);
                 } finally {
-                    if (response.body() != null)
+                    if (response.body() != null) {
                         response.body().close();
+                    }
+
                 }
 
             }

@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#f4f4f4"
-    android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#f4f4f4"
+              android:orientation="vertical">
 
-    <com.youth.banner.Banner xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.youth.banner.Banner
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/home_banner"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="1dp"
         android:layout_weight="1"
         app:indicator_drawable_selected="@drawable/point_focus"
         app:indicator_height="7dp"
         app:indicator_margin="5dp"
-        app:indicator_width="7dp" />
+        app:indicator_width="7dp"/>
 
     <com.etcxc.android.ui.view.GridRecyclerView
         android:id="@+id/home_recylerview"
@@ -22,22 +24,24 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/home_banner"
         android:background="@color/white"
-        android:padding="5dp"
         android:clipToPadding="false"
+        android:padding="5dp"
         android:paddingBottom="10dip"
         android:scrollbars="none"
-        tools:listitem="@layout/item_home_gridview" />
+        tools:listitem="@layout/item_home_gridview"/>
+
     <LinearLayout
         android:id="@+id/home_etcmore_llayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_below="@id/home_recylerview"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <LinearLayout
+            android:layout_marginRight="1dp"
             android:id="@+id/home_etc_online_lly"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -55,18 +59,15 @@
                 android:gravity="center"
                 android:text="@string/home_etconline"
                 android:textColor="@color/colorOrange"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="6dp"
-                android:src="@mipmap/home_etc_car" />
+                android:src="@mipmap/home_etc_car"/>
         </LinearLayout>
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -75,6 +76,8 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
                 android:id="@+id/home_etc_recharge_rly"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -85,12 +88,13 @@
                     android:id="@+id/home_etcrecharge_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:layout_marginLeft="15dip"
                     android:layout_marginRight="10dip"
                     android:layout_marginTop="15dp"
                     android:text="@string/home_etcrecharge"
                     android:textColor="@color/colorrechargegreen"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:id="@+id/tv_can_recharge"
@@ -101,7 +105,7 @@
                     android:layout_toStartOf="@+id/imageView"
                     android:gravity="center_horizontal"
                     android:text="@string/save_time_and_effort"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"/>
 
                 <ImageView
                     android:id="@+id/imageView"
@@ -111,12 +115,9 @@
                     android:layout_marginRight="11dp"
                     android:layout_marginTop="13dip"
                     android:layout_toRightOf="@+id/home_etcrecharge_tv"
-                    android:src="@mipmap/home_etc_recharge" />
+                    android:src="@mipmap/home_etc_recharge"/>
             </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp" />
 
             <RelativeLayout
                 android:id="@+id/home_etc_circle_save_rly"
@@ -136,7 +137,7 @@
                     android:gravity="center"
                     android:text="@string/home_etccircle"
                     android:textColor="@color/colorcircleblue"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:id="@+id/tv_can_save"
@@ -147,7 +148,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="6dp"
                     android:text="@string/every_where_save"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"/>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -155,7 +156,7 @@
                     android:layout_marginBottom="6dp"
                     android:layout_marginRight="15dp"
                     android:layout_toRightOf="@+id/tv_can_save"
-                    android:src="@mipmap/home_etc_circle_save" />
+                    android:src="@mipmap/home_etc_circle_save"/>
             </RelativeLayout>
 
         </LinearLayout>
