@@ -2,15 +2,11 @@ package com.etcxc.android.ui.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.location.Address;
 import android.location.Location;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
-import com.etcxc.android.base.Constants;
 import com.etcxc.android.bean.Networkstore;
-import com.etcxc.android.ui.service.GeocodeAddressIntentService;
 import com.etcxc.android.utils.OpenExternalMapAppUtils;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
@@ -50,7 +44,6 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
         this.mData = mData;
         this.mContext = context;
         this.mLocation = location;
-
     }
 
     @Override
@@ -65,7 +58,8 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
         if (mData.get(position) != null) {
             holder.mTv_netstores_address.setText(mData.get(position).getNetstores_address());
             holder.mTv_netstores_name.setText(mData.get(position).getNetstores_name());
-            if (mData.get(position).getDistance() != 100000.0 * 1000000) {
+            Log.d(TAG, "onBindViewHolder: " + mData.get(position).getDistance());
+            if (mData.get(position).getDistance() > 0) {
                 holder.mTv_distance.setText(OpenExternalMapAppUtils.unitConversion(mData.get(position).getDistance()));
             } else {
                 holder.mTv_distance.setText("未知");
@@ -192,13 +186,10 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
                     }
                     break;
                 case 2://百度地图WEB版
-                    AddressResultReceiver mResultReceiver = new AddressResultReceiver(null);
-                    Intent intent = new Intent(mContext, GeocodeAddressIntentService.class);
-                    intent.putExtra(Constants.RECEIVER, mResultReceiver);
-                    intent.putExtra(Constants.FLAG, Constants.LOCATION);
-                    intent.putExtra(Constants.RECEIVER, mResultReceiver);
-                    intent.putExtra(Constants.LOCATION_NAME_DATA_EXTRA, mDestination);
-                    mContext.startService(intent);
+                    OpenExternalMapAppUtils.openBrosserNaviMap(mContext,
+                            mLocation,
+                            "我的位置",
+                            mDestination);
                     break;
             }
         } else {
@@ -218,32 +209,4 @@ public class NetworkQueryAdapter extends RecyclerView.Adapter<NetworkQueryAdapte
             }
         }
     }
-
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, final Bundle resultData) {
-            final Address address = resultData.getParcelable(Constants.RESULT_ADDRESS);
-            if (resultCode == Constants.LOCATION) {
-                OpenExternalMapAppUtils.openBrosserNaviMap(mContext,
-                        mLocation,
-                        "我的位置",
-                        address,
-                        mDestination);
-            }
-            if (resultCode == Constants.DISTANCE) {
-                if (address != null) {
-                    Double d = OpenExternalMapAppUtils.DistanceOfTwoPoints(
-                            mLocation.getLatitude(),
-                            mLocation.getLongitude(),
-                            address.getLatitude(),
-                            address.getLongitude());
-                }
-            }
-        }
-    }
-
 }
