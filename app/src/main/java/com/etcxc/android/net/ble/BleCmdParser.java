@@ -165,12 +165,13 @@ public class BleCmdParser {
         LogUtil.e("xwpeng16", "parse : " + hexString);
         if (hexString == null) return null;
         hexString = hexString.toLowerCase();
-        if (!hexString.startsWith("fe0100") || !hexString.endsWith("1800")) return null;
-        hexString = hexString.substring(6);
-        hexString = hexString.substring(0, hexString.length() - 4);
-        if (hexString.length() / 2 + 5 != Integer.parseInt(hexString.substring(0, 2), 16))
+        if (!hexString.startsWith("fe0100")) return null;
+        boolean isJy = hexString.endsWith("18914e");
+        if (!isJy && !hexString.endsWith("1800")) return null;
+        if (hexString.length() / 2  != Integer.parseInt(hexString.substring(6, 8), 16))
             return null;
-        hexString = hexString.substring(16);
+        hexString = hexString.substring(22);
+        hexString = hexString.substring(0, hexString.length() - (isJy ? 6 : 4));
         if (hexString.length() / 2 - 1 != Integer.parseInt(hexString.substring(0, 2), 16))
             return null;
         hexString = hexString.substring(2);

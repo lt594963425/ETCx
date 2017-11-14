@@ -24,11 +24,11 @@ import com.etcxc.android.base.BaseFragment;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkHttpUtils;
+import com.etcxc.android.test.StoreTest;
 import com.etcxc.android.ui.activity.AboutUsActivity;
 import com.etcxc.android.ui.activity.ChangePasswordActivity;
 import com.etcxc.android.ui.activity.ChangePhoneActivity;
 import com.etcxc.android.ui.activity.LoginActivity;
-import com.etcxc.android.ui.activity.MineCardActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
@@ -148,7 +148,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mine_my_card_toright:
-                openActivity(MineCardActivity.class);
+//                openActivity(MineCardActivity.class);
+                StoreTest.jyParse();
                 break;
             case R.id.mine_user_head:
             case R.id.mine_layout:

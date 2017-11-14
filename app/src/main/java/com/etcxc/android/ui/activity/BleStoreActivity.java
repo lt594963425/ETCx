@@ -114,7 +114,7 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void bleStore() {
-        mBleManager.scanNameAndConnect("WanJi", 5000, true, new BleGattCallback() {
+        mBleManager.scanNamesAndConnect(new String[]{"WanJi","GV__BT_WX"}, 5000, true, new BleGattCallback() {
             @Override
             public void onConnectError(BleException exception) {
                 runOnUiThread(new Runnable() {
@@ -200,7 +200,8 @@ public class BleStoreActivity extends BaseActivity implements View.OnClickListen
             case 0:  //接到某个值开始握手
 //              if ("fe01001a271100010a0018808004200128023a0657022b82ec7e".equals(mRet)) {//indicate成功，设备请求握手
                 byte[] A2 = procotolEncode(bleEncode(hexStringToBytes("A2")));
-                mBleManager.writeDevice(serviceUUID, writeUUID, A2, null);
+               boolean writeSuccess = mBleManager.writeDevice(serviceUUID, writeUUID, A2, null);
+                LogUtil.e("xwpeng16", "write Success: " + writeSuccess);
                 mCmdFlag = 1;
 //                }
                 break;

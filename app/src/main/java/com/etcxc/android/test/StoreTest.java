@@ -2,6 +2,7 @@ package com.etcxc.android.test;
 
 import com.clj.fastble.utils.HexUtil;
 import com.etcxc.android.net.ble.BleCmdPackager;
+import com.etcxc.android.net.ble.BleCmdParser;
 import com.etcxc.android.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -28,5 +29,12 @@ public class StoreTest {
         byte[] procotol = BleCmdPackager.procotolEncode(ble);
         String pStr = HexUtil.encodeHexStr(procotol);
         LogUtil.e("xwpeng16", "pStr: " + pStr);
+    }
+
+    public static void jyParse(){
+        String respones1 = "fe01001b2712000d0a00120c33098007b20004f2";
+        String respones2 = "d37f442218914e";
+        String aa = BleCmdParser.parseRet(respones1 + respones2);
+        LogUtil.e("xwpeng16", aa);
     }
 }
