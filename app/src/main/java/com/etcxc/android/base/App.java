@@ -6,6 +6,7 @@ import com.bumptech.glide.Glide;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.net.cookie.CookieJarImpl;
 import com.etcxc.android.net.cookie.store.SPCookieStore;
+import com.etcxc.android.net.https.HttpsUtils;
 import com.etcxc.android.net.log.LoggerInterceptor;
 import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -42,7 +44,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         //封装okhttp的初始化配置
-        // HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
+         HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, (X509TrustManager) null);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10000L, TimeUnit.MILLISECONDS)
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)
@@ -57,7 +59,7 @@ public class App extends Application {
                         return true;
                     }
                 })
-//                .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //https
+               .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //https
                 .build();
         OkHttpUtils.initClient(okHttpClient);
         //友盟日志加密传输
