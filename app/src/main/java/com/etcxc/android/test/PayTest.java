@@ -1,7 +1,7 @@
 package com.etcxc.android.test;
 
 import com.etcxc.android.R;
-import com.etcxc.android.base.Constants;
+import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.NetConfig;
 import com.etcxc.android.net.OkClient;
 import com.etcxc.android.pay.WXPay.WXPay;
@@ -17,7 +17,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.etcxc.android.net.FUNC.WX_PAY_ISSUE;
+
 
 /**
  * 用来测试支付接口
@@ -35,7 +35,7 @@ public class PayTest {
                         .put("total_fee", "1")
                         .put("way", "wx")
                         .put("client_type", "Android");
-                e.onNext(OkClient.get(NetConfig.HOST + WX_PAY_ISSUE, jsonObject));
+                e.onNext(OkClient.get(NetConfig.HOST + FUNC.PAY_ISSUE, jsonObject));
             }
 
         }).subscribeOn(Schedulers.io())
@@ -44,11 +44,8 @@ public class PayTest {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
                         boolean b = WXPay.TuneUpWxPay(s);
-                        if (!b) {
                             ToastUtils.showToast(R.string.request_failed);
-                        } else {
-                            Constants.ETC_ISSUE = b;
-                        }
+
 
                     }
                 }, new Consumer<Throwable>() {

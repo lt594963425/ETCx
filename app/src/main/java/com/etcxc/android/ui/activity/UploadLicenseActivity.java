@@ -27,7 +27,6 @@ import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.ui.view.xccamera.CameraConfig;
 import com.etcxc.android.ui.view.xccamera.CropActivity;
-import com.etcxc.android.utils.FileUtils;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.PermissionUtil;
 import com.etcxc.android.utils.SystemUtil;
@@ -164,19 +163,17 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                 if (mIsOrg) {
                     File orgFile = new File(mCachePath, CROP_ORG);
-                    e.onNext(OkHttpUtils
-                            .post()
-                            .addFile("image_id_card", CROP_IDCARD, idCardFile)
-                            .addFile("image_driven_license", CROP_DRIVEN, drivenFile)
-                            .addFile("image_org_license", CROP_ORG, orgFile)
+                    e.onNext(OkHttpUtils.post()
+                            .addFile("image_id_card", CROP_IDCARD, idCardFile)//参数 1
+                            .addFile("image_driven_license", CROP_DRIVEN, drivenFile)//参数2
+                            .addFile("image_org_license", CROP_ORG, orgFile)  //参数3
                             .url(HOST + UPLOAD_FUNC)
                             .params(params)
                             .build().execute().body().string());
                 } else {
-                    e.onNext(OkHttpUtils
-                            .post()
-                            .addFile("image_id_card", CROP_IDCARD, idCardFile)
-                            .addFile("image_driven_license", CROP_DRIVEN, drivenFile)
+                    e.onNext(OkHttpUtils.post()
+                            .addFile("image_id_card", CROP_IDCARD, idCardFile)//参数 1
+                            .addFile("image_driven_license", CROP_DRIVEN, drivenFile)//参数 2
                             .url(HOST + UPLOAD_FUNC)
                             .params(params)
                             .build().execute().body().string());
@@ -335,6 +332,8 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
         startActivityForResult(intent, REQUEST_CAMERA);
     }
 
+    File idCardFile;
+    File drivenFile;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -352,8 +351,10 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 String path = data.getStringExtra(CameraConfig.IMAGE_PATH);
                 if (mClickFlag == CLICK_DRIVEN) {
                     mDriveImageView.setImageURI(Uri.parse(path));
+                     idCardFile = new File(path);
                 } else {
                     mFristImageView.setImageURI(Uri.parse(path));
+                    drivenFile = new File(path);
                 }
 //                File file =FileUtils.getFileByUri(this,Uri.parse(path));
 //                        new File(mCachePath, (mClickFlag & CLICK_IDCARD) != 0 ? CROP_IDCARD : (mClickFlag & CLICK_ORG) != 0 ? CROP_ORG : CROP_DRIVEN);

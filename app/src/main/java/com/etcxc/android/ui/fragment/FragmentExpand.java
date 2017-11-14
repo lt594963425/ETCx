@@ -41,7 +41,7 @@ public class FragmentExpand extends BaseFragment {
         initData();
         View view = inflater.inflate(R.layout.fragment_expand, null);
         mRecyclerview = (XRecyclerView) view.findViewById(R.id.expand_recyclerView);
-        final SwipeRefreshLayout mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        final SwipeRefreshLayout mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout_expand);
         mRefresh.setProgressBackgroundColorSchemeColor(Color.WHITE);
         mRefresh.setColorSchemeColors(Color.BLUE, Color.GREEN, Color.RED);
         mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

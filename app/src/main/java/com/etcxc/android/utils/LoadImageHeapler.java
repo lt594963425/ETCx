@@ -28,12 +28,15 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 public class LoadImageHeapler {
     protected final String TAG = "LoadImageHeapler";
+
     private final String dirName;
+    private final String tag;
     /**
      * 构造方法，需要传入一个保存文件的名字
      */
-    public LoadImageHeapler(String dirName) {
+    public LoadImageHeapler(String dirName,String tag) {
         this.dirName = dirName;
+        this.tag = tag;
     }
     public void loadUserHead(ImageLoadListener listener) {
             if (readFromSDCard(dirName) != null) {
@@ -59,6 +62,7 @@ public class LoadImageHeapler {
                 .url(NetConfig.HOST + GET_HEAD)
                 .content(String.valueOf(jsonObject))
                 .mediaType(NetConfig.JSON)
+                .tag(tag)
                 .build()
                 .execute(new BitmapCallback() {
                     @Override
@@ -90,5 +94,8 @@ public class LoadImageHeapler {
      */
     public Bitmap readFromSDCard(String key) {
         return BitmapFactory.decodeFile(new File(getCachePath(App.get()), key).getAbsolutePath());
+    }
+    public void CancleNet(String tag){
+        OkHttpUtils.cancelTag(tag);
     }
 }

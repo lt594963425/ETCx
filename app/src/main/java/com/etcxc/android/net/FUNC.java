@@ -56,7 +56,7 @@ public class FUNC {
     //上传邮寄地址
     public final static String POST_INFO = "/xczx/issue/postInfo";
     //支付obu与预存金
-    public final static String WX_PAY_ISSUE = "/xczx/issue/pay";
+    public final static String PAY_ISSUE = "/xczx/issue/pay";
     /**
      * 用户地址管理模块
      */
@@ -91,7 +91,6 @@ public class FUNC {
     /**
      * ETC 充值
      */
-    public final static String ADDCARD = "/xczx/pay/addcard/";
-    //微信下单支付
-    public final static String WXORDER = "/xczx/pay/payment/";
+    public final static String ADDCARD = "/xczx/rechargeable/addCardOrder";
+    public final static String PAY = "/xczx/rechargeable/pay";
 }

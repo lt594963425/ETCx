@@ -85,7 +85,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     private String IMAGE_HEAD = MeManager.getToken() + "_head.jpg";
     private String CROP_HEAD = MeManager.getToken() + "_crop.jpg";
     private LoadImageHeapler mHeadLoader;
-
+    protected  String IMAGE_TAG = "PE_LOAD_IMAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -190,11 +190,11 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             mUserPhone.setText(MeManager.getPhone());
             File file = new File(getCachePath(this), CROP_HEAD);
             if (file.exists()) {
-                LogUtil.e(TAG,"本地加载头像");
+                LogUtil.e(TAG, "本地加载头像");
                 Glide.with(this).load(file).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mUserHead);
             } else {
                 if (mHeadLoader == null) {
-                    mHeadLoader = new LoadImageHeapler(CROP_HEAD);
+                    mHeadLoader = new LoadImageHeapler(CROP_HEAD,IMAGE_TAG);
                 }
                 mHeadLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
                     @Override
@@ -212,9 +212,6 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view);
         AlertDialog dialog = builder.show();
-        /*
-        相机
-         */
         view.findViewById(R.id.take_picture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {  //申请相机权限
@@ -372,6 +369,8 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
             case R.id.jy:
                 WXLogin();
                 break;
+            default:
+                break;
         }
         return false;
     }
@@ -509,7 +508,9 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
     protected void onDestroy() {
         super.onDestroy();
         if (mHeadLoader != null) {
+            mHeadLoader.CancleNet(IMAGE_TAG);
             mHeadLoader = null;
+
         }
         finish();
     }

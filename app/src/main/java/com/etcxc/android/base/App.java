@@ -3,7 +3,6 @@ package com.etcxc.android.base;
 import android.app.Application;
 
 import com.bumptech.glide.Glide;
-import com.etcxc.android.crash.CrashHandler;
 import com.etcxc.android.net.OkHttpUtils;
 import com.etcxc.android.net.cookie.CookieJarImpl;
 import com.etcxc.android.net.cookie.store.SPCookieStore;
@@ -67,7 +66,7 @@ public class App extends Application {
         WXapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, true);
         WXapi.registerApp(WX_APP_ID);
         //异常扑捉初始化
-        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
+       // Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
         LogUtil.d(TAG, "App Application onCreate");
 
         if (LeakCanary.isInAnalyzerProcess(this)) {

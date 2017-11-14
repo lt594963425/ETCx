@@ -11,8 +11,8 @@ public class Constants {
     public static String ORIENTION_VALUE = "f";
 
     //在线支付 标识
-    public static boolean ETC_ISSUE = false;
-    public static boolean ETC_RECHARGE = false;
+    public static String ETC_ISSUE = "ETC_ISSUE";
+    public static String ETC_RECHARGE = "ETC_RECHARGE";
     //appid 微信分配的公众账号ID
     public static final String WX_APP_ID = "wx21d6d90cd6a3a206";
     //商户ID

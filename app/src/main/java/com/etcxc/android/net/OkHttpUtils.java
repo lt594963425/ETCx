@@ -9,6 +9,8 @@ import com.etcxc.android.net.callback.Callback;
 import com.etcxc.android.net.request.RequestCall;
 import com.etcxc.android.utils.Platform;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.concurrent.Executor;
 
@@ -132,8 +134,13 @@ public class OkHttpUtils {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                callback.onResponse(object, id);
-                callback.onAfter(id);
+                try {
+                    callback.onResponse(object, id);
+                    callback.onAfter(id);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
     }

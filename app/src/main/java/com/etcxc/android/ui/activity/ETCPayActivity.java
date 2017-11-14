@@ -1,13 +1,11 @@
 package com.etcxc.android.ui.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -15,6 +13,7 @@ import com.alipay.sdk.app.PayTask;
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.base.Constants;
+import com.etcxc.android.bean.OrderRechargeInfo;
 import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.etcxc.android.net.FUNC;
 import com.etcxc.android.net.OkHttpUtils;
@@ -25,11 +24,14 @@ import com.etcxc.android.pay.alipay.PayResult;
 import com.etcxc.android.utils.LogUtil;
 import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.ToastUtils;
+import com.etcxc.android.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -42,27 +44,32 @@ import okhttp3.Call;
 import static com.etcxc.android.net.NetConfig.HOST;
 import static com.etcxc.android.net.NetConfig.JSON;
 
+
 /**
- * 发行支付
- * Created by xwpeng on 2017/6/20.
+ * @author 刘涛
+ * @date 2017/7/5 0005
+ * 充值
  */
 
-public class IssuePayActivity extends BaseActivity implements View.OnClickListener {
-    private TextView mSumPayTextView;
-    private EditText mRechargeEdittext;
-    private RadioButton mPayAlipay;
-    private RadioButton mPayWechat;
+public class ETCPayActivity extends BaseActivity implements View.OnClickListener {
+    private static final String TAG = "ETCPayActivity";
+    private RadioButton mAlipay, mWechat;
+    private List<OrderRechargeInfo> mData;
+    private double mAllMoney;
 
     private class RechargeStringCallBack extends StringCallback {
         @Override
         public void onError(Call call, Exception e, int id) {
-            ToastUtils.showToast(R.string.request_failed);
-            LogUtil.e(TAG, "请求失败");
             closeProgressDialog();
+            if (e.toString().contains("closed")) {
+                ToastUtils.showToast(R.string.cancel_request);
+            } else {
+                ToastUtils.showToast(R.string.request_failed);
+            }
         }
 
         @Override
-        public void onResponse(String response, int id) {
+        public void onResponse(String response, int id) throws JSONException {
             closeProgressDialog();
             switch (id) {
                 case 1:
@@ -70,111 +77,88 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                     if (!b) {
                         ToastUtils.showToast(R.string.request_failed);
                     } else {
-                        PublicSPUtil.getInstance().putString("ETC_FLAGE", Constants.ETC_ISSUE);
+                        PublicSPUtil.getInstance().putString("ETC_FLAGE", Constants.ETC_RECHARGE);
                     }
                     break;
                 case 2:
-                    payToOrderService(response);
+                    JSONObject jsonObject = new JSONObject(response);
+                    if ("s_ok".equals(jsonObject.getString("code"))) {
+                        payToOrderService(jsonObject.getString("ali_pay"));
+                    } else {
+                        ToastUtils.showToast("支付失败");
+                    }
+                    break;
+                default:
                     break;
             }
+            UIUtils.saveInfoList(mData);
         }
     }
 
-    //    private boolean mIsTruck = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_issue_pay);
-        initView();
+        setContentView(R.layout.activity_select_payways);
+        mData = (List<OrderRechargeInfo>) getIntent().getSerializableExtra("orderData");
+        mAllMoney = getIntent().getIntExtra("allMoney", 0);
+        LogUtil.e(TAG, mAllMoney + ":元" + ":::" + mData.size());
+        init();
     }
 
-    private void initView() {
-        setTitle(R.string.pay);
-        mSumPayTextView = find(R.id.issue_pay_amount_text);
-        mRechargeEdittext = find(R.id.recharge_amount_edittext);
-        mPayAlipay = find(R.id.alipay_radiobutton);
-        mPayWechat = find(R.id.wechat_pay_radiobutton);
-        String str = mRechargeEdittext.getText().toString();
-        mSumPayTextView.setText(getString(R.string.sum_pay, strToInt(str) + (200)));
-        mRechargeEdittext.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mSumPayTextView.setText(getString(R.string.sum_pay, strToInt(str) + 200));
-            }
-        });
-        find(R.id.commit_button).setOnClickListener(this);
+    private void init() {
+        setTitle(R.string.please_select);
+        mAlipay = (RadioButton) findViewById(R.id.pay_alipay);
+        mWechat = (RadioButton) findViewById(R.id.pay_wechat);
+        Button mEtcPay = (Button) findViewById(R.id.etc_pay);
+        mEtcPay.setOnClickListener(this);
     }
 
-    private int strToInt(String s) {
-        if (TextUtils.isEmpty(s)) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            LogUtil.e(TAG, "strToInt", e);
-        }
-        return 0;
-    }
-
+    // 支付
     @Override
-    public void onClick(View v) {   //PAY_ISSUE
+    public void onClick(View v) {
         try {
-            showProgressDialog(getString(R.string.loading));
-            JSONObject jsonObject = getIssuePayParams();
-            if (mPayAlipay.isChecked()) {   //支付宝
+            JSONObject params = addPayParams();
+            if (mAlipay.isChecked()) {
                 MobclickAgent.onEvent(this, "AliPay");
-                jsonObject.put("way", "ali");
-                aliPay(jsonObject);
-
+                showProgressDialog(getString(R.string.loading));
+                params.put("way", "ali");
+                aliPay(params);
             }
-            if (mPayWechat.isChecked()) {  //微信支付
-                jsonObject.put("way", "wx");
+            if (mWechat.isChecked()) {
                 MobclickAgent.onEvent(this, "WXPay");
                 showProgressDialog(getString(R.string.loading));
-                wxPay(jsonObject);
-
+                params.put("way", "wx");
+                wxPay(params);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
-    @Nullable
-    private JSONObject getIssuePayParams() throws JSONException {
-        String editMoney = mRechargeEdittext.getText().toString().trim();
-        if (editMoney.isEmpty()) {
-            ToastUtils.showToast(R.string.money_isempty);
-            return null;
+    /**
+     * 充值参数  json串
+     */
+    public JSONObject addPayParams() throws JSONException {
+        JSONObject params = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObjectOrder = new JSONObject();
+        for (int i = 0; i < mData.size(); i++) {
+            int money = mData.get(i).getRechargemoney();
+            jsonObjectOrder.put("etc_card", mData.get(i).getEtccarnumber());
+            jsonObjectOrder.put("money", money);
+            jsonArray.put(jsonObjectOrder);
         }
-
-        int moneyDb = (200 + Integer.valueOf(editMoney)) * 100;
-        JSONObject jsonObject = new JSONObject();
-        String plateLicense = PublicSPUtil.getInstance().getString("carCard", "");
-        String plateColor = PublicSPUtil.getInstance().getString("carCardColor", "");
-        jsonObject.put("licensePlate", plateLicense)
-                .put("plateColor", "蓝底白字")
-                .put("total_fee", moneyDb)
-                .put("client_type", "Android");
-        Log.e(TAG, jsonObject.toString());
-        return jsonObject;
+        params.put("order", jsonArray);
+        params.put("tote_money", mAllMoney);
+        params.put("client_type", "Android");
+        params.put("way", "wx");
+        LogUtil.e("params:", params + "");
+        return params;
     }
 
     private void wxPay(JSONObject jsonObject) {
         OkHttpUtils.postString()
-                .url(HOST + FUNC.PAY_ISSUE)
+                .url(HOST + FUNC.PAY)
                 .content(String.valueOf(jsonObject))
                 .tag(this)
                 .id(1)
@@ -184,7 +168,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
 
     private void aliPay(JSONObject jsonObject) {
         OkHttpUtils.postString()
-                .url(HOST + FUNC.PAY_ISSUE)
+                .url(HOST + FUNC.PAY)
                 .content(String.valueOf(jsonObject))
                 .tag(this)
                 .id(2)
@@ -200,7 +184,7 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
                 String orderInfo = payString.replace("amp;", "");
-                PayTask payTask = new PayTask(IssuePayActivity.this);
+                PayTask payTask = new PayTask(ETCPayActivity.this);
                 Map<String, String> result = payTask.payV2(orderInfo, true);
                 e.onNext(result);
             }
@@ -211,14 +195,11 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                     public void accept(@NonNull Object o) throws Exception {
                         closeProgressDialog();
                         PayResult payResult = new PayResult((Map<String, String>) o);
-                        /**
-                         对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
-                         */
-                        String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+                        String resultInfo = payResult.getResult();
                         String resultStatus = payResult.getResultStatus();
                         switch (resultStatus) {
                             case AliPay.PAY_OK:
-                                openActivity(IssueFinishActivity.class);
+                                showInfoDialog();
                                 finish();
                                 break;
                             case AliPay.PAY_FAIL:
@@ -233,9 +214,34 @@ public class IssuePayActivity extends BaseActivity implements View.OnClickListen
                             case AliPay.PAY_REPEAT:
                                 ToastUtils.showToast(payResult.getMemo());
                                 break;
+                            default:
+                                break;
                         }
                     }
                 });
+    }
+
+    private void showInfoDialog() {
+        View longinDialogView = LayoutInflater.from(this).inflate(R.layout.recharge_info_dialog, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        TextView creditForLoad = (TextView) longinDialogView.findViewById(R.id.to_CreditForLoad);
+        TextView confirm = (TextView) longinDialogView.findViewById(R.id.dialog_confirm);
+        builder.setView(longinDialogView);
+        final Dialog dialog = builder.show();
+        creditForLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(StoreActivity.class);
+                dialog.dismiss();
+            }
+        });
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(MainActivity.class);
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override

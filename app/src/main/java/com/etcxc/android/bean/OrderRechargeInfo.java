@@ -3,32 +3,38 @@
  */
 package com.etcxc.android.bean;
 
+import java.io.Serializable;
+
 /**
  *2017-06-16 11:3:44
  */
-public class OrderRechargeInfo {
-
+public class OrderRechargeInfo implements Serializable {
+    //充值人的名字
     private String rechargename;
-    private String carnumber;
+    //车牌号
+    private String  licenseplate;
+    //充值卡号
     private String etccarnumber;
-    private String rechargemoney;
-    private String alloney;
+    //充值金额
+    private int rechargemoney;
 
-    public String getAlloney() {
-        return alloney;
+    public String getLicenseplate() {
+        return licenseplate;
     }
 
-    public String getRechargemoney() {
+    public void setLicenseplate(String licenseplate) {
+        this.licenseplate = licenseplate;
+    }
+
+    public int getRechargemoney() {
         return rechargemoney;
     }
 
-    public void setRechargemoney(String rechargemoney) {
+    public void setRechargemoney(int rechargemoney) {
         this.rechargemoney = rechargemoney;
     }
 
-    public void setAlloney(String alloney) {
-        this.alloney = alloney;
-    }
+
 
     public String getRechargename() {
         return rechargename;
@@ -38,13 +44,7 @@ public class OrderRechargeInfo {
         this.rechargename = rechargename;
     }
 
-    public String getCarnumber() {
-        return carnumber;
-    }
 
-    public void setCarnumber(String carnumber) {
-        this.carnumber = carnumber;
-    }
 
     public String getEtccarnumber() {
         return etccarnumber;
@@ -54,4 +54,13 @@ public class OrderRechargeInfo {
         this.etccarnumber = etccarnumber;
     }
 
+    @Override
+    public String toString() {
+        return "OrderRechargeInfo{" +
+                "rechargename='" + rechargename + '\'' +
+                ", licenseplate='" + licenseplate + '\'' +
+                ", etccarnumber='" + etccarnumber + '\'' +
+                ", rechargemoney='" + rechargemoney + '\'' +
+                '}';
+    }
 }

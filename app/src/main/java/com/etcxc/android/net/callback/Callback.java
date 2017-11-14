@@ -1,5 +1,11 @@
 package com.etcxc.android.net.callback;
 
+import com.etcxc.android.R;
+import com.etcxc.android.utils.LogUtil;
+import com.etcxc.android.utils.ToastUtils;
+
+import org.json.JSONException;
+
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -10,6 +16,7 @@ import okhttp3.Response;
  * @param <T>
  */
 public abstract class Callback<T> {
+    protected final String TAG = "Callback";
     /**
      * UI Thread
      *
@@ -54,7 +61,7 @@ public abstract class Callback<T> {
 
     public abstract void onError(Call call, Exception e, int id);
 
-    public abstract void onResponse(T response, int id);
+    public abstract void onResponse(T response, int id) throws JSONException;
 
 
     public static Callback CALLBACK_DEFAULT = new Callback() {
@@ -66,7 +73,11 @@ public abstract class Callback<T> {
 
         @Override
         public void onError(Call call, Exception e, int id) {
-
+            if(e.toString().contains("closed")){
+                LogUtil.e(TAG,"取消请求");
+            }else {
+                ToastUtils.showToast(R.string.request_failed);
+            }
         }
 
         @Override

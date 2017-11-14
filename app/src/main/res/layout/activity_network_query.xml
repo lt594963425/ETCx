@@ -8,6 +8,11 @@
     tools:context="com.etcxc.android.ui.activity.NetworkQueryActivity">
 
     <include layout="@layout/toolbar"/>
+ <android.support.v4.widget.SwipeRefreshLayout
+     android:id="@+id/swipeRefreshLayout"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent">
+
 
     <com.etcxc.android.ui.view.XRecyclerView
         android:layout_marginTop="10dp"
@@ -15,5 +20,5 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
+ </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

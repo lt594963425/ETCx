@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
 import com.etcxc.android.bean.OrderRechargeInfo;
+import com.etcxc.android.modle.sp.PublicSPUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -90,10 +92,12 @@ public class UIUtils {
         return getContext().getPackageName();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
     public static void openAnimator(Activity activity) {
         activity.overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
     public static void closeAnimator(Activity activity) {
         activity.overridePendingTransition(0, R.anim.zoom_exit);
 
@@ -260,28 +264,23 @@ public class UIUtils {
     }
 
     //存
-    public static void saveInfoList(Context con, List<OrderRechargeInfo> list) {
-        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String jsonStr = gson.toJson(list); //将List转换成Json
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("KEY_INFO_list", jsonStr); //存入json串
-        editor.apply();  //提交
+    public static void saveInfoList( List<OrderRechargeInfo> list) {
+        PublicSPUtil.getInstance().putString("ETCCARD",new Gson().toJson(list));
     }
 
     //取或查
     @NonNull
-    public static List<OrderRechargeInfo> getInfoList(Context con) {
-        List<OrderRechargeInfo> infoList = new ArrayList<>();
-        SharedPreferences sp = con.getSharedPreferences("SP_INFO_List", Activity.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String infoListString = sp.getString("KEY_INFO_list", "");
+    public static List<OrderRechargeInfo> getInfoList(Context context) {
+        List<OrderRechargeInfo> dataList = new ArrayList<>();
+        String infoListString = PublicSPUtil.getInstance().getString("ETCCARD","");
         if (!TextUtils.isEmpty(infoListString)) {
-            List<OrderRechargeInfo> temp = gson.fromJson(infoListString, new TypeToken<List<OrderRechargeInfo>>() {
+            List<OrderRechargeInfo> temp = new Gson().fromJson(infoListString, new TypeToken<List<OrderRechargeInfo>>() {
             }.getType());
-            if (temp != null) infoList.addAll(temp);
+            if (temp != null) {
+                dataList.addAll(temp);
+            }
         }
-        return infoList;
+        return dataList;
     }
 
     public static void clearDetialData(Context con) {

@@ -35,12 +35,12 @@ public class RechargeHistoryAdapter extends RecyclerView.Adapter {
         OrderRechargeInfo info = mData.get(position);
         ItemViewHolder viewHolder = (ItemViewHolder) holder;
         viewHolder.userName.setText(info.getRechargename());
-        viewHolder.carNumber.setText(info.getCarnumber());
+        viewHolder.carNumber.setText(info.getLicenseplate());
         viewHolder.etcCard.setText(info.getEtccarnumber());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallBack.onItemClick(info.getCarnumber());
+                mCallBack.onItemClick(info.getLicenseplate());
             }
         });
     }

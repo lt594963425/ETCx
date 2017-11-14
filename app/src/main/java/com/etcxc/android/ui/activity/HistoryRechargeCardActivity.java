@@ -18,7 +18,8 @@ import java.util.ArrayList;
 
 /**
  * 充值之后的ETC卡记录
- * Created by 刘涛 on 2017/7/6 0006.
+ * @author 刘涛
+ * @date 2017/7/6 0006
  */
 
 public class HistoryRechargeCardActivity extends BaseActivity implements RechargeHistoryAdapter.CallBack {

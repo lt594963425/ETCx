@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 android {
-
     compileSdkVersion rootProject.ext.cfg.compileSdkVersion
     buildToolsVersion rootProject.ext.cfg.buildToolsVersion
     defaultConfig {
@@ -49,7 +48,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             //applicationIdSuffix '.release'
         }
-        applicationVariants.all { variant ->
+       applicationVariants.all { variant ->
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
@@ -70,12 +69,10 @@ android {
         // tencent {}
         // taobao {}
     }
-
     productFlavors.all {
         flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
     compileOptions {
-        //使用JAVA8语法解析
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -97,6 +94,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
 
     testCompile 'junit:junit:4.12'
+
     //okhttp与日志拦截器
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
@@ -128,8 +126,7 @@ dependencies {
     compile 'com.clj.fastble:FastBleLib:1.2.1'
     //明华
     compile files('libs/mwcard-6.0.0.4.jar')
-
-    //内存泄漏检测
+    //内存泄漏
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
