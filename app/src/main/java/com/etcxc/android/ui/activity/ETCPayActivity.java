@@ -56,7 +56,6 @@ public class ETCPayActivity extends BaseActivity implements View.OnClickListener
     private RadioButton mAlipay, mWechat;
     private List<OrderRechargeInfo> mData;
     private double mAllMoney;
-
     private class RechargeStringCallBack extends StringCallback {
         @Override
         public void onError(Call call, Exception e, int id) {
@@ -67,7 +66,6 @@ public class ETCPayActivity extends BaseActivity implements View.OnClickListener
                 ToastUtils.showToast(R.string.request_failed);
             }
         }
-
         @Override
         public void onResponse(String response, int id) throws JSONException {
             closeProgressDialog();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.etcxc.android.utils;
+package com.etcxc.android.net.request;
 
 import android.os.Build;
 import android.os.Handler;

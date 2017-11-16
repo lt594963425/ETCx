@@ -98,6 +98,7 @@ public class FragmentExpand extends BaseFragment {
             this.datas = datas;
         }
 
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_expand_recylerview, parent, false);
@@ -142,6 +143,7 @@ public class FragmentExpand extends BaseFragment {
         super.onResume();
     }
 
+    @Override
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("FragmentExpand");

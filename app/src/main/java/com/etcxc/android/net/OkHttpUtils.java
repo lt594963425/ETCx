@@ -7,7 +7,7 @@ import com.etcxc.android.net.builder.PostFormBuilder;
 import com.etcxc.android.net.builder.PostStringBuilder;
 import com.etcxc.android.net.callback.Callback;
 import com.etcxc.android.net.request.RequestCall;
-import com.etcxc.android.utils.Platform;
+import com.etcxc.android.net.request.Platform;
 
 import org.json.JSONException;
 

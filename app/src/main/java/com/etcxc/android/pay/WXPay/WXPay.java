@@ -38,7 +38,7 @@ public class WXPay {
         req.prepayId = varBean.getPrepayid();
         req.nonceStr = varBean.getNoncestr();
         req.timeStamp = String.valueOf(varBean.getTimestamp());
-        req.packageValue = varBean.getPackageX();//"Sign=WXPay"
+        req.packageValue = varBean.getPackageX();
         return mWxApi.sendReq(req);
     }
 }
