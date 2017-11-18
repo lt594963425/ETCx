@@ -20,15 +20,12 @@ public class ToastUtils {
         toast.setText(msg);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
-        toast.show();
     }
 
     public static void showToast(int resId) {
-        if (toast == null) {
-            toast = Toast.makeText(App.get(), resId, Toast.LENGTH_SHORT);
-        }
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.setText(resId);
-        toast.show();
+       showToast(App.get().getString(resId));
     }
+
+
+
 }

@@ -2,8 +2,6 @@ package com.etcxc.android.net.ble;
 
 import android.support.annotation.Nullable;
 
-import com.etcxc.android.utils.LogUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +79,7 @@ public class BleCmdParser {
 
     /**
      * B2回复类型解包
-     * 6400为正确
+     *
      */
     private static StringBuilder parseB2(List<Integer> dataList, StringBuilder contentMeaning) {
         int realDataLen = dataList.get(2);
@@ -162,7 +160,6 @@ public class BleCmdParser {
      */
     @Nullable
     public static String  parseRet(String hexString) {
-        LogUtil.e("xwpeng16", "parse : " + hexString);
         if (hexString == null) return null;
         hexString = hexString.toLowerCase();
         if (!hexString.startsWith("fe0100")) return null;

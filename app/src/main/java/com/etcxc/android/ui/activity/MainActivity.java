@@ -63,8 +63,8 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     }
 
     private void initViewPagerFargment() {
-        mViewPager = findViewById(R.id.pager);
-        mTabHost = findViewById(android.R.id.tabhost);
+        mViewPager = find(R.id.pager);
+        mTabHost = find(android.R.id.tabhost);
         mViewPager.setOffscreenPageLimit(4);
         mFixPagerAdapter = new FixPagerAdapter(getSupportFragmentManager());
         mFragments = new ArrayList<>();
@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     private View getTabItemView(int i) {
         View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
         view.findViewById(R.id.tab_imageview).setBackgroundResource(mTabImages[i]);
-        TextView mTextView = view.findViewById(R.id.tab_textview);
+        TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
         mTextView.setText(mTitles[i]);
         return view;
     }
