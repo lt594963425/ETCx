@@ -35,12 +35,16 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * 程序异常处理扑捉
- * Created by LiuTao on 2017/8/16 0016.
+ *
+ * @author LiuTao
+ * @date 2017/8/16 0016
  */
 
 public class CrashHandler implements UncaughtExceptionHandler {
     private UncaughtExceptionHandler mDefaultHandler;
-    //用来存储设备信息和异常信息
+    /**
+     * 用来存储设备信息和异常信息
+     */
     private Map<String, String> mDeviceInfos;
 
     /**
@@ -71,7 +75,6 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     /**
      * 自定义错误处理,收集错误信息 发送错误报告等操作均在此完成.
-     *
      * @param ex
      * @return true:如果处理了该异常信息;否则返回false.
      */

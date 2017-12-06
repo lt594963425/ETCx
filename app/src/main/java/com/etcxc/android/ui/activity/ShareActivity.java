@@ -1,29 +1,17 @@
 package com.etcxc.android.ui.activity;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.App;
@@ -31,7 +19,6 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.ui.view.SharePopupWindows;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
-import com.etcxc.android.utils.UIUtils;
 import com.etcxc.android.utils.WXShareUtils;
 import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
@@ -43,7 +30,6 @@ import com.umeng.analytics.MobclickAgent;
 import java.lang.reflect.Method;
 
 import static com.etcxc.android.base.Constants.QQ_APP_ID;
-import static com.etcxc.android.utils.UIUtils.getResources;
 
 /**
  * 推荐好友  （微信好友、微信朋友圈、QQ、短信）分享
@@ -51,19 +37,10 @@ import static com.etcxc.android.utils.UIUtils.getResources;
  */
 public class ShareActivity extends BaseActivity implements View.OnClickListener {
     private Button btn_share;
-
-
     private BaseUiListener mIUiListener;
-    private Toolbar share_toolbar;
-
     private static String SHARE_URL = "http://www.xckjetc.com/";
-
     public static Tencent mTencent;// 新建Tencent实例用于调用分享方法
     SharePopupWindows sharePopupWindows;
-
-    static {
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,15 +52,12 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void initView() {
-        share_toolbar = (Toolbar) findViewById(R.id.share_toolbar);
         btn_share = (Button) findViewById(R.id.btn_share);
-
-        setSupportActionBar(share_toolbar);
-        share_toolbar.setTitle(R.string.my_share);
-        share_toolbar.inflateMenu(R.menu.menu_share);
-        setBarBack(share_toolbar);
+        getToolbar().inflateMenu(R.menu.menu_share);
+        setTitle(R.string.my_share);
+        setBarBack();
         btn_share.setOnClickListener(this);
-        share_toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        getToolbar().setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.menu_share) {
@@ -216,17 +190,6 @@ public class ShareActivity extends BaseActivity implements View.OnClickListener 
         startActivityForResult(sendIntent, 1002);
     }
 
-    private void setBarBack(Toolbar toolbar) {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                UIUtils.closeAnimator(ShareActivity.this);
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -17,6 +17,7 @@ import com.etcxc.android.utils.RxUtil;
 import com.etcxc.android.utils.SystemUtil;
 import com.etcxc.android.utils.ToastUtils;
 import com.etcxc.android.utils.UIUtils;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -224,6 +225,7 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
             }
         }).compose(RxUtil.io())
                 .compose(RxUtil.activityLifecycle(this))
+                .compose(this.bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
@@ -266,7 +268,9 @@ public class ReceiptAddressActivity extends BaseActivity implements View.OnClick
         Matcher m = SystemUtil.phonePattern.matcher(phoneNumber);
         if (m.matches()) {
             return true;
-        } else ToastUtils.showToast(R.string.please_input_correct_phone_number);
+        } else {
+            ToastUtils.showToast(R.string.please_input_correct_phone_number);
+        }
         return false;
     }
 

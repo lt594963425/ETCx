@@ -15,7 +15,6 @@ public class HomeRecyclerAdapter extends BaseSelectAdapter {
     private int [] mMages;
     private TextView mTextView;
     private ImageView mImageView;
-
     public HomeRecyclerAdapter(String [] datas,int[] image){
          this.mData =datas;
          this.mMages =image ;

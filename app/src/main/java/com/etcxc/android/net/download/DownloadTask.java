@@ -46,12 +46,8 @@ public class DownloadTask {
 
     public void cancle() {
         if (mCall != null && mCall.isExecuted()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
                     mCall.cancel();
-                }
-            }).start();
+
         }
     }
 

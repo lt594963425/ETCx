@@ -25,7 +25,7 @@ import static com.etcxc.android.utils.UIUtils.closeAnimator;
  * 封装Activity公共的操作
  */
 @SuppressWarnings("ResourceType")
-public abstract class BaseActivity extends RxAppCompatActivity {
+public  class BaseActivity extends RxAppCompatActivity {
     protected final String TAG = ((Object) this).getClass().getSimpleName();
     private XToolbar mXToolbar;
 
@@ -126,15 +126,19 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     }
 
     public void openActivity(Class<?> pClass) {
-        Intent mIntent = new Intent(this, pClass);
-        startActivity(mIntent);
-        overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+        if (pClass != null) {
+            Intent mIntent = new Intent(this, pClass);
+            startActivity(mIntent);
+            overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
+        }
     }
 
     public void openActivityForResult(Class<?> pClass, int i) {
-        Intent mIntent = new Intent(this, pClass);
-        startActivityForResult(mIntent, i);
-        overridePendingTransition(R.anim.zoom_enter,R.anim.no_anim);
+        if (pClass != null) {
+            Intent mIntent = new Intent(this, pClass);
+            startActivityForResult(mIntent, i);
+            overridePendingTransition(R.anim.zoom_enter, R.anim.no_anim);
+        }
     }
 
     @Override
@@ -142,12 +146,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         super.onBackPressed();
         closeAnimator(this);
     }
-    protected void initState() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
-    }
+
 
     //	加载对话框相关
     private ProgressDialog mProgressDialog;
@@ -199,5 +198,12 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     public void hindToobar() {
         if (mXToolbar != null) mXToolbar.setVisibility(View.GONE);
     }
-
+    public void setBarBack() {
+        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+    }
 }

@@ -29,17 +29,11 @@ public class RechargeOrderAdapter extends RecyclerView.Adapter<RechargeOrderAdap
 
     public void updateData(List<OrderRechargeInfo> data) {
         this.mData.clear();
-        this.setData(data);
-        this.notifyDataSetChanged();
-    }
-
-    public void setData(List<OrderRechargeInfo> data) {
         if (data != null) {
             this.mData.addAll(data);
         }
+        this.notifyDataSetChanged();
     }
-
-
     @Override
     public int getItemCount() {
         return mData.size();
@@ -93,7 +87,6 @@ public class RechargeOrderAdapter extends RecyclerView.Adapter<RechargeOrderAdap
         public TextView etccard;
         public TextView moneynumber;
         public ImageView deletebtn;
-
         public ViewHolder(View view) {
             super(view);
             username = (TextView) view.findViewById(R.id.item_card_name);

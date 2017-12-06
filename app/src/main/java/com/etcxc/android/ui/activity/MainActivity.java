@@ -1,16 +1,14 @@
 package com.etcxc.android.ui.activity;
 
-import android.content.Intent;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -22,14 +20,13 @@ import com.etcxc.android.base.BaseActivity;
 import com.etcxc.android.helper.VersionUpdateHelper;
 import com.etcxc.android.net.download.DownloadOptions;
 import com.etcxc.android.ui.adapter.FixPagerAdapter;
-import com.etcxc.android.ui.factory.FragmentFactory;
+import com.etcxc.android.ui.fragment.FragmentExpand;
+import com.etcxc.android.ui.fragment.FragmentHome;
+import com.etcxc.android.ui.fragment.FragmentMine;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -42,17 +39,15 @@ import java.util.List;
 public class MainActivity extends BaseActivity implements TabHost.OnTabChangeListener {
     private ViewPager mViewPager;
     private FragmentTabHost mTabHost;
-    int mTabImages[] = {
+    int[] mTabImages = {
             R.drawable.tab_home_btn,
             R.drawable.tab_expand_btn,
             R.drawable.tab_mine_btn};
-    String mTitles[] = {
+    String[] mTitles = {
             App.get().getString(R.string.index_home),
             App.get().getString(R.string.index_expand),
             App.get().getString(R.string.mime)};
     private VersionUpdateHelper mHelper;
-    private List<Fragment> mFragments;
-    private FixPagerAdapter mFixPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,18 +61,18 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
         mViewPager = find(R.id.pager);
         mTabHost = find(android.R.id.tabhost);
         mViewPager.setOffscreenPageLimit(4);
-        mFixPagerAdapter = new FixPagerAdapter(getSupportFragmentManager());
-        mFragments = new ArrayList<>();
-        for (int i = 0; i < mTitles.length; i++) {
-            mFragments.add(FragmentFactory.createMainFragment(i));
-        }
-        mFixPagerAdapter.setFragments(mFragments);
-        mViewPager.setAdapter(mFixPagerAdapter);
+        FixPagerAdapter fixPagerAdapter = new FixPagerAdapter(getSupportFragmentManager());
+        SparseArray<Fragment> fragmentsArr = new SparseArray<>();
+        fragmentsArr.put(0, new FragmentHome());
+        fragmentsArr.put(1, new FragmentExpand());
+        fragmentsArr.put(2, new FragmentMine());
+        fixPagerAdapter.setFragments(fragmentsArr);
+        mViewPager.setAdapter(fixPagerAdapter);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.pager);
         mTabHost.setOnTabChangedListener(this);
         for (int i = 0; i < mTabImages.length; i++) {
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTitles[i]).setIndicator(getTabItemView(i));
-            mTabHost.addTab(tabSpec, mFragments.get(i).getClass(), null);
+            mTabHost.addTab(tabSpec, fragmentsArr.get(i).getClass(), null);
             mTabHost.setTag(i);
             mTabHost.getTabWidget().getChildAt(i)
                     .setBackgroundResource(R.drawable.selector_tab_background);
@@ -96,7 +91,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     }
 
     private View getTabItemView(int i) {
-        View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null);
+        View view = LayoutInflater.from(this).inflate(R.layout.main_tab_content, null, false);
         view.findViewById(R.id.tab_imageview).setBackgroundResource(mTabImages[i]);
         TextView mTextView = (TextView) view.findViewById(R.id.tab_textview);
         mTextView.setText(mTitles[i]);
@@ -125,27 +120,14 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
                 break;
         }
     }
+
     private void startRoationAnim(int position) {
-        ImageView iv = (ImageView) mTabHost
-                .getTabWidget()
+        ImageView iv = mTabHost.getTabWidget()
                 .getChildTabViewAt(position)
                 .findViewById(R.id.tab_imageview);
-        Animation anim = new RotateAnimation(
-                0f, 360f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
-        anim.setFillAfter(true);
-        anim.setRepeatCount(1);
-        anim.setFillAfter(true);
-        anim.setDuration(250);
-        anim.setInterpolator(new LinearInterpolator());
-        iv.startAnimation(anim);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mFragments.get(2).onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
+        ObjectAnimator.ofFloat(iv, "rotation", 0.0F, 360.0F)
+                .setDuration(250)
+                .start();
     }
 
     @Override
@@ -165,11 +147,6 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(DownloadOptions options) {
         mHelper.downloadPd(options);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }
 

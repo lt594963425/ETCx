@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f4f4f4"
     android:orientation="vertical">
-
-    <com.youth.banner.Banner xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/home_banner"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:indicator_drawable_selected="@drawable/point_focus"
-        app:indicator_height="7dp"
-        app:indicator_margin="5dp"
-        app:indicator_width="7dp" />
-
+    <include layout="@layout/banner_top_header"
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight="1"
+        />
     <com.etcxc.android.ui.view.GridRecyclerView
         android:id="@+id/home_recylerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_below="@id/home_banner"
         android:background="@color/white"
         android:padding="5dp"

@@ -4,7 +4,6 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/colorbg"
               android:orientation="vertical">
 
     <LinearLayout
@@ -236,7 +235,6 @@
         android:id="@+id/prepaid_recharge_recylerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
         android:padding="5dp"
         tools:listitem="@layout/item_recharge_form_recylerview"/>
 

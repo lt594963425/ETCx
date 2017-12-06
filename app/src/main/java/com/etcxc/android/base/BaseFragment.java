@@ -138,13 +138,13 @@ public abstract class BaseFragment extends RxFragment {
     }
 
     protected void openActivity(Class<?> c) {
-        if (mActivity != null) {
+        if (mActivity != null && c != null) {
             mActivity.openActivity(c);
         }
     }
 
     protected void openActivityForResult(Class<?> c, int i) {
-        if (mActivity != null) {
+        if (mActivity != null && c != null) {
             mActivity.openActivityForResult(c, i);
         }
     }

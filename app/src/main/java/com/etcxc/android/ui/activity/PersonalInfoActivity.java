@@ -326,7 +326,7 @@ public class PersonalInfoActivity extends BaseActivity implements Toolbar.OnMenu
                 if (success) {
                     UCrop.of(uri, Uri.fromFile(file))
                             .withAspectRatio(1, 1)
-                            .withMaxResultSize(400, 800)
+                            .withMaxResultSize(400, 400)
                             .start(this);
                 }
             } catch (IOException e) {

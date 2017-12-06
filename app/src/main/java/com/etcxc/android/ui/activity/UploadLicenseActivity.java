@@ -48,7 +48,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MultipartBody;
 
 import static com.etcxc.android.net.FUNC.UPLOAD_FUNC;
 import static com.etcxc.android.net.NetConfig.HOST;
@@ -159,8 +158,6 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 Map<String, String> params = new HashMap<>();
                 params.put("licensePlate", PublicSPUtil.getInstance().getString("carCard", ""));
                 params.put("plateColor", PublicSPUtil.getInstance().getString("carCardColor", ""));
-                //构造request
-                MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                 if (mIsOrg) {
                     File orgFile = new File(mCachePath, CROP_ORG);
                     e.onNext(OkHttpUtils.post()
@@ -181,6 +178,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
@@ -334,6 +332,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
 
     File idCardFile;
     File drivenFile;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -351,7 +350,7 @@ public class UploadLicenseActivity extends BaseActivity implements View.OnClickL
                 String path = data.getStringExtra(CameraConfig.IMAGE_PATH);
                 if (mClickFlag == CLICK_DRIVEN) {
                     mDriveImageView.setImageURI(Uri.parse(path));
-                     idCardFile = new File(path);
+                    idCardFile = new File(path);
                 } else {
                     mFristImageView.setImageURI(Uri.parse(path));
                     drivenFile = new File(path);

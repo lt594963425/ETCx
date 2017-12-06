@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AlertDialog;
@@ -32,6 +31,7 @@ import com.etcxc.android.ui.activity.MineCardActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
+import com.etcxc.android.ui.proxy.ThreadPoolProxyFactory;
 import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.FileUtils;
@@ -60,6 +60,7 @@ import static com.etcxc.android.net.NetConfig.JSON;
 
 /**
  * 我的
+ *
  * @author Liutao
  * @date 2017/6/2 0002
  */
@@ -69,11 +70,11 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     private CircleImageView mMineUserHead;
     private TextView mMineUserName;
     private TextView mExit;
-    private Handler mHandler ;
     private String CROP_HEAD;
     private Uri resultUri;
     private LoadImageHeapler mHeadLoader;
-    protected  String IMAGE_TAG = "MINE_LOAD_IMAGE";
+    protected String IMAGE_TAG = "MINE_LOAD_IMAGE";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_mine, null);
@@ -113,8 +114,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE) {
             mUpdateDot.setVisibility(View.VISIBLE);
         }
-        mHandler = new Handler();
-        mHandler.postDelayed(LOAD_DATA, 500);
         mMineUserHead.setOnClickListener(this);
         mMineUserHead.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -128,6 +127,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             }
 
         });
+        ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
     }
 
     private Runnable LOAD_DATA = new Runnable() {
@@ -155,7 +155,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_user_head:
             case R.id.mine_layout:
                 if (MeManager.getIsLogin()) {
-                    openActivityForResult(PersonalInfoActivity.class,REQUST_CODE);
+                    openActivityForResult(PersonalInfoActivity.class, REQUST_CODE);
 
                 } else {
                     //未登录：点击修改密码跳入登录页面
@@ -199,6 +199,8 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             case R.id.mine_exit_login:
                 showExitDialog();
                 break;
+            default:
+                break;
         }
 
     }
@@ -206,7 +208,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
     public void initUserInfo() {
         CROP_HEAD = MeManager.getToken() + "_crop.jpg";
         if (mHeadLoader == null) {
-            mHeadLoader = new LoadImageHeapler(CROP_HEAD,IMAGE_TAG);
+            mHeadLoader = new LoadImageHeapler(CROP_HEAD, IMAGE_TAG);
         }
         mHeadLoader.loadUserHead(new LoadImageHeapler.ImageLoadListener() {
             @Override
@@ -216,26 +218,16 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         });
     }
 
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && mHandler != null) {
-            mHandler.removeCallbacks(LOAD_DATA);
-        }
-    }
-
-
     private void requestLoginOut() {
         JSONObject jsonObject = new JSONObject();
         showProgressDialog(R.string.loading);
+
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 jsonObject.put("uid", MeManager.getUid())
                         .put("token", MeManager.getToken());
-                e.onNext(OkHttpUtils
-                        .postString()
+                e.onNext(OkHttpUtils.postString()
                         .url(NetConfig.HOST + LOGIN_OUT)
                         .content(String.valueOf(jsonObject))
                         .mediaType(JSON)
@@ -254,7 +246,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                             ToastUtils.showToast(R.string.exitlogin);
                             MeManager.clearAll();
                             MeManager.setIsLgon(false);
-                            mHandler.postDelayed(LOAD_DATA, 400);
+                            ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
                         }
                         if ("error".equals(code)) {
                             closeProgressDialog();
@@ -309,14 +301,15 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUST_CODE:
-                    mHandler.postDelayed(LOAD_DATA, 300);
+                ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
                 break;
             default:
                 break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
@@ -339,7 +332,6 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             mHeadLoader.CancleNet(IMAGE_TAG);
             mHeadLoader = null;
         }
-        mHandler.removeCallbacks(LOAD_DATA);
     }
 
 

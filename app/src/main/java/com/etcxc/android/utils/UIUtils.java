@@ -49,6 +49,7 @@ import static android.content.ContentValues.TAG;
  * 封装和ui相关的操作
  */
 public class UIUtils {
+    private UIUtils(){}
     /**
      * 得到上下文
      */

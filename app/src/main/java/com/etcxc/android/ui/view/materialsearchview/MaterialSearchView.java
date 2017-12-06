@@ -1,4 +1,4 @@
-package com.etcxc.android.ui.view;
+package com.etcxc.android.ui.view.materialsearchview;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,8 +34,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.etcxc.android.R;
-import com.etcxc.android.ui.adapter.SearchAdapter;
-import com.etcxc.android.utils.AnimationUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;

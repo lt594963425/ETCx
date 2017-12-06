@@ -285,6 +285,6 @@
     <string name="take_care_info">注意!请把湘通卡放在读卡器的卡座上!</string>
     <string name="hint_application_exit">非常抱歉，程序出现异常即将退出</string>
     <string name="cancel_request">取消请求</string>
-
-
+    <string name="load_end">没有更多数据</string>
+    <string name="load_failed">加载失败，请点我重试</string>
 </resources>

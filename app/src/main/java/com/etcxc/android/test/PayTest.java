@@ -25,7 +25,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class PayTest {
-    public static void wxPay() {
+    public  void wxPay() {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {

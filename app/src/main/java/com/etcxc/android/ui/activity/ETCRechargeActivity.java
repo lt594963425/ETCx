@@ -67,14 +67,23 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
     private TextView mRechaergeDetailNum, mRechaergeTotalMoney, mRechaergeAddDetailBtn;
     private String[] money = {"50", "100", "500", "1000", "1500", "2000"};
     private TextView mRecharge;
+    /**
+     * 存订单信息
+     */
     private List<OrderRechargeInfo> mDatas = new ArrayList<>();
     private String mRechargeCardNumber;
     private int mMoneyNumber;
     private View viewEtc;
     private RechargeOrderAdapter mOrderFormAdapter;
-    private Boolean isShowLeadPager = true;//是否显示过充值提示引导页面
+    /**
+     * 是否显示过充值提示引导页面
+     */
+    private Boolean isShowLeadPager = true;
     private Handler mHandler = null;
     private String SP_ADD＿CARD＿HISTORY = "cardhistory";
+    /**
+     * 总金额
+     */
     private int mAllMoney = 0;
 
     @Override
@@ -277,7 +286,8 @@ public class ETCRechargeActivity extends BaseActivity implements SelectMoneyAdap
                 .url(HOST + FUNC.ADDCARD)
                 .content(String.valueOf(jsonObject))
                 .tag(this)
-                .mediaType(JSON).build()
+                .mediaType(JSON)
+                .build()
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {

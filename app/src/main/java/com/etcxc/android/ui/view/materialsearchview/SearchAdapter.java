@@ -1,4 +1,4 @@
-package com.etcxc.android.ui.adapter;
+package com.etcxc.android.ui.view.materialsearchview;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 搜索
- * Created by 刘涛 on 2017/8/28 .
+ * Suggestions Adapter.
+ *
+ * @author Miguel Catalan Bañuls
  */
-
 public class SearchAdapter extends BaseAdapter implements Filterable {
 
     private ArrayList<String> data;
@@ -56,11 +56,18 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
                     List<String> searchData = new ArrayList<>();
 
                     for (String string : suggestions) {
-                        if (string.toLowerCase().startsWith(constraint.toString().toLowerCase())) {
+//                        if (string.toLowerCase().startsWith(constraint.toString().toLowerCase())) {
+//                            searchData.add(string);
+//                        }
+                        //修改源码，下拉列表展示包含关键字的所有结果
+                        String suggestion = string.toLowerCase().trim();
+                        String keyword = constraint.toString().toLowerCase().replace(" ", "").trim();
+                        if (!TextUtils.isEmpty(keyword) &&
+                                (suggestion.contains(keyword) ||
+                                        suggestion.replace("·", "").contains(keyword))) {
                             searchData.add(string);
                         }
                     }
-
                     // Assign the data to the FilterResults
                     filterResults.values = searchData;
                     filterResults.count = searchData.size();

@@ -2,6 +2,7 @@ package com.etcxc.android.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.etcxc.MeManager;
 import com.etcxc.android.R;
@@ -28,12 +29,8 @@ import static com.etcxc.android.utils.FileUtils.getCachePath;
 
 public class LoadImageHeapler {
     protected final String TAG = "LoadImageHeapler";
-
     private final String dirName;
     private final String tag;
-    /**
-     * 构造方法，需要传入一个保存文件的名字
-     */
     public LoadImageHeapler(String dirName,String tag) {
         this.dirName = dirName;
         this.tag = tag;
@@ -57,8 +54,7 @@ public class LoadImageHeapler {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        OkHttpUtils
-                .postString()
+        OkHttpUtils.postString()
                 .url(NetConfig.HOST + GET_HEAD)
                 .content(String.valueOf(jsonObject))
                 .mediaType(NetConfig.JSON)
@@ -67,7 +63,11 @@ public class LoadImageHeapler {
                 .execute(new BitmapCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        ToastUtils.showToast(R.string.request_failed);
+                        if (e.toString().contains("closed")) {
+                            Log.e(TAG,App.get().getString(R.string.cancel_request));
+                        } else {
+                            ToastUtils.showToast(R.string.request_failed);
+                        }
                     }
 
                     @Override
@@ -82,16 +82,9 @@ public class LoadImageHeapler {
                 });
 
     }
-
-    /**
-     * 定义一个接口
-     */
     public interface ImageLoadListener {
         void loadImage(Bitmap bmp);
     }
-    /**
-     * 文件的读取，
-     */
     public Bitmap readFromSDCard(String key) {
         return BitmapFactory.decodeFile(new File(getCachePath(App.get()), key).getAbsolutePath());
     }

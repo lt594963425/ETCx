@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -49,7 +48,6 @@ import static com.etcxc.android.net.FUNC.VIRIFY_CODE;
 import static com.etcxc.android.net.NetConfig.HOST;
 import static com.etcxc.android.utils.UIUtils.LEFT;
 import static com.etcxc.android.utils.UIUtils.addIcon;
-import static com.etcxc.android.utils.UIUtils.closeAnimator;
 import static com.etcxc.android.utils.UIUtils.initAutoComplete;
 import static com.etcxc.android.utils.UIUtils.isMobileNO;
 import static com.etcxc.android.utils.UIUtils.saveHistory;
@@ -66,12 +64,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     private AutoCompleteTextView mLoginPhonenumberEdt;
     private EditText mLoginVerificodeEdt, mLoginPasswordEdt; // 手机号码,密码 ,输入图形验证码
     private ImageView mLoginPhonenumberDelete, mLoginPasswordDelete;//   删除
-    private ImageView mLoginEye; //可见与不可见
-    private ImageView mLoginImageVerificode;//图形取验证码
-    private ImageView mLoginFreshVerification;//刷新验证码
+    private ImageView mLoginEye;
+    private ImageView mLoginImageVerificode;
+    private ImageView mLoginFreshVerification;
     private RelativeLayout mPictureCodeLayout;
     private boolean isShowPictureCode = false;
-    private Toolbar mToolbar1;
     private String mVerfiyToken;
 
     @Override
@@ -88,9 +85,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     }
 
     private void initLoginView() {
-        mToolbar1 = find(R.id.login_toolbar);
         setTitle(R.string.login);
-        setBarBack(mToolbar1);
+        setBarBack();
         mLoginPhonenumberEdt = find(R.id.login_phonenumber_edt);//
         mLoginPhonenumberDelete = find(login_phonenumber_delete);
         mLoginPasswordEdt = find(R.id.login_password_edt);
@@ -173,6 +169,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                 MobclickAgent.onEvent(this, "LoginClick");
                 if (startUserLoging()) return;
                 break;
+            default:
+                break;
         }
     }
 
@@ -187,7 +185,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         String phoneNum = mLoginPhonenumberEdt.getText().toString().trim();
         String passWord = mLoginPasswordEdt.getText().toString().trim();
         String veriFicodem = mLoginVerificodeEdt.getText().toString().trim();//验证码
-        //定义一个JSON，用于向服务器提交数据
+
         JSONObject data = new JSONObject();
         try {
             if (veriFicodem.isEmpty()) {
@@ -210,17 +208,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         return false;
     }
 
-    private void setBarBack(Toolbar toolbar) {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                closeAnimator(LoginActivity.this);
-            }
-        });
-    }
 
     private boolean LocalThrough(String phoneNum, String passWord, String veriFicodem) {
         if (phoneNum.isEmpty()) {
@@ -247,7 +234,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     private void loginRun(JSONObject jsonObject) {
         Log.e(TAG, jsonObject.toString());
         showProgressDialog(getString(R.string.logining));
-       Observable.create(new ObservableOnSubscribe<String>() {
+        Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
                 e.onNext(
@@ -320,7 +307,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         onProfileSignIn("mLoginPhone");//帐号登录统计
         openActivity(MainActivity.class);
     }
-
     private void errorResult(JSONObject jsonObject) throws JSONException {
         closeProgressDialog();
         String returnMsg = jsonObject.getString("message");//返回的信息

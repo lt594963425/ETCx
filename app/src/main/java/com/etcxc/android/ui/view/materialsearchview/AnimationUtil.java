@@ -1,4 +1,4 @@
-package com.etcxc.android.utils;
+package com.etcxc.android.ui.view.materialsearchview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
