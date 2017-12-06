@@ -14,13 +14,17 @@ import android.widget.TextView;
 
 import com.etcxc.android.R;
 import com.etcxc.android.base.BaseFragment;
-import com.etcxc.android.ui.proxy.ThreadPoolProxyFactory;
 import com.etcxc.android.ui.view.ItemOffsetDecoration;
 import com.etcxc.android.utils.LogUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 
 /**
  * 拓展
@@ -38,17 +42,23 @@ public class FragmentExpand extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_expand, null);
         mRecyclerview = (RecyclerView) view.findViewById(R.id.expand_recyclerView);
         final SwipeRefreshLayout mRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout_expand);
-        ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
+        delayLazy();
         return view;
     }
-    private Runnable LOAD_DATA = new Runnable() {
-        @Override
-        public void run() {
-            initData();
-            setupRecyclerView();
-            runLayoutAnimation(mRecyclerview);
-        }
-    };
+
+    private void delayLazy() {
+        Observable.timer(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.bindToLifecycle())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        initData();
+                        setupRecyclerView();
+                        runLayoutAnimation(mRecyclerview);
+                    }
+                });
+    }
     private void setupRecyclerView() {
         MyRecylerAdapter mAdapter = new MyRecylerAdapter(mDatas);
         mRecyclerview.setAdapter(mAdapter);

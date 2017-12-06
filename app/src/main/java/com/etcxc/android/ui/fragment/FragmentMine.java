@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -31,7 +30,6 @@ import com.etcxc.android.ui.activity.MineCardActivity;
 import com.etcxc.android.ui.activity.PersonalInfoActivity;
 import com.etcxc.android.ui.activity.ReceiptAddressActivity;
 import com.etcxc.android.ui.activity.ShareActivity;
-import com.etcxc.android.ui.proxy.ThreadPoolProxyFactory;
 import com.etcxc.android.ui.view.CircleImageView;
 import com.etcxc.android.ui.view.ColorCircle;
 import com.etcxc.android.utils.FileUtils;
@@ -44,6 +42,7 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -77,38 +76,36 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_mine, null);
+        View view = inflater.inflate(R.layout.fragment_mine, null);
+        initView(view);
+        return view;
 
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initView();
-    }
 
-    private void initView() {
+
+    private void initView(View view) {
         Resources r = getActivity().getResources();
         resultUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
                 + r.getResourcePackageName(R.drawable.vd_head) + "/"
                 + r.getResourceTypeName(R.drawable.vd_head) + "/"
                 + r.getResourceEntryName(R.drawable.vd_head));
-        find(R.id.mine_my_card_toright).setOnClickListener(this);
-        find(R.id.mine_harvestaddress_toright).setOnClickListener(this);
-        find(R.id.mine_recommendfriend_toright).setOnClickListener(this);
-        find(R.id.mine_changepassword_toright).setOnClickListener(this);
-        find(R.id.mine_changephone_toright).setOnClickListener(this);
-        find(R.id.mine_aboutus_toright).setOnClickListener(this);
-        find(R.id.mine_layout).setOnClickListener(this);
+        view.findViewById(R.id.mine_my_card_toright).setOnClickListener(this);
+        view.findViewById(R.id.mine_harvestaddress_toright).setOnClickListener(this);
+        view.findViewById(R.id.mine_recommendfriend_toright).setOnClickListener(this);
+        view.findViewById(R.id.mine_changepassword_toright).setOnClickListener(this);
+        view.findViewById(R.id.mine_changephone_toright).setOnClickListener(this);
+        view.findViewById(R.id.mine_aboutus_toright).setOnClickListener(this);
+        view.findViewById(R.id.mine_layout).setOnClickListener(this);
 
-        mMineUserHead = find(mine_user_head);
-        mMineUserName = find(R.id.mine_user_name);
-        mExit = find(R.id.mine_exit_login);
+        mMineUserHead = view.findViewById(mine_user_head);
+        mMineUserName =  view.findViewById(R.id.mine_user_name);
+        mExit =  view.findViewById(R.id.mine_exit_login);
         mExit.setOnClickListener(this);
         mMineUserName.setText(R.string.now_login);
         VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
         mMineUserHead.setImageDrawable(drawable);
-        ColorCircle mUpdateDot = find(R.id.update_dot);
+        ColorCircle mUpdateDot =  view.findViewById(R.id.update_dot);
         mUpdateDot.setRadius(UIUtils.dip2Px(5));
         mUpdateDot.setColor(getResources().getColor(R.color.update_dot));
         if (PublicSPUtil.getInstance().getInt("check_version_code", 0) > BuildConfig.VERSION_CODE) {
@@ -127,24 +124,30 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
             }
 
         });
-        ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
+        delayLazy();
     }
 
-    private Runnable LOAD_DATA = new Runnable() {
-        @Override
-        public void run() {
-            if (MeManager.getIsLogin()) {
-                mExit.setVisibility(View.VISIBLE);
-                mMineUserName.setText(MeManager.getName());
-                initUserInfo();
-            } else {
-                mExit.setVisibility(View.INVISIBLE);
-                mMineUserName.setText(R.string.now_login);
-                VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
-                mMineUserHead.setImageDrawable(drawable);
-            }
-        }
-    };
+    private void delayLazy() {
+        Observable.timer(200, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.bindToLifecycle())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        if (MeManager.getIsLogin()) {
+                            mExit.setVisibility(View.VISIBLE);
+                            mMineUserName.setText(MeManager.getName());
+                            initUserInfo();
+                        } else {
+                            mExit.setVisibility(View.INVISIBLE);
+                            mMineUserName.setText(R.string.now_login);
+                            VectorDrawableCompat drawable = VectorDrawableCompat.create(getResources(), R.drawable.vd_head, null);
+                            mMineUserHead.setImageDrawable(drawable);
+                        }
+                    }
+                });
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -246,7 +249,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
                             ToastUtils.showToast(R.string.exitlogin);
                             MeManager.clearAll();
                             MeManager.setIsLgon(false);
-                            ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
+                            delayLazy();
                         }
                         if ("error".equals(code)) {
                             closeProgressDialog();
@@ -304,7 +307,7 @@ public class FragmentMine extends BaseFragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUST_CODE:
-                ThreadPoolProxyFactory.getNormalThreadPoolProxy().submit(LOAD_DATA);
+                delayLazy();
                 break;
             default:
                 break;
